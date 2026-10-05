@@ -58,7 +58,6 @@ export const defaultData = {
 
   ],
   bankSlots: Array.from({ length: 80 }, (_, index) =>
-    index === 0 ? { item: "1 orelha de morcegão" } : { item: "" }
   ),
   bankPassword: "133313",
 
