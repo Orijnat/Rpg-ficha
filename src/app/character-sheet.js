@@ -101,7 +101,6 @@ const defaultData = {
     { id: "3", name: "Malcolm", note: "" },
   ],
   bankSlots: Array.from({ length: 80 }, (_, index) =>
-    index === 0 ? { item: "1 orelha de morcegão" } : { item: "" }
   ),
   bankPassword: "133313",
   notes: "corvo rubro com ovo com 0 de vida\nfaça de prata meio ameaçada\novo de corvo mágico (?/100)\n18 balas para o rifle na bandoleira",
