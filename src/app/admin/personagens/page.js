@@ -16,7 +16,18 @@ export default function PersonagensAdmin() {
   }
 
   useEffect(() => {
-    load();
+    let mounted = true;
+    (async () => {
+      const res = await fetch("/api/characters");
+      const data = await res.json();
+      if (mounted) {
+        setItems(data);
+        setLoading(false);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   async function remove(id) {

@@ -32,9 +32,32 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  --color-theme-bg: var(--theme-bg);
+  --color-theme-title: var(--theme-title);
+  --color-theme-subtitle: var(--theme-subtitle);
+  --color-theme-body: var(--theme-body);
+  --color-theme-accent: var(--theme-accent);
+  --color-theme-accent-hover: var(--theme-accent-hover);
+  --color-theme-accent-contrast: var(--theme-accent-contrast);
 }
 
 :root {
+  /* Tema Padrão: Âmbar Vulcânico (Coração da Montanha) */
+  --theme-id: "amber";
+  --theme-bg: #0b0d12;
+  --theme-bg-elevated: #131720;
+  --theme-title: #f5e9d7;
+  --theme-subtitle: #a98b68;
+  --theme-body: #e8d5b0;
+  --theme-accent: #d69a3d;
+  --theme-accent-hover: #e5aa4e;
+  --theme-accent-contrast: #17140f;
+  --theme-accent-glow: rgba(214, 154, 61, 0.25);
+  --theme-glow-1: rgba(214, 154, 61, 0.14);
+  --theme-glow-2: rgba(120, 97, 255, 0.08);
+  --theme-glow-3: rgba(79, 143, 107, 0.1);
+
   --background: #0b0d12;
   --foreground: #e8d5b0;
   --card: #1a1510;
@@ -64,6 +87,165 @@
   --radius: 0.375rem;
 }
 
+/* 1. Âmbar Vulcânico */
+[data-theme="amber"] {
+  --theme-id: "amber";
+  --theme-bg: #0b0d12;
+  --theme-bg-elevated: #131720;
+  --theme-title: #f5e9d7;
+  --theme-subtitle: #a98b68;
+  --theme-body: #e8d5b0;
+  --theme-accent: #d69a3d;
+  --theme-accent-hover: #e5aa4e;
+  --theme-accent-contrast: #17140f;
+  --theme-accent-glow: rgba(214, 154, 61, 0.25);
+  --theme-glow-1: rgba(214, 154, 61, 0.14);
+  --theme-glow-2: rgba(120, 97, 255, 0.08);
+  --theme-glow-3: rgba(79, 143, 107, 0.1);
+  --background: #0b0d12;
+  --foreground: #e8d5b0;
+  --primary: #d69a3d;
+  --primary-foreground: #17140f;
+  --border: rgba(214, 154, 61, 0.2);
+}
+
+/* 2. Cripta Abissal */
+[data-theme="abyss"] {
+  --theme-id: "abyss";
+  --theme-bg: #09070f;
+  --theme-bg-elevated: #130e20;
+  --theme-title: #f3e8ff;
+  --theme-subtitle: #a78bfa;
+  --theme-body: #e2d9f3;
+  --theme-accent: #a855f7;
+  --theme-accent-hover: #c084fc;
+  --theme-accent-contrast: #0f071a;
+  --theme-accent-glow: rgba(168, 85, 247, 0.3);
+  --theme-glow-1: rgba(168, 85, 247, 0.22);
+  --theme-glow-2: rgba(99, 102, 241, 0.12);
+  --theme-glow-3: rgba(192, 132, 252, 0.12);
+  --background: #09070f;
+  --foreground: #e2d9f3;
+  --primary: #a855f7;
+  --primary-foreground: #0f071a;
+  --border: rgba(168, 85, 247, 0.25);
+}
+
+/* 3. Floresta Ancestral */
+[data-theme="forest"] {
+  --theme-id: "forest";
+  --theme-bg: #050e09;
+  --theme-bg-elevated: #091a11;
+  --theme-title: #ecfdf5;
+  --theme-subtitle: #6ee7b7;
+  --theme-body: #d1fae5;
+  --theme-accent: #10b981;
+  --theme-accent-hover: #34d399;
+  --theme-accent-contrast: #042014;
+  --theme-accent-glow: rgba(16, 185, 129, 0.3);
+  --theme-glow-1: rgba(16, 185, 129, 0.2);
+  --theme-glow-2: rgba(234, 179, 8, 0.08);
+  --theme-glow-3: rgba(5, 150, 105, 0.14);
+  --background: #050e09;
+  --foreground: #d1fae5;
+  --primary: #10b981;
+  --primary-foreground: #042014;
+  --border: rgba(16, 185, 129, 0.25);
+}
+
+/* 4. Sangue Carmesim */
+[data-theme="crimson"] {
+  --theme-id: "crimson";
+  --theme-bg: #110608;
+  --theme-bg-elevated: #200b0f;
+  --theme-title: #fef2f2;
+  --theme-subtitle: #fca5a5;
+  --theme-body: #fce7e7;
+  --theme-accent: #ef4444;
+  --theme-accent-hover: #f87171;
+  --theme-accent-contrast: #1a0406;
+  --theme-accent-glow: rgba(239, 68, 68, 0.3);
+  --theme-glow-1: rgba(239, 68, 68, 0.22);
+  --theme-glow-2: rgba(245, 158, 11, 0.08);
+  --theme-glow-3: rgba(185, 28, 28, 0.14);
+  --background: #110608;
+  --foreground: #fce7e7;
+  --primary: #ef4444;
+  --primary-foreground: #1a0406;
+  --border: rgba(239, 68, 68, 0.25);
+}
+
+/* 5. Gelo Eterno */
+[data-theme="frost"] {
+  --theme-id: "frost";
+  --theme-bg: #060d17;
+  --theme-bg-elevated: #0c182b;
+  --theme-title: #f0fdfa;
+  --theme-subtitle: #67e8f9;
+  --theme-body: #e0f2fe;
+  --theme-accent: #06b6d4;
+  --theme-accent-hover: #22d3ee;
+  --theme-accent-contrast: #041624;
+  --theme-accent-glow: rgba(6, 182, 212, 0.3);
+  --theme-glow-1: rgba(6, 182, 212, 0.22);
+  --theme-glow-2: rgba(99, 102, 241, 0.12);
+  --theme-glow-3: rgba(14, 165, 233, 0.14);
+  --background: #060d17;
+  --foreground: #e0f2fe;
+  --primary: #06b6d4;
+  --primary-foreground: #041624;
+  --border: rgba(6, 182, 212, 0.25);
+}
+
+/* Adaptação dinâmica de classes existentes quando um tema alternativo está ativo */
+[data-theme]:not([data-theme="amber"]) .text-\[\#d69a3d\],
+[data-theme]:not([data-theme="amber"]) .text-\[\#c9862a\] {
+  color: var(--theme-accent) !important;
+}
+
+[data-theme]:not([data-theme="amber"]) .bg-\[\#d69a3d\],
+[data-theme]:not([data-theme="amber"]) .bg-\[\#c9862a\] {
+  background-color: var(--theme-accent) !important;
+  color: var(--theme-accent-contrast) !important;
+}
+
+[data-theme]:not([data-theme="amber"]) .border-\[\#d69a3d\],
+[data-theme]:not([data-theme="amber"]) .border-\[\#c9862a\] {
+  border-color: var(--theme-accent) !important;
+}
+
+[data-theme]:not([data-theme="amber"]) .border-\[\#d69a3d\]\/40,
+[data-theme]:not([data-theme="amber"]) .border-\[\#d69a3d\]\/50 {
+  border-color: var(--theme-accent-glow) !important;
+}
+
+[data-theme]:not([data-theme="amber"]) .bg-\[\#d69a3d\]\/10,
+[data-theme]:not([data-theme="amber"]) .bg-\[\#d69a3d\]\/15,
+[data-theme]:not([data-theme="amber"]) .bg-\[\#d69a3d\]\/20,
+[data-theme]:not([data-theme="amber"]) .bg-\[\#d69a3d\]\/25 {
+  background-color: var(--theme-accent-glow) !important;
+}
+
+[data-theme]:not([data-theme="amber"]) .text-\[\#f5e9d7\],
+[data-theme]:not([data-theme="amber"]) .text-\[\#f0bf67\],
+[data-theme]:not([data-theme="amber"]) .text-\[\#fdf6e7\] {
+  color: var(--theme-title) !important;
+}
+
+[data-theme]:not([data-theme="amber"]) .text-\[\#a98b68\],
+[data-theme]:not([data-theme="amber"]) .text-\[\#8a7355\] {
+  color: var(--theme-subtitle) !important;
+}
+
+[data-theme]:not([data-theme="amber"]) .bg-\[\#0b0d12\] {
+  background-color: var(--theme-bg) !important;
+}
+
+[data-theme]:not([data-theme="amber"]) .bg-\[\#0b0d12\]\/80,
+[data-theme]:not([data-theme="amber"]) .bg-\[\#0b0d12\]\/70 {
+  background-color: color-mix(in srgb, var(--theme-bg) 80%, transparent) !important;
+}
+
 @layer base {
   * {
     border-color: var(--border);
@@ -75,8 +257,9 @@
 
   body {
     min-height: 100vh;
-    background: var(--background);
-    color: var(--foreground);
+    background: var(--theme-bg, var(--background));
+    color: var(--theme-body, var(--foreground));
     font-family: "Inter", sans-serif;
+    transition: background-color 0.25s ease, color 0.25s ease;
   }
 }

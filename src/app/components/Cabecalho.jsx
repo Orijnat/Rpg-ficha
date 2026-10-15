@@ -3,12 +3,14 @@
 import React, { useState } from "react";
 import { Settings } from "lucide-react";
 import { useCharacter } from "../context/CharacterContext";
+import { useTheme } from "../context/ThemeContext";
 import { EditableText, HPBar } from "./ui";
-import BackupModal from "./BackupModal";
+import SettingsModal from "./SettingsModal";
 
 export default function Cabecalho() {
   const { data, upd } = useCharacter();
-  const [isBackupOpen, setIsBackupOpen] = useState(false);
+  const { activeThemeObj } = useTheme();
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   return (
     <>
@@ -38,21 +40,29 @@ export default function Cabecalho() {
                 </div>
               </div>
 
+              {/* Botão de Configurações com indicação visual de tema */}
               <button
                 type="button"
-                onClick={() => setIsBackupOpen(true)}
-                className="flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-[#a98b68] transition hover:border-[#d69a3d]/40 hover:bg-[#d69a3d]/10 hover:text-[#f5e9d7] active:scale-95"
-                title="Backup & Sincronização"
+                onClick={() => setIsSettingsOpen(true)}
+                className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold text-[#a98b68] transition hover:border-[#d69a3d]/40 hover:bg-[#d69a3d]/10 hover:text-[#f5e9d7] active:scale-95"
+                title="Configurações & Temas"
               >
                 <Settings size={15} />
-                <span className="hidden sm:inline">Backup</span>
+                <span className="hidden sm:inline">Configurações</span>
+                {activeThemeObj && (
+                  <span
+                    className="h-2 w-2 rounded-full ring-1 ring-white/30"
+                    style={{ backgroundColor: activeThemeObj.accent }}
+                    title={`Tema ativo: ${activeThemeObj.name}`}
+                  />
+                )}
               </button>
             </div>
           </div>
         </div>
       </header>
 
-      <BackupModal isOpen={isBackupOpen} onClose={() => setIsBackupOpen(false)} />
+      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </>
   );
 }

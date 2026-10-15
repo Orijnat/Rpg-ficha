@@ -7,11 +7,11 @@ import { Coins, FileText, Footprints, Home, Package, ScrollText, Users } from "l
 import "./globals.css";
 import { CharacterProvider, useCharacter } from "./context/CharacterContext";
 import { DiceProvider } from "./context/DiceContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import { EditableText, HPBar } from "./components/ui";
 import Cabecalho from "./components/Cabecalho";
 import DiceModal from "./components/dice/DiceModal";
 import DiceFloatingTrigger from "./components/dice/DiceFloatingTrigger";
-
 
 const TABS = [
   { id: "personagem", label: "Personagem", icon: <ScrollText size={15} /> },
@@ -33,12 +33,31 @@ function AppChrome({ children }) {
   }, []);
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#0b0d12] text-[#e8d5b0]" style={{ fontFamily: "'Inter', sans-serif" }}>
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(214,154,61,0.13),transparent_35%),radial-gradient(circle_at_top_right,rgba(120,97,255,0.08),transparent_30%),linear-gradient(180deg,rgba(255,255,255,0.02),transparent_18%)]" />
-      <div className="pointer-events-none absolute -left-24 top-24 h-72 w-72 rounded-full bg-[#d69a3d]/10 blur-3xl" />
-      <div className="pointer-events-none absolute right-0 top-80 h-96 w-96 rounded-full bg-[#4f8f6b]/10 blur-3xl" />
+    <div
+      className="relative min-h-screen overflow-hidden text-[var(--theme-body)] transition-colors duration-300"
+      style={{
+        backgroundColor: "var(--theme-bg, #0b0d12)",
+        fontFamily: "'Inter', sans-serif",
+      }}
+    >
+      {/* Luzes dinâmicas de fundo adaptadas ao tema */}
+      <div
+        className="pointer-events-none absolute inset-0 transition-opacity duration-500"
+        style={{
+          background:
+            "radial-gradient(circle at top left, var(--theme-glow-1, rgba(214,154,61,0.13)), transparent 35%), radial-gradient(circle at top right, var(--theme-glow-2, rgba(120,97,255,0.08)), transparent 30%), linear-gradient(180deg, rgba(255,255,255,0.02), transparent 18%)",
+        }}
+      />
+      <div
+        className="pointer-events-none absolute -left-24 top-24 h-72 w-72 rounded-full blur-3xl transition-colors duration-500"
+        style={{ backgroundColor: "var(--theme-glow-1, rgba(214,154,61,0.1))" }}
+      />
+      <div
+        className="pointer-events-none absolute right-0 top-80 h-96 w-96 rounded-full blur-3xl transition-colors duration-500"
+        style={{ backgroundColor: "var(--theme-glow-3, rgba(79,143,107,0.1))" }}
+      />
 
-     <Cabecalho/>
+      <Cabecalho />
 
       <nav className="sticky top-[93px] z-10 border-b border-white/10 bg-[#0b0d12]/70 backdrop-blur-xl">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
@@ -74,7 +93,7 @@ function AppChrome({ children }) {
       <style>{`
         .custom-scroll::-webkit-scrollbar { width: 4px; }
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(201,134,42,0.3); border-radius: 2px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: var(--theme-accent-glow, rgba(201,134,42,0.3)); border-radius: 2px; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
@@ -86,13 +105,14 @@ export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR" className="h-full antialiased">
       <body className="flex min-h-full flex-col">
-        <CharacterProvider>
-          <DiceProvider>
-            <AppChrome>{children}</AppChrome>
-          </DiceProvider>
-        </CharacterProvider>
+        <ThemeProvider>
+          <CharacterProvider>
+            <DiceProvider>
+              <AppChrome>{children}</AppChrome>
+            </DiceProvider>
+          </CharacterProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
 }
-
