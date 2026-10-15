@@ -6,8 +6,12 @@ import { usePathname } from "next/navigation";
 import { Coins, FileText, Footprints, Home, Package, ScrollText, Users } from "lucide-react";
 import "./globals.css";
 import { CharacterProvider, useCharacter } from "./context/CharacterContext";
+import { DiceProvider } from "./context/DiceContext";
 import { EditableText, HPBar } from "./components/ui";
 import Cabecalho from "./components/Cabecalho";
+import DiceModal from "./components/dice/DiceModal";
+import DiceFloatingTrigger from "./components/dice/DiceFloatingTrigger";
+
 
 const TABS = [
   { id: "personagem", label: "Personagem", icon: <ScrollText size={15} /> },
@@ -64,6 +68,9 @@ function AppChrome({ children }) {
 
       <main className="relative mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</main>
 
+      <DiceModal />
+      <DiceFloatingTrigger />
+
       <style>{`
         .custom-scroll::-webkit-scrollbar { width: 4px; }
         .custom-scroll::-webkit-scrollbar-track { background: transparent; }
@@ -80,9 +87,12 @@ export default function RootLayout({ children }) {
     <html lang="pt-BR" className="h-full antialiased">
       <body className="flex min-h-full flex-col">
         <CharacterProvider>
-          <AppChrome>{children}</AppChrome>
+          <DiceProvider>
+            <AppChrome>{children}</AppChrome>
+          </DiceProvider>
         </CharacterProvider>
       </body>
     </html>
   );
 }
+

@@ -21,8 +21,9 @@ export default function MundoPage() {
               </button>
             </div>
             <div className="space-y-2">
-              {data[listKey].map((person) => (
+              {(data?.[listKey] || []).map((person) => (
                 <div key={person.id} className="group flex items-start gap-2 border-b border-[rgba(201,134,42,0.08)] pb-2 last:border-0">
+
                   <div className="flex-1 space-y-0.5">
                     <EditableText value={person.name} onChange={(value) => updPerson(listKey, person.id, { name: value })} className="text-sm font-medium text-[#e8d5b0]" />
                     <EditableText value={person.note} onChange={(value) => updPerson(listKey, person.id, { note: value })} className="text-xs text-[#8a7355]" placeholder="nota..." />

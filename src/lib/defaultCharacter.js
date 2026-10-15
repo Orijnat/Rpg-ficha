@@ -1,0 +1,79 @@
+/**
+ * Dados padrão e estrutura canônica do Personagem (7 Atributos, 19 Perícias, 80 Slots de Banco)
+ * Mantido por: @rpg-rules-engine
+ */
+
+export const defaultData = {
+  name: "Geralt de Rívia",
+  hp: 70,
+  hpMax: 70,
+  age: "Cerca de 100",
+  eyes: "Amarelos felinos",
+  height: "1,85m",
+  skin: "Pálida",
+  weight: "85kg",
+  hair: "Branco leitoso",
+  appearance: "Cicatriz no olho esquerdo, porte atlético, medalhão de lobo.",
+  FOR: 16,
+  DES: 16,
+  CON: 16,
+  SAB: 14,
+  ESP: 14,
+  CAR: 10,
+  INT: 12,
+  skills: [
+    { name: "Atletismo", attr: "FOR", trained: true, bonus: 5 },
+    { name: "Acrobacia", attr: "DES", trained: true, bonus: 5 },
+    { name: "Furtividade", attr: "DES", trained: false, bonus: null },
+    { name: "Prestidigitação", attr: "DES", trained: false, bonus: null },
+    { name: "História", attr: "SAB", trained: false, bonus: null },
+    { name: "Investigação", attr: "SAB", trained: true, bonus: 4 },
+    { name: "Sobrevivência", attr: "SAB", trained: true, bonus: 5 },
+    { name: "Provocação", attr: "SAB", trained: false, bonus: null },
+    { name: "Animais", attr: "SAB", trained: true, bonus: 4 },
+    { name: "Medicina", attr: "SAB", trained: false, bonus: null },
+    { name: "Intuição", attr: "ESP", trained: true, bonus: 4 },
+    { name: "Percepção", attr: "ESP", trained: true, bonus: 6 },
+    { name: "Atuação", attr: "ESP", trained: false, bonus: null },
+    { name: "Enganação", attr: "CAR", trained: false, bonus: null },
+    { name: "Intimidação", attr: "CAR", trained: true, bonus: 5 },
+    { name: "Persuasão", attr: "CAR", trained: false, bonus: null },
+    { name: "Arcanismo", attr: "INT", trained: true, bonus: 3 },
+    { name: "Religião", attr: "INT", trained: false, bonus: null },
+    { name: "Natureza", attr: "INT", trained: true, bonus: 3 },
+  ],
+  latina: 0,
+  ouro: 66,
+  prata: 70,
+  cobre: 3,
+  inventory: [
+    { id: "1", name: "Espada de Aço", qty: 1 },
+    { id: "2", name: "Espada de Prata", qty: 1 },
+    { id: "3", name: "Óleo contra Espectros", qty: 2 },
+    { id: "4", name: "Poção Andorinha", qty: 3 },
+    { id: "5", name: "Besta de mão com virotes", qty: 1 },
+  ],
+  contracts: [
+    { id: "1", title: "O Monstro do Poço", reward: "50 Ouro", done: false },
+    { id: "2", title: "Bestas nas Colinas", reward: "120 Ouro", done: true },
+  ],
+  players: [
+    { id: "1", name: "Marosso", note: "Bárbaro guerreiro" },
+    { id: "2", name: "Skjar", note: "Caçador" },
+  ],
+  npcs: [
+    { id: "1", name: "Mithril", note: "Ferreiro da vila" },
+    { id: "2", name: "Luma", note: "Curandeira" },
+  ],
+  bankSlots: Array.from({ length: 80 }, (_, index) =>
+
+    index === 0 ? { item: "Relíquia Antiga de Prata" } : { item: "" }
+  ),
+  bankPassword: "133313",
+  notes: "Medalhão vibra na presença de monstros ou fontes de magia.",
+  roomNotes: "Aposentos na estalagem do centro da vila.",
+  mountName: "Carpeado",
+  mountHP: 30,
+  mountHPMax: 30,
+  mountNotes: "Sela de viagem reforçada, alforjes de couro duplo.",
+};

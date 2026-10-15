@@ -1,64 +1,142 @@
 "use client";
 
-import React from "react";
-import { Check, Plus, Trash2, FileText } from "lucide-react";
-import { SectionHeader, Card, EditableText } from "..//components/ui";
+import React, { useState, useMemo } from "react";
+import { Check, Plus, Trash2, FileText, CheckCircle2, Clock } from "lucide-react";
+import { SectionHeader, Card, EditableText } from "../components/ui";
 import { useCharacter } from "../context/CharacterContext";
 
 export default function Contratos() {
   const { data, addContract, updContract, removeContract } = useCharacter();
+  const [filter, setFilter] = useState("all"); // "all" | "active" | "done"
+
+  const completedCount = useMemo(
+    () => data.contracts.filter((c) => c.done).length,
+    [data.contracts]
+  );
+
+  const filteredContracts = useMemo(() => {
+    if (filter === "active") return data.contracts.filter((c) => !c.done);
+    if (filter === "done") return data.contracts.filter((c) => c.done);
+    return data.contracts;
+  }, [data.contracts, filter]);
 
   return (
     <div className="space-y-4">
       <Card>
-        <div className="mb-3 flex items-center justify-between">
-          <SectionHeader title="Painel de Contratos" icon={<FileText size={14} />} />
-          <button onClick={addContract} className="flex items-center gap-1 text-xs text-[#c9862a] transition-colors hover:text-[#e8a030]">
-            <Plus size={13} /> Novo Contrato
-          </button>
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <SectionHeader
+              title={`Painel de Contratos (${completedCount}/${data.contracts.length} Concluídos)`}
+              icon={<FileText size={14} />}
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+            {/* Filtros */}
+            <div className="flex rounded-lg border border-white/10 bg-white/5 p-0.5 text-xs">
+              <button
+                onClick={() => setFilter("all")}
+                className={`rounded-md px-2.5 py-1 font-medium transition ${
+                  filter === "all"
+                    ? "bg-[#d69a3d] text-[#17140f]"
+                    : "text-[#8a7355] hover:text-[#e8d5b0]"
+                }`}
+              >
+                Todos
+              </button>
+              <button
+                onClick={() => setFilter("active")}
+                className={`flex items-center gap-1 rounded-md px-2.5 py-1 font-medium transition ${
+                  filter === "active"
+                    ? "bg-[#d69a3d] text-[#17140f]"
+                    : "text-[#8a7355] hover:text-[#e8d5b0]"
+                }`}
+              >
+                <Clock size={11} />
+                Ativos
+              </button>
+              <button
+                onClick={() => setFilter("done")}
+                className={`flex items-center gap-1 rounded-md px-2.5 py-1 font-medium transition ${
+                  filter === "done"
+                    ? "bg-[#d69a3d] text-[#17140f]"
+                    : "text-[#8a7355] hover:text-[#e8d5b0]"
+                }`}
+              >
+                <CheckCircle2 size={11} />
+                Concluídos
+              </button>
+            </div>
+
+            <button
+              onClick={addContract}
+              className="flex items-center gap-1.5 rounded-lg border border-[#d69a3d]/40 bg-[#d69a3d]/10 px-3 py-1.5 text-xs font-semibold text-[#d69a3d] transition hover:bg-[#d69a3d]/20 active:scale-95"
+            >
+              <Plus size={13} /> Novo Contrato
+            </button>
+          </div>
         </div>
+
         <div className="space-y-3">
-          {data.contracts.map((contract) => (
+          {filteredContracts.map((contract) => (
             <div
               key={contract.id}
-              className={`group rounded-lg border p-3 transition-all ${
+              className={`group rounded-xl border p-3.5 transition-all ${
                 contract.done
-                  ? "border-[rgba(201,134,42,0.1)] opacity-50"
-                  : "border-[rgba(201,134,42,0.3)] hover:border-[rgba(201,134,42,0.5)]"
+                  ? "border-emerald-500/20 bg-emerald-950/10 opacity-70"
+                  : "border-white/10 bg-white/[0.02] hover:border-[#d69a3d]/40 hover:bg-white/[0.04]"
               }`}
             >
               <div className="flex items-start gap-3">
                 <button
+                  type="button"
                   onClick={() => updContract(contract.id, { done: !contract.done })}
-                  className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border transition-colors ${
+                  className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-colors ${
                     contract.done
-                      ? "border-[#4a7c59] bg-[#4a7c59] text-white"
-                      : "border-[rgba(201,134,42,0.4)] hover:border-[#c9862a]"
+                      ? "border-emerald-500 bg-emerald-500 text-[#0f0d0a]"
+                      : "border-white/20 hover:border-[#d69a3d]"
                   }`}
+                  title={contract.done ? "Marcar como Ativo" : "Marcar como Concluído"}
                 >
-                  {contract.done ? <Check size={11} /> : null}
+                  {contract.done ? <Check size={12} strokeWidth={3} /> : null}
                 </button>
+
                 <div className="flex-1 space-y-1">
                   <EditableText
                     value={contract.title}
                     onChange={(value) => updContract(contract.id, { title: value })}
-                    className={`text-sm font-medium ${contract.done ? "line-through text-[#8a7355]" : "text-[#e8d5b0]"}`}
+                    className={`text-sm font-semibold transition ${
+                      contract.done ? "line-through text-[#8a7355]" : "text-[#f5e9d7]"
+                    }`}
                   />
                   <div className="flex items-center gap-2 text-xs">
-                    <span className="text-[#8a7355]" style={{ fontFamily: "'Cinzel', serif" }}>
+                    <span className="font-serif uppercase tracking-wider text-[#8a7355]">
                       Recompensa:
                     </span>
-                    <EditableText value={contract.reward} onChange={(value) => updContract(contract.id, { reward: value })} className="text-[#c9862a]" />
+                    <EditableText
+                      value={contract.reward}
+                      onChange={(value) => updContract(contract.id, { reward: value })}
+                      className="font-mono font-medium text-[#d69a3d]"
+                    />
                   </div>
                 </div>
-                <button onClick={() => removeContract(contract.id)} className="shrink-0 text-[#8b1a1a] opacity-0 transition-all group-hover:opacity-100 hover:text-[#c02020]">
-                  <Trash2 size={13} />
+
+                <button
+                  onClick={() => removeContract(contract.id)}
+                  className="shrink-0 rounded p-1 text-[#8b1a1a] opacity-0 transition-all group-hover:opacity-100 hover:bg-rose-500/10 hover:text-rose-400"
+                  title="Excluir contrato"
+                >
+                  <Trash2 size={14} />
                 </button>
               </div>
             </div>
           ))}
 
-          {data.contracts.length === 0 ? <p className="py-6 text-center text-sm italic text-[#8a7355]">Nenhum contrato ativo</p> : null}
+          {filteredContracts.length === 0 && (
+            <p className="py-8 text-center text-xs italic text-[#8a7355]">
+              Nenhum contrato encontrado nesta categoria.
+            </p>
+          )}
         </div>
       </Card>
     </div>

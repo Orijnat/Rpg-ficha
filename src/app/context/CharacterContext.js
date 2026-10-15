@@ -1,96 +1,11 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { syncCharacterWithBackend } from "../../lib/api";
 
-export const defaultData = {
-  name: "",
-  hp: 70,
-  hpMax: 70,
-  age: "",
-  eyes: "Verde Azul",
-  height: "1,89",
-  skin: "Bronze",
-  weight: "100kg",
-  hair: "Laranja/cobre",
-  appearance: "ondulados, corpo atlético, barba falha",
-  FOR: 14,
-  DES: 16,
-  CON: 14,
-  SAB: 12,
-  ESP: 14,
-  CAR: 10,
-  INT: 10,
-  skills: [
-    { name: "Atletismo", attr: "FOR", trained: false, bonus: null },
-    { name: "Acrobacia", attr: "DES", trained: false, bonus: null },
-    { name: "Furtividade", attr: "DES", trained: false, bonus: null },
-    { name: "Prestidigitação", attr: "DES", trained: false, bonus: null },
-    { name: "História", attr: "SAB", trained: false, bonus: null },
-    { name: "Investigação", attr: "SAB", trained: true, bonus: 5 },
-    { name: "Sobrevivência", attr: "SAB", trained: false, bonus: null },
-    { name: "Provocação", attr: "SAB", trained: false, bonus: null },
-    { name: "Intuição", attr: "ESP", trained: false, bonus: null },
-    { name: "Percepção", attr: "ESP", trained: true, bonus: 6 },
-    { name: "Atuação", attr: "ESP", trained: false, bonus: null },
-    { name: "Enganação", attr: "CAR", trained: false, bonus: null },
-    { name: "Intimidação", attr: "CAR", trained: true, bonus: 6 },
-    { name: "Persuasão", attr: "CAR", trained: false, bonus: null },
-    { name: "Arcanismo", attr: "INT", trained: false, bonus: null },
-    { name: "Religião", attr: "INT", trained: false, bonus: null },
-    { name: "Natureza", attr: "INT", trained: false, bonus: null },
-    { name: "Animais", attr: "SAB", trained: false, bonus: null },
-    { name: "Medicina", attr: "SAB", trained: false, bonus: null },
-  ],
-  latina: 0,
-  ouro: 66,
-  prata: 70,
-  cobre: 3,
-  inventory: [
-    { id: "1", name: "no farol", qty: 1 },
-    { id: "2", name: "Annabelle", qty: 1 },
-    { id: "3", name: "Garasta", qty: 1 },
-    { id: "4", name: "Espada com tambor", qty: 1 },
-    { id: "5", name: "Revolver/Rifle (1 anel)", qty: 1 },
-    { id: "6", name: "Revolver de prata", qty: 1 },
-    { id: "7", name: "Caixa de munição", qty: 24 },
-    { id: "8", name: "Balas de rifle", qty: 246 },
-    { id: "9", name: "Balas negras (rifle)", qty: 12 },
-    { id: "10", name: "Bandoleira", qty: 1 },
-    { id: "11", name: "Pistola", qty: 1 },
-    { id: "12", name: "Armadura de couro e prata", qty: 1 },
-    { id: "13", name: "7 gramas de flor (drogas)", qty: 1 },
-  ],
-  contracts: [
-    { id: "1", title: "Me vingar de Brank", reward: "???", done: false },
-    { id: "2", title: "Um velho amigo", reward: "???", done: false },
-    { id: "3", title: "Para mais poder de...", reward: "???", done: false },
-    { id: "4", title: "O que é meu é seu", reward: "???", done: false },
-  ],
-  players: [
-    { id: "1", name: "Marosso", note: "" },
-    { id: "2", name: "little finger", note: "" },
-    { id: "3", name: "Skjar", note: "" },
-    { id: "4", name: "jasmini", note: "" },
-    { id: "5", name: "Victor", note: "" },
-    { id: "6", name: "Humpty Dumpty", note: "" },
-    { id: "7", name: "Ryathar", note: "" },
-  ],
-  npcs: [
-    { id: "1", name: "Mithril", note: "6 de armadura de espinhos sacro, 2 cap" },
-    { id: "2", name: "Luma", note: "" },
-    { id: "3", name: "Malcolm", note: "" },
-  ],
-  bankSlots: Array.from({ length: 80 }, (_, index) =>
-    index === 0 ? { item: "1 orelha de morcegão" } : { item: "" }
-  ),
-  bankPassword: "133313",
-  notes: "corvo rubro com ovo com 0 de vida\nfaça de prata meio ameaçada\novo de corvo mágico (?/100)\n18 balas para o rifle na bandoleira",
-  roomNotes: "",
-  mountName: "",
-  mountHP: 20,
-  mountHPMax: 20,
-  mountNotes: "",
-};
+import { defaultData } from "../../lib/defaultCharacter";
+export { defaultData };
+
 
 const CharacterContext = createContext(null);
 
@@ -125,7 +40,15 @@ export function CharacterProvider({ children }) {
     }
 
     window.localStorage.setItem("bruxeiro-sheet", JSON.stringify(data));
+
+    // Sincronização em segundo plano com o backend (debounce de 1.2s)
+    const timer = setTimeout(() => {
+      syncCharacterWithBackend(data);
+    }, 1200);
+
+    return () => clearTimeout(timer);
   }, [data, hydrated]);
+
 
   const upd = (key, value) => {
     setData((current) => ({ ...current, [key]: value }));
@@ -220,9 +143,22 @@ export function CharacterProvider({ children }) {
     setBankError(true);
   };
 
+  const loadCharacter = (importedData) => {
+    if (importedData && typeof importedData === "object") {
+      setData({ ...defaultData, ...importedData });
+    }
+  };
+
+  const resetCharacter = () => {
+    setData(defaultData);
+    window.localStorage.removeItem("bruxeiro-sheet");
+  };
+
   const value = {
     data,
     setData,
+    loadCharacter,
+    resetCharacter,
     hydrated,
     bankUnlocked,
     setBankUnlocked,
@@ -246,6 +182,7 @@ export function CharacterProvider({ children }) {
   };
 
   return <CharacterContext.Provider value={value}>{children}</CharacterContext.Provider>;
+
 }
 
 function uid() {

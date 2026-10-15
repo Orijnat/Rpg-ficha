@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { Dices } from "lucide-react";
+import { calculateModifier, formatModifier } from "../../lib/modifiers";
+import { useDice } from "../context/DiceContext";
 
 export function modifier(score) {
-  const mod = Math.floor((score - 10) / 2);
-  return mod >= 0 ? `+${mod}` : `${mod}`;
+  return formatModifier(calculateModifier(score));
 }
+
 
 export function uid() {
   return Math.random().toString(36).slice(2);
@@ -140,17 +143,29 @@ export function Card({ children, className = "" }) {
 }
 
 export function StatBox({ label, value, onChange }) {
+  const { promptRoll } = useDice();
+  const mod = calculateModifier(value);
+  const formattedMod = formatModifier(mod);
+
   return (
-    <div className="flex min-w-[64px] flex-col items-center gap-1 rounded-xl border border-white/10 bg-white/[0.03] p-3 shadow-sm">
-      <span className="text-[10px] uppercase tracking-[0.22em] text-[#a98b68]">{label}</span>
+    <div className="group relative flex min-w-[68px] flex-col items-center gap-1 rounded-xl border border-white/10 bg-white/[0.03] p-3 shadow-sm transition-all hover:border-[#d69a3d]/40">
+      <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#a98b68]">{label}</span>
       <EditableNumber
         value={value}
         onChange={onChange}
-        className="text-center text-xl font-semibold text-[#f5e9d7]"
+        className="text-center text-xl font-bold text-[#f5e9d7]"
         min={1}
         max={30}
       />
-      <span className="font-mono text-xs text-[#d69a3d]">{modifier(value)}</span>
+      <button
+        onClick={() => promptRoll(`Teste de ${label}`, mod)}
+        className="mt-0.5 flex items-center gap-1 rounded-md border border-white/5 bg-white/[0.02] px-2 py-0.5 font-mono text-xs font-semibold text-[#d69a3d] transition-all hover:border-[#d69a3d]/50 hover:bg-[#d69a3d]/15 hover:text-[#fdf6e7] active:scale-95"
+        title={`Rolar teste de ${label} (${formattedMod})`}
+      >
+        <Dices size={11} className="opacity-60 group-hover:opacity-100" />
+        <span>{formattedMod}</span>
+      </button>
     </div>
   );
 }
+
