@@ -33,13 +33,13 @@ export default function Contratos() {
 
           <div className="flex items-center gap-2">
             {/* Filtros */}
-            <div className="flex rounded-lg border border-white/10 bg-white/5 p-0.5 text-xs">
+            <div className="flex rounded-lg border border-border bg-secondary p-0.5 text-xs">
               <button
                 onClick={() => setFilter("all")}
                 className={`rounded-md px-2.5 py-1 font-medium transition ${
                   filter === "all"
-                    ? "bg-[#d69a3d] text-[#17140f]"
-                    : "text-[#8a7355] hover:text-[#e8d5b0]"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 Todos
@@ -48,8 +48,8 @@ export default function Contratos() {
                 onClick={() => setFilter("active")}
                 className={`flex items-center gap-1 rounded-md px-2.5 py-1 font-medium transition ${
                   filter === "active"
-                    ? "bg-[#d69a3d] text-[#17140f]"
-                    : "text-[#8a7355] hover:text-[#e8d5b0]"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <Clock size={11} />
@@ -59,8 +59,8 @@ export default function Contratos() {
                 onClick={() => setFilter("done")}
                 className={`flex items-center gap-1 rounded-md px-2.5 py-1 font-medium transition ${
                   filter === "done"
-                    ? "bg-[#d69a3d] text-[#17140f]"
-                    : "text-[#8a7355] hover:text-[#e8d5b0]"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <CheckCircle2 size={11} />
@@ -70,7 +70,7 @@ export default function Contratos() {
 
             <button
               onClick={addContract}
-              className="flex items-center gap-1.5 rounded-lg border border-[#d69a3d]/40 bg-[#d69a3d]/10 px-3 py-1.5 text-xs font-semibold text-[#d69a3d] transition hover:bg-[#d69a3d]/20 active:scale-95"
+              className="flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary transition hover:bg-primary/20 active:scale-95"
             >
               <Plus size={13} /> Novo Contrato
             </button>
@@ -84,7 +84,7 @@ export default function Contratos() {
               className={`group rounded-xl border p-3.5 transition-all ${
                 contract.done
                   ? "border-emerald-500/20 bg-emerald-950/10 opacity-70"
-                  : "border-white/10 bg-white/[0.02] hover:border-[#d69a3d]/40 hover:bg-white/[0.04]"
+                  : "border-border bg-secondary/50 hover:border-primary/40 hover:bg-secondary"
               }`}
             >
               <div className="flex items-start gap-3">
@@ -94,7 +94,7 @@ export default function Contratos() {
                   className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-colors ${
                     contract.done
                       ? "border-emerald-500 bg-emerald-500 text-[#0f0d0a]"
-                      : "border-white/20 hover:border-[#d69a3d]"
+                      : "border-border hover:border-primary"
                   }`}
                   title={contract.done ? "Marcar como Ativo" : "Marcar como Concluído"}
                 >

@@ -16,7 +16,7 @@ export default function MundoPage() {
           <Card key={listKey}>
             <div className="mb-3 flex items-center justify-between">
               <SectionHeader title={isPlayers ? "Jogadores" : "NPCs"} icon={isPlayers ? <Users size={14} /> : <Skull size={14} />} />
-              <button onClick={() => addPerson(listKey)} className="flex items-center gap-1 text-xs text-[#c9862a] transition-colors hover:text-[#e8a030]">
+              <button onClick={() => addPerson(listKey)} className="flex min-h-11 items-center gap-1 rounded-lg px-2 text-xs text-primary transition-colors hover:bg-primary/15 hover:text-foreground active:scale-95">
                 <Plus size={13} />
               </button>
             </div>
@@ -28,7 +28,7 @@ export default function MundoPage() {
                     <EditableText value={person.name} onChange={(value) => updPerson(listKey, person.id, { name: value })} className="text-sm font-medium text-[#e8d5b0]" />
                     <EditableText value={person.note} onChange={(value) => updPerson(listKey, person.id, { note: value })} className="text-xs text-[#8a7355]" placeholder="nota..." />
                   </div>
-                  <button onClick={() => removePerson(listKey, person.id)} className="mt-0.5 text-[#8b1a1a] opacity-0 transition-all group-hover:opacity-100 hover:text-[#c02020]">
+                  <button onClick={() => removePerson(listKey, person.id)} className="mt-0.5 rounded p-2 text-destructive opacity-0 transition-all group-hover:opacity-100 hover:bg-destructive/15 hover:text-destructive-foreground">
                     <Trash2 size={12} />
                   </button>
                 </div>

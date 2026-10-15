@@ -2,10 +2,10 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { syncCharacterWithBackend } from "../../lib/api";
+import { useAuth } from "./AuthContext";
 
 import { defaultData } from "../../lib/defaultCharacter";
 export { defaultData };
-
 
 const CharacterContext = createContext(null);
 
@@ -16,6 +16,9 @@ export function CharacterProvider({ children }) {
   const [bankInput, setBankInput] = useState("");
   const [bankError, setBankError] = useState(false);
 
+  const { activeCharacter, token } = useAuth();
+
+  // Carrega do cache local inicialmente
   useEffect(() => {
     const timeout = window.setTimeout(() => {
       try {
@@ -34,6 +37,19 @@ export function CharacterProvider({ children }) {
     return () => window.clearTimeout(timeout);
   }, []);
 
+  // Atualiza ficha quando o personagem ativo da conta logada mudar
+  useEffect(() => {
+    if (activeCharacter) {
+      setData((current) => ({
+        ...defaultData,
+        ...activeCharacter,
+        // Garante compatibilidade de formatos
+        inventory: activeCharacter.inventory || current.inventory || [],
+        contracts: activeCharacter.contracts || current.contracts || [],
+      }));
+    }
+  }, [activeCharacter?.id]);
+
   useEffect(() => {
     if (!hydrated) {
       return;
@@ -43,11 +59,11 @@ export function CharacterProvider({ children }) {
 
     // Sincronização em segundo plano com o backend (debounce de 1.2s)
     const timer = setTimeout(() => {
-      syncCharacterWithBackend(data);
+      syncCharacterWithBackend(data, token);
     }, 1200);
 
     return () => clearTimeout(timer);
-  }, [data, hydrated]);
+  }, [data, hydrated, token]);
 
 
   const upd = (key, value) => {

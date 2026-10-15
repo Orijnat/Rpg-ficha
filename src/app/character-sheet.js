@@ -507,7 +507,7 @@ export default function CharacterSheet() {
       <Card>
         <div className="mb-3 flex items-center justify-between">
           <SectionHeader title="Itens & Equipamentos" icon={<Package size={14} />} />
-          <button onClick={addItem} className="flex items-center gap-1 text-xs text-[#c9862a] transition-colors hover:text-[#e8a030]">
+          <button onClick={addItem} className="flex min-h-11 items-center gap-1 rounded-lg px-2 text-xs text-primary transition-colors hover:bg-primary/15 hover:text-foreground active:scale-95">
             <Plus size={13} /> Adicionar
           </button>
         </div>
@@ -696,13 +696,13 @@ export default function CharacterSheet() {
           </div>
           <div>
             <div className="mb-2 flex items-center gap-3">
-              <button className="flex h-7 w-7 items-center justify-center rounded bg-[#8b1a1a] text-[#e8d5b0] hover:bg-[#a02020]" onClick={() => upd("mountHP", Math.max(0, data.mountHP - 1))}>
+              <button className="flex h-9 w-9 items-center justify-center rounded border border-destructive/40 bg-destructive/20 text-foreground hover:bg-destructive/40 active:scale-95" onClick={() => upd("mountHP", Math.max(0, data.mountHP - 1))}>
                 −
               </button>
               <div className="flex-1">
                 <HPBar hp={data.mountHP} max={data.mountHPMax} />
               </div>
-              <button className="flex h-7 w-7 items-center justify-center rounded bg-[#4a7c59] text-[#e8d5b0] hover:bg-[#5a9c69]" onClick={() => upd("mountHP", Math.min(data.mountHPMax, data.mountHP + 1))}>
+              <button className="flex h-9 w-9 items-center justify-center rounded border border-primary/40 bg-primary/20 text-foreground hover:bg-primary/40 active:scale-95" onClick={() => upd("mountHP", Math.min(data.mountHPMax, data.mountHP + 1))}>
                 +
               </button>
             </div>
@@ -751,7 +751,7 @@ export default function CharacterSheet() {
           <div className="flex flex-col gap-4 rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-4 shadow-[0_18px_60px_rgba(0,0,0,0.24)] sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-[10px] uppercase tracking-[0.32em] text-[#a98b68]">Ficha de personagem</p>
-              <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[#f5e9d7] sm:text-3xl">Coração da Montanha</h1>
+              <h1 className="mt-1 text-2xl font-semibold tracking-tight text-[#f5e9d7] sm:text-3xl">Crônicas do Destino</h1>
               <p className="mt-1 text-sm text-[#a98b68]">Controle central da ficha, inventário e contratos</p>
             </div>
             <div className="min-w-0 text-left sm:text-right">

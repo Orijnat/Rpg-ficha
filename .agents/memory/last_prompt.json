@@ -1,0 +1,8 @@
+{
+  "conversationId": "test-123",
+  "timestamp": "2026-10-15T23:33:44.803Z",
+  "prompt": "poderia alterar o back round ele esta muito vazio",
+  "rawContent": "<USER_REQUEST>\npoderia alterar o back round ele esta muito vazio\n</USER_REQUEST>\n<ADDITIONAL_METADATA>\nThe current local time is 2026-10-15T20:33:44-03:00.\n</ADDITIONAL_METADATA>",
+  "stepIndex": 1,
+  "status": "CONCLUIDO"
+}

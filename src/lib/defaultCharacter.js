@@ -71,6 +71,7 @@ export const defaultData = {
   ),
   bankPassword: "133313",
   notes: "Medalhão vibra na presença de monstros ou fontes de magia.",
+  notesImages: [],
   roomNotes: "Aposentos na estalagem do centro da vila.",
   mountName: "Carpeado",
   mountHP: 30,

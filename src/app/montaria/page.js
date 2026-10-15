@@ -45,7 +45,7 @@ export default function MontariaPage() {
           </div>
 
           {/* Painel de Pontos de Vida (HP) */}
-          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+          <div className="rounded-xl border border-border bg-secondary/50 p-4">
             <div className="mb-3 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Heart size={16} className="text-rose-400" />
@@ -107,7 +107,7 @@ export default function MontariaPage() {
                 </button>
                 <button
                   onClick={restoreFull}
-                  className="flex items-center gap-1 rounded-lg border border-[#d69a3d]/40 bg-[#d69a3d]/15 px-2.5 py-1 text-xs font-semibold text-[#d69a3d] hover:bg-[#d69a3d]/25 active:scale-95"
+                  className="flex items-center gap-1 rounded-lg border border-primary/40 bg-primary/15 px-2.5 py-1 text-xs font-semibold text-primary hover:bg-primary/25 active:scale-95"
                 >
                   <Sparkles size={12} /> Restaurar Max
                 </button>

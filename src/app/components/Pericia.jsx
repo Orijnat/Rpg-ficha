@@ -21,14 +21,14 @@ export default function Pericia() {
           return (
             <div
               key={skill.name}
-              className="group flex items-center justify-between rounded-lg border border-transparent px-2 py-1.5 transition-all hover:border-white/5 hover:bg-white/[0.02]"
+              className="group flex items-center justify-between rounded-lg border border-transparent px-2 py-2 transition-all hover:border-primary/20 hover:bg-primary/5"
             >
               {/* Checkbox de Treinado */}
               <div className="flex items-center gap-2.5">
                 <button
                   type="button"
                   onClick={() => updSkill(index, { trained: !skill.trained })}
-                  className={`flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors ${
+                  className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors ${
                     skill.trained
                       ? "border-[#d69a3d] bg-[#d69a3d] text-[#0f0d0a]"
                       : "border-white/20 hover:border-[#d69a3d]"

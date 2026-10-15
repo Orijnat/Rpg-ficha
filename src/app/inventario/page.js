@@ -136,7 +136,7 @@ export default function InventarioPage() {
                         label: `Dano/Efeito: ${item.name}`,
                       });
                     }}
-                    className="flex items-center gap-1 rounded bg-[#d69a3d]/15 px-2 py-0.5 text-[10px] font-mono font-bold text-[#d69a3d] hover:bg-[#d69a3d]/30"
+                    className="flex items-center gap-1 rounded border border-primary/30 bg-primary/15 px-2 py-0.5 text-[10px] font-mono font-bold text-primary hover:bg-primary/30"
                     title={`Rolar teste com ${item.name}`}
                   >
                     <Dices size={10} />
@@ -148,7 +148,7 @@ export default function InventarioPage() {
                 <div className="flex shrink-0 items-center gap-1">
                   <button
                     onClick={() => updItem(item.id, { qty: Math.max(0, item.qty - 1) })}
-                    className="flex h-5 w-5 items-center justify-center rounded bg-white/5 text-xs text-[#8a7355] transition hover:bg-white/10 hover:text-[#d69a3d]"
+                    className="flex h-7 w-7 items-center justify-center rounded border border-border bg-secondary text-xs text-muted-foreground transition hover:border-primary/40 hover:bg-primary/10 hover:text-primary"
                     title="Diminuir"
                   >
                     <ChevronDown size={12} />
@@ -163,7 +163,7 @@ export default function InventarioPage() {
 
                   <button
                     onClick={() => updItem(item.id, { qty: item.qty + 1 })}
-                    className="flex h-5 w-5 items-center justify-center rounded bg-white/5 text-xs text-[#8a7355] transition hover:bg-white/10 hover:text-[#d69a3d]"
+                    className="flex h-7 w-7 items-center justify-center rounded border border-border bg-secondary text-xs text-muted-foreground transition hover:border-primary/40 hover:bg-primary/10 hover:text-primary"
                     title="Aumentar"
                   >
                     <ChevronUp size={12} />

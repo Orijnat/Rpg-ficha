@@ -8,23 +8,23 @@
  */
 export const BANK_STYLES = {
   // Tela de login (bloqueado)
-  icon: "text-4xl text-[#c9862a]",
-  title: "text-lg text-[#e8d5b0]",
-  subtitle: "text-sm text-[#8a7355]",
-  errorMessage: "text-xs text-[#8b1a1a]",
+  icon: "text-4xl text-primary",
+  title: "text-lg text-foreground",
+  subtitle: "text-sm text-muted-foreground",
+  errorMessage: "text-xs text-destructive",
   unlockButton:
-    "w-full rounded bg-[#c9862a] py-2 font-semibold text-[#0f0d0a] transition-colors hover:bg-[#e8a030]",
+    "w-full rounded bg-primary py-2 font-semibold text-primary-foreground transition-colors hover:brightness-110",
 
   // Input de senha
   inputBorder:
-    "border-[rgba(201,134,42,0.3)] focus:border-[#c9862a]",
-  inputErrorBorder: "border-[#8b1a1a]",
+    "border-primary/30 focus:border-primary",
+  inputErrorBorder: "border-destructive",
 
   // Slots
   slotFilled:
-    "border-[#c9862a] bg-[#2a1c0a] text-[#c9862a]",
+    "border-primary bg-secondary text-primary",
   slotEmpty:
-    "border-[rgba(201,134,42,0.15)] bg-[#241c13] text-transparent hover:border-[rgba(201,134,42,0.4)] hover:text-[#8a7355]",
+    "border-primary/15 bg-muted text-transparent hover:border-primary/40 hover:text-muted-foreground",
 };
 
 /**

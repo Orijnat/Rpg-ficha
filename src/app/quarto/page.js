@@ -64,7 +64,7 @@ export default function QuartoPage() {
             </div>
             <button
               onClick={handleShortRest}
-              className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-[#d69a3d]/40 bg-[#d69a3d]/15 py-2.5 text-xs font-bold text-[#d69a3d] transition hover:bg-[#d69a3d]/25 active:scale-95"
+              className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-primary/40 bg-primary/15 py-2.5 text-xs font-bold text-primary transition hover:bg-primary/25 active:scale-95"
             >
               <Sparkles size={13} />
               Realizar Descanso Curto
@@ -84,7 +84,7 @@ export default function QuartoPage() {
             </div>
             <button
               onClick={handleLongRest}
-              className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-indigo-500/40 bg-indigo-500/15 py-2.5 text-xs font-bold text-indigo-300 transition hover:bg-indigo-500/25 active:scale-95"
+              className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-accent/50 bg-accent/15 py-2.5 text-xs font-bold text-accent transition hover:bg-accent/25 active:scale-95"
             >
               <Sparkles size={13} />
               Realizar Descanso Longo

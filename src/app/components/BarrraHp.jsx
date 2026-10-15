@@ -11,9 +11,9 @@ export default function BarrraHp() {
   return (
     <div>
       <SectionHeader title="Pontos de Vida" icon={<Shield size={14} />} />
-      <div className="mb-2 flex items-center gap-3">
+      <div className="mb-3 flex items-center gap-3">
         <button
-          className="flex h-7 w-7 items-center justify-center rounded bg-[#8b1a1a] text-[#e8d5b0] transition-colors hover:bg-[#a02020]"
+          className="flex h-9 w-9 items-center justify-center rounded-lg border border-destructive/40 bg-destructive/20 text-lg text-foreground transition-all hover:bg-destructive/40 active:scale-95"
           onClick={() => upd("hp", Math.max(0, data.hp - 1))}
         >
           −
@@ -22,17 +22,17 @@ export default function BarrraHp() {
           <HPBar hp={data.hp} max={data.hpMax} />
         </div>
         <button
-          className="flex h-7 w-7 items-center justify-center rounded bg-[#4a7c59] text-[#e8d5b0] transition-colors hover:bg-[#5a9c69]"
+          className="flex h-9 w-9 items-center justify-center rounded-lg border border-emerald-400/30 bg-emerald-900/40 text-lg text-foreground transition-all hover:bg-emerald-800/60 active:scale-95"
           onClick={() => upd("hp", Math.min(data.hpMax, data.hp + 1))}
         >
           +
         </button>
       </div>
       <div className="flex items-center gap-2 text-sm">
-        <span className="text-[#8a7355]">HP:</span>
-        <EditableNumber value={data.hp} onChange={(value) => upd("hp", value)} className="font-bold text-[#e8d5b0]" min={0} max={data.hpMax} />
-        <span className="text-[#8a7355]">/</span>
-        <EditableNumber value={data.hpMax} onChange={(value) => upd("hpMax", value)} className="text-[#8a7355]" min={1} />
+        <span className="font-serif text-xs font-semibold uppercase tracking-wider text-muted-foreground">Vitalidade</span>
+        <EditableNumber value={data.hp} onChange={(value) => upd("hp", value)} className="font-bold text-foreground" min={0} max={data.hpMax} />
+        <span className="text-muted-foreground">/</span>
+        <EditableNumber value={data.hpMax} onChange={(value) => upd("hpMax", value)} className="text-muted-foreground" min={1} />
       </div>
     </div>
   );

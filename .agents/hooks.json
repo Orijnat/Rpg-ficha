@@ -1,0 +1,19 @@
+{
+  "session-sync": {
+    "enabled": true,
+    "PreInvocation": [
+      {
+        "type": "command",
+        "command": "node .agents/scripts/sync_session_memory.js",
+        "timeout": 15
+      }
+    ],
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "node .agents/scripts/sync_session_memory.js",
+        "timeout": 15
+      }
+    ]
+  }
+}

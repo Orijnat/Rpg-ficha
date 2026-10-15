@@ -55,7 +55,7 @@ export default function EditPersonagem({ params }) {
       </div>
 
       <div className="mt-4 flex gap-2">
-        <button type="submit" className="rounded-md bg-[#d69a3d] px-4 py-2 text-[#17140f]">Salvar</button>
+        <button type="submit" className="rounded-md bg-primary px-4 py-2 font-semibold text-primary-foreground transition hover:brightness-110 active:scale-95">Salvar</button>
       </div>
     </form>
   );
