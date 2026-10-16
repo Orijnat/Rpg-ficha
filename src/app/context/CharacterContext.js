@@ -40,12 +40,30 @@ export function CharacterProvider({ children }) {
   // Atualiza ficha quando o personagem ativo da conta logada mudar
   useEffect(() => {
     if (activeCharacter) {
+      const atributos = {
+        FOR: activeCharacter.forca ?? activeCharacter.FOR ?? activeCharacter.attributes?.FOR,
+        DES: activeCharacter.destreza ?? activeCharacter.DES ?? activeCharacter.attributes?.DES,
+        CON: activeCharacter.constituicao ?? activeCharacter.CON ?? activeCharacter.attributes?.CON,
+        SAB: activeCharacter.sabedoria ?? activeCharacter.SAB ?? activeCharacter.attributes?.SAB,
+        ESP: activeCharacter.espirito ?? activeCharacter.ESP ?? activeCharacter.attributes?.ESP,
+        CAR: activeCharacter.carisma ?? activeCharacter.CAR ?? activeCharacter.attributes?.CAR,
+        INT: activeCharacter.inteligencia ?? activeCharacter.INT ?? activeCharacter.attributes?.INT,
+      };
       setData((current) => ({
         ...defaultData,
         ...activeCharacter,
+        ...atributos,
+        skills: activeCharacter.pericias?.length ? activeCharacter.pericias : activeCharacter.skills || current.skills,
+        inventory: activeCharacter.itensInventario?.length
+          ? activeCharacter.itensInventario
+          : activeCharacter.inventory || current.inventory || [],
+        contracts: activeCharacter.contratosDados?.length
+          ? activeCharacter.contratosDados
+          : activeCharacter.contracts || current.contracts || [],
+        players: activeCharacter.jogadores || current.players || [],
+        npcs: activeCharacter.npcs || current.npcs || [],
+        notesImages: activeCharacter.imagensAnotacoes || current.notesImages || [],
         // Garante compatibilidade de formatos
-        inventory: activeCharacter.inventory || current.inventory || [],
-        contracts: activeCharacter.contracts || current.contracts || [],
       }));
     }
   }, [activeCharacter?.id]);

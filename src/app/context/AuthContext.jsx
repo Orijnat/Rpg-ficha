@@ -118,6 +118,8 @@ export function AuthProvider({ children }) {
   };
 
   const activeCharacter = characters.find((c) => c.id === activeCharacterId) || null;
+  const isMaster = user?.role === "master";
+  const isPlayer = user?.role === "player";
 
   const value = {
     user,
@@ -127,6 +129,8 @@ export function AuthProvider({ children }) {
     activeCharacterId,
     loading,
     isAuthenticated: Boolean(user && token),
+    isMaster,
+    isPlayer,
     login,
     register,
     logout,

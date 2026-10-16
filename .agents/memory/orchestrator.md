@@ -47,6 +47,10 @@ Este arquivo é a fonte de memória persistente da liderança técnica do projet
 - [x] **Fase 11**: Fundo dark fantasy mais nítido com textura em camadas, pontos rúnicos, rails e vinheta.
 - [x] **Fase 12**: Redesign visual não minimalista com selos arcanos, molduras de pergaminho e palco ornamentado.
 - [x] **Fase 13**: Migração global para identidade de grimório/guilda, com placas, faixa de navegação e medalhões.
+- [x] **Fase 14**: MVP inicial da Sala do Mestre com campanha, NPCs, iniciativa e gestão de personagens.
+- [x] **Fase 15**: Perfis `player`/`master`, autorização por proprietário e filtragem server-side de dados sensíveis.
+- [x] **Fase 16**: Redirecionamento global de usuários não autenticados para a tela de login.
+- [x] **Fase 17**: Mapeamento completo do domínio e persistência PostgreSQL/Sequelize ampliada com campos canônicos em português.
 
 ---
 

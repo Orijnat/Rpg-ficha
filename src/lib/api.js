@@ -161,3 +161,24 @@ export async function verifyBankPasswordOnBackend(characterId, password) {
     return null;
   }
 }
+
+export async function fetchCampaignData(token = getStoredToken()) {
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  const response = await fetch(`${API_BASE_URL}/campanha`, { headers });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || "Erro ao carregar os dados da campanha.");
+  return data;
+}
+
+export async function updateCampaignData(campaignData, token = getStoredToken()) {
+  const headers = { "Content-Type": "application/json" };
+  if (token) headers.Authorization = `Bearer ${token}`;
+  const response = await fetch(`${API_BASE_URL}/campanha`, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify(campaignData),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || "Erro ao salvar os dados da campanha.");
+  return data;
+}

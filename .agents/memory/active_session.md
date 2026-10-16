@@ -137,3 +137,34 @@ continua minimalista eu nao quero iso
 - **Dados & Rolagens**: [`dice-mechanic`](file:///home/cledi/rp/Rpg-ficha/.agents/memory/dice-mechanic.md)
 - **Backend & Banco de Dados**: [`backend-database`](file:///home/cledi/rp/Rpg-ficha/.agents/memory/backend-database.md)
 - **QA & Testes**: [`qa-tester`](file:///home/cledi/rp/Rpg-ficha/.agents/memory/qa-tester.md)
+
+### Continuidade — Sala do Mestre
+- **Status**: MVP inicial implementado e validado.
+- **Arquivos alterados**: `src/app/admin/page.js`, `src/app/admin/layout.js`, `src/app/admin/personagens/page.js`.
+- **Recursos**: dashboard da campanha, resumo de heróis/NPCs, preparação de sessão, NPCs locais, tracker de iniciativa e links para fichas.
+- **Persistência**: preparação, NPCs e iniciativa em `localStorage` (`rpg-gm-dashboard`); personagens continuam vindo de `/api/characters`.
+- **Validação**: `npm run build` e `git diff --check` concluídos com sucesso.
+- **Próximo passo recomendado**: criar endpoints persistentes para campanha, encontros, NPCs e sessões quando a camada de backend estiver disponível.
+
+### Continuidade — Perfis mestre/jogador
+- **Status**: ✅ Implementado no frontend e no backend.
+- **Banco**: `users.role` com valores `player` e `master`; novas contas começam como `player`.
+- **Autorização**: jogadores acessam apenas os próprios personagens; mestres podem gerenciar todos.
+- **Privacidade**: `bankPassword` é removida das respostas da API; verificação do cofre continua server-side.
+- **Frontend**: aba Admin só aparece para mestres e o dashboard informa quando o acesso é reservado.
+- **Validação**: build do frontend e `node --check` do backend concluídos com sucesso.
+
+### Continuidade — Proteção de rotas
+- **Status**: ✅ Implementado.
+- **Alteração**: `AppChrome` agora verifica a sessão globalmente e redireciona usuários não autenticados para `/login`.
+- **Exceções**: `/login` e `/registro` continuam públicas.
+- **Feedback**: enquanto a sessão é verificada, as rotas protegidas exibem “Verificando acesso...”.
+- **Validação**: `npm run build` e `git diff --check` concluídos com sucesso.
+
+### Continuidade — Mapeamento e persistência completa
+- **Status**: ✅ Implementado e validado.
+- **Backend**: modelos `User` e `Character` ampliados com campos canônicos em português, coleções JSONB e dados privados do mestre.
+- **API**: criado `/api/campanha`; personagens convertem nomes da interface para o modelo persistido e preservam compatibilidade.
+- **Frontend**: sala do mestre passou a salvar dados no backend, com fallback local; `CharacterContext` normaliza dados persistidos para a ficha.
+- **Documentação**: criado `Rpg-backend/docs/modelo-dados.md` com o mapa das entidades, campos, segurança e compatibilidade.
+- **Validação**: build frontend, `node --check` do backend e `git diff --check` passaram.
