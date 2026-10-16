@@ -1,8 +1,8 @@
 {
   "conversationId": "test-123",
-  "timestamp": "2026-10-15T21:11:30.103-03:00",
-  "prompt": "mapear o sistema como um todo e alterar o banco de dados para suportar todos os dados do sistema, com variaveis profissionais em portugues",
-  "rawContent": "<USER_REQUEST>\nmapear o sistema como um todo e alterar o banco de dados para suportar todos os dados do sistema, com variaveis profissionais em portugues\n</USER_REQUEST>",
+  "timestamp": "2026-10-16T15:32:42.419-03:00",
+  "prompt": "confirmar se foram criados agentes localizados e especializados para o backend",
+  "rawContent": "<USER_REQUEST>\nconfirmar se foram criados agentes localizados e especializados para o backend\n</USER_REQUEST>",
   "stepIndex": 1,
   "status": "CONCLUIDO"
 }

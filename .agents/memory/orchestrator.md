@@ -51,6 +51,7 @@ Este arquivo é a fonte de memória persistente da liderança técnica do projet
 - [x] **Fase 15**: Perfis `player`/`master`, autorização por proprietário e filtragem server-side de dados sensíveis.
 - [x] **Fase 16**: Redirecionamento global de usuários não autenticados para a tela de login.
 - [x] **Fase 17**: Mapeamento completo do domínio e persistência PostgreSQL/Sequelize ampliada com campos canônicos em português.
+- [x] **Fase 18**: Criação da equipe especializada de frontend, backend, contrato de integração e orquestração fullstack.
 
 ---
 
@@ -76,3 +77,6 @@ Este arquivo é a fonte de memória persistente da liderança técnica do projet
     * Criação do hook de ciclo de vida `.agents/hooks.json` com `PreInvocation` e `SessionStart`.
     * Criação do script `.agents/scripts/sync_session_memory.js` para registrar prompts e injetar instruções.
     * Definição de regras estritas em `AGENTS.md` e `GEMINI.md` para obrigatoriedade de salvamento do prompt para continuidade entre sessões e uso incondicional dos agentes especializados.
+  - **Equipe especializada fullstack**:
+    * Agentes em `.github/agents/` para frontend, backend, contrato de integração e orquestração.
+    * Skills em `.github/skills/` para frontend RPG, backend RPG e contrato API RPG.

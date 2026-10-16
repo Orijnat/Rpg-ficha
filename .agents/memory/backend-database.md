@@ -52,3 +52,9 @@ Modelagem de dados, PostgreSQL, Sequelize ORM e endpoints de Route Handlers no N
 - [x] Criar endpoint `POST /api/characters/sync` e `GET /api/characters/:id`.
 - [x] Criar cliente de sincronização no frontend com debounce.
 
+## 🤝 Coordenação entre agentes
+- Agente operacional: `.github/agents/backend-database.agent.md`.
+- Skill principal: `.github/skills/backend-rpg/SKILL.md`.
+- Antes de alterar modelos, rotas ou schema, consultar `.agents/memory/contrato-integracao.md`.
+- Registrar no contrato mudanças de DTO, status HTTP, aliases e regras de autorização.
+- O arquivo canônico de planejamento SQL é `database/banco.sql` no backend.

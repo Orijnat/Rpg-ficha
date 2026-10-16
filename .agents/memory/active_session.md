@@ -168,3 +168,24 @@ continua minimalista eu nao quero iso
 - **Frontend**: sala do mestre passou a salvar dados no backend, com fallback local; `CharacterContext` normaliza dados persistidos para a ficha.
 - **Documentação**: criado `Rpg-backend/docs/modelo-dados.md` com o mapa das entidades, campos, segurança e compatibilidade.
 - **Validação**: build frontend, `node --check` do backend e `git diff --check` passaram.
+
+### Continuidade — Agente de mapeamento do banco
+- **Status**: ✅ Criado no workspace.
+- **Arquivo**: `.github/agents/mapeador-banco.agent.md`.
+- **Responsabilidade**: mapear requisitos do sistema para entidades PostgreSQL/Sequelize,
+  comparar frontend/API/banco, tratar perfis mestre/jogador e orientar migrations.
+- **Ferramentas**: leitura, busca, execução e edição; não cria commits automaticamente.
+
+### Continuidade — Equipe especializada frontend/backend
+- **Status**: ✅ Criada e validada.
+- **Agentes**: `frontend-artisan`, `backend-database`, `contrato-integracao` e `orquestrador-fullstack` em `.github/agents/`.
+- **Skills**: `frontend-rpg`, `backend-rpg` e `contrato-api-rpg` em `.github/skills/`.
+- **Memória compartilhada**: `.agents/memory/contrato-integracao.md` registra DTOs, aliases, permissões, erros HTTP e ordem de rollout.
+- **Próximo passo recomendado**: usar o orquestrador para funcionalidades que atravessem UI, API e banco; usar especialistas diretamente para tarefas isoladas.
+
+### Confirmação — Agente especializado de backend
+- **Status**: ✅ Confirmado.
+- **Agente localizado no workspace**: `.github/agents/backend-database.agent.md`.
+- **Skill associada**: `.github/skills/backend-rpg/SKILL.md`.
+- **Memória associada**: `.agents/memory/backend-database.md`.
+- **Integração obrigatória**: `.agents/memory/contrato-integracao.md`.

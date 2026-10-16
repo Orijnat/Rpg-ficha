@@ -63,3 +63,9 @@ UI/UX da Área do Jogador, componentes React 19, Tailwind CSS v4, responsividade
 - [x] Reforçar o fundo com textura visível, estrelas/rúnicas, laterais ornamentais e vinheta.
 - [x] Criar composição visual expressiva com selos arcanos, faixas de pergaminho e moldura da área principal.
 - [x] Substituir linguagem minimalista por composição de grimório/guilda com placas sólidas, molduras e navegação de metal.
+
+## 🤝 Coordenação entre agentes
+- Agente operacional: `.github/agents/frontend-artisan.agent.md`.
+- Skill principal: `.github/skills/frontend-rpg/SKILL.md`.
+- Antes de alterar API ou autenticação, consultar `.agents/memory/contrato-integracao.md`.
+- Registrar no contrato qualquer novo endpoint, campo, erro ou permissão consumido pela UI.
