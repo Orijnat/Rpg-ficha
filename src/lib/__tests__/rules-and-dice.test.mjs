@@ -116,6 +116,23 @@ assert(formulaRoll !== null, "Fórmula 2d6+4 interpretada");
 assert(formulaRoll.sides === 6 && formulaRoll.rolls.length === 2 && formulaRoll.modifier === 4, "Parâmetros de 2d6+4 corretos");
 assert(formulaRoll.total === formulaRoll.rolls[0] + formulaRoll.rolls[1] + 4, "Total de 2d6+4 soma dados + mod");
 
+// 7. Aleatoriedade injetável e múltiplos dados
+console.log("\n--- 7. Repetibilidade e múltiplos dados ---");
+const sequence = [0, 0.5, 0.999999];
+const repeatableRoll = rollDice({
+  sides: 20,
+  count: 3,
+  modifier: -2,
+  random: () => sequence.shift(),
+  label: "Teste repetível",
+});
+assert(
+  repeatableRoll.rolls.join(",") === "1,11,20" &&
+    repeatableRoll.total === 30 &&
+    repeatableRoll.formula === "3d20 - 2",
+  "Fonte aleatória injetada preserva valores, total e fórmula de 3 dados",
+);
+
 console.log(`\n========================================`);
 console.log(`📊 Resultado dos Testes: ${testsPassed} passaram, ${testsFailed} falharam.`);
 if (testsFailed > 0) {

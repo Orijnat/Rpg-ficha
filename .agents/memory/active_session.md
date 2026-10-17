@@ -189,3 +189,85 @@ continua minimalista eu nao quero iso
 - **Skill associada**: `.github/skills/backend-rpg/SKILL.md`.
 - **Memória associada**: `.agents/memory/backend-database.md`.
 - **Integração obrigatória**: `.agents/memory/contrato-integracao.md`.
+
+### Continuidade — Conta mestre
+- **Status**: ✅ Criada e verificada no PostgreSQL local.
+- **Perfil**: `mestre` (`role=master`).
+- **Nome de usuário**: `cledi`.
+- **E-mail**: `cledivanleao@gmail.com`.
+- **Segurança**: senha armazenada somente como hash via hook `bcrypt`; nunca registrar a senha em memória, logs ou documentação.
+- **Verificação**: credencial validada com `checkPassword`, hash confirmado e conta existente.
+
+### Continuidade — Aplicação do banco.sql
+- **Status**: ✅ Schema aplicado no PostgreSQL local.
+- **Arquivo executado**: `/home/cledi/rp/Rpg-backend/database/banco.sql`.
+- **Resultado**: 18 tabelas novas, índices, constraints, comentários e triggers criados/verificados.
+- **Conta mestre**: presente em `usuarios` com perfil `mestre`.
+- **Observação**: a migração opcional das tabelas legadas `characters`, `inventory_items` e `contracts` não foi executada por falta de permissão de leitura do usuário PostgreSQL; o novo schema permaneceu aplicado e o SQL foi ajustado para continuar sem falhar nessa condição.
+- **Pendência**: conceder `SELECT` nas tabelas legadas e executar somente a etapa de migração quando os dados antigos precisarem ser transportados.
+
+### Continuidade — Animação do rolador de dados
+- **Status**: ✅ Implementada, corrigida e validada.
+- **Arquivos**: `src/app/components/dice/DiceModal.jsx` e `src/app/globals.css`.
+- **Detalhes**: dados numerados entram com giro 3D, quique e aura; vantagem/desvantagem exibem os dois resultados, e rolagens múltiplas exibem seus dados.
+- **Segurança funcional**: a animação usa exclusivamente os valores retornados por `rollDice`; não altera a aleatoriedade nem o total real.
+- **Acessibilidade**: `role="img"` com descrição da rolagem e redução de movimento via `prefers-reduced-motion`.
+- **Correção adicional**: criado estado explícito `isRolling` no `DiceContext`, com duração visual de 1,4 s e seleção automática do conteúdo de resultado mesmo quando a aba anterior era Histórico.
+- **Validação**: `git diff --check` e `npm run build` passaram após a correção.
+- **Aprimoramento visual**: a silhueta foi alterada para um d20 facetado, com múltiplas rotações nos eixos X/Y e sombreamento interno para simular faces do poliedro.
+
+### Continuidade — Equipe de agentes e skills do ecossistema RPG
+- **Status**: ✅ Aplicado.
+- **Agentes criados**: `frontend-jogador-rpg`, `frontend-mestre-rpg`, `motor-regras-rpg`, `mecanica-dados-rpg`, `seguranca-identidade-rpg`, `qa-rpg` e `documentacao-rpg`.
+- **Skills criadas**: frontend jogador/mestre, motor de regras, dados, autenticação, autorização, uploads, QA, segurança e documentação.
+- **Memórias criadas**: arquivos correspondentes em `.agents/memory/`.
+- **Integração**: o `orquestrador-fullstack.agent.md` agora pode acionar os novos especialistas.
+
+### Continuidade — Análise geral e melhorias do ecossistema
+- **Status**: ✅ Primeira fase implementada.
+- **Rolagem**: motor com aleatoriedade injetável, suporte consistente a múltiplos dados e modal acessível com animação d20.
+- **Área do Mestre**: proteção de rota reforçada, operações administrativas centralizadas no cliente autenticado e tratamento de erros nas telas de personagens.
+- **Área do Jogador**: ficha passou a exibir estado de sincronização (`Salvando`, `Salvo`, `Salvo localmente` ou falha).
+- **Segurança**: backend remove campos de identidade controlados pelo cliente, filtra senha do cofre, exige `JWT_SECRET` e rejeita usuários inativos.
+- **Documentação**: criado `docs/MELHORIAS-FUTURAS-RPG.md` com análise, prioridades, riscos e roadmap.
+- **Validação**: frontend build, testes direcionados de regras/dados (26 aprovados), `git diff --check` e `node --check` do backend passaram.
+
+### Correção — Sala do Mestre sem dados de iniciativa
+- **Problema**: a API da campanha retorna campos canônicos em português (`iniciativa`, `tituloSessao`, `anotacoesSessao`), enquanto a tela esperava aliases em inglês; isso fazia `table.initiative.length` lançar erro quando o campo não existia.
+- **Correção**: adicionada normalização defensiva de campanha e cache local, com aliases português/inglês e garantia de arrays para `npcs` e `initiative`.
+- **Validação**: `npm run build` e `git diff --check` passaram.
+
+### Correção — Dados do backend sobrescritos pelo cache local
+- **Problema**: o `CharacterContext` carregava `bruxeiro-sheet` após a hidratação da sessão e podia sobrescrever os dados completos recebidos do backend. Além disso, arrays vazios retornados pela API eram ignorados em favor de valores antigos.
+- **Correção**: o cache agora é usado apenas como fallback sem personagem autenticado, é separado por personagem (`bruxeiro-sheet:<id>`) e a normalização usa `??`, preservando arrays vazios válidos do backend.
+- **Validação**: `npm run build` e `git diff --check` passaram.
+
+### Correção — Erro interno ao listar personagens
+- **Causa**: `characterController.list` solicitava o atributo Sequelize `updatedAt`, mas a tabela PostgreSQL usa `updated_at`; a consulta falhava com `column "updatedAt" does not exist`.
+- **Correção**: removida a seleção desse atributo de resumo; a ordenação por `updated_at` foi mantida.
+- **Validação**: consulta real executada contra PostgreSQL com sucesso, `node --check` e `git diff --check` passaram.
+
+### Correção — Aliases de ficha e moedas no contrato
+- **Problema**: Sequelize persistia arrays/moedas nos campos em português,
+  enquanto telas legadas editavam aliases em inglês e moedas planas. Defaults
+  `[]` também podiam ocultar aliases antigos.
+- **Correção**: controller agora serializa ambos os formatos, normaliza moedas
+  no sync e mantém `bankPassword` fora do DTO; `CharacterContext` faz fallback
+  por alias e o cliente desembrulha `{ character }` do sync.
+- **Validação**: build, testes unitários do frontend e `node --check` do
+  backend passaram.
+
+### Continuidade — Retomada da correção de dados do backend
+- **Pedido retomado**: continuar a verificação de dados que não eram carregados do backend.
+- **Estado**: ✅ Correção já aplicada e confirmada no código atual.
+- **Validação adicional**: `npm run build` passou com 17 rotas; `git diff --check` passou.
+- **Próximo passo**: não há correção pendente relacionada a esse pedido; aguardar nova demanda ou um caso específico reproduzível.
+
+### Confirmação — Prompt extenso anterior
+- **Pedido**: confirmar a disponibilidade do prompt extenso solicitado anteriormente.
+- **Estado**: ✅ O contexto permanece disponível nas memórias persistentes da sessão.
+
+### Verificação — Alterações do prompt extenso
+- **Pendência encontrada**: a normalização de coleções no `CharacterContext` ainda trocava arrays canônicos vazios por aliases antigos.
+- **Correção aplicada**: coleções canônicas agora usam `??`, preservando `[]` retornado pelo backend como estado válido.
+- **Validação**: `npm run build`, `node --test src/lib/__tests__/rules-and-dice.test.mjs` (26 aprovados) e `git diff --check` passaram.

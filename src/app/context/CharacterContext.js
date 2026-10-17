@@ -15,73 +15,79 @@ export function CharacterProvider({ children }) {
   const [bankUnlocked, setBankUnlocked] = useState(false);
   const [bankInput, setBankInput] = useState("");
   const [bankError, setBankError] = useState(false);
+  const [syncStatus, setSyncStatus] = useState("idle");
 
-  const { activeCharacter, token } = useAuth();
+  const { activeCharacter, token, loading: authLoading } = useAuth();
 
-  // Carrega do cache local inicialmente
+  const cacheKey = activeCharacter?.id
+    ? `bruxeiro-sheet:${activeCharacter.id}`
+    : "bruxeiro-sheet";
+
+  // O cache só é usado como fallback quando não existe personagem vindo da API.
   useEffect(() => {
-    const timeout = window.setTimeout(() => {
-      try {
-        const saved = window.localStorage.getItem("bruxeiro-sheet");
-
-        if (saved) {
-          setData({ ...defaultData, ...JSON.parse(saved) });
-        }
-      } catch {
-        setData(defaultData);
-      }
-
+    if (authLoading || activeCharacter) return;
+    try {
+      const saved = window.localStorage.getItem(cacheKey);
+      if (saved) setData({ ...defaultData, ...JSON.parse(saved) });
+    } catch {
+      setData(defaultData);
+    } finally {
       setHydrated(true);
-    }, 0);
-
-    return () => window.clearTimeout(timeout);
-  }, []);
+    }
+  }, [activeCharacter, authLoading, cacheKey]);
 
   // Atualiza ficha quando o personagem ativo da conta logada mudar
   useEffect(() => {
-    if (activeCharacter) {
-      const atributos = {
-        FOR: activeCharacter.forca ?? activeCharacter.FOR ?? activeCharacter.attributes?.FOR,
-        DES: activeCharacter.destreza ?? activeCharacter.DES ?? activeCharacter.attributes?.DES,
-        CON: activeCharacter.constituicao ?? activeCharacter.CON ?? activeCharacter.attributes?.CON,
-        SAB: activeCharacter.sabedoria ?? activeCharacter.SAB ?? activeCharacter.attributes?.SAB,
-        ESP: activeCharacter.espirito ?? activeCharacter.ESP ?? activeCharacter.attributes?.ESP,
-        CAR: activeCharacter.carisma ?? activeCharacter.CAR ?? activeCharacter.attributes?.CAR,
-        INT: activeCharacter.inteligencia ?? activeCharacter.INT ?? activeCharacter.attributes?.INT,
-      };
-      setData((current) => ({
-        ...defaultData,
-        ...activeCharacter,
-        ...atributos,
-        skills: activeCharacter.pericias?.length ? activeCharacter.pericias : activeCharacter.skills || current.skills,
-        inventory: activeCharacter.itensInventario?.length
-          ? activeCharacter.itensInventario
-          : activeCharacter.inventory || current.inventory || [],
-        contracts: activeCharacter.contratosDados?.length
-          ? activeCharacter.contratosDados
-          : activeCharacter.contracts || current.contracts || [],
-        players: activeCharacter.jogadores || current.players || [],
-        npcs: activeCharacter.npcs || current.npcs || [],
-        notesImages: activeCharacter.imagensAnotacoes || current.notesImages || [],
-        // Garante compatibilidade de formatos
-      }));
-    }
-  }, [activeCharacter?.id]);
+    if (authLoading || !activeCharacter) return;
+    const atributos = {
+      FOR: activeCharacter.forca ?? activeCharacter.FOR ?? activeCharacter.attributes?.FOR,
+      DES: activeCharacter.destreza ?? activeCharacter.DES ?? activeCharacter.attributes?.DES,
+      CON: activeCharacter.constituicao ?? activeCharacter.CON ?? activeCharacter.attributes?.CON,
+      SAB: activeCharacter.sabedoria ?? activeCharacter.SAB ?? activeCharacter.attributes?.SAB,
+      ESP: activeCharacter.espirito ?? activeCharacter.ESP ?? activeCharacter.attributes?.ESP,
+      CAR: activeCharacter.carisma ?? activeCharacter.CAR ?? activeCharacter.attributes?.CAR,
+      INT: activeCharacter.inteligencia ?? activeCharacter.INT ?? activeCharacter.attributes?.INT,
+    };
+    const pickCollection = (canonical, alias, fallback) =>
+      canonical ?? alias ?? fallback;
+    const moedas = Object.keys(activeCharacter.moedas ?? {}).length
+      ? activeCharacter.moedas
+      : (activeCharacter.currencies ?? {});
+    setData((current) => ({
+      ...defaultData,
+      ...activeCharacter,
+      ...atributos,
+      skills: pickCollection(activeCharacter.pericias, activeCharacter.skills, defaultData.skills),
+      inventory: pickCollection(activeCharacter.itensInventario, activeCharacter.inventory, defaultData.inventory),
+      contracts: pickCollection(activeCharacter.contratosDados, activeCharacter.contracts, defaultData.contracts),
+      players: activeCharacter.jogadores ?? activeCharacter.players ?? defaultData.players,
+      npcs: activeCharacter.npcs ?? defaultData.npcs,
+      notesImages: pickCollection(activeCharacter.imagensAnotacoes, activeCharacter.notesImages, defaultData.notesImages),
+      latina: activeCharacter.latina ?? moedas.latina ?? moedas.platina ?? defaultData.latina,
+      ouro: activeCharacter.ouro ?? moedas.ouro ?? defaultData.ouro,
+      prata: activeCharacter.prata ?? moedas.prata ?? defaultData.prata,
+      cobre: activeCharacter.cobre ?? moedas.cobre ?? defaultData.cobre,
+    }));
+    setHydrated(true);
+  }, [activeCharacter, authLoading]);
 
   useEffect(() => {
     if (!hydrated) {
       return;
     }
 
-    window.localStorage.setItem("bruxeiro-sheet", JSON.stringify(data));
+    window.localStorage.setItem(cacheKey, JSON.stringify(data));
 
     // Sincronização em segundo plano com o backend (debounce de 1.2s)
+    setSyncStatus("saving");
     const timer = setTimeout(() => {
-      syncCharacterWithBackend(data, token);
+      syncCharacterWithBackend(data, token)
+        .then((result) => setSyncStatus(result ? "saved" : "offline"))
+        .catch(() => setSyncStatus("error"));
     }, 1200);
 
     return () => clearTimeout(timer);
-  }, [data, hydrated, token]);
+  }, [cacheKey, data, hydrated, token]);
 
 
   const upd = (key, value) => {
@@ -185,7 +191,7 @@ export function CharacterProvider({ children }) {
 
   const resetCharacter = () => {
     setData(defaultData);
-    window.localStorage.removeItem("bruxeiro-sheet");
+    window.localStorage.removeItem(cacheKey);
   };
 
   const value = {
@@ -199,6 +205,7 @@ export function CharacterProvider({ children }) {
     bankInput,
     setBankInput,
     bankError,
+    syncStatus,
     setBankError,
     upd,
     updSkill,

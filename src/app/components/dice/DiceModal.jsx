@@ -17,9 +17,45 @@ import { formatModifier } from "../../../lib/modifiers";
 
 const DICE_TYPES = [4, 6, 8, 10, 12, 20, 100];
 
+function DiceRollAnimation({ roll }) {
+  const values = roll.mode === "normal" && roll.rolls.length > 1
+    ? roll.rolls
+    : roll.rolls.slice(0, 2);
+  const isContest = roll.mode === "advantage" || roll.mode === "disadvantage";
+
+  return (
+    <div
+      key={roll.id}
+      className="dice-roll-stage"
+      role="img"
+      aria-label={`${roll.formula}: dados ${roll.rolls.join(", ")}; total ${roll.total}`}
+      data-sides={roll.sides}
+    >
+      <div className="dice-roll-aura" />
+      <div className="dice-roll-dice">
+        {values.map((value, index) => {
+          const discarded = isContest && value === roll.discarded && values.indexOf(value) === index;
+          return (
+            <div
+              className={`dice-cube dice-cube-${index + 1}${discarded ? " dice-cube-discarded" : ""}`}
+              key={`${roll.id}-${index}`}
+            >
+              <span>{value}</span>
+            </div>
+          );
+        })}
+      </div>
+      <span className="dice-roll-caption">
+        {isContest ? (roll.mode === "advantage" ? "Vantagem" : "Desvantagem") : `d${roll.sides}`}
+      </span>
+    </div>
+  );
+}
+
 export default function DiceModal() {
   const {
     isModalOpen,
+    isRolling,
     closeModal,
     lastRoll,
     pendingTarget,
@@ -36,8 +72,13 @@ export default function DiceModal() {
   if (!isModalOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
-      <div className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-white/10 bg-[#0f1118] text-[#e8d5b0] shadow-2xl shadow-black/90">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md" role="presentation">
+      <div
+        className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-white/10 bg-[#0f1118] text-[#e8d5b0] shadow-2xl shadow-black/90"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="dice-modal-title"
+      >
         {/* Glow de fundo */}
         <div className="pointer-events-none absolute -right-20 -top-20 h-48 w-48 rounded-full bg-[#d69a3d]/15 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-20 -left-20 h-48 w-48 rounded-full bg-[#7861ff]/10 blur-3xl" />
@@ -49,7 +90,7 @@ export default function DiceModal() {
               <Dices size={18} />
             </span>
             <div>
-              <h3 className="text-sm font-semibold tracking-wide text-[#f5e9d7]">
+              <h3 id="dice-modal-title" className="text-sm font-semibold tracking-wide text-[#f5e9d7]">
                 Rolador de Dados Virtual
               </h3>
               <p className="text-[11px] text-[#8a7355]">
@@ -64,6 +105,7 @@ export default function DiceModal() {
 
           <button
             onClick={closeModal}
+            aria-label="Fechar rolador de dados"
             className="rounded-lg p-1.5 text-[#8a7355] transition-colors hover:bg-white/10 hover:text-[#f5e9d7]"
           >
             <X size={18} />
@@ -187,8 +229,13 @@ export default function DiceModal() {
                 </button>
               </div>
             </div>
-          ) : activeTab === "result" && lastRoll ? (
+          ) : (activeTab === "result" || isRolling) && lastRoll ? (
             <div className="space-y-5 text-center">
+              {isRolling && (
+                <div className="text-xs font-semibold uppercase tracking-[0.24em] text-[#d69a3d]" role="status" aria-live="polite">
+                  Rolando os dados...
+                </div>
+              )}
               {/* Badge de Crítico */}
               {lastRoll.isCriticalSuccess && (
                 <div className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/40 bg-emerald-500/15 px-3 py-1 text-xs font-bold text-emerald-300 shadow-lg shadow-emerald-950">
@@ -202,6 +249,7 @@ export default function DiceModal() {
               )}
 
               {/* Número Gigante do Total */}
+              <DiceRollAnimation roll={lastRoll} />
               <div className="relative mx-auto flex h-32 w-32 items-center justify-center rounded-3xl border-2 border-[#d69a3d]/50 bg-gradient-to-b from-[#241c13] to-[#120e09] shadow-[0_0_35px_rgba(214,154,61,0.25)]">
                 <span className="font-mono text-5xl font-black text-[#fdf6e7]">
                   {lastRoll.total}

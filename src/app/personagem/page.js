@@ -1,6 +1,6 @@
 "use client";
 
-import { Crown, Sparkles, Sword } from "lucide-react";
+import { Check, CloudOff, Crown, LoaderCircle, Sparkles, Sword, TriangleAlert } from "lucide-react";
 import { useCharacter } from "../context/CharacterContext";
 import { Card, EditableText, SectionHeader, StatBox } from "../components/ui";
 import Aparencia from "../components/Aparencia";
@@ -8,7 +8,16 @@ import Pericia from "../components/Pericia";
 import BarraHp from "../components/BarrraHp";
 
 export default function Personagem() {
-  const { data, upd } = useCharacter();
+  const { data, upd, syncStatus } = useCharacter();
+
+  const syncLabels = {
+    idle: null,
+    saving: { label: "Salvando...", Icon: LoaderCircle, className: "text-primary" },
+    saved: { label: "Salvo", Icon: Check, className: "text-emerald-400" },
+    offline: { label: "Salvo localmente", Icon: CloudOff, className: "text-amber-300" },
+    error: { label: "Falha ao sincronizar", Icon: TriangleAlert, className: "text-rose-300" },
+  };
+  const syncIndicator = syncLabels[syncStatus];
 
   return (
     <div className="space-y-5">
@@ -27,7 +36,14 @@ export default function Personagem() {
               Um novo capítulo aguarda ser escrito.
             </p>
           </div>
-          <div className="grid grid-cols-2 gap-2 sm:min-w-52">
+          <div className="flex flex-col gap-2 sm:items-end">
+            {syncIndicator && (
+              <span className={`flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider ${syncIndicator.className}`} role="status">
+                <syncIndicator.Icon size={13} className={syncStatus === "saving" ? "animate-spin" : ""} />
+                {syncIndicator.label}
+              </span>
+            )}
+            <div className="grid grid-cols-2 gap-2 sm:min-w-52">
             <div className="rounded-xl border border-white/10 bg-background/40 p-3">
               <span className="block text-[10px] uppercase tracking-wider text-muted-foreground">Nível</span>
               <span className="font-serif text-xl font-bold text-foreground">{data.level || 1}</span>
@@ -36,6 +52,7 @@ export default function Personagem() {
               <span className="block text-[10px] uppercase tracking-wider text-muted-foreground">Ofício</span>
               <EditableText value={data.job || "Aventureiro"} onChange={(value) => upd("job", value)} className="font-serif text-sm font-semibold text-foreground" />
             </div>
+          </div>
           </div>
         </div>
       </Card>

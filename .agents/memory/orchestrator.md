@@ -80,3 +80,29 @@ Este arquivo é a fonte de memória persistente da liderança técnica do projet
   - **Equipe especializada fullstack**:
     * Agentes em `.github/agents/` para frontend, backend, contrato de integração e orquestração.
     * Skills em `.github/skills/` para frontend RPG, backend RPG e contrato API RPG.
+
+- **2026-10-16 — Animação do rolador**:
+  - `DiceModal` recebeu dados numerados com rotação 3D, quique e aura temática.
+  - Vantagem/desvantagem preservam a distinção entre resultado mantido e descartado; múltiplos dados são exibidos sem alterar o motor.
+  - `globals.css` inclui keyframes dedicados e fallback para `prefers-reduced-motion`.
+  - Build de produção e verificação de whitespace passaram.
+
+- **2026-10-16 — Equipe expandida do ecossistema RPG**:
+  - Criados agentes especializados para Área do Jogador, Área do Mestre, motor de regras, mecânica de dados, segurança, QA e documentação.
+  - Criadas skills de frontend jogador/mestre, regras d20, dados, autenticação, autorização, uploads, QA, segurança e documentação.
+  - Criadas memórias persistentes correspondentes em `.agents/memory/`.
+  - O orquestrador foi atualizado para poder acionar os novos agentes.
+
+- **2026-10-16 — Primeira melhoria geral do sistema**:
+  - Rolador revisado com aleatoriedade injetável, múltiplos dados, acessibilidade e animação d20.
+  - Área do Mestre reforçada com proteção de rota, cliente autenticado e tratamento de falhas.
+  - Área do Jogador recebeu indicador de sincronização local/backend.
+  - Backend teve correções de associação de personagens, filtro de dados privados, segredo JWT obrigatório e bloqueio de usuários inativos.
+  - Criado `docs/MELHORIAS-FUTURAS-RPG.md` com diagnóstico e roadmap priorizado.
+
+- **2026-10-17 — Continuidade da integração backend/frontend**:
+  - Retomada a correção de dados ausentes no carregamento do backend.
+  - Confirmados os aliases canônicos/legados, moedas e preservação de arrays vazios no `CharacterContext` e cliente de API.
+  - `npm run build` e `git diff --check` passaram novamente.
+  - Ajustada a normalização para preservar explicitamente coleções canônicas vazias vindas do backend.
+  - Testes direcionados de regras e dados: 26 aprovados.

@@ -44,6 +44,7 @@ Motor de rolagem de dados virtuais com bônus, notação d20, mecânicas de Vant
 ## 📋 Próximas Ações
 - [x] Implementar `src/lib/dice.js` com suporte a dados múltiplos e modificadores positivos/negativos.
 - [x] Criar o contexto de dados `DiceContext` e o componente de histórico/bandeja na Fase 2.
+- [x] Adicionar animação visual de rolagem no resultado do `DiceModal`, preservando o valor real calculado pelo motor e respeitando `prefers-reduced-motion`.
+- [x] Garantir ciclo visual explícito de rolagem por 1,4 s e exibir o resultado mesmo quando outra aba do modal estava selecionada.
+- [x] Aproximar a animação do estilo Roll20 com silhueta facetada de d20 e rotações amplas nos eixos X/Y.
 - [ ] Implementar persistência opcional de histórico de rolagens no banco (Fase 5).
-
-

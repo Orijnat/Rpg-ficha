@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { Card, SectionHeader } from "../components/ui";
 import { useAuth } from "../context/AuthContext";
-import { fetchCampaignData, getStoredToken, updateCampaignData } from "../../lib/api";
+import { fetchCampaignData, getApiBaseUrl, getStoredToken, updateCampaignData } from "../../lib/api";
 
 const STORAGE_KEY = "rpg-gm-dashboard";
 
@@ -31,11 +31,27 @@ const defaultTable = {
   ],
 };
 
+function normalizeTable(value) {
+  const source = value && typeof value === "object" ? value : {};
+  return {
+    ...defaultTable,
+    ...source,
+    sessionTitle: source.sessionTitle ?? source.tituloSessao ?? defaultTable.sessionTitle,
+    sessionNotes: source.sessionNotes ?? source.anotacoesSessao ?? defaultTable.sessionNotes,
+    npcs: Array.isArray(source.npcs) ? source.npcs : defaultTable.npcs,
+    initiative: Array.isArray(source.initiative)
+      ? source.initiative
+      : Array.isArray(source.iniciativa)
+        ? source.iniciativa
+        : defaultTable.initiative,
+  };
+}
+
 function loadTable() {
   if (typeof window === "undefined") return defaultTable;
   try {
     const saved = window.localStorage.getItem(STORAGE_KEY);
-    return saved ? { ...defaultTable, ...JSON.parse(saved) } : defaultTable;
+    return saved ? normalizeTable(JSON.parse(saved)) : defaultTable;
   } catch {
     return defaultTable;
   }
@@ -53,10 +69,12 @@ export default function AdminIndex() {
   useEffect(() => {
     if (authLoading || !isMaster) return;
     fetchCampaignData(getStoredToken())
-      .then(setTable)
+      .then((campaign) => setTable(normalizeTable(campaign)))
       .catch(() => setTable(loadTable()))
       .finally(() => setCampaignLoaded(true));
-    fetch("/api/characters", { headers: { Authorization: `Bearer ${getStoredToken()}` } })
+    fetch(`${getApiBaseUrl()}/characters`, {
+      headers: { Authorization: `Bearer ${getStoredToken()}` },
+    })
       .then(async (response) => {
         if (!response.ok) throw new Error("Não foi possível carregar os personagens.");
         return response.json();

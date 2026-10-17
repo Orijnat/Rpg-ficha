@@ -12,6 +12,7 @@
  * @param {'normal'|'advantage'|'disadvantage'} [options.mode='normal'] Modo da rolagem.
  * @param {number} [options.modifier=0] Modificador somado ao total.
  * @param {string} [options.label=''] Nome do teste (ex: "Iniciativa", "Atletismo").
+ * @param {() => number} [options.random=Math.random] Fonte de aleatoriedade injetável.
  * @returns {Object} Resultado detalhado da rolagem.
  */
 export function rollDice({
@@ -20,8 +21,18 @@ export function rollDice({
   mode = "normal",
   modifier = 0,
   label = "",
+  random = Math.random,
 } = {}) {
-  const rollOne = () => Math.floor(Math.random() * sides) + 1;
+  const validSides = Number.isFinite(Number(sides)) && Number(sides) >= 1
+    ? Math.floor(Number(sides))
+    : 20;
+  const randomSource = typeof random === "function" ? random : Math.random;
+  const rollOne = () => {
+    const sample = Number(randomSource());
+    // A fonte pode retornar 1 por arredondamento; manter o domínio sempre [1, sides].
+    const normalized = Number.isFinite(sample) ? Math.min(Math.max(sample, 0), 0.9999999999999999) : 0;
+    return Math.floor(normalized * validSides) + 1;
+  };
   const numModifier = Number(modifier) || 0;
   const modSign = numModifier >= 0 ? `+ ${numModifier}` : `- ${Math.abs(numModifier)}`;
   const modString = numModifier !== 0 ? ` ${modSign}` : "";
@@ -35,22 +46,22 @@ export function rollDice({
     const kept = isAdv ? Math.max(d1, d2) : Math.min(d1, d2);
     const discarded = isAdv ? Math.min(d1, d2) : Math.max(d1, d2);
     const formula = isAdv
-      ? `2d${sides}kh1${modString}`
-      : `2d${sides}kl1${modString}`;
+      ? `2d${validSides}kh1${modString}`
+      : `2d${validSides}kl1${modString}`;
 
     return {
-      id: `${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      id: createRollId(),
       label,
       formula,
       mode,
-      sides,
+      sides: validSides,
       rolls: [d1, d2],
       kept,
       discarded,
       modifier: numModifier,
       total: kept + numModifier,
-      isCriticalSuccess: sides === 20 && kept === 20,
-      isCriticalFailure: sides === 20 && kept === 1,
+      isCriticalSuccess: validSides === 20 && kept === 20,
+      isCriticalFailure: validSides === 20 && kept === 1,
       timestamp: new Date().toISOString(),
     };
   }
@@ -58,7 +69,11 @@ export function rollDice({
   // Modo Normal
   const rolls = [];
   let sum = 0;
-  const actualCount = Math.max(1, Number(count) || 1);
+  const requestedCount = Number(count);
+  const actualCount = Math.max(
+    1,
+    Number.isFinite(requestedCount) ? Math.floor(requestedCount) : 1,
+  );
 
   for (let i = 0; i < actualCount; i++) {
     const val = rollOne();
@@ -66,24 +81,31 @@ export function rollDice({
     sum += val;
   }
 
-  const formula = `${actualCount}d${sides}${modString}`;
+  const formula = `${actualCount}d${validSides}${modString}`;
   const total = sum + numModifier;
 
   return {
-    id: `${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+    id: createRollId(),
     label,
     formula,
     mode: "normal",
-    sides,
+    sides: validSides,
     rolls,
     kept: rolls.length === 1 ? rolls[0] : sum,
     discarded: null,
     modifier: numModifier,
     total,
-    isCriticalSuccess: sides === 20 && actualCount === 1 && rolls[0] === 20,
-    isCriticalFailure: sides === 20 && actualCount === 1 && rolls[0] === 1,
+    isCriticalSuccess: validSides === 20 && actualCount === 1 && rolls[0] === 20,
+    isCriticalFailure: validSides === 20 && actualCount === 1 && rolls[0] === 1,
     timestamp: new Date().toISOString(),
   };
+}
+
+let rollSequence = 0;
+
+function createRollId() {
+  rollSequence += 1;
+  return `${Date.now()}_${rollSequence}`;
 }
 
 /**

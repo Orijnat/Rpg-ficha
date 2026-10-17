@@ -1,11 +1,23 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Crown, LayoutDashboard, ScrollText } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { useEffect } from "react";
 
 export default function AdminLayout({ children }) {
-  const { isMaster } = useAuth();
+  const { isMaster, loading, isAuthenticated } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && (!isAuthenticated || !isMaster)) {
+      router.replace(isAuthenticated ? "/" : "/login");
+    }
+  }, [loading, isAuthenticated, isMaster, router]);
+
+  if (loading || !isAuthenticated || !isMaster) return null;
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
       <div className="mb-6 flex flex-col gap-4 border-b-2 border-primary/35 pb-4 sm:flex-row sm:items-center sm:justify-between">

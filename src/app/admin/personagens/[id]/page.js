@@ -2,37 +2,49 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { fetchCharacterFromBackend, updateCharacterOnBackend } from "../../../../lib/api";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function EditPersonagem({ params }) {
-  const { id } = params;
+  const [id, setId] = useState(null);
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const router = useRouter();
+  const { token, isMaster, loading: authLoading } = useAuth();
 
   useEffect(() => {
     async function load() {
+      const resolvedParams = await params;
+      setId(resolvedParams.id);
       setLoading(true);
-      const res = await fetch(`/api/characters/${id}`);
-      if (res.ok) {
-        const data = await res.json();
+      try {
+        const data = await fetchCharacterFromBackend(resolvedParams.id);
         setItem(data);
+      } catch (loadError) {
+        setError(loadError.message);
       }
       setLoading(false);
     }
-    load();
-  }, [id]);
+    if (!authLoading && isMaster) load();
+  }, [authLoading, isMaster]);
 
   async function save(e) {
     e.preventDefault();
-    await fetch(`/api/characters/${id}`, { method: "PUT", body: JSON.stringify(item) });
-    router.push("/admin/personagens");
+    try {
+      await updateCharacterOnBackend(id, item, token);
+      router.push("/admin/personagens");
+    } catch (saveError) {
+      setError(saveError.message);
+    }
   }
 
   if (loading) return <p className="text-sm text-[#a98b68]">Carregando...</p>;
-  if (!item) return <p className="text-sm text-red-400">Personagem não encontrado.</p>;
+  if (!item) return <p className="text-sm text-red-400">{error || "Personagem não encontrado."}</p>;
 
   return (
     <form onSubmit={save} className="max-w-lg">
+      {error && <p className="mb-4 border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive-foreground">{error}</p>}
       <div>
         <label className="block text-sm text-[#a98b68]">Nome</label>
         <input value={item.name || ""} onChange={(e) => setItem({ ...item, name: e.target.value })} className="mt-1 w-full rounded-md bg-[#0b0d12] border border-white/6 px-3 py-2 text-[#f5e9d7]" />

@@ -1,7 +1,7 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
-import { rollDice, rollCheck } from "../../lib/dice";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { rollDice } from "../../lib/dice";
 
 const DiceContext = createContext(null);
 
@@ -9,15 +9,21 @@ export function DiceProvider({ children }) {
   const [history, setHistory] = useState([]);
   const [lastRoll, setLastRoll] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRolling, setIsRolling] = useState(false);
   const [pendingTarget, setPendingTarget] = useState(null); // { label, modifier }
+  const rollingTimer = useRef(null);
 
   // Executa uma rolagem e registra no histórico
-  const executeRoll = ({ sides = 20, mode = "normal", modifier = 0, label = "Rolagem" }) => {
-    const result = rollDice({ sides, mode, modifier, label });
+  const executeRoll = ({ sides = 20, count = 1, mode = "normal", modifier = 0, label = "Rolagem" }) => {
+    const result = rollDice({ sides, count, mode, modifier, label });
     setLastRoll(result);
     setHistory((prev) => [result, ...prev].slice(0, 30)); // Mantém últimas 30
     setPendingTarget(null);
+    setIsRolling(true);
     setIsModalOpen(true);
+    window.clearTimeout(rollingTimer.current);
+    const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    rollingTimer.current = window.setTimeout(() => setIsRolling(false), reducedMotion ? 0 : 1400);
     return result;
   };
 
@@ -34,8 +40,11 @@ export function DiceProvider({ children }) {
 
   const closeModal = () => {
     setIsModalOpen(false);
+    setIsRolling(false);
     setPendingTarget(null);
   };
+
+  useEffect(() => () => window.clearTimeout(rollingTimer.current), []);
 
   const clearHistory = () => {
     setHistory([]);
@@ -47,6 +56,7 @@ export function DiceProvider({ children }) {
         history,
         lastRoll,
         isModalOpen,
+        isRolling,
         pendingTarget,
         executeRoll,
         promptRoll,
