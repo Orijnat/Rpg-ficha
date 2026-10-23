@@ -9,6 +9,25 @@ Este arquivo é a fonte de memória persistente da liderança técnica do projet
 - **Stack Consolidada**: Next.js 16 (App Router), React 19, Tailwind CSS v4, PostgreSQL, Sequelize ORM.
 - **Foco Principal**: Área do Jogador (Mobile-first e Desktop) para sistema próprio baseado em d20 (7 atributos).
 
+### Diagnóstico mais recente — 2026-10-20
+- A página raiz (`src/app/page.js`) contém somente um redirecionamento server-side
+  para `/login` e não apresenta problema funcional.
+- Melhorias restantes prioritárias estão documentadas em
+  `docs/MELHORIAS-FUTURAS-RPG.md`, com foco em segurança, persistência,
+  sincronização e testes.
+
+### Relatório consolidado — 2026-10-22
+- Implementações recentes abrangem a área do jogador, diário/anotações,
+  inventário, contratos, área do mestre, perfis, persistência/sincronização,
+  schema v2, regras d20, backup JSON e refinamento visual.
+- `npm run build`: aprovado, com 18 rotas geradas.
+- `node --test src/lib/__tests__/*.mjs`: aprovado, 2 arquivos e 73 asserções.
+- `npm test`: indisponível porque não há script `test` no `package.json`.
+- `npm run lint`: pendente, com 6 erros e 5 avisos.
+- Pendências prioritárias: regras oficiais, campanhas e autorização completa,
+  migrations, hardening de segurança, uploads privados, Google Drive/Sheets/Docs,
+  acessibilidade e testes de integração/E2E.
+
 ---
 
 ## 📜 Histórico de Decisões Arquiteturais (ADRs)
@@ -52,6 +71,7 @@ Este arquivo é a fonte de memória persistente da liderança técnica do projet
 - [x] **Fase 16**: Redirecionamento global de usuários não autenticados para a tela de login.
 - [x] **Fase 17**: Mapeamento completo do domínio e persistência PostgreSQL/Sequelize ampliada com campos canônicos em português.
 - [x] **Fase 18**: Criação da equipe especializada de frontend, backend, contrato de integração e orquestração fullstack.
+- [x] **Fase 19**: Implementação das Melhorias do Roadmap (Ficha do Jogador, Inventário com Carga/Filtros, Contratos com Busca, Diário com Tags/Ordenação, Indicador de Sincronização Global no Cabeçalho e Schema v2 com Validação de Integridade).
 
 ---
 
@@ -106,3 +126,17 @@ Este arquivo é a fonte de memória persistente da liderança técnica do projet
   - `npm run build` e `git diff --check` passaram novamente.
   - Ajustada a normalização para preservar explicitamente coleções canônicas vazias vindas do backend.
   - Testes direcionados de regras e dados: 26 aprovados.
+  - Área do Mestre ampliada com central visual de personagens, ficha administrativa em nova aba e edição de inventário, capacidade de carga, atributos, HP e perícias.
+  - Build passou com a rota dinâmica `/admin/personagens/[id]/ficha`.
+  - Planilha técnica analisada e regras adicionais incorporadas em `dadosExtras`, incluindo classe customizada, BP, PE, insanidade, CA, iniciativa e dado de vida.
+  - NPC Eldric Rawlins criado para o mestre existente; senha não utilizada porque o usuário esclareceu que Eldric é controlado pelo mestre.
+  - Integração Google Workspace iniciada com OAuth mestre, tokens criptografados, status/desconexão e configuração de sincronização bidirecional.
+- **2026-10-20 — Implementação das Melhorias Futuras (Roadmap do Jogador & Sistema)**:
+  - Ficha Principal do Jogador: Novo componente `RecursosCombate.jsx` exibindo PE (Pontos de Energia), Insanidade, BP (Proficiência), CA (Classe de Armadura), Iniciativa (com rolagem d20 integrada) e Dado de Vida (com rolagem de descanso/cura).
+  - Inventário & Mochila: Cálculo em tempo real da capacidade de carga (`calculateCapacity`) com alerta de sobrecarga, barra de progresso visual, filtros por categoria (Armas/Fórmulas, Consumíveis/Munições, Outros) e ordenação (A-Z, Quantidade asc/desc, Ordem original).
+  - Painel de Contratos: Adicionada busca textual por título e recompensa combinada com filtros de status (Todos, Ativos, Concluídos).
+  - Diário de Campanha: Adicionada busca textual por relato/título, tags/categorias temáticas (Missão, Rumor, Lore, Combate, Pessoal) com contadores, e ordenação (Mais recentes, Mais antigos, Título A-Z).
+  - Cabeçalho Global: Indicador dinâmico de status de sincronização (`syncStatus`: Salvando, Salvo na Nuvem, Cache Local, Erro) visível em todas as telas.
+  - Backup & Exportação JSON: Versionamento canônico de Schema v2 com metadados e validação estrita com saneamento automático via `validateCharacterSchema`.
+  - Suíte de Testes: 59 testes automatizados de QA aprovados com 100% de sucesso em `backup.test.mjs` e `rules-and-dice.test.mjs`.
+  - Build de Produção: 17 rotas estáticas e dinâmicas geradas com sucesso sem erros.

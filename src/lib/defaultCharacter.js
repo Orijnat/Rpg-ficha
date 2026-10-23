@@ -5,6 +5,8 @@
 
 export const defaultData = {
   name: "Geralt de Rívia",
+  job: "Bruxeiro",
+  customClass: "",
   hp: 70,
   hpMax: 70,
   age: "Cerca de 100",
@@ -77,4 +79,18 @@ export const defaultData = {
   mountHP: 30,
   mountHPMax: 30,
   mountNotes: "Sela de viagem reforçada, alforjes de couro duplo.",
+  dadosExtras: {
+    inventoryCapacity: 20,
+    insanityMax: 0,
+    insanityCurrent: 0,
+    bpMax: 0,
+    bpCurrent: 0,
+    peMax: 0,
+    peCurrent: 0,
+    hitDie: "1d10",
+    armorClass: 0,
+    initiative: 0,
+    customAbilities: [],
+    training: [],
+  },
 };

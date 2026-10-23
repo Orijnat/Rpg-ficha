@@ -1,12 +1,40 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { BookOpen, CalendarDays, ImagePlus, Plus, Save, Trash2, X } from "lucide-react";
+import {
+  BookOpen,
+  CalendarDays,
+  ImagePlus,
+  Plus,
+  Save,
+  Trash2,
+  X,
+  Search,
+  Tag,
+  ArrowUpDown,
+  Filter,
+} from "lucide-react";
 import { Card, SectionHeader } from "./ui";
 import { useCharacter } from "../context/CharacterContext";
 
 const today = () => new Date().toISOString().slice(0, 10);
-const EMPTY_ENTRY = { id: "empty-diary", date: "", title: "", content: "", images: [] };
+const EMPTY_ENTRY = {
+  id: "empty-diary",
+  date: "",
+  title: "",
+  content: "",
+  category: "Geral",
+  images: [],
+};
+
+export const DIARY_CATEGORIES = [
+  { id: "Geral", label: "Geral", color: "text-muted-foreground bg-white/5 border-white/10" },
+  { id: "Missão", label: "Missão", color: "text-amber-300 bg-amber-950/30 border-amber-500/30" },
+  { id: "Rumor", label: "Rumor", color: "text-purple-300 bg-purple-950/30 border-purple-500/30" },
+  { id: "Lore", label: "Lore", color: "text-sky-300 bg-sky-950/30 border-sky-500/30" },
+  { id: "Combate", label: "Combate", color: "text-rose-300 bg-rose-950/30 border-rose-500/30" },
+  { id: "Pessoal", label: "Pessoal", color: "text-emerald-300 bg-emerald-950/30 border-emerald-500/30" },
+];
 
 function formatDate(value) {
   if (!value) return "Sem data";
@@ -18,10 +46,24 @@ function formatDate(value) {
 }
 
 function getDiaryEntries(notes) {
-  if (Array.isArray(notes)) return notes;
+  if (Array.isArray(notes)) {
+    return notes.map((entry) => ({
+      ...entry,
+      category: entry.category || "Geral",
+    }));
+  }
 
   if (typeof notes === "string" && notes.trim()) {
-    return [{ id: "legacy-note", date: today(), title: "Primeiro registro", content: notes, images: [] }];
+    return [
+      {
+        id: "legacy-note",
+        date: today(),
+        title: "Primeiro registro",
+        content: notes,
+        category: "Geral",
+        images: [],
+      },
+    ];
   }
 
   if (notes && typeof notes === "object") {
@@ -32,6 +74,7 @@ function getDiaryEntries(notes) {
         date: item.date || item.createdAt || today(),
         title: item.title || category,
         content: item.content || String(item),
+        category: category || "Geral",
         images: item.images || [],
       }));
     });
@@ -46,8 +89,38 @@ export default function Anotacoes() {
   const [selectedId, setSelectedId] = useState(entries[0]?.id || null);
   const [draft, setDraft] = useState(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [sortBy, setSortBy] = useState("recent"); // "recent" | "oldest" | "title"
 
-  const selectedEntry = entries.find((entry) => entry.id === selectedId) || entries[0];
+  const filteredAndSortedEntries = useMemo(() => {
+    let list = [...entries];
+
+    if (selectedCategory !== "all") {
+      list = list.filter((e) => (e.category || "Geral") === selectedCategory);
+    }
+
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase();
+      list = list.filter(
+        (e) =>
+          (e.title || "").toLowerCase().includes(term) ||
+          (e.content || "").toLowerCase().includes(term)
+      );
+    }
+
+    if (sortBy === "recent") {
+      list.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+    } else if (sortBy === "oldest") {
+      list.sort((a, b) => (a.date || "").localeCompare(b.date || ""));
+    } else if (sortBy === "title") {
+      list.sort((a, b) => (a.title || "").localeCompare(b.title || "", "pt-BR"));
+    }
+
+    return list;
+  }, [entries, searchTerm, selectedCategory, sortBy]);
+
+  const selectedEntry = entries.find((entry) => entry.id === selectedId) || filteredAndSortedEntries[0];
   const currentDraft = draft || selectedEntry || EMPTY_ENTRY;
 
   const updateDraft = (patch) => setDraft({ ...currentDraft, ...patch });
@@ -64,7 +137,14 @@ export default function Anotacoes() {
   };
 
   const createEntry = () => {
-    const entry = { id: `diary-${Date.now()}`, date: today(), title: "", content: "", images: [] };
+    const entry = {
+      id: `diary-${Date.now()}`,
+      date: today(),
+      title: "",
+      content: "",
+      category: selectedCategory !== "all" ? selectedCategory : "Geral",
+      images: [],
+    };
     setSelectedId(entry.id);
     setDraft(entry);
     setIsCreating(true);
@@ -106,57 +186,140 @@ export default function Anotacoes() {
 
   return (
     <Card className="min-h-[60vh]">
-      <div className="flex items-center justify-between gap-3">
-        <SectionHeader title="Diário de campanha" icon={<BookOpen size={14} />} />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <SectionHeader title="Diário de Campanha" icon={<BookOpen size={14} />} />
         <button
           type="button"
           onClick={createEntry}
           className="flex min-h-11 items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-3 py-2 text-xs font-semibold text-primary transition hover:bg-primary/20 active:scale-95"
         >
           <Plus size={15} />
-          <span className="hidden sm:inline">Novo registro</span>
+          <span>Novo registro</span>
         </button>
       </div>
 
-      <div className="mt-5 grid gap-5 lg:grid-cols-[230px_1fr]">
-        <aside className="space-y-2 lg:border-r lg:border-white/10 lg:pr-4">
-          <p className="px-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            Registros · {entries.length}
+      <div className="mt-5 grid gap-5 lg:grid-cols-[280px_1fr]">
+        {/* Painel Lateral com Filtros e Lista */}
+        <aside className="space-y-3 lg:border-r lg:border-white/10 lg:pr-4">
+          {/* Campo de Busca */}
+          <div className="relative">
+            <Search
+              size={13}
+              className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground"
+            />
+            <input
+              type="text"
+              placeholder="Buscar no diário..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full rounded-xl border border-white/10 bg-background/50 py-1.5 pl-8 pr-2 text-xs text-foreground outline-none transition focus:border-primary"
+            />
+          </div>
+
+          {/* Ordenação */}
+          <div className="flex items-center justify-between gap-1 text-[11px] text-muted-foreground">
+            <span className="flex items-center gap-1 font-medium">
+              <ArrowUpDown size={11} className="text-primary" /> Ordenar:
+            </span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="rounded-lg border border-white/10 bg-background/60 px-2 py-1 text-xs text-foreground outline-none cursor-pointer"
+            >
+              <option value="recent" className="bg-card text-foreground">Mais recentes</option>
+              <option value="oldest" className="bg-card text-foreground">Mais antigos</option>
+              <option value="title" className="bg-card text-foreground">Título (A-Z)</option>
+            </select>
+          </div>
+
+          {/* Filtro por Categorias */}
+          <div className="flex flex-wrap gap-1 border-y border-white/10 py-2">
+            <button
+              type="button"
+              onClick={() => setSelectedCategory("all")}
+              className={`rounded-md px-2 py-0.5 text-[10px] font-medium transition ${
+                selectedCategory === "all"
+                  ? "bg-primary text-primary-foreground font-semibold"
+                  : "border border-white/10 bg-white/5 text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              Todas ({entries.length})
+            </button>
+            {DIARY_CATEGORIES.map((cat) => {
+              const count = entries.filter((e) => (e.category || "Geral") === cat.id).length;
+              return (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => setSelectedCategory(cat.id)}
+                  className={`rounded-md px-2 py-0.5 text-[10px] font-medium transition ${
+                    selectedCategory === cat.id
+                      ? "bg-primary text-primary-foreground font-semibold"
+                      : "border border-white/10 bg-white/5 text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {cat.label} ({count})
+                </button>
+              );
+            })}
+          </div>
+
+          <p className="px-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            Registros Filtrados · {filteredAndSortedEntries.length}
           </p>
-          {entries.length === 0 ? (
-            <p className="px-2 py-5 text-xs italic text-muted-foreground">Seu diário ainda está vazio.</p>
-          ) : (
-            entries.map((entry) => (
-              <button
-                key={entry.id}
-                type="button"
-                onClick={() => {
-                  setSelectedId(entry.id);
-                  setDraft(null);
-                  setIsCreating(false);
-                }}
-                className={`w-full rounded-xl border p-3 text-left transition ${
-                  selectedEntry?.id === entry.id
-                    ? "border-primary/40 bg-primary/10"
-                    : "border-white/10 bg-background/30 hover:border-primary/25 hover:bg-primary/5"
-                }`}
-              >
-                <span className="block truncate font-serif text-sm font-semibold text-foreground">
-                  {entry.title || "Registro sem título"}
-                </span>
-                <span className="mt-1 flex items-center gap-1 text-[10px] text-muted-foreground">
-                  <CalendarDays size={11} />
-                  {formatDate(entry.date)}
-                </span>
-              </button>
-            ))
-          )}
+
+          <div className="max-h-[50vh] space-y-1.5 overflow-y-auto pr-1 custom-scroll">
+            {filteredAndSortedEntries.length === 0 ? (
+              <p className="px-2 py-5 text-xs italic text-muted-foreground">
+                {searchTerm || selectedCategory !== "all"
+                  ? "Nenhum registro encontrado."
+                  : "Seu diário ainda está vazio."}
+              </p>
+            ) : (
+              filteredAndSortedEntries.map((entry) => {
+                const catInfo =
+                  DIARY_CATEGORIES.find((c) => c.id === (entry.category || "Geral")) ||
+                  DIARY_CATEGORIES[0];
+
+                return (
+                  <button
+                    key={entry.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedId(entry.id);
+                      setDraft(null);
+                      setIsCreating(false);
+                    }}
+                    className={`w-full rounded-xl border p-2.5 text-left transition ${
+                      selectedEntry?.id === entry.id
+                        ? "border-primary/40 bg-primary/10"
+                        : "border-white/10 bg-background/30 hover:border-primary/25 hover:bg-primary/5"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-1">
+                      <span className="block truncate font-serif text-xs font-bold text-foreground">
+                        {entry.title || "Registro sem título"}
+                      </span>
+                      <span className={`shrink-0 rounded px-1.5 py-0.2 text-[9px] font-semibold border ${catInfo.color}`}>
+                        {catInfo.label}
+                      </span>
+                    </div>
+                    <span className="mt-1 flex items-center gap-1 text-[10px] text-muted-foreground">
+                      <CalendarDays size={11} />
+                      {formatDate(entry.date)}
+                    </span>
+                  </button>
+                );
+              })
+            )}
+          </div>
         </aside>
 
+        {/* Editor de Entrada */}
         <section className="min-w-0">
           {selectedEntry || isCreating ? (
             <>
-              <div className="grid gap-3 sm:grid-cols-[1fr_180px]">
+              <div className="grid gap-3 sm:grid-cols-[1fr_140px_160px]">
                 <label className="text-xs text-muted-foreground">
                   Título do registro
                   <input
@@ -165,6 +328,20 @@ export default function Anotacoes() {
                     placeholder="Ex.: A noite na floresta"
                     className="mt-1 min-h-11 w-full rounded-xl border border-white/10 bg-background/40 px-3 text-sm text-foreground outline-none transition focus:border-primary"
                   />
+                </label>
+                <label className="text-xs text-muted-foreground">
+                  Categoria
+                  <select
+                    value={currentDraft.category || "Geral"}
+                    onChange={(event) => updateDraft({ category: event.target.value })}
+                    className="mt-1 min-h-11 w-full rounded-xl border border-white/10 bg-background/40 px-3 text-sm text-foreground outline-none transition focus:border-primary cursor-pointer"
+                  >
+                    {DIARY_CATEGORIES.map((cat) => (
+                      <option key={cat.id} value={cat.id} className="bg-card text-foreground">
+                        {cat.label}
+                      </option>
+                    ))}
+                  </select>
                 </label>
                 <label className="text-xs text-muted-foreground">
                   Data

@@ -47,6 +47,14 @@ UI/UX da Área do Jogador, componentes React 19, Tailwind CSS v4, responsividade
     * `src/app/globals.css`: Adicionada variável de iluminação ambiente `--glow-primary` para cada tema e suporte no `@theme inline`.
     * Migração de cores hardcoded para tokens semânticos em `ui.js`, `BackupModal.jsx`, `Aparencia.jsx`, `BarrraHp.jsx` e `banco/constants.js`.
   - Validação do build de produção Turbopack do Next.js 16 sem nenhum erro em todas as 16 rotas.
+- **2026-10-20 — Melhorias do Roadmap (Fase 19)**:
+  - Criação do `RecursosCombate.jsx` com barras e controles de PE (azul ciano), Insanidade (púrpura sombria), BP (dourado), CA (escudo), Iniciativa e Dado de Vida com rolagens interativas.
+  - Atualização do `Personagem/page.js` com painel de recursos de combate e resumo dinâmico de capacidade de carga com barra de progresso.
+  - Atualização do `Cabecalho.jsx` para exibir badge de `syncStatus` em tempo real.
+  - Atualização do `InventarioPage`: capacidade de carga com cálculo dinâmico e aviso de sobrecarga, filtros de categoria (Armas/Fórmulas, Consumíveis/Munições, Outros) e ordenação multinível.
+  - Atualização do `ContratosPage`: barra de pesquisa textual por título e recompensa combinada com filtros de status.
+  - Atualização do `Anotacoes.jsx`: pesquisa em tempo real, categorias/tags coloridas (Missão, Rumor, Lore, Combate, Pessoal) e ordenação por data e título.
+  - Atualização do `BackupModal.jsx`: suporte para schema versionado (v2) e feedback detalhado de importação.
 
 ---
 

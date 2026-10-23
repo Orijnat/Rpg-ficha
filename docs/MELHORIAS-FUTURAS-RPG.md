@@ -37,6 +37,12 @@ As principais lacunas identificadas são:
 
 - Listagem e edição de personagens encaminhadas para o cliente autenticado da
   API, em vez de chamadas relativas sem contrato compartilhado.
+- Central de personagens com cartões de todos os jogadores e abertura da ficha
+  administrativa em nova aba (`/admin/personagens/:id/ficha`).
+- Ficha administrativa completa para alterar vitalidade, atributos, perícias,
+  itens e capacidade máxima de carga.
+- Campos de regras derivados da planilha: classe customizada, insanidade, BP,
+  PE, dado de vida, classe de armadura e iniciativa.
 - Mensagens de erro adicionadas às telas administrativas.
 - Edição de rota dinâmica preparada para parâmetros assíncronos do Next.js.
 - Exclusão e atualização de personagens passam a usar token e tratamento de
@@ -49,6 +55,49 @@ As principais lacunas identificadas são:
   final precisa permanecer no backend.
 - A auditoria de autenticação, autorização e privacidade está registrada como
   etapa própria e deve ser concluída antes de produção.
+
+### Regras identificadas na planilha técnica
+
+- A ficha usa sete atributos (`FOR`, `DES`, `CON`, `SAB`, `ESP`, `CAR` e
+  `INT`) e perícias vinculadas a esses atributos.
+- A classe pode possuir nome customizado, habilidades próprias e progressão de
+  BP.
+- Recursos adicionais incluem PV, PE, insanidade, BP, dado de vida, CA e
+  iniciativa.
+- Inventário possui munições e itens quantificados; a capacidade é editável
+  pelo mestre.
+- A planilha de Eldric informa PV atual 46 e PV máximo 39, combinação
+  incompatível com a constraint do banco. O NPC foi salvo com PV atual 39 e
+  máximo 46, mantendo os valores originais em `dadosExtras` para auditoria.
+
+### Integração Google Workspace
+
+- O backend possui OAuth protegido por perfil mestre para Google Drive,
+  Planilhas e Docs.
+- Os tokens OAuth são criptografados com AES-256-GCM usando
+  `GOOGLE_TOKEN_ENCRYPTION_KEY`; nenhuma credencial deve ser colocada no
+  código ou no frontend.
+- O painel do mestre possui o botão de conexão e exibe o estado da integração.
+- A configuração escolhida é sincronização bidirecional com política “última
+  alteração vence”.
+- A implementação inicial cobre conexão, status e desconexão. O mapeamento
+  definitivo da planilha enviada, exportação de Docs e sincronização de linhas
+  ainda devem ser implementados após o cadastro das credenciais OAuth e a
+  definição dos IDs dos arquivos.
+
+#### Configuração local
+
+No `.env` do backend, preencher:
+
+```env
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_REDIRECT_URI=http://localhost:3333/api/google/oauth/callback
+GOOGLE_TOKEN_ENCRYPTION_KEY=
+```
+
+O redirect URI deve ser cadastrado exatamente no Google Cloud Console. Gere a
+chave de criptografia com `openssl rand -hex 32` e nunca a versione.
 
 ## Roadmap recomendado
 

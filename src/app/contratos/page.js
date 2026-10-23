@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { Check, Plus, Trash2, FileText, CheckCircle2, Clock } from "lucide-react";
+import { Check, Plus, Trash2, FileText, CheckCircle2, Clock, Search } from "lucide-react";
 import { SectionHeader, Card, EditableText } from "../components/ui";
 import { useCharacter } from "../context/CharacterContext";
 
 export default function Contratos() {
   const { data, addContract, updContract, removeContract } = useCharacter();
   const [filter, setFilter] = useState("all"); // "all" | "active" | "done"
+  const [searchTerm, setSearchTerm] = useState("");
 
   const completedCount = useMemo(
     () => data.contracts.filter((c) => c.done).length,
@@ -15,10 +16,20 @@ export default function Contratos() {
   );
 
   const filteredContracts = useMemo(() => {
-    if (filter === "active") return data.contracts.filter((c) => !c.done);
-    if (filter === "done") return data.contracts.filter((c) => c.done);
-    return data.contracts;
-  }, [data.contracts, filter]);
+    let list = data.contracts;
+    if (filter === "active") list = list.filter((c) => !c.done);
+    if (filter === "done") list = list.filter((c) => c.done);
+
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase();
+      list = list.filter(
+        (c) =>
+          (c.title || "").toLowerCase().includes(term) ||
+          (c.reward || "").toLowerCase().includes(term)
+      );
+    }
+    return list;
+  }, [data.contracts, filter, searchTerm]);
 
   return (
     <div className="space-y-4">
@@ -31,7 +42,22 @@ export default function Contratos() {
             />
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Barra de Pesquisa */}
+            <div className="relative">
+              <Search
+                size={13}
+                className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground"
+              />
+              <input
+                type="text"
+                placeholder="Buscar contrato..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-36 rounded-lg border border-white/10 bg-white/5 py-1 pl-8 pr-2 text-xs text-foreground outline-none transition focus:w-48 focus:border-primary"
+              />
+            </div>
+
             {/* Filtros */}
             <div className="flex rounded-lg border border-border bg-secondary p-0.5 text-xs">
               <button
@@ -133,8 +159,10 @@ export default function Contratos() {
           ))}
 
           {filteredContracts.length === 0 && (
-            <p className="py-8 text-center text-xs italic text-[#8a7355]">
-              Nenhum contrato encontrado nesta categoria.
+            <p className="py-8 text-center text-xs italic text-muted-foreground">
+              {searchTerm
+                ? "Nenhum contrato encontrado com o termo pesquisado."
+                : "Nenhum contrato encontrado nesta categoria."}
             </p>
           )}
         </div>

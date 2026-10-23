@@ -67,6 +67,11 @@ export function CharacterProvider({ children }) {
       ouro: activeCharacter.ouro ?? moedas.ouro ?? defaultData.ouro,
       prata: activeCharacter.prata ?? moedas.prata ?? defaultData.prata,
       cobre: activeCharacter.cobre ?? moedas.cobre ?? defaultData.cobre,
+      dadosExtras: {
+        ...defaultData.dadosExtras,
+        ...(current.dadosExtras || {}),
+        ...(activeCharacter.dadosExtras || {}),
+      },
     }));
     setHydrated(true);
   }, [activeCharacter, authLoading]);
@@ -92,6 +97,16 @@ export function CharacterProvider({ children }) {
 
   const upd = (key, value) => {
     setData((current) => ({ ...current, [key]: value }));
+  };
+
+  const updExtra = (key, value) => {
+    setData((current) => ({
+      ...current,
+      dadosExtras: {
+        ...(current.dadosExtras || {}),
+        [key]: value,
+      },
+    }));
   };
 
   const updSkill = (index, patch) => {
@@ -208,6 +223,7 @@ export function CharacterProvider({ children }) {
     syncStatus,
     setBankError,
     upd,
+    updExtra,
     updSkill,
     addItem,
     removeItem,

@@ -5,8 +5,42 @@
 ---
 
 ## 🕒 Metadados da Sessão
-- **Última Atualização**: 2026-10-15T22:39:00Z
-- **Status do Trabalho**: 🟢 **PRONTO PARA CONTINUAÇÃO**
+- **Última Atualização**: 2026-10-22T20:59:21-03:00
+- **Status do Trabalho**: 🟢 **RELATÓRIO CONSOLIDADO**
+
+### Requisição Atual (Relatório de andamento)
+```text
+me mande um relatorio do que foi feito e oq falta ser feito
+```
+- **Status**: ✅ **CONCLUÍDO**
+- **Evidências**: build de produção aprovado; testes Node aprovados (73 asserções);
+  lint ainda pendente com 6 erros e 5 avisos.
+- **Próximo passo recomendado**: corrigir o lint e priorizar hardening de
+  autorização, migrations e regras oficiais antes de produção.
+
+### Requisição Atual (Documento para revisão dos agentes)
+```text
+adicione tudo isto a um documento para revisao dos aentes, e tambem adicione
+um disclaimer para refatorar a mecanica do rp pois irei descrever em detales
+futuramente como sera
+```
+- **Status**: ✅ **CONCLUÍDO**
+- **Documento criado**: `docs/RELATORIO-REVISAO-AGENTES.md`
+- **Decisão registrada**: a mecânica atual do RPG é provisória e não deve ser
+  refatorada ou reinterpretada até a especificação detalhada do proprietário.
+
+### Requisição Atual (Diagnóstico de melhorias)
+```text
+existem melorias a ser feitas?
+```
+- **Status**: ✅ **DIAGNÓSTICO CONCLUÍDO**
+- **Escopo analisado**: `src/app/page.js` e o roadmap existente em
+  `docs/MELHORIAS-FUTURAS-RPG.md`.
+- **Conclusão**: `src/app/page.js` já cumpre corretamente o redirecionamento
+  inicial para `/login`; as melhorias prioritárias estão em segurança,
+  sincronização, migrations, uploads e testes de integração/acessibilidade.
+- **Próximo passo recomendado**: priorizar o hardening antes de produção e
+  depois implementar indicador de salvamento e seletor de personagem.
 
 ---
 
@@ -271,3 +305,59 @@ continua minimalista eu nao quero iso
 - **Pendência encontrada**: a normalização de coleções no `CharacterContext` ainda trocava arrays canônicos vazios por aliases antigos.
 - **Correção aplicada**: coleções canônicas agora usam `??`, preservando `[]` retornado pelo backend como estado válido.
 - **Validação**: `npm run build`, `node --test src/lib/__tests__/rules-and-dice.test.mjs` (26 aprovados) e `git diff --check` passaram.
+
+### Implementação — Central administrativa completa do mestre
+- **Pedido**: criar uma tela do mestre distinta da área do jogador, com visão dos personagens, abertura em nova aba e gestão ampla das fichas.
+- **Alterações**:
+  - cartões administrativos de todos os personagens em `/admin/personagens`;
+  - abertura da ficha completa em nova aba por `/admin/personagens/:id/ficha`;
+  - edição de identidade, HP, atributos, perícias, inventário e capacidade máxima de carga;
+  - normalização backend preservando coleções vazias válidas.
+- **Validação**: `npm run build` passou com a nova rota dinâmica; `node --check` do controller backend e `git diff --check` passaram.
+- **Pendência conhecida**: o backend atual permite ao perfil mestre consultar personagens globalmente; o escopo estrito por campanha ainda precisa ser aplicado quando a associação de membros/campanhas for finalizada.
+
+### Solicitação — Análise de planilha de ficha RPG
+- **Estado**: aguardando envio do arquivo para analisar campos, fórmulas, validações e regras de negócio.
+
+### Implementação — Planilha técnica e NPC Eldric
+- **Planilha analisada**: abas `Página1`, `Habilidades`, `quarto`, `banco de glenor` e `Montaria`.
+- **Regras incorporadas**: classe customizada, habilidades próprias, BP, PE, insanidade, dado de vida, CA, iniciativa, capacidade de inventário e recursos de montaria.
+- **NPC criado no backend**: `Eldric Rawlins`, pertencente ao usuário mestre existente, marcado em `dadosExtras` como NPC controlado pelo mestre.
+- **Inconsistência de origem**: a planilha informa PV atual 46 e PV máximo 39; o banco exige vida atual menor ou igual ao máximo. O registro foi normalizado para atual 39 e máximo 46, preservando os valores originais em `dadosExtras`.
+- **Conta de login**: não foi criada; Eldric foi interpretado conforme esclarecimento do usuário como NPC do mestre. A senha informada não foi usada nem armazenada.
+
+### Solicitação — Resumo das alterações da planilha
+- **Estado**: pronto para apresentar resumo separado por frontend, backend, banco e dados criados.
+
+### Implementação — Ficha exclusiva do jogador
+- **Alteração**: usuários mestres não usam mais `/personagem`; são direcionados para `/admin`.
+- **Navegação**: mestres veem somente o acesso administrativo; jogadores veem as abas da ficha.
+- **Login/cadastro**: o destino agora depende do perfil retornado pela API.
+- **Validação**: `npm run build` e `git diff --check` passaram.
+
+### Implementação — Listagem de jogadores e NPCs
+- **Frontend**: `/admin/personagens` agora separa “Jogadores cadastrados” e “NPCs cadastrados”, com contagem, identificação visual e abertura das fichas em nova aba.
+- **Backend**: listagem inclui `dadosExtras` e o proprietário do personagem; a classificação usa `dadosExtras.npc === true`.
+- **Validação**: build do frontend, `node --check` do controller e `git diff --check` passaram.
+
+### Solicitação — Integração Google
+- **Estado**: aguardando definição do escopo de Docs, Drive e Planilhas, estratégia OAuth e direção da sincronização.
+
+### Implementação — Integração Google Workspace
+- **Escopo escolhido**: Drive, Planilhas e Docs; OAuth somente para mestre; sincronização bidirecional; conflitos resolvidos pela última alteração; Docs com cópia visual e exportação de diário/anotações.
+- **Implementado**: cliente `googleapis`, OAuth protegido, callback, status, desconexão, tokens criptografados e botão de conexão na Sala do Mestre.
+- **Configuração pendente**: preencher credenciais `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` e `GOOGLE_TOKEN_ENCRYPTION_KEY` no backend.
+- **Pendente após OAuth**: mapeamento de células da planilha técnica, sincronização bidirecional de fichas e criação/exportação de documentos.
+- **Validação**: build frontend, sintaxe backend e `git diff --check` passaram.
+
+### Solicitação — Uso do vínculo com Google Drive
+- **Estado**: explicar configuração e comportamento atual da conexão Google.
+- **Limitação importante**: a implementação atual conclui OAuth e guarda o status/token criptografado, mas ainda não lista arquivos do Drive nem executa importação/exportação/sincronização de fichas.
+
+### Implementação — Checklist geral do produto
+- **Arquivo criado**: `COISAS-A-FAZER.md`.
+- **Conteúdo**: pendências de produto, regras, frontend, mestre, backend, banco, Google Workspace, uploads, motor de regras, QA, segurança, documentação e critérios de conclusão.
+
+### Confirmação — Credencial de Eldric
+- **Estado**: Eldric foi criado como NPC controlado pelo mestre, não como usuário de login.
+- **Credencial**: nenhuma conta ou senha de login foi criada para Eldric; a senha informada durante a conversa não foi usada nem armazenada.

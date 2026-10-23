@@ -28,8 +28,8 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await login(identifier, password);
-      router.push("/personagem");
+      const data = await login(identifier, password);
+      router.push(data.user?.role === "master" || data.user?.perfil === "mestre" ? "/admin" : "/personagem");
     } catch (err) {
       setError(err.message || "Erro ao conectar. Verifique suas credenciais.");
     } finally {

@@ -1,4 +1,4 @@
-import { validateAttributes, ATTRIBUTES } from "../modifiers.js";
+import { validateAttributes, validateCharacterSchema, ATTRIBUTES } from "../modifiers.js";
 import { defaultData } from "../defaultCharacter.js";
 
 
@@ -46,6 +46,18 @@ assert(parsed.name === defaultData.name, "Nome preservado");
 assert(parsed.bankPassword === defaultData.bankPassword, "Senha do banco preservada");
 assert(parsed.inventory.length === defaultData.inventory.length, "Inventário preservado");
 assert(parsed.contracts.length === defaultData.contracts.length, "Contratos preservados");
+
+// 5. Schema v2 e Validação Rigorosa
+console.log("\n--- 5. Validação de Schema v2 e Sanitização ---");
+const schemaVal = validateCharacterSchema(parsed);
+assert(schemaVal.valid === true, "Objeto padrão passa na validação de schema v2");
+assert(schemaVal.sanitized._schemaVersion === 2, "Schema versionado como 2");
+assert(typeof schemaVal.sanitized.dadosExtras === "object", "dadosExtras preservado ou sanitizado");
+
+const corrupted = { ...defaultData, FOR: "invalido", hp: -10 };
+const corruptVal = validateCharacterSchema(corrupted);
+assert(corruptVal.valid === false, "Ficha corrompida rejeitada corretamente");
+assert(corruptVal.errors.length >= 2, "Erros de atributo e HP reportados detalhadamente");
 
 console.log(`\n========================================`);
 console.log(`📊 Resultado dos Testes de Backup: ${testsPassed} passaram, ${testsFailed} falharam.`);

@@ -83,6 +83,7 @@ export default function RegisterPage() {
   // Dados do Primeiro Personagem
   const [characterName, setCharacterName] = useState("");
   const [characterJob, setCharacterJob] = useState("Bruxeiro");
+  const [customClass, setCustomClass] = useState("");
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -112,15 +113,16 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      await register({
+      const data = await register({
         username: username.trim(),
         email: email.trim(),
         password,
         characterName: characterName.trim() || "Novo Herói",
         characterJob: characterJob.trim() || "Aventureiro",
+        customClass: customClass.trim(),
       });
 
-      router.push("/personagem");
+      router.push(data.user?.role === "master" || data.user?.perfil === "mestre" ? "/admin" : "/personagem");
     } catch (err) {
       setError(err.message || "Erro ao realizar o cadastro. Tente novamente.");
     } finally {
@@ -365,6 +367,19 @@ export default function RegisterPage() {
                         {job}
                       </button>
                     ))}
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[#b59a6e]" style={{ fontFamily: "Cinzel, serif" }}>
+                      Classe customizada
+                    </label>
+                    <input
+                      type="text"
+                      value={customClass}
+                      onChange={(e) => setCustomClass(e.target.value)}
+                      placeholder="Opcional: Pistoleiro Ígneo, Artífice de Guerra..."
+                      className="w-full rounded-lg border border-[#4a3d2a]/60 bg-[#0f0d0a]/60 px-3 py-2 text-xs text-[#f1e7d2] placeholder-[#6b5a3e]/50 shadow-inner transition-all focus:border-[#d69a3d]/60 focus:outline-none"
+                      style={inputFont}
+                    />
                   </div>
                 </div>
               </div>

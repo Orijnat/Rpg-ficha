@@ -35,5 +35,7 @@ Especialista em regras matemáticas, cálculos de atributos, modificadores, per�
 
 ## 📋 Próximas Ações
 - [x] Implementar `src/lib/modifiers.js` com funções puras.
-- [ ] Integrar `calculateModifier` e `calculateSkillBonus` diretamente nos componentes de UI da ficha.
+- [x] Integrar `calculateModifier` e `calculateSkillBonus` diretamente nos componentes de UI da ficha.
+- [x] Implementar cálculo de capacidade de carga (`calculateCapacity`) e iniciativa (`calculateInitiative`).
+- [x] Implementar validação formal de schema com sanitização profunda (`validateCharacterSchema`) para importação/exportação com schema versionado v2.
 

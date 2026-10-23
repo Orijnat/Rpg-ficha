@@ -43,11 +43,11 @@ export async function loginUser({ login, password }) {
   return data;
 }
 
-export async function registerUser({ username, email, password, characterName, characterJob }) {
+export async function registerUser({ username, email, password, characterName, characterJob, customClass }) {
   const response = await fetch(`${API_BASE_URL}/auth/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, email, password, characterName, characterJob }),
+    body: JSON.stringify({ username, email, password, characterName, characterJob, customClass }),
   });
   const data = await response.json();
   if (!response.ok) throw new Error(data.error || "Erro ao realizar cadastro.");
@@ -178,5 +178,29 @@ export async function updateCampaignData(campaignData, token = getStoredToken())
   });
   const data = await response.json();
   if (!response.ok) throw new Error(data.error || "Erro ao salvar os dados da campanha.");
+  return data;
+}
+
+export async function getGoogleWorkspaceAuthUrl(token = getStoredToken()) {
+  const response = await fetch(`${API_BASE_URL}/google/oauth/url`, { headers: authHeaders(token) });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || "Não foi possível iniciar a conexão com o Google.");
+  return data.url;
+}
+
+export async function getGoogleWorkspaceStatus(token = getStoredToken()) {
+  const response = await fetch(`${API_BASE_URL}/google/status`, { headers: authHeaders(token) });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || "Não foi possível verificar a conexão Google.");
+  return data;
+}
+
+export async function disconnectGoogleWorkspace(token = getStoredToken()) {
+  const response = await fetch(`${API_BASE_URL}/google/connection`, {
+    method: "DELETE",
+    headers: authHeaders(token),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || "Não foi possível desconectar o Google.");
   return data;
 }

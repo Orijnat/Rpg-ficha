@@ -4,6 +4,13 @@ import {
   calculateSkillBonus,
   calculateAllModifiers,
   validateAttributes,
+  calculateCapacity,
+  calculateInitiative,
+  validateCharacterSchema,
+  CONDITIONS_LIST,
+  applyHealthChange,
+  advanceTurn,
+  validateNumericBounds,
   DEFAULT_SKILLS,
   ATTRIBUTES,
 } from "../modifiers.js";
@@ -132,6 +139,76 @@ assert(
     repeatableRoll.formula === "3d20 - 2",
   "Fonte aleatória injetada preserva valores, total e fórmula de 3 dados",
 );
+
+// 8. Testes de Capacidade de Carga e Iniciativa
+console.log("\n--- 8. Capacidade de Carga e Iniciativa ---");
+const testChar = {
+  FOR: 16,
+  DES: 14,
+  inventory: [
+    { name: "Espada", qty: 2 },
+    { name: "Poção", qty: 5 },
+  ],
+  dadosExtras: {
+    inventoryCapacity: 10,
+    initiative: 2,
+  },
+};
+const capCheck = calculateCapacity(testChar);
+assert(capCheck.carried === 7, "Carga carregada calculada corretamente (7 itens)");
+assert(capCheck.max === 10, "Capacidade máxima de carga correta (10)");
+assert(capCheck.isOverloaded === false, "Não está sobrecarregado (7 <= 10)");
+assert(capCheck.percentage === 70, "Percentual de carga correto (70%)");
+
+const initCheck = calculateInitiative(testChar);
+assert(initCheck.desMod === 2, "Modificador de DES da iniciativa correto (+2)");
+assert(initCheck.extra === 2, "Bônus extra de iniciativa correto (+2)");
+assert(initCheck.total === 4 && initCheck.formatted === "+4", "Iniciativa total formatada como +4");
+
+// 9. Validação de Schema v2
+console.log("\n--- 9. Validação de Schema v2 ---");
+const schemaCheck = validateCharacterSchema({
+  ...mockCharacter,
+  name: "Geralt",
+  hp: 50,
+  hpMax: 70,
+});
+assert(schemaCheck.valid === true, "Personagem válido aprovado no schema v2");
+assert(schemaCheck.sanitized._schemaVersion === 2, "Schema versionado como 2");
+assert(schemaCheck.sanitized.dadosExtras.inventoryCapacity === 20, "Dados extras saneados com valores padrão");
+
+// 10. Regras de Condições e Alteração de Vida
+console.log("\n--- 10. Condições e Gestão de PV ---");
+assert(Array.isArray(CONDITIONS_LIST) && CONDITIONS_LIST.length >= 10, "Lista canônica contém pelo menos 10 condições táticas");
+assert(CONDITIONS_LIST.some((c) => c.id === "atordoado" && c.name === "Atordoado"), "Condição 'Atordoado' mapeada");
+assert(CONDITIONS_LIST.some((c) => c.id === "envenenado" && c.name === "Envenenado"), "Condição 'Envenenado' mapeada");
+
+const dmgCheck = applyHealthChange(20, 50, -15);
+assert(dmgCheck.currentHp === 5, "Dano reduz PV corretamente (20 - 15 = 5)");
+assert(dmgCheck.isDead === false, "Personagem com 5 PV não está morto");
+
+const fatalCheck = applyHealthChange(10, 50, -30);
+assert(fatalCheck.currentHp === 0 && fatalCheck.isDead === true, "Dano excessivo limita PV a 0 e marca isDead");
+
+const healCheck = applyHealthChange(45, 50, 10);
+assert(healCheck.currentHp === 50 && healCheck.isFull === true, "Cura excessiva é limitada ao hpMax e marca isFull");
+
+// 11. Controle de Iniciativa, Turnos e Limites Numéricos
+console.log("\n--- 11. Turnos e Limites Numéricos ---");
+const mockCombatants = [{ name: "A" }, { name: "B" }, { name: "C" }];
+const turn1 = advanceTurn(mockCombatants, 0, 1);
+assert(turn1.turnIndex === 1 && turn1.round === 1 && turn1.activeCombatant.name === "B", "Avança para o próximo combatente na mesma rodada");
+
+const turnWrap = advanceTurn(mockCombatants, 2, 1);
+assert(turnWrap.turnIndex === 0 && turnWrap.round === 2 && turnWrap.activeCombatant.name === "A", "Reinicia turno no primeiro combatente e incrementa rodada");
+
+const emptyTurn = advanceTurn([], 0, 1);
+assert(emptyTurn.turnIndex === 0 && emptyTurn.activeCombatant === null, "Lista vazia tratada defensivamente");
+
+assert(validateNumericBounds(15, 1, 30, 10) === 15, "Número dentro dos limites preservado");
+assert(validateNumericBounds(-5, 0, 100, 0) === 0, "Número abaixo do mínimo fixado no mínimo");
+assert(validateNumericBounds(150, 0, 100, 0) === 100, "Número acima do máximo fixado no máximo");
+assert(validateNumericBounds("abc", 0, 100, 10) === 10, "Valor NaN substituído pelo fallback");
 
 console.log(`\n========================================`);
 console.log(`📊 Resultado dos Testes: ${testsPassed} passaram, ${testsFailed} falharam.`);
