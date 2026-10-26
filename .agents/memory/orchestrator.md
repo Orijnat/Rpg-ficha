@@ -31,6 +31,7 @@ Este arquivo é a fonte de memória persistente da liderança técnica do projet
   (`ataque-web-controlado`) e defesa/hardening (`defesa-web-hardening`). Auditoria
   autorizada concluída; Next.js atualizado, headers defensivos aplicados e
   `npm audit --omit=dev` sem vulnerabilidades.
+- **Entrega**: hardening publicado em `origin/main` no commit `0fd75a2`.
 
 ---
 

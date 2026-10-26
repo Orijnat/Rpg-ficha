@@ -287,6 +287,8 @@ continua minimalista eu nao quero iso
   zerada; headers de segurança adicionados; `X-Powered-By` desativado.
 - **Validação**: `npm audit --omit=dev` e `npm run build` aprovados. O lint ainda
   possui falhas preexistentes fora deste hardening.
+- **Entrega**: commit `0fd75a2` enviado com sucesso para `origin/main` após rebase
+  dos commits remotos.
 - **Correção**: removida a seleção desse atributo de resumo; a ordenação por `updated_at` foi mantida.
 - **Validação**: consulta real executada contra PostgreSQL com sucesso, `node --check` e `git diff --check` passaram.
 
