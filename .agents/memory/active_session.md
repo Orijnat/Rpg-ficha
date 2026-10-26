@@ -278,6 +278,15 @@ continua minimalista eu nao quero iso
 
 ### Correção — Erro interno ao listar personagens
 - **Causa**: `characterController.list` solicitava o atributo Sequelize `updatedAt`, mas a tabela PostgreSQL usa `updated_at`; a consulta falhava com `column "updatedAt" does not exist`.
+
+### Continuidade — Segurança web (2026-10-26)
+- **Status**: ✅ Hardening inicial concluído.
+- **Agentes criados**: `.github/agents/ataque-web-controlado.agent.md` e
+  `.github/agents/defesa-web-hardening.agent.md`.
+- **Proteções aplicadas**: Next.js atualizado para 16.4.3; auditoria de produção
+  zerada; headers de segurança adicionados; `X-Powered-By` desativado.
+- **Validação**: `npm audit --omit=dev` e `npm run build` aprovados. O lint ainda
+  possui falhas preexistentes fora deste hardening.
 - **Correção**: removida a seleção desse atributo de resumo; a ordenação por `updated_at` foi mantida.
 - **Validação**: consulta real executada contra PostgreSQL com sucesso, `node --check` e `git diff --check` passaram.
 

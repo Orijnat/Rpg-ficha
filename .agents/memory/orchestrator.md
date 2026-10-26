@@ -27,6 +27,10 @@ Este arquivo é a fonte de memória persistente da liderança técnica do projet
 - Pendências prioritárias: regras oficiais, campanhas e autorização completa,
   migrations, hardening de segurança, uploads privados, Google Drive/Sheets/Docs,
   acessibilidade e testes de integração/E2E.
+- **Segurança web (2026-10-26)**: agentes workspace criados para ataque controlado
+  (`ataque-web-controlado`) e defesa/hardening (`defesa-web-hardening`). Auditoria
+  autorizada concluída; Next.js atualizado, headers defensivos aplicados e
+  `npm audit --omit=dev` sem vulnerabilidades.
 
 ---
 
