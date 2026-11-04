@@ -74,3 +74,57 @@ Modelagem de dados, PostgreSQL, Sequelize ORM e endpoints de Route Handlers no N
   `/api/campanhas` para a coleção moderna.
 - O backend já possuía alterações locais amplas antes desta análise; elas foram
   preservadas e não houve reset/commit.
+
+## Implementação inicial — 2026-11-04
+
+- Adicionados `database/migrations/20261104120000-inicial.js`, `.sequelizerc`
+  e `config/config.cjs`; a migration usa `banco.sql` como baseline e é
+  executada por `npm run db:migrate`. O servidor não usa `sequelize.sync`.
+- Adicionados `src/schemas/apiSchemas.js` e `src/middlewares/validate.js`.
+  Registro/login e mutações de personagens filtram payloads e retornam 422
+  padronizado em falha de schema.
+- Healthchecks live/ready e limite JSON de 1 MB foram adicionados.
+- Validação executada com `node --check`; os testes do backend são executados com
+  `npm test`.
+- Pendente: executar migration contra PostgreSQL disponível e criar testes de
+  contrato; validar o baseline contra todas as colunas físicas esperadas pelos
+  modelos atuais.
+
+## Entrega dos requisitos do backend — 2026-11-04
+
+- Migrations agora são descobertas pelo Sequelize CLI em
+  `database/migrations/20261104120000-inicial.js`; o bootstrap não chama
+  `sequelize.sync()`.
+- Validação Zod foi ampliada para campanhas, convites, membros, NPCs, notas e
+  encontros, com resposta 422 em `{ status, statusCode, code, message, errors }`.
+- Atributos canônicos e aliases da ficha aceitos pela API ficam restritos a
+  inteiros de 1 a 30; payloads de autenticação continuam estritos.
+- Verificação do cofre usa bcrypt para novos valores e bloqueia temporariamente
+  após cinco falhas consecutivas por usuário/personagem.
+- Incluídos `npm test` com testes de schema e `npm run db:seed`, que exige
+  `SEED_PASSWORD` de pelo menos 12 caracteres e não grava credenciais no código.
+- Validação executada: 3 testes, `node --check`, `git diff --check`, descoberta
+  do Sequelize CLI e smoke tests dos endpoints `/health/live`, `/health/ready`
+  e validação 422. PostgreSQL não está disponível nesta máquina, portanto a
+  aplicação da migration permanece pendente em ambiente de banco real.
+
+## Gaps P0/P1 implementados — 2026-11-04
+
+- `GET /api/characters` mantém a resposta legada em array sem parâmetros; com
+  `page`, `limit`, `search`/`q` retorna `{ characters, pagination }`, limita
+  `limit` a 100 e pesquisa por `name`/`job` com `ILIKE`.
+- A entidade de sessão de jogo foi corrigida para `sessoes_jogo`; o nome
+  `sessoes_autenticacao` do banco é reservado a tokens. O modelo foi exportado,
+  a tabela/índices/checks foram adicionados a `database/banco.sql` e as rotas
+  existentes do controlador foram registradas em
+  `/api/campanhas/:campanhaId/sessoes` e `/api/campanhas/sessoes/:id`.
+- Encontros, mapas, notas e sessões agora verificam proprietário ou membro
+  ativo da campanha no servidor. Mestres não acessam campanhas de terceiros;
+  mutações ficam restritas ao proprietário. A sincronização de iniciativa não
+  busca/cria mais encontro em campanha arbitrária.
+- Adicionados testes sem banco para parser de paginação e guard de perfil.
+- Validação local: `npm test` (9 testes), `node --check` em `src`/`test` e
+  `git diff --check` passaram.
+- Pendente: aplicar `database/banco.sql` em PostgreSQL e testar constraints,
+  índice, `findAndCountAll`, associação de membros e todos os endpoints com
+  dados reais; não há PostgreSQL disponível neste ambiente.

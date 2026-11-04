@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, CloudOff, Crown, LoaderCircle, Sparkles, Sword, TriangleAlert, Package } from "lucide-react";
+import { Check, CloudOff, Crown, LoaderCircle, RefreshCw, Sparkles, Sword, TriangleAlert, Package } from "lucide-react";
 import Link from "next/link";
 import { useCharacter } from "../context/CharacterContext";
 import { Card, EditableText, SectionHeader, StatBox } from "../components/ui";
@@ -11,7 +11,7 @@ import RecursosCombate from "../components/RecursosCombate";
 import { calculateCapacity } from "../../lib/modifiers";
 
 export default function Personagem() {
-  const { data, upd, syncStatus } = useCharacter();
+  const { data, upd, syncStatus, syncError, retrySync } = useCharacter();
   const capacity = calculateCapacity(data);
 
   const syncLabels = {
@@ -20,6 +20,7 @@ export default function Personagem() {
     saved: { label: "Salvo", Icon: Check, className: "text-emerald-400" },
     offline: { label: "Salvo localmente", Icon: CloudOff, className: "text-amber-300" },
     error: { label: "Falha ao sincronizar", Icon: TriangleAlert, className: "text-rose-300" },
+    conflict: { label: "Conflito: revisão necessária", Icon: TriangleAlert, className: "text-amber-300" },
   };
   const syncIndicator = syncLabels[syncStatus];
 
@@ -42,9 +43,14 @@ export default function Personagem() {
           </div>
           <div className="flex flex-col gap-2 sm:items-end">
             {syncIndicator && (
-              <span className={`flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider ${syncIndicator.className}`} role="status">
+              <span className={`flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider ${syncIndicator.className}`} role="status" aria-live="polite">
                 <syncIndicator.Icon size={13} className={syncStatus === "saving" ? "animate-spin" : ""} />
                 {syncIndicator.label}
+                {(syncStatus === "error" || syncStatus === "conflict") && (
+                  <button type="button" onClick={retrySync} className="ml-1 inline-flex min-h-8 items-center gap-1 rounded px-2 text-[10px] underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label="Tentar sincronizar novamente">
+                    <RefreshCw size={11} aria-hidden="true" /> Tentar novamente
+                  </button>
+                )}
               </span>
             )}
             <div className="grid grid-cols-2 gap-2 sm:min-w-52">

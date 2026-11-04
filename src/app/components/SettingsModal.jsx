@@ -135,13 +135,20 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
     setSyncStatus("syncing");
     setSyncMessage("Conectando ao backend e salvando no PostgreSQL...");
 
-    const res = await syncCharacterWithBackend(data);
-    if (res && res.success) {
+    try {
+      const res = await syncCharacterWithBackend(data);
+      if (res) {
       setSyncStatus("success");
       setSyncMessage("Ficha salva no PostgreSQL com sucesso!");
-    } else {
+      } else {
       setSyncStatus("error");
       setSyncMessage("Backend offline ou inacessível. Seus dados continuam salvos no navegador!");
+      }
+    } catch (error) {
+      setSyncStatus(error.status === 409 ? "error" : "error");
+      setSyncMessage(error.status === 409
+        ? "Conflito detectado: a ficha não foi sobrescrita. Revise e tente novamente."
+        : `Falha ao sincronizar: ${error.message}`);
     }
 
     setTimeout(() => setSyncStatus(null), 4500);
@@ -168,7 +175,7 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="relative flex max-h-[90vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0f1118] text-[#e8d5b0] shadow-2xl">
+      <div role="dialog" aria-modal="true" aria-labelledby="settings-title" className="relative flex max-h-[90vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0f1118] text-[#e8d5b0] shadow-2xl">
         {/* Cabeçalho do Modal */}
         <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.02] px-6 py-4">
           <div className="flex items-center gap-2.5">
@@ -176,7 +183,7 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
               <Settings2 size={18} />
             </span>
             <div>
-              <h3 className="text-base font-semibold tracking-wide text-[#f5e9d7]">
+              <h3 id="settings-title" className="text-base font-semibold tracking-wide text-[#f5e9d7]">
                 Configurações do Sistema
               </h3>
               <p className="text-xs text-[#8a7355]">Personalize temas, gerencie backups e dados da ficha</p>
@@ -184,9 +191,11 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
           </div>
 
           <button
+            type="button"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-[#8a7355] transition hover:bg-white/10 hover:text-[#f5e9d7]"
+            className="min-h-11 min-w-11 rounded-lg p-1.5 text-[#8a7355] transition hover:bg-white/10 hover:text-[#f5e9d7] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             title="Fechar"
+            aria-label="Fechar configurações"
           >
             <X size={18} />
           </button>

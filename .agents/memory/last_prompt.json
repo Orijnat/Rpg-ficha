@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-11-04T00:56:41-03:00",
-  "request": "Adicionar no login a opção de criar ou vincular conta Google.",
+  "timestamp": "2026-11-04T12:46:06-03:00",
+  "request": "marque os topicos implementados no arquivos",
   "status": "completed",
-  "target_section": "OAuth Google de identidade para login/cadastro.",
-  "follow_up": "Configurar credenciais Google e executar smoke test OAuth real."
+  "target_section": "Atualização dos checklists com os tópicos comprovadamente implementados.",
+  "follow_up": "Concluir e validar as pendências marcadas como parciais ou pendentes."
 }

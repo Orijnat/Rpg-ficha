@@ -64,6 +64,70 @@
 - Próximo passo recomendado: revisar visualmente o shell em desktop/mobile caso seja desejada uma segunda rodada de adaptação estética.
 - Esclarecimento: a adaptação de componentização foi limitada ao shell global (`src/layouts/AppShell.jsx`). Os componentes de domínio continuam em `src/app/components`, pois os layouts da referência eram específicos do hospital e não foram copiados.
 
+### Continuidade — 2026-11-04 (Implementação dos requisitos do backend)
+- Requisitos recebidos em `COISAS-A-FAZER-BACKEND.md`, cobrindo migrations, validação Zod,
+  autorização multi-tenant, endpoints, segurança de produção e testes.
+- Backend separado alvo: `/home/cledi/rp/Rpg-backend`.
+- Implementação em andamento com prioridade para fundação executável e compatível:
+  migrations versionadas, validação padronizada, remoção de sync automático e healthcheck.
+- Próximo passo: revisar as alterações realizadas, completar lacunas diretamente relacionadas e
+  executar `node --check`, testes disponíveis e `git diff --check`.
+
+### Continuidade — fechamento da implementação do backend
+- Implementados migrations/CLI, schemas Zod, middleware de erro 422, healthchecks,
+  limite de payload, seed controlado por ambiente, proteção de brute force do cofre
+  e validação das rotas de campanha/NPC/notas/encontros.
+- Validação concluída no backend separado: 3 testes passando, sintaxe JavaScript,
+  diff sem whitespace inválido, CLI Sequelize descoberto e smoke tests live/ready/422.
+- Bloqueio conhecido: sem PostgreSQL local para aplicar a migration e validar o
+  baseline fisicamente; executar `SEED_PASSWORD=... npm run db:seed` somente após
+  subir o banco.
+- Próximo passo recomendado: aplicar migration em PostgreSQL de staging e criar
+  testes de contrato multi-tenant/notas privadas.
+
+### Continuidade — atualização do checklist backend
+- [`COISAS-A-FAZER-BACKEND.md`](../COISAS-A-FAZER-BACKEND.md) atualizado em
+  04/11/2026, marcando somente as migrations baseline, validações Zod,
+  autorização, sincronização, campanhas, membros, NPCs, auditoria e segurança
+  do cofre efetivamente implementadas.
+- Migrations separadas por entidade, paginação/busca, upload privado, sessões
+  narrativas, logs de combate e segurança de produção continuam pendentes.
+
+### Continuidade — Fases 6 e 7 do backend
+- Aplicado hardening em [`Rpg-backend`](../../Rpg-backend): CORS com allowlist,
+  Helmet, rate limiting geral/auth, limite JSON de 2 MB, `/api/health` e
+  tratamento de erros internos sem ecoar detalhes sensíveis.
+- Adicionados testes independentes de PostgreSQL para CORS, healthcheck, headers
+  de segurança e limite de payload. `npm test` aprovou 6 testes.
+- O checklist foi atualizado: limite de payload e itens da Fase 7 marcados como
+  concluídos; testes de integração com PostgreSQL permanecem pendentes.
+
+### Continuidade — relatório consolidado do backend
+- Criado [`docs/RELATORIO-BACKEND-STATUS.md`](../docs/RELATORIO-BACKEND-STATUS.md)
+  com alterações verificadas, pendências, comandos de validação e melhorias
+  recomendadas para evolução do backend.
+
+### Continuidade — implementação incremental do checklist fullstack
+- Mapeamento completo confirmou que o checklist ainda possui lacunas P0:
+  PostgreSQL real/migrations incrementais, uploads privados, regras oficiais,
+  refresh/revogação de sessão, Google Drive/Sheets/Docs, integração/E2E e CI.
+- Backend recebeu paginação/busca de personagens, endpoints persistidos de
+  sessões, guards de campanha e testes offline; frontend passou a preferir
+  `sessionStorage`, preservar conflitos HTTP 409 e expor retry/sincronização.
+- Validação: backend `npm test` com 9 testes aprovados; frontend build
+  aprovado, testes unitários aprovados e lint sem erros (avisos preexistentes).
+- `COISAS-A-FAZER.md` foi atualizado marcando somente itens com evidência;
+  requisitos dependentes de PostgreSQL, credenciais Google ou infraestrutura
+  continuam parciais/pendentes.
+
+### Continuidade — atualização dos tópicos implementados
+- Marcados nos checklists os guards de autorização e isolamento horizontal já
+  implementados nos endpoints.
+- Marcados no checklist backend a paginação/busca de personagens, sessões
+  narrativas e os testes offline de barreira multi-tenant/notas privadas.
+- Integrações PostgreSQL reais, uploads, Google, E2E e demais itens sem
+  evidência verificável continuam pendentes ou parciais.
+
 ### Continuidade — 2026-11-04 (Melhorias prioritárias)
 - Revisado [`docs/MELHORIAS-FUTURAS-RPG.md`](../docs/MELHORIAS-FUTURAS-RPG.md).
 - Implementada autenticação server-side e autorização de mestre em personagens, campanhas e NPCs por meio de [`src/lib/server-auth.js`](../src/lib/server-auth.js).
@@ -105,6 +169,18 @@
 - Removidos após confirmação explícita: `src/app/character-sheet.js`, `src/app/components/character-sheet-full.js`, `src/models/character.js` e os SVGs padrão não referenciados em `public/`.
 - Preservados todos os arquivos não rastreados/criados durante a sessão.
 - Validação concluída: 27 testes aprovados, lint aprovado sem erros (28 avisos preexistentes), build aprovado com 34 rotas e `git diff --check` aprovado.
+
+### Continuidade — Documento de alterações recomendadas
+- Criado `docs/ALTERACOES-RECOMENDADAS.md` com o estado implementado, pendências críticas e ordem recomendada para cookies HTTP-only, migrations, validação, autorização, sincronização, auditoria, uploads, testes e CI.
+
+### Continuidade — Landing pública
+- A rota `/` passou a apresentar o serviço antes do login, com hero, recursos,
+  demonstração visual de ficha e chamadas para login/cadastro.
+- `AppShell` foi ajustado para ocultar navegação autenticada e botão de dados na
+  landing.
+- Validação concluída: 27 testes aprovados, build aprovado com 34 rotas,
+  `git diff --check` aprovado e lint aprovado sem erros, mantendo apenas os
+  avisos preexistentes.
 
 1. **Mapeamento Arquitetural Completo (Front ↔ Back ↔ Banco)**:
    - Mapeadas 19 telas da interface (Área do Jogador e Câmara do Mestre).

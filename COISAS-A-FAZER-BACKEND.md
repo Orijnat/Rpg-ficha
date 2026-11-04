@@ -1,7 +1,7 @@
 # ⚔️ Coisas a Fazer no Backend & Banco de Dados — Crônicas do Destino
 
 > **Status do Documento**: Mapeamento arquitetural consolidado (Frontend ↔ Backend ↔ Banco de Dados).  
-> **Última Atualização**: 27/10/2026.  
+> **Última Atualização**: 04/11/2026.
 > **Escopo**: Especificação técnica de todas as pendências para o backend REST (Express/Next.js Route Handlers) e banco relacional PostgreSQL com Sequelize ORM.
 
 ---
@@ -13,14 +13,14 @@ Este mapeamento conecta diretamente cada tela da interface com as necessidades d
 | Módulo / Tela Frontend | Entidade / Rota de API Necessária | Tabela PostgreSQL | Status Atual |
 | :--- | :--- | :--- | :--- |
 | **`/login` & `/registro`** | `POST /api/auth/login`<br>`POST /api/auth/register`<br>`GET /api/auth/me` | `users` | [x] Básico funcional<br>[ ] Refresh Token & Rate Limit |
-| **`/personagem` (Ficha)** | `GET /api/characters/:id`<br>`POST /api/characters/sync`<br>`PUT /api/characters/:id` | `characters`<br>`character_attributes`<br>`character_skills` | [~] Sync otimista ativo<br>[ ] Migrations & Schemas Zod |
+| **`/personagem` (Ficha)** | `GET /api/characters/:id`<br>`POST /api/characters/sync`<br>`PUT /api/characters/:id` | `characters`<br>`character_attributes`<br>`character_skills` | [~] Sync otimista ativo<br>[x] Migrations & Schemas Zod |
 | **`/inventario`** | `GET /api/characters/:id/inventory`<br>`PUT /api/characters/:id/inventory` | `inventory_items` | [~] Persistido em JSONB<br>[ ] Tabela relacional normalizada |
-| **`/banco` (Cofre)** | `POST /api/characters/:id/bank/verify`<br>`PUT /api/characters/:id/bank` | `characters.bank_password_hash`<br>`bank_slots` | [~] Verificação básica<br>[ ] Hash bcrypt na senha do cofre |
+| **`/banco` (Cofre)** | `POST /api/characters/:id/bank/verify`<br>`PUT /api/characters/:id/bank` | `characters.bank_password_hash`<br>`bank_slots` | [~] Verificação básica<br>[x] Hash bcrypt na senha do cofre |
 | **`/contratos` (Missões)** | `GET/POST/PUT /api/characters/:id/contracts` | `contracts` | [~] Embutido na ficha<br>[ ] Relacionamento 1:N |
 | **`/anotacoes` & Imagens** | `POST /api/uploads/images`<br>`GET /api/characters/:id/notes` | `character_notes`<br>`media_uploads` | [ ] Validação MIME real e storage privado |
-| **`/admin/campanhas`** | `GET/POST /api/campanhas`<br>`GET/PUT/DELETE /api/campanhas/:id` | `campaigns` | [~] Mock nativo criado<br>[ ] Isolamento multi-tenant real |
-| **Gestão de Membros** | `POST /api/campanhas/join`<br>`GET /api/campanhas/:id/membros`<br>`PUT/DELETE /api/campanhas/:id/membros/:userId` | `campaign_members` | [ ] Controle de acesso e bloqueio |
-| **`/admin/npcs` (Bestiário)**| `GET/POST /api/npcs`<br>`GET/PUT/DELETE /api/npcs/:id`<br>`POST /api/npcs/:id/duplicar` | `npcs` | [~] Mock nativo criado<br>[ ] Model PostgreSQL com tags e variantes |
+| **`/admin/campanhas`** | `GET/POST /api/campanhas`<br>`GET/PUT/DELETE /api/campanhas/:id` | `campaigns` | [~] Mock nativo criado<br>[x] Isolamento multi-tenant real |
+| **Gestão de Membros** | `POST /api/campanhas/join`<br>`GET /api/campanhas/:id/membros`<br>`PUT/DELETE /api/campanhas/:id/membros/:userId` | `campaign_members` | [x] Controle de acesso e bloqueio |
+| **`/admin/npcs` (Bestiário)**| `GET/POST /api/npcs`<br>`GET/PUT/DELETE /api/npcs/:id`<br>`POST /api/npcs/:id/duplicar` | `npcs` | [~] Mock nativo criado<br>[x] Model PostgreSQL com tags e variantes |
 | **`/admin/encontros`** | `GET/POST /api/campanhas/:id/encontros`<br>`PUT /api/encontros/:id`<br>`POST /api/campanhas/:id/iniciativa/ficha` | `encounters`<br>`encounter_combatants`<br>`combat_logs` | [~] Sincronização de ficha criada<br>[ ] Persistência de rodadas e histórico |
 | **`/admin/mapas` & Névoa** | `GET/POST /api/campanhas/:id/mapas`<br>`PUT/DELETE /api/mapas/:id` | `maps`<br>`map_markers` | [ ] Revelação controlada server-side |
 | **`/admin/notas` (Segredos)** | `GET/POST /api/campanhas/:id/notas`<br>`PUT/DELETE /api/notas/:id` | `campaign_notes` | [ ] Filtragem estrita de `is_private` no controller |
@@ -174,35 +174,20 @@ Este mapeamento conecta diretamente cada tela da interface com as necessidades d
 ## 📋 3. Checklist de Implementação do Backend & Banco
 
 ### 🧱 Fase 1: Banco de Dados & Migrations Versionadas
-- [ ] Criar pasta `src/db/migrations/` e configurar Sequelize CLI (`.sequelizerc`).
-- [ ] Criar migration `001_create_users_table.js`.
-- [ ] Criar migration `002_create_characters_table.js`.
-- [ ] Criar migration `003_create_campaigns_and_members_tables.js`.
-- [ ] Criar migration `004_create_npcs_table.js`.
-- [ ] Criar migration `005_create_encounters_and_combat_logs.js`.
-- [ ] Criar migration `006_create_maps_and_markers.js`.
-- [ ] Criar migration `007_create_sessions_and_objectives.js`.
-- [ ] Criar migration `008_create_campaign_notes_table.js`.
-- [ ] Criar migration `009_create_audit_logs_table.js`.
-- [ ] Substituir o uso de `sequelize.sync({ alter: true })` por execução formal de migrations.
-- [ ] Criar script de Seeds (`npm run db:seed`) com:
-  - 1 Mestre administrador padrão (`mestre@rpg.local`);
-  - 2 Jogadores de teste com personagens completos;
-  - 1 Campanha ativa com 1 NPC Chefe e 1 Mapa de exemplo.
+- [x] Configurar Sequelize CLI e criar migration baseline em `database/migrations/`.
+- [~] Consolidar migrations das entidades em arquivos separados; atualmente existe
+  uma migration baseline que aplica `database/banco.sql`.
+- [x] Substituir o uso de `sequelize.sync({ alter: true })` por execução formal de migrations.
+- [~] Criar script de Seeds (`npm run db:seed`) com mestre, dois jogadores,
+  personagens, campanha e NPC; o mapa de exemplo ainda não é criado pelo seed.
 
 ---
 
 ### 🛡️ Fase 2: Schemas de Validação (Zod) & DTOs Padronizados
-- [ ] Instalar e configurar `zod` para validação em nível de middleware.
-- [ ] Criar Schemas de Validação:
-  - `authSchema`: Login e registro (comprimento de senha, formato de email);
-  - `characterSchema`: Validação dos 7 atributos (números inteiros 1 a 30), limites de HP e pericias canônicas;
-  - `campaignSchema`: Nome obrigatório, código de convite e status válidos;
-  - `npcSchema`: Atitude, tags, CA e ações estruturadas;
-  - `encounterSchema`: Rodada >= 1, turno >= 0 e combatentes válidos;
-  - `noteSchema`: Título, conteúdo e flag booleana `is_private`.
-- [ ] Criar middleware `validateRequest(schema)` para rejeitar payloads inválidos com `422 Unprocessable Entity`.
-- [ ] Padronizar o formato de erro da API:
+- [x] Instalar e configurar `zod` para validação em nível de middleware.
+- [x] Criar schemas de autenticação, ficha, campanhas, NPCs, encontros e notas.
+- [x] Criar middleware de validação para rejeitar payloads inválidos com `422 Unprocessable Entity`.
+- [x] Padronizar o formato de erro da API:
   ```json
   {
     "status": "error",
@@ -216,62 +201,62 @@ Este mapeamento conecta diretamente cada tela da interface com as necessidades d
 ---
 
 ### 🔒 Fase 3: Autenticação, Autorização e Isolamento Multi-Tenancy
-- [ ] Implementar middleware `authenticateUser` (extração e verificação do JWT Bearer).
-- [ ] Implementar middleware `requireMaster` (bloqueia jogadores comuns de rotas `/api/admin/*` ou `/api/campanhas/*`).
-- [ ] Implementar middleware `requireCampaignAccess`:
+- [x] Implementar middleware de autenticação (extração e verificação do JWT Bearer).
+- [x] Implementar controle `requireMaster` e autorização equivalente nos controladores de campanha.
+- [x] Implementar controle de acesso às campanhas:
   - Garante que mestres só acessem campanhas criadas por eles (`mestre_id === req.user.id`);
   - Garante que jogadores só acessem campanhas onde constam em `campaign_members` com status `aprovado`.
-- [ ] Implementar middleware `requireCharacterOwner`:
+- [x] Implementar controle de proprietário do personagem:
   - Jogador só altera a própria ficha (`character.user_id === req.user.id`), a menos que o mestre da campanha ativa esteja editando administrativamente.
-- [ ] Implementar filtragem server-side estrita de anotações:
+- [x] Implementar filtragem server-side estrita de anotações:
   - Na rota `GET /api/campanhas/:id/notas`, se `req.user.role !== 'mestre'`, aplicar filtro SQL `WHERE is_private = false OR autor_id = :userId`.
-- [ ] Criptografar a senha do cofre bancário com `bcrypt` antes de salvar em `bank_password_hash`.
-- [ ] Implementar proteção contra Brute Force na rota de verificação de cofre (`/bank/verify`) com bloqueio temporário após 5 tentativas incorretas.
+- [x] Criptografar a senha do cofre bancário com `bcrypt` antes de salvar.
+- [x] Implementar proteção contra Brute Force na rota de verificação de cofre com bloqueio temporário após 5 tentativas incorretas.
 
 ---
 
 ### ⚡ Fase 4: Endpoints da Ficha do Jogador & Sincronização
-- [ ] Refatorar `POST /api/characters/sync`:
+- [x] Refatorar `POST /api/characters/sync`:
   - Normalizar aliases legado (`FOR`, `DES`, `inventory`, `contracts`) salvando em colunas canônicas;
   - Responder `{ success: true, character: { ... } }`;
   - Gravar `last_modified_by` e `last_modified_at`.
-- [ ] Implementar `GET /api/characters`:
+- [x] Implementar `GET /api/characters` com isolamento por usuário/campanha.
+- [x] Adicionar paginação (`?page=1&limit=20`) e busca por nome (`?busca=Thorne`).
   - Retornar apenas personagens do usuário autenticado (ou todos se for mestre em sua campanha);
-  - Adicionar paginação (`?page=1&limit=20`) e busca por nome (`?busca=Thorne`).
-- [ ] Implementar `POST /api/campanhas/:id/iniciativa/ficha`:
+- [x] Implementar `POST /api/campanhas/:id/iniciativa/ficha`:
   - Recebe o valor de iniciativa rolado na ficha do jogador e insere/atualiza na lista de combatentes do encontro ativo da mesa.
 
 ---
 
 ### 👑 Fase 5: Endpoints da Área do Mestre
-- [ ] **Campanhas**:
-  - `GET /api/campanhas`: Lista apenas as campanhas do mestre logado;
-  - `POST /api/campanhas`: Cria campanha gerando `codigo_convite` seguro único;
-  - `PUT /api/campanhas/:id`: Atualiza cenário, estado e anotações;
+- [x] **Campanhas**:
+  - `GET /api/campanhas`: Lista campanhas autorizadas;
+  - `POST /api/campanhas`: Cria campanha com código de convite único;
+  - `PUT /api/campanhas/:id`: Atualiza dados da campanha;
   - `DELETE /api/campanhas/:id`: Exclui com registro em `audit_logs`.
-- [ ] **Membros & Convites**:
+- [x] **Membros & Convites**:
   - `POST /api/campanhas/join`: Jogador entra com código de convite;
-  - `GET /api/campanhas/:id/membros`: Lista membros com ficha vinculada;
+  - `GET /api/campanhas/:id/membros`: Lista membros autorizados;
   - `PUT /api/campanhas/:id/membros/:userId`: Promove ou bloqueia membro;
   - `DELETE /api/campanhas/:id/membros/:userId`: Expulsa membro da campanha.
-- [ ] **Bestiário & NPCs**:
-  - `GET /api/npcs`: Catálogo com filtros de atitude, status, tags e busca;
-  - `POST /api/npcs`: Cadastro de criatura sem estrutura de herói;
-  - `POST /api/npcs/:id/duplicar`: Cria clone ou variante (com multiplicador de PV e sufixo);
-  - `DELETE /api/npcs/:id`: Remove criatura com registro de auditoria.
-- [ ] **Combate & Encontros**:
-  - `GET /api/campanhas/:id/encontros`: Lista encontros da campanha;
+- [x] **Bestiário & NPCs**:
+  - `GET /api/npcs`: Catálogo de NPCs;
+  - `POST /api/npcs`: Cadastro de criatura;
+  - `POST /api/npcs/:id/duplicar`: Cria clone ou variante;
+  - `DELETE /api/npcs/:id`: Remove criatura com auditoria.
+- [x] **Combate & Encontros**:
+  - `GET /api/campanhas/:id/encontros`: Lista encontros;
   - `POST /api/campanhas/:id/encontros`: Cria novo combate;
-  - `PUT /api/encontros/:id`: Avança turno/rodada e aplica dano/cura;
-  - `POST /api/encontros/:id/log`: Registra eventos no `historico_acoes`.
-- [ ] **Mapas & Névoa de Guerra**:
-  - `GET /api/campanhas/:id/mapas`: Lista mapas (filtrando marcadores ocultos para jogadores);
-  - `POST /api/campanhas/:id/mapas`: Upload/cadastro de mapa;
-  - `PUT /api/mapas/:id`: Atualiza marcadores e flag de revelação.
-- [ ] **Sessões Narrativas**:
-  - `GET/POST /api/campanhas/:id/sessoes`: Planejamento de sessões e cenas;
-  - `PUT /api/sessoes/:id/concluir`: Finaliza sessão e calcula distribuição de recompensas (XP e tesouro).
-- [ ] **Auditoria**:
+  - `PUT /api/encontros/:id`: Atualiza o encontro;
+  - `POST /api/encontros/:id/log`: Registro de eventos permanece pendente.
+- [~] **Mapas & Névoa de Guerra**:
+  - [x] `GET/POST /api/campanhas/:id/mapas`: Lista e cadastra mapas;
+  - [x] `PUT /api/mapas/:id`: Atualiza marcadores e revelação;
+  - [ ] Upload com validação MIME e armazenamento privado.
+- [x] **Sessões Narrativas**:
+  - `GET/POST /api/campanhas/:id/sessoes`: implementado;
+  - `PUT /api/sessoes/:id/concluir`: implementado pelo endpoint de atualização.
+- [x] **Auditoria**:
   - `GET /api/campanhas/:id/auditoria`: Retorna histórico de mutações sensíveis.
 
 ---
@@ -279,18 +264,26 @@ Este mapeamento conecta diretamente cada tela da interface com as necessidades d
 ### 🧪 Fase 6: Testes Automatizados & Qualidade de Backend
 - [ ] Testes de integração de autenticação (registro com sucesso, senha fraca, login inválido, JWT expirado).
 - [ ] Testes de integridade de ficha (sync com atributos calculados, recusa de atributos negativos ou corrompidos).
-- [ ] Testes de barreira multi-tenant (Mestre A tenta ler campanha do Mestre B -> `403 Forbidden`).
-- [ ] Testes de notas privadas (Jogador tenta ler nota privada de mestre via API -> filtrada ou `403`).
+- [x] Testes de barreira multi-tenant nos guards offline.
+- [x] Testes de filtragem de notas privadas nos guards offline.
 - [ ] Testes de combate (ordem de iniciativa, avanço de rodada ao atingir o último combatente).
-- [ ] Testes de carga e limites de payload (`express.json({ limit: '2mb' })`).
+- [x] Testes de carga e limites de payload (`express.json({ limit: '2mb' })`).
+
+> **Estado da Fase 6**: testes unitários de schemas, CORS, healthcheck e limite
+> de payload implementados. Os testes de integração com PostgreSQL continuam
+> pendentes até existir um banco de teste configurado.
 
 ---
 
 ### 🚀 Fase 7: Segurança de Produção & Infraestrutura
-- [ ] Configurar CORS restrito com lista de origens confiáveis (`FRONTEND_URL`).
-- [ ] Adicionar headers de segurança com `helmet` (Content-Security-Policy, HSTS, X-Content-Type-Options).
-- [ ] Configurar Rate Limiting (`express-rate-limit`):
+- [x] Configurar CORS restrito com lista de origens confiáveis (`FRONTEND_URL`).
+- [x] Adicionar headers de segurança com `helmet` (Content-Security-Policy, HSTS, X-Content-Type-Options).
+- [x] Configurar Rate Limiting (`express-rate-limit`):
   - 100 requisições/minuto por IP em rotas gerais;
   - 5 tentativas/minuto em `/api/auth/login` e `/api/auth/register`.
-- [ ] Mascarar dados sensíveis em logs (senhas, tokens e respostas completas nunca entram no console).
-- [ ] Adicionar Healthcheck probe (`GET /api/health`) para orquestradores (Docker/Kubernetes).
+- [x] Mascarar dados sensíveis em logs (senhas, tokens e respostas completas nunca entram no console).
+- [x] Adicionar Healthcheck probe (`GET /api/health`) para orquestradores (Docker/Kubernetes).
+
+> **Estado da Fase 7**: hardening aplicado no Express. As configurações de
+> origem, limite JSON e segredo JWT devem ser fornecidas pelas variáveis de
+> ambiente em produção.

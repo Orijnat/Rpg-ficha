@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { syncCharacterWithBackend, verifyBankPasswordOnBackend } from "../../lib/api";
 import { useAuth } from "./AuthContext";
 
@@ -17,6 +17,9 @@ export function CharacterProvider({ children }) {
   const [bankInput, setBankInput] = useState("");
   const [bankError, setBankError] = useState(false);
   const [syncStatus, setSyncStatus] = useState("idle");
+  const [syncError, setSyncError] = useState(null);
+  const latestData = useRef(data);
+  const syncSequence = useRef(0);
 
   const { activeCharacter, token, user, loading: authLoading } = useAuth();
 
@@ -84,18 +87,42 @@ export function CharacterProvider({ children }) {
       return;
     }
 
+    latestData.current = data;
     window.localStorage.setItem(cacheKey, JSON.stringify(data));
 
     // Sincronização em segundo plano com o backend (debounce de 1.2s)
+    const sequence = ++syncSequence.current;
     setSyncStatus("saving");
+    setSyncError(null);
     const timer = setTimeout(() => {
       syncCharacterWithBackend(data, token)
-        .then((result) => setSyncStatus(result ? "saved" : "offline"))
-        .catch(() => setSyncStatus("error"));
+        .then((result) => {
+          if (sequence === syncSequence.current) setSyncStatus(result ? "saved" : "offline");
+        })
+        .catch((error) => {
+          if (sequence !== syncSequence.current) return;
+          setSyncError(error);
+          setSyncStatus(error.status === 409 ? "conflict" : "error");
+        });
     }, 1200);
 
     return () => clearTimeout(timer);
   }, [cacheKey, data, hydrated, hydratedKey, token]);
+
+  const retrySync = async () => {
+    const sequence = ++syncSequence.current;
+    setSyncStatus("saving");
+    setSyncError(null);
+    try {
+      const result = await syncCharacterWithBackend(latestData.current, token);
+      if (sequence === syncSequence.current) setSyncStatus(result ? "saved" : "offline");
+    } catch (error) {
+      if (sequence === syncSequence.current) {
+        setSyncError(error);
+        setSyncStatus(error.status === 409 ? "conflict" : "error");
+      }
+    }
+  };
 
 
   const upd = (key, value) => {
@@ -229,6 +256,8 @@ export function CharacterProvider({ children }) {
     setBankInput,
     bankError,
     syncStatus,
+    syncError,
+    retrySync,
     setBankError,
     upd,
     updExtra,

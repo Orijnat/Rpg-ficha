@@ -28,8 +28,9 @@ export default function AppShell({ children }) {
   const { isMaster, isAuthenticated, loading } = useAuth();
 
   const isAuthRoute = pathname === "/login" || pathname === "/registro";
+  const isLandingPage = pathname === "/";
   const isStandaloneSheet = Boolean(pathname?.includes("/admin/personagens/") && pathname?.endsWith("/ficha"));
-  const hideNavigation = isAuthRoute || isStandaloneSheet;
+  const hideNavigation = isAuthRoute || isLandingPage || isStandaloneSheet;
 
   useEffect(() => {
     document.title = "Coração da Montanha";
@@ -72,7 +73,7 @@ export default function AppShell({ children }) {
       {!hideNavigation && <Cabecalho />}
 
       {!hideNavigation && (
-        <nav className="sticky top-[93px] z-10 border-b border-white/10 bg-[#0b0d12]/70 backdrop-blur-xl">
+        <nav aria-label="Navegação da ficha" className="sticky top-[93px] z-10 border-b border-white/10 bg-[#0b0d12]/70 backdrop-blur-xl">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <div className="no-scrollbar flex overflow-x-auto rounded-2xl border border-white/10 bg-white/[0.03] px-1 py-1">
               {TABS.filter((item) => item.id !== "admin" || isMaster).map((item) => {
@@ -83,7 +84,8 @@ export default function AppShell({ children }) {
                   <Link
                     key={item.id}
                     href={href}
-                    className={`flex items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-xs font-medium transition-all sm:px-4 ${
+                    aria-current={active ? "page" : undefined}
+                    className={`flex min-h-11 items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:px-4 ${
                       active
                         ? "bg-[#d69a3d] text-[#17140f] shadow-md shadow-[#d69a3d]/20"
                         : "text-[#a98b68] hover:bg-white/[0.04] hover:text-[#f5e9d7]"
@@ -103,6 +105,8 @@ export default function AppShell({ children }) {
         className={
           isAuthRoute
             ? "relative flex min-h-screen w-full items-center justify-center p-4 sm:p-6"
+            : isLandingPage
+              ? "relative w-full"
             : isStandaloneSheet
               ? "relative w-full"
               : "relative mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8"

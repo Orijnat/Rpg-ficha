@@ -88,54 +88,41 @@ produto completo e pronto para uso. Ele descreve o estado real conhecido em
 - [x] Sincronização de fichas.
 - [x] Filtro básico de dados privados.
 - [x] Compatibilidade entre aliases em português e inglês.
-- [ ] Criar schemas formais de validação de entrada e saída.
-- [ ] Padronizar formato de erro, códigos e mensagens da API.
+- [x] Criar schemas formais de validação de entrada e saída.
+- [x] Padronizar formato de erro, códigos e mensagens da API.
 - [ ] Separar controllers, services, DTOs e validadores.
-- [ ] Implementar paginação, filtros e busca na listagem de personagens.
-- [ ] Implementar endpoints próprios para:
-  - [ ] campanhas;
-  - [ ] membros;
-  - [ ] NPCs;
-  - [ ] encontros;
-  - [ ] sessões;
-  - [ ] mapas;
-  - [ ] notas privadas;
-  - [ ] histórico de alterações;
-  - [ ] rolagens persistidas.
-- [ ] Aplicar autorização por sujeito, recurso, ação e campanha em todos os
-  endpoints.
-- [ ] Impedir acesso horizontal entre mestres e campanhas.
-- [ ] Não confiar em `role`, `userId` ou `campanhaId` enviados pelo cliente.
-- [ ] Implementar refresh token, expiração, revogação e rotação de sessão.
-- [ ] Adicionar rate limiting, proteção contra brute force e bloqueio gradual.
-- [ ] Configurar logs estruturados sem senhas, tokens ou dados sensíveis.
-- [ ] Definir limites de payload, paginação e tempo de requisição.
-- [ ] Corrigir os pontos restantes que dependem de `localStorage` para dados
-  sensíveis.
+- [x] Implementar paginação, filtros e busca na listagem de personagens.
+- [x] Implementar endpoints próprios para campanhas, membros, NPCs, encontros,
+  sessões, mapas, notas privadas e histórico de alterações.
+- [ ] Implementar endpoint próprio para rolagens persistidas.
+- [x] Aplicar autorização por sujeito, recurso, ação e campanha nos endpoints
+  implementados; novas rotas devem seguir o mesmo guard.
+- [x] Impedir acesso horizontal entre mestres e campanhas nos endpoints
+  implementados.
+- [x] Não confiar em `role`, `userId` ou `campanhaId` enviados pelo cliente nos
+  endpoints implementados.
+- [~] Implementar refresh token, expiração, revogação e rotação de sessão.
+- [x] Adicionar rate limiting, proteção contra brute force e bloqueio gradual.
+- [x] Configurar logs sem senhas, tokens ou dados sensíveis.
+- [x] Definir limites de payload e paginação; timeout operacional ainda pendente.
+- [~] Corrigir os pontos restantes que dependem de `localStorage` para dados
+  sensíveis; o token principal usa `sessionStorage`, mas cookies HTTP-only ainda
+  dependem da consolidação da arquitetura.
 
 ## 5. Banco de dados
 
 - [x] Schema principal de usuários e personagens.
 - [x] Modelos Sequelize básicos.
 - [x] Constraints iniciais de vida e integridade.
-- [ ] Criar migrations versionadas para todas as tabelas.
-- [ ] Remover dependência operacional de `sequelize.sync()` em produção.
-- [ ] Modelar tabelas relacionais para:
-  - [ ] campanhas;
-  - [ ] membros;
-  - [ ] classes;
-  - [ ] habilidades;
-  - [ ] perícias;
-  - [ ] itens;
-  - [ ] encontros;
-  - [ ] sessões;
-  - [ ] mapas;
-  - [ ] notas;
-  - [ ] auditoria;
-  - [ ] integrações externas.
+- [~] Criar migrations versionadas para todas as tabelas; existe migration
+  baseline, mas a separação incremental por entidade ainda falta.
+- [x] Remover dependência operacional de `sequelize.sync()` em produção.
+- [~] Modelar tabelas relacionais para campanhas, membros, perícias, itens,
+  encontros, sessões, mapas, notas e auditoria; classes, habilidades e
+  integrações externas ainda precisam de modelagem dedicada.
 - [ ] Definir foreign keys, índices, cascatas e unicidade.
 - [ ] Criar estratégia de migração dos dados legados.
-- [ ] Criar seed seguro para desenvolvimento sem credenciais reais.
+- [x] Criar seed seguro para desenvolvimento sem credenciais reais.
 - [ ] Criar backup, restauração e retenção.
 - [ ] Testar instalação do banco do zero e atualização de uma instalação
   existente.
@@ -196,17 +183,20 @@ produto completo e pronto para uso. Ele descreve o estado real conhecido em
 - [x] Testes direcionados de regras e dados.
 - [x] Build de produção do frontend.
 - [x] Validação sintática de controllers principais.
-- [ ] Testes unitários de validadores e serviços backend.
+- [x] Testes unitários de validadores e serviços backend.
 - [ ] Testes de integração login → personagem → sincronização.
-- [ ] Testes de autorização permitida e negada.
-- [ ] Testes contra acesso horizontal indevido.
-- [ ] Testes de campanhas e membros.
+- [~] Testes de autorização permitida e negada; os testes de integração com
+  PostgreSQL ainda estão pendentes.
+- [~] Testes contra acesso horizontal indevido; a cobertura offline dos guards
+  existe, mas falta validar o fluxo completo com banco.
+- [~] Testes de campanhas e membros; a cobertura de integração permanece
+  pendente.
 - [ ] Testes de importação/exportação Google.
 - [ ] Testes de upload e privacidade.
 - [ ] Testes de acessibilidade.
 - [ ] Testes E2E em navegador.
 - [ ] Testes mobile e desktop.
-- [ ] Testes de carga e limites de payload.
+- [x] Testes de carga e limites de payload.
 - [ ] Pipeline CI com lint, testes, build, migrations e auditoria.
 - [ ] Resolver avisos e erros restantes do lint.
 
@@ -215,22 +205,22 @@ produto completo e pronto para uso. Ele descreve o estado real conhecido em
 - [ ] Nunca versionar `.env`, tokens, senhas ou chaves.
 - [ ] Trocar credenciais de desenvolvimento que tenham sido expostas.
 - [ ] Usar HTTPS em frontend, backend e callback OAuth.
-- [ ] Configurar CORS por lista de origens confiáveis.
-- [ ] Configurar headers de segurança e CSP.
+- [x] Configurar CORS por lista de origens confiáveis.
+- [x] Configurar headers de segurança e CSP.
 - [ ] Usar cookies HTTP-only quando a arquitetura estiver pronta.
 - [ ] Rotacionar JWT secret e chaves OAuth conforme política.
 - [ ] Fazer revisão de segurança antes do deploy.
 - [ ] Criar política de privacidade e tratamento de dados.
 - [ ] Definir procedimento de incidente e revogação de acesso.
-- [ ] Monitorar erros sem coletar conteúdo privado das fichas.
+- [x] Monitorar erros sem coletar conteúdo privado das fichas.
 
 ## 11. Documentação e operação
 
 - [x] Documentação inicial de melhorias e arquitetura.
 - [ ] Documentar instalação do frontend e backend.
-- [ ] Documentar variáveis de ambiente sem valores reais.
-- [ ] Documentar criação do banco e migrations.
-- [ ] Documentar fluxo de mestre, jogador e NPC.
+- [x] Documentar variáveis de ambiente sem valores reais.
+- [x] Documentar criação do banco e migrations.
+- [x] Documentar fluxo de mestre, jogador e NPC.
 - [ ] Documentar integração Google passo a passo.
 - [ ] Documentar importação da planilha técnica.
 - [ ] Documentar backup e restauração.

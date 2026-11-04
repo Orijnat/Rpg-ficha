@@ -56,6 +56,59 @@ Manter alinhamento entre frontend, backend, banco e regras de autorização.
 - Ainda pendente: migrations versionadas e fixture PostgreSQL para verificar a
   compatibilidade entre `database/banco.sql` e todas as colunas Sequelize.
 
+## Hardening P0/P1 — 2026-11-04
+
+- `GET /api/characters` sem parâmetros continua retornando array para
+  compatibilidade. Ao enviar `page`, `limit`, `search` ou `q`, retorna
+  `{ characters, pagination: { page, limit, total, totalPages } }`; `limit`
+  máximo é 100 e a busca é por nome/classe.
+- Sessões de jogo foram registradas em
+  `/api/campanhas/:campanhaId/sessoes` (GET/POST) e
+  `/api/campanhas/sessoes/:id` (GET/PUT/DELETE). A tabela é `sessoes_jogo`;
+  `sessoes_autenticacao` continua exclusivamente para tokens.
+- Recursos de encontros, mapas, notas e sessões exigem campanha própria ou
+  associação ativa. Jogadores veem somente conteúdo permitido; mutações de
+  campanha ficam restritas ao proprietário. Respostas 403/404 preservam o
+  padrão existente.
+- Testes offline cobrem parser de paginação e aliases de perfil. A execução
+  com PostgreSQL ainda é necessária para validar SQL, associações e autorização
+  multiusuário real.
+
+## Fases iniciais do backend — 2026-11-04
+
+- O backend passou a usar migrations Sequelize versionadas em
+  `database/migrations/`; o servidor não chama mais `sequelize.sync()`.
+- `POST /api/auth/register`, `POST /api/auth/login` e mutações de personagens
+  usam schemas Zod. Campos desconhecidos são filtrados (segredos como
+  `bankPassword` não entram no schema) e erros retornam `422` com
+  `{ error, code: "VALIDATION_ERROR", details }`.
+- Foram adicionados `/health/live` e `/health/ready`; o último retorna `503`
+  se o PostgreSQL não estiver disponível. O JSON HTTP padrão foi limitado a
+  `1mb` (`JSON_BODY_LIMIT` pode ajustar explicitamente).
+
+## Contrato de backend — 2026-11-04
+
+- O backend separado usa `npm run db:migrate` com Sequelize CLI; o servidor não
+  cria ou altera tabelas automaticamente.
+- Payloads inválidos em rotas validadas retornam HTTP 422 com
+  `status: "error"`, `statusCode: 422`, `code: "VALIDATION_FAILED"`,
+  `message` e lista `errors[{ field, message }]`.
+- Rotas de campanhas, NPCs, notas e encontros passaram a validar payloads Zod;
+  aliases legados de personagem seguem aceitos.
+- `/health/live` não depende do banco; `/health/ready` retorna 503 quando a
+  conexão PostgreSQL está indisponível.
+- A verificação de cofre retorna 429 durante bloqueio temporário após cinco
+  falhas; segredos continuam fora da serialização pública.
+
+## Hardening e testes — 2026-11-04
+
+- Backend aplica allowlist CORS por `FRONTEND_URL`/`CORS_ORIGIN`, Helmet,
+  limite JSON de 2 MB e rate limiting de 100/min geral e 5/min em login/cadastro.
+- `/api/health` responde sem depender do PostgreSQL; erros internos não retornam
+  detalhes da exceção ao cliente.
+- Testes locais cobrem CORS, healthcheck, headers e payload excedente; testes de
+  integração de autenticação, multi-tenant, notas e combate exigem PostgreSQL.
+
 ## Investigação 2026-10-16
 
 - Causa raiz confirmada: o Sequelize mantém campos canônicos em português

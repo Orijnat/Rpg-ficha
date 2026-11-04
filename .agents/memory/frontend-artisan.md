@@ -89,3 +89,33 @@ UI/UX da Área do Jogador, componentes React 19, Tailwind CSS v4, responsividade
 - Skill principal: `.github/skills/frontend-rpg/SKILL.md`.
 - Antes de alterar API ou autenticação, consultar `.agents/memory/contrato-integracao.md`.
 - Registrar no contrato qualquer novo endpoint, campo, erro ou permissão consumido pela UI.
+
+### Entrega — Landing pública
+- A rota `/` deixou de redirecionar diretamente para `/login` e agora apresenta
+  uma landing page pública com proposta de valor, recursos para jogadores e
+  mestres e chamadas para login/cadastro.
+- A landing usa o tema dark fantasy existente, é responsiva, possui navegação
+  por teclado e não consome novos endpoints.
+
+### Hardening P0/P1 — 2026-11-04
+- `src/lib/api.js`: JWT passou a ser mantido preferencialmente em
+  `sessionStorage`; tokens legados em `localStorage` são migrados uma vez e
+  removidos. O contrato atual de autenticação Bearer não foi alterado.
+- `src/lib/api.js`: erros HTTP agora carregam `status`, `code` e `details`;
+  `syncCharacterWithBackend` não mascara mais falhas/conflicts como sucesso
+  offline.
+- `src/app/context/CharacterContext.js`: sincronização debounced recebe
+  sequência anti-stale, mantém cache local como fallback, expõe erro/conflito e
+  `retrySync`.
+- `src/app/personagem/page.js`: indicador de sincronização anuncia estado,
+  distingue conflito HTTP 409 e oferece tentativa explícita novamente.
+- `src/layouts/AppShell.jsx` e `src/app/components/SettingsModal.jsx`:
+  navegação com `aria-current`, alvos de toque/foco visível e modal com
+  semântica de diálogo.
+- Validação: 27 testes frontend passaram, build Next.js 16 passou, lint passou
+  com avisos/diagnósticos preexistentes; `git diff --check` passou.
+- Pendência: resolução automática de conflito por campo exige versão/ETag ou
+  contrato backend; a UI preserva o rascunho local e não sobrescreve dados
+  silenciosamente.
+- `AppShell` oculta cabeçalho, navegação autenticada e botão de dados na rota
+  pública, preservando o layout de autenticação.

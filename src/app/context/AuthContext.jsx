@@ -43,13 +43,14 @@ export function AuthProvider({ children }) {
           setCharacters(data.characters || []);
 
           // Recupera o personagem ativo salvo ou pega o primeiro da lista
-          const savedCharId = localStorage.getItem("rpg_current_char_id");
+          const savedCharId = window.sessionStorage.getItem("rpg_current_char_id")
+            || window.localStorage.getItem("rpg_current_char_id");
           const found = (data.characters || []).find((c) => c.id === savedCharId);
           if (found) {
             setActiveCharacterId(found.id);
           } else if (data.characters && data.characters.length > 0) {
             setActiveCharacterId(data.characters[0].id);
-            localStorage.setItem("rpg_current_char_id", data.characters[0].id);
+            window.sessionStorage.setItem("rpg_current_char_id", data.characters[0].id);
           }
         } else {
           clearAuth();
@@ -75,7 +76,7 @@ export function AuthProvider({ children }) {
     if (data.characters && data.characters.length > 0) {
       const firstChar = data.characters[0];
       setActiveCharacterId(firstChar.id);
-      localStorage.setItem("rpg_current_char_id", firstChar.id);
+      window.sessionStorage.setItem("rpg_current_char_id", firstChar.id);
     }
 
     return data;
@@ -91,7 +92,7 @@ export function AuthProvider({ children }) {
 
     if (chars.length > 0) {
       setActiveCharacterId(chars[0].id);
-      localStorage.setItem("rpg_current_char_id", chars[0].id);
+      window.sessionStorage.setItem("rpg_current_char_id", chars[0].id);
     }
 
     return data;
@@ -134,7 +135,7 @@ export function AuthProvider({ children }) {
   const selectCharacter = (characterId) => {
     setActiveCharacterId(characterId);
     if (typeof window !== "undefined") {
-      localStorage.setItem("rpg_current_char_id", characterId);
+      window.sessionStorage.setItem("rpg_current_char_id", characterId);
     }
   };
 
@@ -159,7 +160,7 @@ export function AuthProvider({ children }) {
     const first = data.characters?.[0];
     if (first) {
       setActiveCharacterId(first.id);
-      localStorage.setItem("rpg_current_char_id", first.id);
+      window.sessionStorage.setItem("rpg_current_char_id", first.id);
     }
     return data;
   }, []);

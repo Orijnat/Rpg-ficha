@@ -31,6 +31,18 @@ Este arquivo é a fonte de memória persistente da liderança técnica do projet
 - Fixtures de autenticação não armazenam senha em texto simples.
 - Persistência PostgreSQL, cookies HTTP-only, uploads privados, auditoria e E2E permanecem pendentes por dependerem do backend separado e decisões de contrato.
 
+### Entrega — 2026-11-04 (Fundação do backend e banco)
+- No backend separado [`Rpg-backend`](/home/cledi/rp/Rpg-backend), substituído o
+  `sequelize.sync()` por migration baseline executável via Sequelize CLI.
+- Adicionados schemas/middleware Zod com contrato de erro 422, validação nas rotas
+  de autenticação, ficha, campanhas, membros, NPCs, notas e encontros.
+- Adicionados healthchecks live/ready, limite JSON configurável de 1 MB, seed
+  seguro com `SEED_PASSWORD` e bloqueio de brute force do cofre.
+- Validação: 3 testes unitários, `node --check`, `git diff --check`, CLI Sequelize
+  e smoke tests HTTP aprovados. Aplicação real da migration aguarda PostgreSQL.
+- Próximo passo: staging PostgreSQL para validar o baseline e testes de contrato
+  de isolamento multi-tenant, notas privadas e combate.
+
 ### Entrega: Sessões e Perfis via JWT Tokens — 2026-10-27
 - Criado o módulo de utilitário criptográfico e gerenciamento de claims JWT em `src/lib/jwt.js`:
   * Assinatura HS256 (`signJwt`), validação de integridade e tempo (`verifyJwt`), decodificação segura (`decodeJwt`) e normalização canônica de papéis (`mestre` / `jogador`, `master` / `player`).
@@ -91,6 +103,15 @@ Este arquivo é a fonte de memória persistente da liderança técnica do projet
 - Removidos, após confirmação do usuário, os dois componentes monolíticos de ficha sem referências no runtime, o modelo legado não importado e os cinco SVGs padrão do scaffold não referenciados.
 - Arquivos não rastreados e alterações recentes foram preservados.
 - Validação pós-limpeza: 27 testes aprovados, lint aprovado sem erros (28 avisos preexistentes), build aprovado com 34 rotas e `git diff --check` aprovado.
+
+### Entrega — Documento de alterações recomendadas
+- Criado `docs/ALTERACOES-RECOMENDADAS.md`, consolidando melhorias já realizadas, prioridades de produção, pendências conhecidas e sequência sugerida de implementação.
+
+### Entrega — Landing pública
+- A rota raiz agora apresenta o serviço Coração da Montanha antes da autenticação, com conteúdo público responsivo e CTAs para login/cadastro.
+- O `AppShell` não renderiza cabeçalho, abas autenticadas ou dados flutuantes na landing.
+- Validação: 27 testes aprovados, build aprovado com 34 rotas, `git diff --check`
+  aprovado e lint aprovado sem erros, mantendo apenas avisos preexistentes.
 
 ---
 

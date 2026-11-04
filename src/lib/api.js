@@ -16,20 +16,46 @@ export function getGoogleLoginUrl() {
 
 export function getStoredToken() {
   if (typeof window === "undefined") return null;
-  return localStorage.getItem("rpg_auth_token");
+  try {
+    // sessionStorage reduz a persistência do JWT sem mudar o contrato Bearer da API.
+    const sessionToken = window.sessionStorage.getItem("rpg_auth_token");
+    if (sessionToken) return sessionToken;
+    // Compatibilidade de migração: sessões antigas continuam funcionando uma vez.
+    const legacyToken = window.localStorage.getItem("rpg_auth_token");
+    if (legacyToken) {
+      window.sessionStorage.setItem("rpg_auth_token", legacyToken);
+      window.localStorage.removeItem("rpg_auth_token");
+    }
+    return legacyToken;
+  } catch {
+    return null;
+  }
 }
 
 export function storeAuth(token, user) {
   if (typeof window === "undefined") return;
-  if (token) localStorage.setItem("rpg_auth_token", token);
-  if (user) localStorage.setItem("rpg_auth_user", JSON.stringify(user));
+  try {
+    if (token) {
+      window.sessionStorage.setItem("rpg_auth_token", token);
+      window.localStorage.removeItem("rpg_auth_token");
+    }
+    if (user) window.sessionStorage.setItem("rpg_auth_user", JSON.stringify(user));
+  } catch {
+    // A sessão em memória continua válida mesmo se o navegador bloquear storage.
+  }
 }
 
 export function clearAuth() {
   if (typeof window === "undefined") return;
-  localStorage.removeItem("rpg_auth_token");
-  localStorage.removeItem("rpg_auth_user");
-  localStorage.removeItem("rpg_current_char_id");
+  for (const storage of [window.sessionStorage, window.localStorage]) {
+    try {
+      storage.removeItem("rpg_auth_token");
+      storage.removeItem("rpg_auth_user");
+      storage.removeItem("rpg_current_char_id");
+    } catch {
+      // Storage pode estar indisponível em modo privado/restrito.
+    }
+  }
 }
 
 function authHeaders(token = getStoredToken()) {
@@ -70,7 +96,12 @@ export async function safeFetchJson(url, options = {}, fallbackErrorMsg = "Erro 
 
   if (!response.ok) {
     const errorMsg = data?.error || data?.message || fallbackErrorMsg;
-    throw new Error(errorMsg);
+    const error = new Error(errorMsg);
+    error.name = "ApiError";
+    error.status = response.status;
+    error.code = data?.code;
+    error.details = data?.details || data?.errors;
+    throw error;
   }
 
   return data;
@@ -155,17 +186,12 @@ export async function deleteCharacterOnBackend(characterId, token = getStoredTok
 }
 
 export async function syncCharacterWithBackend(characterData, token = getStoredToken()) {
-  try {
-    const data = await safeFetchJson(`${API_BASE_URL}/characters/sync`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", ...authHeaders(token) },
-      body: JSON.stringify(characterData),
-    });
-    return data?.character || data;
-  } catch (error) {
-    console.warn("Backend offline ou inacessível. Mantendo dados em cache local:", error.message);
-    return null;
-  }
+  const data = await safeFetchJson(`${API_BASE_URL}/characters/sync`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify(characterData),
+  });
+  return data?.character || data;
 }
 
 export async function fetchCharacterFromBackend(characterId, token = getStoredToken()) {
