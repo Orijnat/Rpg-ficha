@@ -128,6 +128,12 @@
 - Integrações PostgreSQL reais, uploads, Google, E2E e demais itens sem
   evidência verificável continuam pendentes ou parciais.
 
+### Continuidade — commit e publicação
+- Commit criado: `f530c0b` (`chore: consolidar implementacoes fullstack`).
+- Alterações publicadas com sucesso em `origin/main`.
+- A validação `git diff --cached --check` foi corrigida e aprovada antes do
+  commit; os relatórios Markdown tiveram apenas whitespace ajustado.
+
 ### Continuidade — 2026-11-04 (Melhorias prioritárias)
 - Revisado [`docs/MELHORIAS-FUTURAS-RPG.md`](../docs/MELHORIAS-FUTURAS-RPG.md).
 - Implementada autenticação server-side e autorização de mestre em personagens, campanhas e NPCs por meio de [`src/lib/server-auth.js`](../src/lib/server-auth.js).
