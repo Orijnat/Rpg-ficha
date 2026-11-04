@@ -10,6 +10,10 @@ export function getApiBaseUrl() {
   return API_BASE_URL;
 }
 
+export function getGoogleLoginUrl() {
+  return `${API_BASE_URL}/auth/google/url`;
+}
+
 export function getStoredToken() {
   if (typeof window === "undefined") return null;
   return localStorage.getItem("rpg_auth_token");

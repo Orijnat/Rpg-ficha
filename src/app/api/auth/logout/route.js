@@ -1,19 +1,19 @@
 import { NextResponse } from "next/server";
+import { authenticateRequest } from "../../../../lib/server-auth.js";
 
 export async function POST(req) {
   try {
-    const authHeader = req.headers.get("authorization");
-    const hasToken = Boolean(authHeader && authHeader.startsWith("Bearer "));
+    authenticateRequest(req);
 
     return NextResponse.json({
       message: "Sessão encerrada com sucesso.",
-      revoked: hasToken,
+      revoked: true,
       loggedOutAt: new Date().toISOString(),
     });
   } catch (error) {
     return NextResponse.json(
       { error: error.message || "Erro ao encerrar sessão." },
-      { status: 500 }
+      { status: 401 }
     );
   }
 }

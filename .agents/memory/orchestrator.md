@@ -9,6 +9,28 @@ Este arquivo é a fonte de memória persistente da liderança técnica do projet
 - **Stack Consolidada**: Next.js 16 (App Router), React 19, Tailwind CSS v4, PostgreSQL, Sequelize ORM.
 - **Foco Principal**: Área do Jogador (Mobile-first e Desktop) para sistema próprio baseado em d20 (7 atributos).
 
+### Entrega — 2026-11-04 (Skill de adaptação de estruturas GitHub)
+- Criada [`github-structure-adapter`](../.github/skills/github-structure-adapter/SKILL.md) em `.github/skills/`.
+- A skill orienta análise arquitetural, verificação de licença, clone temporário seguro, matriz de adaptação, implementação incremental e validação.
+- Ela proíbe copiar segredos, `.git`, artefatos, dependências sem revisão e substituir o workspace inteiro por um clone.
+
+### Entrega — 2026-11-04 (Adaptação da referência hospital)
+- Analisado `Orijnat/teste-crs/sistema/hospitalFront/hospital` no commit `39533638b450ec0b7d5cf1ded04bcd8d4468021f`.
+- Aplicada a separação estrutural de layouts ao criar [`src/layouts/AppShell.jsx`](../src/layouts/AppShell.jsx).
+- `src/app/layout.js` agora compõe providers e delega a moldura global ao shell; nenhuma tela ou dependência específica do hospital foi importada.
+
+### Entrega — 2026-11-04 (Melhorias prioritárias de segurança)
+- Criado [`src/lib/server-auth.js`](../src/lib/server-auth.js) para validação centralizada de Bearer JWT e perfil mestre.
+- Protegidas as rotas de personagens, campanhas e NPCs contra acesso anônimo; jogadores ficam limitados aos próprios personagens/campanhas.
+- Cache da ficha isolado pela combinação de usuário/personagem em [`CharacterContext.js`](../src/app/context/CharacterContext.js).
+- Testes de autenticação server-side adicionados.
+
+### Entrega — 2026-11-04 (Hardening P0)
+- Criado [`src/lib/server-security.js`](../src/lib/server-security.js) com scrypt, `JWT_SECRET` obrigatório e rate limiting básico.
+- Removido segredo JWT conhecido, bloqueada promoção pública a mestre e protegidos campanha/logout.
+- Fixtures de autenticação não armazenam senha em texto simples.
+- Persistência PostgreSQL, cookies HTTP-only, uploads privados, auditoria e E2E permanecem pendentes por dependerem do backend separado e decisões de contrato.
+
 ### Entrega: Sessões e Perfis via JWT Tokens — 2026-10-27
 - Criado o módulo de utilitário criptográfico e gerenciamento de claims JWT em `src/lib/jwt.js`:
   * Assinatura HS256 (`signJwt`), validação de integridade e tempo (`verifyJwt`), decodificação segura (`decodeJwt`) e normalização canônica de papéis (`mestre` / `jogador`, `master` / `player`).
@@ -64,6 +86,11 @@ Este arquivo é a fonte de memória persistente da liderança técnica do projet
   autorizada concluída; Next.js atualizado, headers defensivos aplicados e
   `npm audit --omit=dev` sem vulnerabilidades.
 - **Entrega**: hardening publicado em `origin/main` no commit `0fd75a2`.
+
+### Entrega — Limpeza de arquivos legados
+- Removidos, após confirmação do usuário, os dois componentes monolíticos de ficha sem referências no runtime, o modelo legado não importado e os cinco SVGs padrão do scaffold não referenciados.
+- Arquivos não rastreados e alterações recentes foram preservados.
+- Validação pós-limpeza: 27 testes aprovados, lint aprovado sem erros (28 avisos preexistentes), build aprovado com 34 rotas e `git diff --check` aprovado.
 
 ---
 

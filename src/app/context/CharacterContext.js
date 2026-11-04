@@ -12,16 +12,15 @@ const CharacterContext = createContext(null);
 export function CharacterProvider({ children }) {
   const [data, setData] = useState(defaultData);
   const [hydrated, setHydrated] = useState(false);
+  const [hydratedKey, setHydratedKey] = useState(null);
   const [bankUnlocked, setBankUnlocked] = useState(false);
   const [bankInput, setBankInput] = useState("");
   const [bankError, setBankError] = useState(false);
   const [syncStatus, setSyncStatus] = useState("idle");
 
-  const { activeCharacter, token, loading: authLoading } = useAuth();
+  const { activeCharacter, token, user, loading: authLoading } = useAuth();
 
-  const cacheKey = activeCharacter?.id
-    ? `bruxeiro-sheet:${activeCharacter.id}`
-    : "bruxeiro-sheet";
+  const cacheKey = `bruxeiro-sheet:${user?.id || "anonymous"}:${activeCharacter?.id || "default"}`;
 
   // O cache só é usado como fallback quando não existe personagem vindo da API.
   useEffect(() => {
@@ -33,12 +32,15 @@ export function CharacterProvider({ children }) {
       setData(defaultData);
     } finally {
       setHydrated(true);
+      setHydratedKey(cacheKey);
     }
   }, [activeCharacter, authLoading, cacheKey]);
 
   // Atualiza ficha quando o personagem ativo da conta logada mudar
   useEffect(() => {
     if (authLoading || !activeCharacter) return;
+    setHydrated(false);
+    setHydratedKey(null);
     const atributos = {
       FOR: activeCharacter.forca ?? activeCharacter.FOR ?? activeCharacter.attributes?.FOR,
       DES: activeCharacter.destreza ?? activeCharacter.DES ?? activeCharacter.attributes?.DES,
@@ -74,10 +76,11 @@ export function CharacterProvider({ children }) {
       },
     }));
     setHydrated(true);
-  }, [activeCharacter, authLoading]);
+    setHydratedKey(cacheKey);
+  }, [activeCharacter, authLoading, cacheKey]);
 
   useEffect(() => {
-    if (!hydrated) {
+    if (!hydrated || hydratedKey !== cacheKey) {
       return;
     }
 
@@ -92,7 +95,7 @@ export function CharacterProvider({ children }) {
     }, 1200);
 
     return () => clearTimeout(timer);
-  }, [cacheKey, data, hydrated, token]);
+  }, [cacheKey, data, hydrated, hydratedKey, token]);
 
 
   const upd = (key, value) => {

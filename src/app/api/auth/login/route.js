@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import { signJwt, normalizeProfile } from "../../../../lib/jwt.js";
+import { enforceRateLimit, getJwtSecret, verifyPassword } from "../../../../lib/server-security.js";
 import { mockUsers, mockCharacters } from "../_store.js";
 
 export async function POST(req) {
   try {
+    enforceRateLimit(`login:${req.headers.get("x-forwarded-for") || "unknown"}`, { limit: 8 });
     const body = await req.json();
     const { login, password } = body;
 
@@ -29,7 +31,7 @@ export async function POST(req) {
     }
 
     // Validação de senha (ou dev pass)
-    if (user.password && user.password !== password) {
+    if (!verifyPassword(password, user.passwordHash)) {
       return NextResponse.json(
         { error: "Credenciais inválidas. Verifique o usuário e a senha." },
         { status: 401 }
@@ -45,7 +47,7 @@ export async function POST(req) {
         perfil: profileInfo.perfil,
         role: profileInfo.role,
       },
-      process.env.JWT_SECRET,
+      getJwtSecret(),
       { expiresIn: "7d" }
     );
 
@@ -71,7 +73,7 @@ export async function POST(req) {
     console.error("Erro no login Next.js API:", error);
     return NextResponse.json(
       { error: error.message || "Erro interno ao processar login." },
-      { status: 500 }
+      { status: error.status || (error.message.includes("JWT_SECRET") ? 500 : 401) }
     );
   }
 }

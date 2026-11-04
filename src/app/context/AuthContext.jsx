@@ -145,6 +145,25 @@ export function AuthProvider({ children }) {
     return newChar;
   };
 
+  const adoptToken = useCallback(async (nextToken) => {
+    if (!nextToken) throw new Error("Token Google ausente.");
+    storeAuth(nextToken);
+    const data = await fetchMe(nextToken);
+    if (!data?.user) {
+      clearAuth();
+      throw new Error("Não foi possível validar a conta Google.");
+    }
+    setToken(nextToken);
+    setUser(data.user);
+    setCharacters(data.characters || []);
+    const first = data.characters?.[0];
+    if (first) {
+      setActiveCharacterId(first.id);
+      localStorage.setItem("rpg_current_char_id", first.id);
+    }
+    return data;
+  }, []);
+
   const sessionInfo = token ? getUserFromToken(token) : null;
   const profileInfo = normalizeProfile(user?.perfil || user?.role || sessionInfo?.perfil);
   const isMaster = profileInfo.isMaster;
@@ -168,6 +187,7 @@ export function AuthProvider({ children }) {
     logout,
     selectCharacter,
     createCharacter,
+    adoptToken,
     updateProfile,
     switchProfile,
   };

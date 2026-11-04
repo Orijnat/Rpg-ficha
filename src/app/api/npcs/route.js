@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { requireMaster } from "../../../lib/server-auth.js";
 
 let mockNpcs = [
   {
@@ -35,15 +36,22 @@ let mockNpcs = [
   },
 ];
 
-export async function GET() {
-  return NextResponse.json(mockNpcs);
+export async function GET(req) {
+  try {
+    requireMaster(req);
+    return NextResponse.json(mockNpcs);
+  } catch (error) {
+    return NextResponse.json({ error: error.message || "Não autorizado." }, { status: error.message.includes("mestre") ? 403 : 401 });
+  }
 }
 
 export async function POST(req) {
   try {
+    const user = requireMaster(req);
     const body = await req.json();
     const newNpc = {
       id: `npc-${Date.now()}`,
+      mestreId: user.id,
       nome: body.nome || "Novo NPC",
       papel: body.papel || "Inimigo",
       hp: Number(body.hp) || 10,
@@ -62,6 +70,6 @@ export async function POST(req) {
     mockNpcs.unshift(newNpc);
     return NextResponse.json(newNpc, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: error.message || "Erro ao cadastrar NPC." }, { status: 400 });
+    return NextResponse.json({ error: error.message || "Erro ao cadastrar NPC." }, { status: error.message.includes("mestre") ? 403 : 401 });
   }
 }

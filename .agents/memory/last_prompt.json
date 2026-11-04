@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-10-27T20:24:21-03:00",
-  "request": "podeia ajustar os campo onde se podem  diitar ou onde listam coisas colocar um scroll bar interna, ao invez de alterar o tamano do layout do site",
-  "status": "in_progress",
-  "target_section": "Adição de scrollbars internas estilizadas (custom-scroll) e limites de altura (max-h) em campos editáveis e listagens para preservar o layout",
-  "follow_up": "Aplicar max-h com overflow-y-auto e custom-scroll em textareas, EditableText multiline, listas de inventário, contratos, mundo, anotações e admin."
+  "timestamp": "2026-11-04T00:56:41-03:00",
+  "request": "Adicionar no login a opção de criar ou vincular conta Google.",
+  "status": "completed",
+  "target_section": "OAuth Google de identidade para login/cadastro.",
+  "follow_up": "Configurar credenciais Google e executar smoke test OAuth real."
 }

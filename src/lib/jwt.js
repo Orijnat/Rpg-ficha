@@ -158,7 +158,10 @@ export function getUserFromToken(token) {
  * @returns {string} Token JWT
  */
 export function signJwt(payload, secret, options = {}) {
-  const secretKey = secret || process.env.JWT_SECRET || "rpg-destiny-default-dev-secret-key-2026";
+  const secretKey = secret || process.env.JWT_SECRET;
+  if (!secretKey) {
+    throw new Error("JWT_SECRET ausente ou fraco.");
+  }
   const header = { alg: "HS256", typ: "JWT" };
 
   const now = Math.floor(Date.now() / 1000);
@@ -228,7 +231,10 @@ export function verifyJwt(token, secret) {
   }
 
   const [headerB64, payloadB64, signatureB64] = parts;
-  const secretKey = secret || process.env.JWT_SECRET || "rpg-destiny-default-dev-secret-key-2026";
+  const secretKey = secret || process.env.JWT_SECRET;
+  if (!secretKey) {
+    throw new Error("JWT_SECRET ausente ou fraco.");
+  }
 
   const crypto = cryptoModule || globalThis.crypto;
   if (!cryptoModule || !cryptoModule.createHmac) {

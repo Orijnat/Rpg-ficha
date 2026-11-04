@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
 import { Lock, User, Eye, EyeOff, LogIn, Sparkles, AlertCircle } from "lucide-react";
+import { getGoogleLoginUrl } from "../../lib/api";
 
 export default function LoginPage() {
   const [identifier, setIdentifier] = useState("");
@@ -15,6 +16,10 @@ export default function LoginPage() {
 
   const { login } = useAuth();
   const router = useRouter();
+
+  const handleGoogleLogin = () => {
+    window.location.assign(getGoogleLoginUrl());
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -257,6 +262,16 @@ export default function LoginPage() {
               </span>
             </div>
           </div>
+
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            className="flex w-full items-center justify-center gap-2 rounded-lg border border-[#8a7355]/50 bg-[#f5e9d7] py-3 text-sm font-semibold text-[#241b12] transition hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#d69a3d]/60"
+            style={{ fontFamily: "Cinzel, serif" }}
+          >
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white text-xs font-bold text-[#4285f4]">G</span>
+            Criar ou entrar com Google
+          </button>
 
           {/* Link para Registro */}
           <div className="text-center">

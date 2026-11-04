@@ -42,6 +42,20 @@ Manter alinhamento entre frontend, backend, banco e regras de autorização.
   campos em inglês/agrupados; a normalização foi adicionada, mas não há fixture
   de banco neste repositório.
 
+## Ajustes de integração — 2026-11-04
+
+- Mantidos os aliases `/api/campanha` (legado, dados do mestre) e
+  `/api/campanhas` (coleção de campanhas). O primeiro aceita GET/PUT para
+  compatibilidade com `fetchCampaignData`/`updateCampaignData`.
+- Respostas de autenticação que incluem personagens removem `bankPassword`.
+- Cadastro público sempre cria `jogador`; tentativa de alterar `perfil`/`role`
+  para outro perfil retorna 403.
+- Criação/atualização de personagem não permite apontar `campanhaId` para uma
+  campanha sem associação válida. NPCs ficam limitados ao mestre proprietário
+  (leitura de campanha pode ser feita por membro autorizado).
+- Ainda pendente: migrations versionadas e fixture PostgreSQL para verificar a
+  compatibilidade entre `database/banco.sql` e todas as colunas Sequelize.
+
 ## Investigação 2026-10-16
 
 - Causa raiz confirmada: o Sequelize mantém campos canônicos em português

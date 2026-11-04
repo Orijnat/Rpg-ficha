@@ -100,6 +100,8 @@ Rpg-ficha/
 │   │   ├── quarto/page.js      # Notas de descanso e aposentos
 │   │   ├── layout.js           # Layout global e navegação
 │   │   └── globals.css         # Tailwind CSS v4
+│   ├── layouts/                # Shells de composição e navegação
+│   │   └── AppShell.jsx        # Navegação, proteção de rotas e moldura visual
 │   ├── db/                     # Conexão Sequelize e Models
 │   │   ├── models/             # Modelos Sequelize
 │   │   └── sequelize.js        # Singleton de conexão
@@ -108,3 +110,41 @@ Rpg-ficha/
 ├── package.json
 └── README.md
 ```
+
+### Estrutura adaptada de referências externas
+
+O projeto adota a separação de `src/layouts` usada no projeto de referência
+[`Orijnat/teste-crs`](https://github.com/Orijnat/teste-crs/tree/main/sistema/hospitalFront/hospital),
+mas mantém o domínio, a autenticação e os contratos da ficha de RPG. O shell
+global foi extraído de `src/app/layout.js` para
+[`src/layouts/AppShell.jsx`](../src/layouts/AppShell.jsx). Componentes de
+domínio continuam em `src/app/components`, contextos em `src/app/context` e
+cliente HTTP em `src/lib/api.js`; não foi introduzida uma segunda camada Axios
+nem copiado código específico do hospital.
+
+### Integração com o backend existente
+
+O cliente HTTP em [`src/lib/api.js`](../src/lib/api.js) usa
+`NEXT_PUBLIC_API_URL` para chamar o backend Express em
+`http://localhost:3333/api`. O backend correspondente está em
+`/home/cledi/rp/Rpg-backend` e expõe autenticação, personagens, campanhas,
+NPCs e recursos administrativos.
+
+Para desenvolvimento:
+
+1. Copie `.env.example` para `.env` no frontend.
+2. Configure `JWT_SECRET` e `DATABASE_URL` no `.env` do backend.
+3. Configure `CORS_ORIGIN=http://localhost:3000`.
+4. Inicie o backend antes de usar login e sincronização.
+
+Os Route Handlers em `src/app/api` permanecem como superfícies locais de
+desenvolvimento, mas o cliente configurado aponta para o backend Express. Não
+use segredos reais em arquivos versionados.
+
+O botão **Criar ou entrar com Google** usa o fluxo de identidade separado do
+Google Workspace: `GET /api/auth/google/url` inicia OpenID (`openid`, `email`,
+`profile`) e `/api/auth/google/callback` cria ou vincula um jogador pelo
+identificador Google/e-mail verificado. O callback devolve o JWT em fragmento
+(`#token`) para não enviá-lo em query string. Configure
+`GOOGLE_AUTH_REDIRECT_URI` no Google Cloud Console; ele não substitui
+`GOOGLE_REDIRECT_URI`, usado pela integração Workspace do mestre.

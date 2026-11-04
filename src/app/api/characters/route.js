@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { authenticateRequest } from "../../../lib/server-auth.js";
 
 // Fallback in-memory quando o backend externo estiver desconectado
 let mockCharacters = [
@@ -36,16 +37,26 @@ let mockCharacters = [
   },
 ];
 
-export async function GET() {
-  return NextResponse.json(mockCharacters);
+export async function GET(req) {
+  try {
+    const user = authenticateRequest(req);
+    const characters = user.isMaster
+      ? mockCharacters
+      : mockCharacters.filter((character) => character.userId === user.id);
+    return NextResponse.json(characters);
+  } catch (error) {
+    return NextResponse.json({ error: error.message || "Não autorizado." }, { status: 401 });
+  }
 }
 
 export async function POST(req) {
   try {
+    const user = authenticateRequest(req);
     const body = await req.json();
     const newChar = {
       id: `char-${Date.now()}`,
-      name: body.name || "Novo Personagem",
+      userId: user.isMaster && body.userId ? String(body.userId) : user.id,
+      name: typeof body.name === "string" && body.name.trim() ? body.name.trim() : "Novo Personagem",
       job: body.job || "Aventureiro",
       level: Number(body.level) || 1,
       hp: Number(body.hp) || 10,
@@ -55,6 +66,11 @@ export async function POST(req) {
     mockCharacters.unshift(newChar);
     return NextResponse.json(newChar, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: error.message || "Erro ao processar criação de personagem." }, { status: 400 });
+    const status = error.message === "Token não fornecido." || error.message.includes("token") || error.message.includes("Sessão")
+      ? 401
+      : error.message.includes("mestre")
+        ? 403
+        : 400;
+    return NextResponse.json({ error: error.message || "Erro ao processar criação de personagem." }, { status });
   }
 }

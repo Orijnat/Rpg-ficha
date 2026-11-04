@@ -23,6 +23,23 @@ As principais lacunas identificadas são:
 
 ## Melhorias implementadas nesta fase
 
+### Segurança e isolamento de dados
+
+- Rotas de personagens, campanhas e NPCs agora exigem JWT válido no servidor.
+- Operações de campanha e bestiário exigem perfil de mestre; jogadores recebem
+  apenas seus próprios personagens e campanhas associadas.
+- O cache local da ficha passou a usar usuário e personagem na chave, evitando
+  mistura de dados ao alternar contas ou personagens.
+- O segredo JWT padrão foi removido: emissão e validação exigem `JWT_SECRET`;
+  a configuração de produção deve possuir pelo menos 32 caracteres.
+- O cadastro público sempre cria jogadores; promoção para mestre não é aceita
+  pelo payload público.
+- Senhas das fixtures locais usam hash scrypt, sem armazenamento em texto
+  simples.
+- Login e registro possuem rate limiting em memória como proteção básica para
+  ambiente local; produção deve usar um limitador distribuído.
+- Logout e dados da campanha passaram a exigir token válido no servidor.
+
 ### Rolagem de dados
 
 - Ciclo explícito de rolagem com duração visual controlada.

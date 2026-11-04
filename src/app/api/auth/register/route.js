@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server";
 import { signJwt, normalizeProfile } from "../../../../lib/jwt.js";
+import { enforceRateLimit, getJwtSecret, hashPassword } from "../../../../lib/server-security.js";
 import { mockUsers, mockCharacters } from "../_store.js";
 
 export async function POST(req) {
   try {
+    enforceRateLimit(`register:${req.headers.get("x-forwarded-for") || "unknown"}`, { limit: 4, windowMs: 300_000 });
     const body = await req.json();
     const { username, email, password, characterName, characterJob, customClass, perfil } = body;
 
@@ -37,13 +39,14 @@ export async function POST(req) {
       return NextResponse.json({ error: "Este e-mail já está cadastrado." }, { status: 409 });
     }
 
-    const profileInfo = normalizeProfile(perfil || "jogador");
+    // O cadastro público nunca pode criar ou promover um mestre.
+    const profileInfo = normalizeProfile("jogador");
 
     const newUser = {
       id: `usr-${Date.now()}`,
       username: cleanUsername,
       email: cleanEmail,
-      password,
+      passwordHash: hashPassword(password),
       perfil: profileInfo.perfil,
       role: profileInfo.role,
       ativo: true,
@@ -73,7 +76,7 @@ export async function POST(req) {
         perfil: profileInfo.perfil,
         role: profileInfo.role,
       },
-      process.env.JWT_SECRET,
+      getJwtSecret(),
       { expiresIn: "7d" }
     );
 
@@ -100,7 +103,7 @@ export async function POST(req) {
     console.error("Erro no registro Next.js API:", error);
     return NextResponse.json(
       { error: error.message || "Erro interno ao cadastrar." },
-      { status: 500 }
+      { status: error.status || (error.message.includes("JWT_SECRET") ? 500 : 400) }
     );
   }
 }

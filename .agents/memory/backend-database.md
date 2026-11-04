@@ -58,3 +58,19 @@ Modelagem de dados, PostgreSQL, Sequelize ORM e endpoints de Route Handlers no N
 - Antes de alterar modelos, rotas ou schema, consultar `.agents/memory/contrato-integracao.md`.
 - Registrar no contrato mudanças de DTO, status HTTP, aliases e regras de autorização.
 - O arquivo canônico de planejamento SQL é `database/banco.sql` no backend.
+
+## Investigação de integração — 2026-11-04
+
+- O backend existente foi comparado com `src/lib/api.js`: autenticação, personagens,
+  campanha legada (`/api/campanha`) e NPCs usam os mesmos caminhos esperados pelo
+  frontend.
+- Correções cirúrgicas aplicadas no backend (sem tocar no frontend): respostas de
+  login/registro/me não expõem `bankPassword`; cadastro público não aceita promoção
+  de perfil; atualização de perfil não permite autoelevação; vínculo de personagem
+  a campanha valida proprietário/membro; mestres ficam isolados às próprias
+  campanhas; membros só podem ser listados por usuário autorizado; e NPCs validam
+  proprietário/membro antes de ler ou alterar.
+- `/api/campanha` passou a encaminhar GET/PUT para o controlador legado, mantendo
+  `/api/campanhas` para a coleção moderna.
+- O backend já possuía alterações locais amplas antes desta análise; elas foram
+  preservadas e não houve reset/commit.
