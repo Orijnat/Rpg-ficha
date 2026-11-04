@@ -141,7 +141,7 @@ export default function InventarioPage() {
           <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
             <div className="flex items-center gap-2">
               <Package size={15} className="text-primary" />
-              <span className="font-serif font-bold text-foreground">Capacidade de Carga</span>
+              <span className="font-serif font-bold text-foreground">Capacidade de Carga (peso)</span>
               {capacity.isOverloaded && (
                 <span className="flex items-center gap-1 rounded bg-rose-500/20 px-2 py-0.5 text-[10px] font-bold text-rose-300">
                   <AlertTriangle size={11} /> Sobrecarga!
@@ -262,6 +262,16 @@ export default function InventarioPage() {
                   />
                 </div>
 
+                <div className="flex shrink-0 items-center gap-1 text-[10px] text-muted-foreground" title="Peso por unidade">
+                  <span>Peso</span>
+                  <EditableNumber
+                    value={item.weight ?? item.peso ?? 1}
+                    onChange={(value) => updItem(item.id, { weight: value })}
+                    className="w-10 text-center font-mono text-xs font-bold text-muted-foreground"
+                    min={0}
+                  />
+                </div>
+
                 {/* Botão de Rolagem Rápida se o item tiver dados no nome (ex: 1d6) */}
                 {formula && (
                   <button
@@ -283,6 +293,8 @@ export default function InventarioPage() {
                 {/* Contador de Quantidade */}
                 <div className="flex shrink-0 items-center gap-1">
                   <button
+                    type="button"
+                    aria-label={`Diminuir quantidade de ${item.name || "item"}`}
                     onClick={() => updItem(item.id, { qty: Math.max(0, item.qty - 1) })}
                     className="flex h-7 w-7 items-center justify-center rounded border border-border bg-secondary text-xs text-muted-foreground transition hover:border-primary/40 hover:bg-primary/10 hover:text-primary"
                     title="Diminuir"
@@ -295,9 +307,12 @@ export default function InventarioPage() {
                     onChange={(value) => updItem(item.id, { qty: value })}
                     className="w-8 text-center font-mono text-xs font-bold text-[#d69a3d]"
                     min={0}
+                    label={`Quantidade de ${item.name || "item"}`}
                   />
 
                   <button
+                    type="button"
+                    aria-label={`Aumentar quantidade de ${item.name || "item"}`}
                     onClick={() => updItem(item.id, { qty: item.qty + 1 })}
                     className="flex h-7 w-7 items-center justify-center rounded border border-border bg-secondary text-xs text-muted-foreground transition hover:border-primary/40 hover:bg-primary/10 hover:text-primary"
                     title="Aumentar"
@@ -308,6 +323,8 @@ export default function InventarioPage() {
 
                 {/* Remover Item */}
                 <button
+                  type="button"
+                  aria-label={`Excluir item ${item.name || ""}`}
                   onClick={() => removeItem(item.id)}
                   className="rounded p-1 text-[#8b1a1a] opacity-0 transition-all group-hover:opacity-100 hover:bg-rose-500/10 hover:text-rose-400"
                   title="Excluir item"

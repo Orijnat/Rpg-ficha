@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   Shield,
   Zap,
@@ -9,15 +9,23 @@ import {
   Dices,
   Flame,
   HeartPulse,
+  Send,
+  Check,
 } from "lucide-react";
 import { SectionHeader, EditableNumber } from "./ui";
 import { useCharacter } from "../context/CharacterContext";
 import { useDice } from "../context/DiceContext";
+import { useAuth } from "../context/AuthContext";
 import { calculateInitiative, calculateModifier } from "../../lib/modifiers";
+import { sendInitiativeFromSheet } from "../../lib/api";
 
 export default function RecursosCombate() {
   const { data, updExtra } = useCharacter();
   const { executeRoll, promptRoll } = useDice();
+  const { token, isMaster } = useAuth();
+
+  const [sendingInit, setSendingInit] = useState(false);
+  const [sentSuccess, setSentSuccess] = useState(false);
 
   const extras = data.dadosExtras || {};
 
@@ -47,6 +55,37 @@ export default function RecursosCombate() {
       modifier: initiativeData.total,
       label: `Iniciativa (${initiativeData.formatted})`,
     });
+  };
+
+  // Enviar iniciativa diretamente da ficha para a mesa do mestre
+  const handleSendInitiativeToMaster = async () => {
+    setSendingInit(true);
+    setSentSuccess(false);
+    try {
+      const roll = executeRoll({
+        sides: 20,
+        modifier: initiativeData.total,
+        label: `Iniciativa enviada à mesa (${initiativeData.formatted})`,
+      });
+
+      await sendInitiativeFromSheet(
+        data.campanhaId || "ativa",
+        {
+          characterId: data.id,
+          name: data.name || "Aventureiro",
+          initiative: roll?.total ?? initiativeData.total,
+          hp: data.hp ?? 10,
+          hpMax: data.hpMax ?? 10,
+        },
+        token
+      );
+      setSentSuccess(true);
+      setTimeout(() => setSentSuccess(false), 3000);
+    } catch (err) {
+      console.warn("Não foi possível enviar iniciativa à mesa:", err.message);
+    } finally {
+      setSendingInit(false);
+    }
   };
 
   // Rolar Dado de Vida para descanso/cura
@@ -80,11 +119,12 @@ export default function RecursosCombate() {
             className="mt-1 font-serif text-2xl font-black text-foreground"
             min={0}
             max={99}
+            disabled={!isMaster}
           />
           <span className="text-[9px] text-muted-foreground uppercase">Armadura</span>
         </div>
 
-        {/* Iniciativa com Rolagem Rápida */}
+        {/* Iniciativa com Rolagem Rápida e Envio à Mesa */}
         <div className="flex flex-col items-center justify-center rounded-xl border border-white/10 bg-background/50 p-3 text-center shadow-inner group">
           <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
             <Flame size={12} className="text-primary" />
@@ -102,8 +142,23 @@ export default function RecursosCombate() {
             >
               <Dices size={14} />
             </button>
+            <button
+              type="button"
+              onClick={handleSendInitiativeToMaster}
+              disabled={sendingInit}
+              className={`rounded-lg border p-1.5 transition active:scale-95 ${
+                sentSuccess
+                  ? "border-emerald-500/50 bg-emerald-950/40 text-emerald-300"
+                  : "border-primary/40 bg-primary/20 text-primary hover:bg-primary/30"
+              }`}
+              title="Rolar e enviar iniciativa diretamente para a mesa ativa do mestre"
+            >
+              {sentSuccess ? <Check size={14} /> : <Send size={14} />}
+            </button>
           </div>
-          <span className="text-[9px] text-muted-foreground uppercase">DES + Bônus</span>
+          <span className="text-[9px] text-muted-foreground uppercase">
+            {sentSuccess ? "Enviado à mesa!" : "DES + Bônus"}
+          </span>
         </div>
 
         {/* Dado de Vida com Rolagem de Cura */}
@@ -153,6 +208,8 @@ export default function RecursosCombate() {
                 onChange={(val) => updExtra("peMax", val)}
                 className="text-muted-foreground"
                 min={0}
+                disabled={!isMaster}
+                label="PE Máximo"
               />
             </div>
           </div>
@@ -195,6 +252,7 @@ export default function RecursosCombate() {
                 onChange={(val) => updExtra("insanityCurrent", val)}
                 className="font-bold text-purple-300"
                 min={0}
+                max={insanityMax > 0 ? insanityMax : undefined}
               />
               <span className="text-muted-foreground">/</span>
               <EditableNumber
@@ -202,6 +260,9 @@ export default function RecursosCombate() {
                 onChange={(val) => updExtra("insanityMax", val)}
                 className="text-muted-foreground"
                 min={0}
+                max={99}
+                disabled={!isMaster}
+                label="Insanidade Máxima"
               />
             </div>
           </div>
@@ -243,18 +304,17 @@ export default function RecursosCombate() {
               onChange={(val) => updExtra("bpCurrent", val)}
               className="font-bold text-amber-300"
               min={0}
+              max={bpMax > 0 ? bpMax : undefined}
             />
-            {bpMax > 0 && (
-              <>
-                <span className="text-muted-foreground">/</span>
-                <EditableNumber
-                  value={bpMax}
-                  onChange={(val) => updExtra("bpMax", val)}
-                  className="text-muted-foreground"
-                  min={0}
-                />
-              </>
-            )}
+            <span className="text-muted-foreground">/</span>
+            <EditableNumber
+              value={bpMax}
+              onChange={(val) => updExtra("bpMax", val)}
+              className="text-muted-foreground"
+              min={0}
+              disabled={!isMaster}
+              label="BP Máximo"
+            />
           </div>
         </div>
       </div>

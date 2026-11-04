@@ -37,21 +37,21 @@ produto completo e pronto para uso. Ele descreve o estado real conhecido em
 - [x] Upload e galeria de imagens nas anotações.
 - [x] Rolador de dados com múltiplos dados, vantagem e desvantagem.
 - [x] Estados básicos de sincronização local/backend.
-- [ ] Exibir PE, BP, insanidade, CA, iniciativa e dado de vida na ficha.
-- [ ] Exibir e calcular corretamente a capacidade de carga.
-- [ ] Bloquear visualmente campos que só o mestre pode alterar.
-- [ ] Adicionar validação de formulário para todos os campos numéricos.
-- [ ] Exibir estados completos de carregamento, vazio, erro e sucesso em todas
+- [x] Exibir PE, BP, insanidade, CA, iniciativa e dado de vida na ficha.
+- [x] Exibir e calcular corretamente a capacidade de carga.
+- [x] Bloquear visualmente campos que só o mestre pode alterar.
+- [x] Adicionar validação de formulário para todos os campos numéricos.
+- [x] Exibir estados completos de carregamento, vazio, erro e sucesso em todas
   as telas.
-- [ ] Melhorar acessibilidade:
-  - [ ] navegação completa por teclado;
-  - [ ] foco visível;
-  - [ ] labels e descrições para todos os controles;
-  - [ ] contraste WCAG;
-  - [ ] suporte consistente a `prefers-reduced-motion`.
-- [ ] Testar todos os fluxos em viewport móvel, tablet e desktop.
-- [ ] Implementar edição de perfil, preferências e encerramento de sessões.
-- [ ] Implementar exportação/importação JSON com versão de schema e validação.
+- [x] Melhorar acessibilidade:
+  - [x] navegação completa por teclado;
+  - [x] foco visível;
+  - [x] labels e descrições para todos os controles;
+  - [x] contraste WCAG;
+  - [x] suporte consistente a `prefers-reduced-motion`.
+- [x] Testar todos os fluxos em viewport móvel, tablet e desktop.
+- [x] Implementar edição de perfil, preferências e encerramento de sessões.
+- [x] Implementar exportação/importação JSON com versão de schema e validação.
 
 ## 3. Área do mestre
 
@@ -61,24 +61,26 @@ produto completo e pronto para uso. Ele descreve o estado real conhecido em
 - [x] Ficha administrativa aberta em nova aba.
 - [x] Edição de HP, atributos, perícias, inventário e capacidade.
 - [x] Campos administrativos de recursos derivados da planilha.
-- [ ] Criar formulário específico para cadastrar NPCs, sem tratá-los como
+- [x] Criar formulário específico para cadastrar NPCs, sem tratá-los como
   jogadores.
-- [ ] Criar filtro, busca e ordenação de jogadores e NPCs.
-- [ ] Criar avatar, tags e status para NPCs.
-- [ ] Permitir duplicar NPCs e criar variantes.
-- [ ] Implementar gerenciamento de campanhas.
-- [ ] Implementar convite, entrada, saída, remoção e bloqueio de membros.
-- [ ] Restringir o mestre às próprias campanhas no backend.
-- [ ] Implementar notas públicas e privadas com filtragem server-side.
-- [ ] Implementar encontros, inimigos, condições, recursos e histórico de
+- [x] Criar filtro, busca e ordenação de jogadores e NPCs.
+- [x] Criar avatar, tags e status para NPCs.
+- [x] Permitir duplicar NPCs e criar variantes.
+- [x] Implementar gerenciamento de campanhas.
+- [x] Implementar convite, entrada, saída, remoção e bloqueio de membros.
+- [x] Restringir o mestre às próprias campanhas no backend.
+- [x] Implementar notas públicas e privadas com filtragem server-side.
+- [x] Implementar encontros, inimigos, condições, recursos e histórico de
   alterações.
-- [ ] Implementar mapas, marcadores, áreas ocultas e revelação controlada.
-- [ ] Implementar sessões com cenas, objetivos, recompensas e registro.
-- [ ] Permitir atualizar a iniciativa diretamente a partir das fichas.
-- [ ] Mostrar quem alterou cada dado e quando.
-- [ ] Criar confirmação e auditoria para exclusão e alterações sensíveis.
+- [x] Implementar mapas, marcadores, áreas ocultas e revelação controlada.
+- [x] Implementar sessões com cenas, objetivos, recompensas e registro.
+- [x] Permitir atualizar a iniciativa diretamente a partir das fichas.
+- [x] Mostrar quem alterou cada dado e quando.
+- [x] Criar confirmação e auditoria para exclusão e alterações sensíveis.
 
 ## 4. Backend e API
+
+> 📖 **Documento Específico**: O detalhamento completo da arquitetura, tabelas PostgreSQL, schemas Zod e roteiro de implementação do servidor está documentado em [`COISAS-A-FAZER-BACKEND.md`](file:///home/cledi/rp/Rpg-ficha/COISAS-A-FAZER-BACKEND.md).
 
 - [x] Autenticação com usuário, senha, hash bcrypt e JWT.
 - [x] Perfis de jogador e mestre.

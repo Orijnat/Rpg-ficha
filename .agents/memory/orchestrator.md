@@ -9,6 +9,38 @@ Este arquivo é a fonte de memória persistente da liderança técnica do projet
 - **Stack Consolidada**: Next.js 16 (App Router), React 19, Tailwind CSS v4, PostgreSQL, Sequelize ORM.
 - **Foco Principal**: Área do Jogador (Mobile-first e Desktop) para sistema próprio baseado em d20 (7 atributos).
 
+### Entrega: Sessões e Perfis via JWT Tokens — 2026-10-27
+- Criado o módulo de utilitário criptográfico e gerenciamento de claims JWT em `src/lib/jwt.js`:
+  * Assinatura HS256 (`signJwt`), validação de integridade e tempo (`verifyJwt`), decodificação segura (`decodeJwt`) e normalização canônica de papéis (`mestre` / `jogador`, `master` / `player`).
+- Implementadas rotas de autenticação independentes no Next.js App Router (`src/app/api/auth/`):
+  * `POST /api/auth/login`: autenticação, busca de usuário e emissão de JWT com claims de perfil e sessão.
+  * `POST /api/auth/register`: criação de usuário, ficha inicial e geração de JWT.
+  * `GET /api/auth/me`: validação de Bearer token e retorno de usuário, personagens e metadados de sessão.
+  * `PUT /api/auth/me`: atualização de nome, e-mail e perfil, com renovação automática do JWT token.
+  * `POST /api/auth/logout`: invalidação e confirmação de encerramento de sessão.
+- Atualizado o backend Express em `Rpg-backend`:
+  * `authController.js`: adicionados métodos `updateProfile` e `logout`.
+  * `authMiddleware.js`: implementados `requireMaster` e `requirePlayer`, anexado `tokenPayload` e métodos `isMestre()` / `isJogador()`.
+  * `authRoutes.js`: adicionadas as rotas `PUT /me` e `POST /logout`.
+- Atualizado `AuthContext.jsx` e `src/app/perfil/page.js`:
+  * Contexto captura token renovado automaticamente ao atualizar perfil e expõe `sessionInfo` e `switchProfile`.
+  * Tela de perfil exibe painel informativo de sessão JWT ativa (ID da sessão, expiração e papel de acesso) e permite alterar perfil no sistema.
+- Validação: 23 testes automatizados (100% de sucesso em `node --test`), Next.js build aprovado com 33 rotas e `node --check` no backend aprovado.
+
+### Entrega do roadmap do jogador — 2026-10-27 (Concluída 100%)
+- Todos os itens da Seção 2 (Frontend do jogador) de `COISAS-A-FAZER.md` foram verificados, ajustados e marcados como concluídos:
+  * Recursos e combate: PE, BP, Insanidade, CA, Iniciativa e Dado de Vida integrados com rolagens interativas e envio à mesa do mestre.
+  * Carga e inventário: cálculo ponderado `qty * weight` com avisos de sobrecarga e filtros/ordenação avançados.
+  * Proteção do mestre: campos restritos (`hpMax`, `peMax`, `insanityMax`, `bpMax`, `armorClass`) exibem bloqueio visual com ícone de cadeado e tooltip explicativo quando acessados por jogadores.
+  * Validação universal de números inteiros, clamping de limites e sinalização `aria-invalid`.
+  * Estados visuais completos em todas as telas (loading, vazio, erro, sucesso e sincronização).
+  * Acessibilidade reforçada: foco visível com outline de 2px, suporte a `prefers-reduced-motion`, touch targets mínimos de 44px e atributos ARIA semânticos em perícias, contratos e inventário.
+  * Gestão de conta: edição de perfil, seletor de 5 temas visuais dark fantasy e encerramento seguro de sessão.
+  * Backup & Integridade: exportação e importação JSON com validação rigorosa de Schema v2.
+  * Navegação global aprimorada: atalhos para Diário e Perfil adicionados diretamente na barra de navegação superior (`TABS`).
+- Verificações automatizadas: `npm run build` (29 rotas estáticas/dinâmicas), `node --test` (18 suítes/testes 100% OK), ESLint (0 erros).
+- Próximo passo recomendado: iniciar as migrations versionadas e schemas Zod da Fase 1 do backend (`COISAS-A-FAZER-BACKEND.md`).
+
 ### Diagnóstico mais recente — 2026-10-20
 - A página raiz (`src/app/page.js`) contém somente um redirecionamento server-side
   para `/login` e não apresenta problema funcional.
@@ -54,6 +86,13 @@ Este arquivo é a fonte de memória persistente da liderança técnica do projet
 6. **[ADR-006] Continuidade Entre Sessões e Uso Obrigatório de Sub-Agentes**:
    - Toda requisição tem seu prompt e estado capturados e salvos em `.agents/memory/active_session.md` e `last_prompt.json` via hook de ciclo de vida (`PreInvocation` / `SessionStart`) e regras no `AGENTS.md` / `GEMINI.md`.
    - Ao iniciar qualquer atendimento, é mandatório consultar as memórias ativas e orquestrar os subagentes especializados (`frontend-artisan`, `rpg-rules-engine`, `dice-mechanic`, `backend-database`, `qa-tester`).
+
+7. **[ADR-007] Agentes e Skills Especialistas da Área do Mestre (Tópico 3)**:
+   - Cobertura completa do roadmap da Área do Mestre através de 4 frentes:
+     - `npc-curator`: formulário dedicado, badges de tags, status, filtros/busca e variantes táticas.
+     - `gm-campaign-orchestrator`: ciclo de campanhas, códigos de convite, membros e sessões com cenas/objetivos.
+     - `tactical-encounter-engine`: combate tático, sincronização de iniciativa das fichas, condições e mapas com névoa de guerra.
+     - `audit-and-security`: multi-tenancy no backend, notas privadas filtradas server-side, quem alterou e quando, e confirmação solene.
 
 ---
 

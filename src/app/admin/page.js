@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import { Card, SectionHeader } from "../components/ui";
 import { useAuth } from "../context/AuthContext";
-import { fetchCampaignData, getApiBaseUrl, getGoogleWorkspaceAuthUrl, getGoogleWorkspaceStatus, getStoredToken, updateCampaignData } from "../../lib/api";
+import { fetchCampaignData, getApiBaseUrl, getGoogleWorkspaceAuthUrl, getGoogleWorkspaceStatus, getStoredToken, listCharacters, updateCampaignData } from "../../lib/api";
 import { CONDITIONS_LIST, applyHealthChange, advanceTurn } from "../../lib/modifiers";
 import { rollDice } from "../../lib/dice";
 
@@ -88,14 +88,8 @@ export default function AdminIndex() {
       .then((campaign) => setTable(normalizeTable(campaign)))
       .catch(() => setTable(loadTable()))
       .finally(() => setCampaignLoaded(true));
-    fetch(`${getApiBaseUrl()}/characters`, {
-      headers: { Authorization: `Bearer ${getStoredToken()}` },
-    })
-      .then(async (response) => {
-        if (!response.ok) throw new Error("Não foi possível carregar os personagens.");
-        return response.json();
-      })
-      .then(setCharacters)
+    listCharacters(getStoredToken())
+      .then((chars) => setCharacters(Array.isArray(chars) ? chars : []))
       .catch((error) => setCharacterError(error.message))
       .finally(() => setLoadingCharacters(false));
     getGoogleWorkspaceStatus(getStoredToken())

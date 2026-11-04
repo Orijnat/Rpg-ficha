@@ -71,6 +71,18 @@ UI/UX da Área do Jogador, componentes React 19, Tailwind CSS v4, responsividade
 - [x] Reforçar o fundo com textura visível, estrelas/rúnicas, laterais ornamentais e vinheta.
 - [x] Criar composição visual expressiva com selos arcanos, faixas de pergaminho e moldura da área principal.
 - [x] Substituir linguagem minimalista por composição de grimório/guilda com placas sólidas, molduras e navegação de metal.
+- [x] Ocultar condicionalmente a barra de navegação, cabeçalho da ficha e botão flutuante de dados em telas de autenticação (`/login` e `/registro`) e fichas isoladas de admin em `src/app/layout.js`.
+- [x] Concluir todos os itens da Seção 2 (Frontend do Jogador) do COISAS-A-FAZER.md:
+  * Exibir PE, BP, insanidade, CA, iniciativa e dado de vida na ficha.
+  * Exibir e calcular corretamente a capacidade de carga ponderada (peso * qty) com alerta de sobrecarga.
+  * Bloqueio visual solene com LockKeyhole em campos restritos ao mestre (hpMax, peMax, insanityMax, bpMax, armorClass).
+  * Validação numérica universal com limites inteiros, clamping e aria-invalid.
+  * Estados visuais completos em todas as telas (loading, vazio, sucesso, erro).
+  * Acessibilidade completa: navegação por teclado, foco visível com ring primário, ARIA roles/labels, WCAG e prefers-reduced-motion.
+  * Suporte responsivo mobile-first, tablet e desktop.
+  * Gestão de perfil, temas e encerramento de sessão local/remoto.
+  * Exportação e importação JSON com validação de Schema v2.
+  * Adição de Diário e Perfil na barra de navegação global (TABS).
 
 ## 🤝 Coordenação entre agentes
 - Agente operacional: `.github/agents/frontend-artisan.agent.md`.

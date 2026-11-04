@@ -86,6 +86,11 @@ Arquivos relacionados:
 - Edição de HP, atributos, perícias, inventário, capacidade e recursos
   derivados.
 - Redirecionamento de mestres para `/admin`.
+- Catálogo e formulário específico de NPCs (`/admin/npcs` e `/admin/npcs/new`).
+- Busca, filtros multicritério, tags, atitudes e status operacionais para NPCs.
+- Duplicação de NPCs e gerador reativo de variantes táticas.
+- Atualização e sincronização de iniciativa a partir das fichas de heróis.
+- Confirmação solene para exclusões e ações destrutivas (`ConfirmDialog.jsx`).
 
 ### Autenticação, perfis e interface
 

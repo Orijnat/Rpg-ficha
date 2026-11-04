@@ -22,8 +22,19 @@ import { useTheme } from "../context/ThemeContext";
 import { useCharacter } from "../context/CharacterContext";
 
 export default function PerfilPage() {
-  const { user, isMaster, isAuthenticated, logout, characters, activeCharacterId, selectCharacter, createCharacter } = useAuth();
-  const { themeId, setThemeId, themes } = useTheme();
+  const {
+    user,
+    isMaster,
+    sessionInfo,
+    isAuthenticated,
+    logout,
+    updateProfile,
+    characters,
+    activeCharacterId,
+    selectCharacter,
+    createCharacter,
+  } = useAuth();
+  const { theme: themeId, setTheme: setThemeId, themes = [] } = useTheme();
   const { data: activeCharData } = useCharacter();
   const router = useRouter();
 
@@ -31,6 +42,31 @@ export default function PerfilPage() {
   const [newCharJob, setNewCharJob] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [createMsg, setCreateMsg] = useState("");
+  const [profileForm, setProfileForm] = useState({ username: "", email: "", perfil: "jogador" });
+  const [profileStatus, setProfileStatus] = useState("");
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+
+  React.useEffect(() => {
+    setProfileForm({
+      username: user?.username || "",
+      email: user?.email || "",
+      perfil: user?.perfil || (isMaster ? "mestre" : "jogador"),
+    });
+  }, [user, isMaster]);
+
+  const handleProfileSave = async (event) => {
+    event.preventDefault();
+    setIsSavingProfile(true);
+    setProfileStatus("");
+    try {
+      await updateProfile(profileForm);
+      setProfileStatus("Perfil atualizado com sucesso.");
+    } catch (error) {
+      setProfileStatus(`Erro: ${error.message}`);
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -118,6 +154,71 @@ export default function PerfilPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
+        <Card className="border-2 border-primary/25 md:col-span-2">
+          <SectionHeader title="Dados da Conta & Perfil" icon={<User size={16} />} />
+          <form onSubmit={handleProfileSave} className="grid gap-3 sm:grid-cols-4 sm:items-end">
+            <label className="text-xs font-semibold text-muted-foreground">
+              Nome de usuário
+              <input
+                type="text"
+                required
+                value={profileForm.username}
+                onChange={(event) => setProfileForm((current) => ({ ...current, username: event.target.value }))}
+                className="mt-1 min-h-11 w-full rounded-lg border border-border bg-input-background px-3 text-sm text-foreground outline-none focus:border-primary"
+              />
+            </label>
+            <label className="text-xs font-semibold text-muted-foreground">
+              E-mail
+              <input
+                type="email"
+                required
+                value={profileForm.email}
+                onChange={(event) => setProfileForm((current) => ({ ...current, email: event.target.value }))}
+                className="mt-1 min-h-11 w-full rounded-lg border border-border bg-input-background px-3 text-sm text-foreground outline-none focus:border-primary"
+              />
+            </label>
+            <label className="text-xs font-semibold text-muted-foreground">
+              Perfil no Sistema
+              <select
+                value={profileForm.perfil}
+                onChange={(event) => setProfileForm((current) => ({ ...current, perfil: event.target.value }))}
+                className="mt-1 min-h-11 w-full rounded-lg border border-border bg-input-background px-3 text-sm text-foreground outline-none focus:border-primary cursor-pointer"
+              >
+                <option value="jogador">Jogador (Herói / Ficha)</option>
+                <option value="mestre">Mestre (Campanha / Admin)</option>
+              </select>
+            </label>
+            <button type="submit" disabled={isSavingProfile} className="min-h-11 rounded-lg bg-primary px-4 text-xs font-bold uppercase text-primary-foreground disabled:opacity-60">
+              {isSavingProfile ? "Salvando..." : "Salvar perfil"}
+            </button>
+            {profileStatus && (
+              <p role="status" className={`text-xs sm:col-span-4 ${profileStatus.startsWith("Erro") ? "text-rose-300" : "text-emerald-300"}`}>
+                {profileStatus}
+              </p>
+            )}
+          </form>
+
+          {/* Painel Informativo da Sessão JWT */}
+          {sessionInfo && (
+            <div className="mt-4 border-t border-white/10 pt-4 text-xs text-muted-foreground">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="font-serif font-bold text-foreground">Sessão JWT Ativa:</span>
+                  <code className="rounded bg-black/40 px-2 py-0.5 font-mono text-[11px] text-primary">
+                    {sessionInfo.sessionId || "Sessão verificada"}
+                  </code>
+                </div>
+                <div className="flex items-center gap-3 font-mono text-[11px]">
+                  <span>Perfil JWT: <strong className="text-foreground">{sessionInfo.label}</strong></span>
+                  {sessionInfo.expiresAt && (
+                    <span>Expira em: <strong className="text-foreground">{new Date(sessionInfo.expiresAt).toLocaleDateString("pt-BR", { hour: "2-digit", minute: "2-digit" })}</strong></span>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </Card>
+
         {/* Gestão de Personagens do Usuário */}
         <Card className="border-2 border-primary/25">
           <div className="flex items-center justify-between border-b border-border/70 pb-3">
@@ -256,7 +357,7 @@ export default function PerfilPage() {
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-xl">{theme.emoji}</span>
+                    <span className="text-xl">{theme.emoji || "✨"}</span>
                     <div>
                       <div className="flex items-center gap-2">
                         <strong className="font-serif text-sm text-foreground">
@@ -276,12 +377,12 @@ export default function PerfilPage() {
                   <div className="flex items-center gap-1.5 shrink-0">
                     <span
                       className="h-4 w-4 rounded-full border border-white/20 shadow-sm"
-                      style={{ backgroundColor: theme.preview.accent }}
+                      style={{ backgroundColor: theme.accent || theme.preview?.accent || "#d69a3d" }}
                       title="Destaque"
                     />
                     <span
                       className="h-4 w-4 rounded-full border border-white/20 shadow-sm"
-                      style={{ backgroundColor: theme.preview.bg }}
+                      style={{ backgroundColor: theme.bg || theme.preview?.bg || "#0b0d12" }}
                       title="Superfície"
                     />
                   </div>

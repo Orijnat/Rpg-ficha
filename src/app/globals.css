@@ -251,6 +251,11 @@
     border-color: var(--border);
   }
 
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+
   html {
     font-size: 15px;
   }
@@ -261,5 +266,42 @@
     color: var(--theme-body, var(--foreground));
     font-family: "Inter", sans-serif;
     transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  /* Acessibilidade: Navegação por teclado com foco visível */
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+  }
+
+  /* Acessibilidade: Respeito a prefers-reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+
+    button,
+    a,
+    input,
+    textarea,
+    select {
+      min-height: 2.75rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }

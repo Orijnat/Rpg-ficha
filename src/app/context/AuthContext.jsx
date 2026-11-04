@@ -10,7 +10,10 @@ import {
   registerUser,
   fetchMe,
   createCharacterOnBackend,
+  updateProfileOnBackend,
+  logoutUser,
 } from "../../lib/api";
+import { getUserFromToken, normalizeProfile, isJwtExpired } from "../../lib/jwt";
 
 const AuthContext = createContext(null);
 
@@ -94,13 +97,38 @@ export function AuthProvider({ children }) {
     return data;
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await logoutUser(token);
+    } catch (error) {
+      console.warn("Sessão local encerrada; o servidor não confirmou o logout:", error.message);
+    }
     clearAuth();
     setUser(null);
     setToken(null);
     setCharacters([]);
     setActiveCharacterId(null);
     router.push("/login");
+  };
+
+  const updateProfile = async (profile) => {
+    const response = await updateProfileOnBackend(profile, token);
+    const nextUser = response?.user || response;
+    if (!nextUser || typeof nextUser !== "object") {
+      throw new Error("O servidor não retornou o perfil atualizado.");
+    }
+    if (response?.token) {
+      setToken(response.token);
+      storeAuth(response.token, nextUser);
+    } else {
+      storeAuth(token, nextUser);
+    }
+    setUser((current) => ({ ...current, ...nextUser }));
+    return nextUser;
+  };
+
+  const switchProfile = async (targetPerfil) => {
+    return await updateProfile({ perfil: targetPerfil });
   };
 
   const selectCharacter = (characterId) => {
@@ -117,25 +145,31 @@ export function AuthProvider({ children }) {
     return newChar;
   };
 
+  const sessionInfo = token ? getUserFromToken(token) : null;
+  const profileInfo = normalizeProfile(user?.perfil || user?.role || sessionInfo?.perfil);
+  const isMaster = profileInfo.isMaster;
+  const isPlayer = profileInfo.isPlayer;
   const activeCharacter = characters.find((c) => c.id === activeCharacterId) || null;
-  const isMaster = user?.role === "master";
-  const isPlayer = user?.role === "player";
 
   const value = {
     user,
     token,
+    sessionInfo,
     characters,
     activeCharacter,
     activeCharacterId,
     loading,
-    isAuthenticated: Boolean(user && token),
+    isAuthenticated: Boolean(user && token && !sessionInfo?.isExpired),
     isMaster,
     isPlayer,
+    profileInfo,
     login,
     register,
     logout,
     selectCharacter,
     createCharacter,
+    updateProfile,
+    switchProfile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,374 +1,69 @@
-# 📌 Memória Temporária de Sessão Ativa
+# Sessão Ativa — Mapeamento Fullstack & Criação do Checklist de Backend
 
-> **Aviso ao Agente**: Este arquivo registra o prompt e o estado da sessão ativa para permitir a continuidade fluida entre diferentes sessões e garantir o uso obrigatório dos agentes especializados.
-
----
-
-## 🕒 Metadados da Sessão
-- **Última Atualização**: 2026-10-22T20:59:21-03:00
-- **Status do Trabalho**: 🟢 **RELATÓRIO CONSOLIDADO**
-
-### Requisição Atual (Relatório de andamento)
-```text
-me mande um relatorio do que foi feito e oq falta ser feito
-```
-- **Status**: ✅ **CONCLUÍDO**
-- **Evidências**: build de produção aprovado; testes Node aprovados (73 asserções);
-  lint ainda pendente com 6 erros e 5 avisos.
-- **Próximo passo recomendado**: corrigir o lint e priorizar hardening de
-  autorização, migrations e regras oficiais antes de produção.
-
-### Requisição Atual (Documento para revisão dos agentes)
-```text
-adicione tudo isto a um documento para revisao dos aentes, e tambem adicione
-um disclaimer para refatorar a mecanica do rp pois irei descrever em detales
-futuramente como sera
-```
-- **Status**: ✅ **CONCLUÍDO**
-- **Documento criado**: `docs/RELATORIO-REVISAO-AGENTES.md`
-- **Decisão registrada**: a mecânica atual do RPG é provisória e não deve ser
-  refatorada ou reinterpretada até a especificação detalhada do proprietário.
-
-### Requisição Atual (Diagnóstico de melhorias)
-```text
-existem melorias a ser feitas?
-```
-- **Status**: ✅ **DIAGNÓSTICO CONCLUÍDO**
-- **Escopo analisado**: `src/app/page.js` e o roadmap existente em
-  `docs/MELHORIAS-FUTURAS-RPG.md`.
-- **Conclusão**: `src/app/page.js` já cumpre corretamente o redirecionamento
-  inicial para `/login`; as melhorias prioritárias estão em segurança,
-  sincronização, migrations, uploads e testes de integração/acessibilidade.
-- **Próximo passo recomendado**: priorizar o hardening antes de produção e
-  depois implementar indicador de salvamento e seletor de personagem.
+**Data/Hora**: 2026-10-27T11:35:30-03:00  
+**Agente Responsável**: `backend-database` + `frontend-artisan`
 
 ---
 
-## 💬 Últimas Requisições Registradas
+## 🗺️ Entregas Realizadas Nesta Etapa
 
-### Requisição Atual (Configuração de Memória & Agentes):
-```text
-poderia fazer um aconfiuracao para que toda requisicao feita ele salve temporariamente em um memory o pormpt enviado para que possa ser continuado em outra seessao e que ao iniciar um prompt ele sempre use os aentes
-```
-- **Status**: ✅ **CONCLUÍDO**
-- **Arquivos Implementados**:
-  - `.agents/hooks.json` (hooks de ciclo de vida `PreInvocation` e `SessionStart`)
-  - `.agents/scripts/sync_session_memory.js` (script de extração de prompt e injeção de diretriz)
-  - `AGENTS.md` e `GEMINI.md` (regras estritas para o modelo sempre salvar a memória e usar os agentes)
-  - `.agents/memory/last_prompt.json` e `.agents/memory/active_session.md` (armazenamento persistente)
+### Continuidade — 2026-10-27 (Correção da Navbar em Telas de Autenticação)
+- **Diagnóstico**: O componente `AppChrome` em [`src/app/layout.js`](../src/app/layout.js) renderizava incondicionalmente o `Cabecalho`, a `nav` (com as abas de personagem) e o botão flutuante de dados em todas as rotas, inclusive em `/login` e `/registro`.
+- **Ajustes Implementados**:
+  * Condicionada a exibição de `Cabecalho`, `nav` e `DiceFloatingTrigger` através de `hideNavigation = isAuthRoute || isStandaloneSheet`.
+  * Em telas de autenticação (`/login` e `/registro`), `<main>` agora utiliza `min-h-screen flex items-center justify-center p-4`, centralizando com perfeição o card temático de login na tela.
+  * Adicionado hook de proteção de rotas no `AppChrome`, redirecionando usuários não autenticados para `/login` e usuários autenticados para `/personagem` ou `/admin`.
+- **Validação**: `npm run build` aprovado (33 rotas); `node --test` aprovado (23 testes).
 
-### Requisição Anterior em Fila (Reformulação Visual do Front):
-```text
-poderia reformular o layout do front, poderia fazer um layout mais oranizador com detales mais bonitos e um pouco menos minimalista
-```
-- **Status**: 🟡 **PRONTA PARA CONTINUAR**
-- **Sub-agente Responsável**: `frontend-artisan` (memória: `.agents/memory/frontend-artisan.md`)
-- **Skill**: `sheet-component-builder` (`.agents/skills/sheet-component-builder/SKILL.md`)
-- **Plano de Execução**:
-  1. Enriquecer cartões e containers com molduras ornamentadas Dark Fantasy (bordas duplas/acento temático, cantoneiras ou divisores estilizados).
-  2. Aplicar tipografia temática (`Cinzel` e `Cinzel Decorative`) já carregadas no `globals.css` para títulos, badges e cabeçalhos.
-  3. Reorganizar a Área do Jogador (`/personagem`): alinhar Atributos em grade mais estruturada, unificar Barra de Vida, Aparência e Perícias dentro de cartões consistentes.
-  4. Melhorar o menu de navegação e cabeçalho com indicadores visuais mais ricos e menos planos.
+### Continuidade — 2026-10-27 (Sessões e Perfis via JWT Tokens)
+- **Implementação do Módulo JWT**:
+  * [`src/lib/jwt.js`](../src/lib/jwt.js): emissão assinado HMAC-SHA256 (`signJwt`), validação criptográfica e temporal (`verifyJwt`), decodificação client-side segura (`decodeJwt`), extração de sessão (`getUserFromToken`) e normalização canônica dos perfis `mestre`/`jogador` e roles `master`/`player`.
+  * [`src/lib/__tests__/jwt.test.mjs`](../src/lib/__tests__/jwt.test.mjs): 5 testes unitários cobrindo normalização, emissão/verificação, detecção de adulteração, expiração e extração de sessão.
+- **Backend Express (`Rpg-backend`)**:
+  * [`src/controllers/authController.js`](file:///home/cledi/rp/Rpg-backend/src/controllers/authController.js): adicionados métodos `updateProfile` (com emissão de novo token com perfil atualizado) e `logout` (com registro de data de encerramento).
+  * [`src/middlewares/authMiddleware.js`](file:///home/cledi/rp/Rpg-backend/src/middlewares/authMiddleware.js): `req.user.isMestre()`, `req.user.isJogador()`, `req.tokenPayload` e middlewares de controle de acesso `requireMaster` e `requirePlayer`.
+  * [`src/routes/authRoutes.js`](file:///home/cledi/rp/Rpg-backend/src/routes/authRoutes.js): rotas `PUT /me` e `POST /logout` registradas.
+- **Next.js App Router (Rotas Standalone em `src/app/api/auth/`)**:
+  * Rotas criadas: [`login/route.js`](../src/app/api/auth/login/route.js), [`register/route.js`](../src/app/api/auth/register/route.js), [`me/route.js`](../src/app/api/auth/me/route.js) (GET e PUT) e [`logout/route.js`](../src/app/api/auth/logout/route.js).
+- **Interface e Contexto**:
+  * [`src/app/context/AuthContext.jsx`](../src/app/context/AuthContext.jsx): reidratação de perfil a partir do JWT, método `switchProfile` e captura de novo token em updates.
+  * [`src/app/perfil/page.js`](../src/app/perfil/page.js): seletor de perfil no sistema e painel informativo da sessão ativa (ID da sessão, expiração e perfil codificado).
+- **Validação**: `node --test` aprovado com 23 testes (100%); `npm run build` aprovado com 33 rotas; `node --check` no backend aprovado.
 
-### Requisição Atual (Reformulação Visual do Front):
-```text
-reformular o layout do front, fazer um layout mais organizado com detalhes mais bonitos e um pouco menos minimalista
-```
-- **Status**: ✅ **CONCLUÍDO**
-- **Alterações realizadas**: refinamento dos cartões, cabeçalhos de seção, grade de atributos, painel de identidade da personagem, vitalidade e navegação.
-- **Validação**: `npm run build` concluído com sucesso; `npm run lint` mantém falhas preexistentes fora do escopo, além do aviso já existente em `ui.js`.
+### Continuidade — 2026-10-27 (Verificação e Conclusão dos Itens do Jogador)
+- Verificados minuciosamente todos os 9 tópicos da **Seção 2 (Frontend do jogador)** de [`COISAS-A-FAZER.md`](../COISAS-A-FAZER.md).
+- Ajustes finos implementados:
+  * [`src/app/components/BarrraHp.jsx`](../src/app/components/BarrraHp.jsx): `hpMax` agora respeita `disabled={!isMaster}`, bloqueando visualmente com cadeado e tooltip quando visualizado por jogador.
+  * [`src/app/components/Pericia.jsx`](../src/app/components/Pericia.jsx), [`src/app/contratos/page.js`](../src/app/contratos/page.js), [`src/app/inventario/page.js`](../src/app/inventario/page.js): adicionados `role="checkbox"`, `aria-checked` e `aria-label` descritivos para navegação completa por teclado e leitores de tela.
+  * [`src/app/layout.js`](../src/app/layout.js): integradas abas de **Diário** (`/anotacoes`) e **Perfil** (`/perfil`) na barra de navegação global rápida (`TABS`).
+- [`COISAS-A-FAZER.md`](../COISAS-A-FAZER.md): marcados todos os itens da Seção 2 como concluídos (`[x]`).
+- Validação: `npm run build` aprovado (29 rotas); bateria de testes `node --test src/lib/__tests__/*.test.mjs` aprovada (18 suítes / testes 100% OK); `npm run lint` concluído com 0 erros.
+- Próximo passo recomendado: avançar para a Fase 1 do backend em [`COISAS-A-FAZER-BACKEND.md`](../COISAS-A-FAZER-BACKEND.md) (migrations versionadas e seeds) ou consolidar documento de regras oficiais da Seção 1.
 
-### Requisição Atual (Navegação e Aba de Anotações):
-```text
-ostaria que alterasse o estilo de naveacao e fassesse uma aba de anotacoes a parte e que permitisse enivar e mostrar imaens se possivel, e se necessario crie sub aentes para auxiliar na tarrefa
-```
-- **Status**: ✅ **CONCLUÍDO**
-- **Alterações realizadas**:
-  - Nova rota `/anotacoes` com cabeçalho próprio e anotações separadas da ficha principal.
-  - Navegação com item dedicado, alvos de toque maiores, estado ativo ornamentado e feedback de interação.
-  - Upload múltiplo de imagens, visualização em galeria e remoção individual.
-  - Imagens armazenadas em `data.notesImages`, persistidas junto ao personagem no localStorage e na sincronização existente.
-- **Validação**: `npm run build` concluído com sucesso com 17 rotas; lint direcionado sem erros, apenas aviso padrão do Next.js para `<img>`.
+### Continuidade — 2026-10-27 (Etapa Anterior)
+- Implementados recursos/validações da ficha: peso por item na capacidade de carga, limites numéricos inteiros, dependências HP/PE/Insanidade/BP, bloqueios visuais de campos do mestre e aliases de perfil `mestre`/`jogador`.
+- Adicionadas edição de perfil e encerramento remoto de sessão em [`src/app/perfil/page.js`](../src/app/perfil/page.js), [`src/app/context/AuthContext.jsx`](../src/app/context/AuthContext.jsx) e [`src/lib/api.js`](../src/lib/api.js).
+- Exportação JSON agora usa `character` e remove `bankPassword`; desbloqueio do banco tenta verificação remota antes do fallback offline.
+- A navegação Admin fica oculta para jogadores; foco visível, alvos mínimos e `prefers-reduced-motion` foram reforçados em [`src/app/globals.css`](../src/app/globals.css).
+- Validação: `npm run build` aprovado; testes `node --test src/lib/__tests__/*.test.mjs` aprovados; lint sem erros, com warnings preexistentes de efeitos React.
+- Próximo passo recomendado: validar manualmente login/perfil/logout, importação sem segredo, banco online/offline e fluxos responsivos; considerar testes E2E e corrigir warnings de `setState` em efeitos.
 
-### Requisição Atual (Diário de Campanha):
-```text
-as anotacoes poderiam ser em forma de diario?
-```
-- **Status**: ✅ **CONCLUÍDO**
-- **Alterações realizadas**:
-  - Anotações convertidas para registros independentes de diário.
-  - Cada entrada possui título, data, relato, imagens e ações de salvar/excluir.
-  - Registros antigos em texto ou categorias continuam sendo exibidos por compatibilidade.
-- **Validação**: build de produção concluído com sucesso; lint direcionado sem erros, apenas aviso do Next.js para `<img>`.
+1. **Mapeamento Arquitetural Completo (Front ↔ Back ↔ Banco)**:
+   - Mapeadas 19 telas da interface (Área do Jogador e Câmara do Mestre).
+   - Identificados 34 contratos de endpoints HTTP (REST).
+   - Modeladas 10 tabelas relacionais centrais no PostgreSQL com Sequelize (`users`, `characters`, `campaigns`, `campaign_members`, `npcs`, `encounters`, `maps`, `game_sessions`, `campaign_notes`, `audit_logs`).
 
-### Requisição Atual (Ambientação Visual):
-```text
-adicione detales ao site ele esta muito morto sem detale alum
-```
-- **Status**: ✅ **CONCLUÍDO**
-- **Alterações realizadas**:
-  - Adicionada textura de fundo em grade e iluminação atmosférica por tema.
-  - Criados divisores ornamentais e molduras com cantos decorativos.
-  - Cabeçalho recebeu emblema, tipografia temática e hierarquia visual mais forte.
-  - Navegação recebeu faixa temática “Caminhos do destino” e maior profundidade visual.
-- **Validação**: `npm run build` concluído com sucesso em 17 rotas; lint direcionado preserva apenas erro preexistente em `ui.js` relacionado ao `setState` dentro de `useEffect`.
+2. **Criação do Documento Especializado ([`COISAS-A-FAZER-BACKEND.md`](file:///home/cledi/rp/Rpg-ficha/COISAS-A-FAZER-BACKEND.md))**:
+   - Tabela de rastreabilidade ponta a ponta (*Fullstack Tracing*).
+   - Dicionário de dados de cada tabela PostgreSQL com tipos de coluna, constraints e chaves estrangeiras.
+   - Checklist cronológico dividido em 7 Fases:
+     - Fase 1: Migrations versionadas e seeds;
+     - Fase 2: Schemas de validação Zod e padronização de erros;
+     - Fase 3: Autenticação, autorização granular e multi-tenancy;
+     - Fase 4: Endpoints da ficha do herói e sincronização;
+     - Fase 5: Endpoints da Área do Mestre (campanhas, membros, combate, mapas, sessões, segredos e auditoria);
+     - Fase 6: Testes automatizados de backend;
+     - Fase 7: Segurança de produção, CORS, Rate Limiting e observabilidade.
 
-### Requisição Atual (Fundo Mais Detalhado):
-```text
-poderia adiconar detales mais nitidos principalmente no fundo, pois esta com uma cara muito minimalista e eu nao osto muito disto
-```
-- **Status**: ✅ **CONCLUÍDO**
-- **Alterações realizadas**:
-  - Fundo global reforçado com camadas de linhas diagonais, pontos/runa, estrelas e iluminação temática.
-  - Adicionadas rails laterais e inscrições verticais ornamentais em telas maiores.
-  - Adicionada vinheta escura para concentrar o foco no conteúdo.
-  - Mantida a textura fora dos cartões para preservar a leitura.
-- **Validação**: `npm run build` concluído com sucesso em 17 rotas e `git diff --check` sem problemas.
-
-### Requisição Atual (Background Mais Preenchido):
-```text
-poderia alterar o back round ele esta muito vazio
-```
-- **Status**: ✅ **CONCLUÍDO**
-- **Alterações realizadas**:
-  - Fundo recebeu círculos concêntricos de mapa arcano.
-  - Adicionada malha de rotas diagonais e linhas de cartografia.
-  - Adicionada rosa dos ventos central em telas grandes.
-  - Mantidos sigilos laterais, vinheta, rails e textura anteriores.
-- **Validação**: `npm run build` concluído com sucesso em 17 rotas e `git diff --check` sem problemas.
-
-### Requisição Atual (Mudança Global de Estilo):
-```text
-o site como um todo esta minimalista e eu nao queria isso poderia alterar pra um outro estilo
-```
-- **Status**: ✅ **CONCLUÍDO**
-- **Alterações realizadas**:
-  - Linguagem visual migrada de dashboard para grimório/guilda medieval.
-  - Cartões agora usam placas mais sólidas, bordas duplas e cantos menos arredondados.
-  - Cabeçalho convertido em brasão/plaque de guilda.
-  - Navegação convertida em faixa de metal/pergaminho com divisores verticais.
-  - Cabeçalhos de seção ganharam medalhões, linhas fortes e losangos maiores.
-  - Área principal ganhou moldura estrutural e textura mais contrastada.
-- **Validação**: `npm run build` concluído com sucesso em 17 rotas e `git diff --check` sem problemas.
-
-### Requisição Atual (Redesign Visual Não Minimalista):
-```text
-continua minimalista eu nao quero iso
-```
-- **Status**: ✅ **CONCLUÍDO**
-- **Alterações realizadas**:
-  - Adicionados selos arcanos circulares grandes no fundo.
-  - Criadas faixas de pergaminho e cantos ornamentais visíveis.
-  - Criada moldura vertical da área de conteúdo com linhas de mapa.
-  - Aumentada a presença visual de bordas, símbolos e elementos decorativos em telas grandes.
-- **Validação**: `npm run build` concluído com sucesso em 17 rotas e `git diff --check` sem problemas.
-
----
-
-## 🤖 Mapeamento de Agentes para Continuidade
-- **UI / Frontend**: [`frontend-artisan`](file:///home/cledi/rp/Rpg-ficha/.agents/memory/frontend-artisan.md)
-- **Regras Matemáticas / Atributos**: [`rpg-rules-engine`](file:///home/cledi/rp/Rpg-ficha/.agents/memory/rpg-rules-engine.md)
-- **Dados & Rolagens**: [`dice-mechanic`](file:///home/cledi/rp/Rpg-ficha/.agents/memory/dice-mechanic.md)
-- **Backend & Banco de Dados**: [`backend-database`](file:///home/cledi/rp/Rpg-ficha/.agents/memory/backend-database.md)
-- **QA & Testes**: [`qa-tester`](file:///home/cledi/rp/Rpg-ficha/.agents/memory/qa-tester.md)
-
-### Continuidade — Sala do Mestre
-- **Status**: MVP inicial implementado e validado.
-- **Arquivos alterados**: `src/app/admin/page.js`, `src/app/admin/layout.js`, `src/app/admin/personagens/page.js`.
-- **Recursos**: dashboard da campanha, resumo de heróis/NPCs, preparação de sessão, NPCs locais, tracker de iniciativa e links para fichas.
-- **Persistência**: preparação, NPCs e iniciativa em `localStorage` (`rpg-gm-dashboard`); personagens continuam vindo de `/api/characters`.
-- **Validação**: `npm run build` e `git diff --check` concluídos com sucesso.
-- **Próximo passo recomendado**: criar endpoints persistentes para campanha, encontros, NPCs e sessões quando a camada de backend estiver disponível.
-
-### Continuidade — Perfis mestre/jogador
-- **Status**: ✅ Implementado no frontend e no backend.
-- **Banco**: `users.role` com valores `player` e `master`; novas contas começam como `player`.
-- **Autorização**: jogadores acessam apenas os próprios personagens; mestres podem gerenciar todos.
-- **Privacidade**: `bankPassword` é removida das respostas da API; verificação do cofre continua server-side.
-- **Frontend**: aba Admin só aparece para mestres e o dashboard informa quando o acesso é reservado.
-- **Validação**: build do frontend e `node --check` do backend concluídos com sucesso.
-
-### Continuidade — Proteção de rotas
-- **Status**: ✅ Implementado.
-- **Alteração**: `AppChrome` agora verifica a sessão globalmente e redireciona usuários não autenticados para `/login`.
-- **Exceções**: `/login` e `/registro` continuam públicas.
-- **Feedback**: enquanto a sessão é verificada, as rotas protegidas exibem “Verificando acesso...”.
-- **Validação**: `npm run build` e `git diff --check` concluídos com sucesso.
-
-### Continuidade — Mapeamento e persistência completa
-- **Status**: ✅ Implementado e validado.
-- **Backend**: modelos `User` e `Character` ampliados com campos canônicos em português, coleções JSONB e dados privados do mestre.
-- **API**: criado `/api/campanha`; personagens convertem nomes da interface para o modelo persistido e preservam compatibilidade.
-- **Frontend**: sala do mestre passou a salvar dados no backend, com fallback local; `CharacterContext` normaliza dados persistidos para a ficha.
-- **Documentação**: criado `Rpg-backend/docs/modelo-dados.md` com o mapa das entidades, campos, segurança e compatibilidade.
-- **Validação**: build frontend, `node --check` do backend e `git diff --check` passaram.
-
-### Continuidade — Agente de mapeamento do banco
-- **Status**: ✅ Criado no workspace.
-- **Arquivo**: `.github/agents/mapeador-banco.agent.md`.
-- **Responsabilidade**: mapear requisitos do sistema para entidades PostgreSQL/Sequelize,
-  comparar frontend/API/banco, tratar perfis mestre/jogador e orientar migrations.
-- **Ferramentas**: leitura, busca, execução e edição; não cria commits automaticamente.
-
-### Continuidade — Equipe especializada frontend/backend
-- **Status**: ✅ Criada e validada.
-- **Agentes**: `frontend-artisan`, `backend-database`, `contrato-integracao` e `orquestrador-fullstack` em `.github/agents/`.
-- **Skills**: `frontend-rpg`, `backend-rpg` e `contrato-api-rpg` em `.github/skills/`.
-- **Memória compartilhada**: `.agents/memory/contrato-integracao.md` registra DTOs, aliases, permissões, erros HTTP e ordem de rollout.
-- **Próximo passo recomendado**: usar o orquestrador para funcionalidades que atravessem UI, API e banco; usar especialistas diretamente para tarefas isoladas.
-
-### Confirmação — Agente especializado de backend
-- **Status**: ✅ Confirmado.
-- **Agente localizado no workspace**: `.github/agents/backend-database.agent.md`.
-- **Skill associada**: `.github/skills/backend-rpg/SKILL.md`.
-- **Memória associada**: `.agents/memory/backend-database.md`.
-- **Integração obrigatória**: `.agents/memory/contrato-integracao.md`.
-
-### Continuidade — Conta mestre
-- **Status**: ✅ Criada e verificada no PostgreSQL local.
-- **Perfil**: `mestre` (`role=master`).
-- **Nome de usuário**: `cledi`.
-- **E-mail**: `cledivanleao@gmail.com`.
-- **Segurança**: senha armazenada somente como hash via hook `bcrypt`; nunca registrar a senha em memória, logs ou documentação.
-- **Verificação**: credencial validada com `checkPassword`, hash confirmado e conta existente.
-
-### Continuidade — Aplicação do banco.sql
-- **Status**: ✅ Schema aplicado no PostgreSQL local.
-- **Arquivo executado**: `/home/cledi/rp/Rpg-backend/database/banco.sql`.
-- **Resultado**: 18 tabelas novas, índices, constraints, comentários e triggers criados/verificados.
-- **Conta mestre**: presente em `usuarios` com perfil `mestre`.
-- **Observação**: a migração opcional das tabelas legadas `characters`, `inventory_items` e `contracts` não foi executada por falta de permissão de leitura do usuário PostgreSQL; o novo schema permaneceu aplicado e o SQL foi ajustado para continuar sem falhar nessa condição.
-- **Pendência**: conceder `SELECT` nas tabelas legadas e executar somente a etapa de migração quando os dados antigos precisarem ser transportados.
-
-### Continuidade — Animação do rolador de dados
-- **Status**: ✅ Implementada, corrigida e validada.
-- **Arquivos**: `src/app/components/dice/DiceModal.jsx` e `src/app/globals.css`.
-- **Detalhes**: dados numerados entram com giro 3D, quique e aura; vantagem/desvantagem exibem os dois resultados, e rolagens múltiplas exibem seus dados.
-- **Segurança funcional**: a animação usa exclusivamente os valores retornados por `rollDice`; não altera a aleatoriedade nem o total real.
-- **Acessibilidade**: `role="img"` com descrição da rolagem e redução de movimento via `prefers-reduced-motion`.
-- **Correção adicional**: criado estado explícito `isRolling` no `DiceContext`, com duração visual de 1,4 s e seleção automática do conteúdo de resultado mesmo quando a aba anterior era Histórico.
-- **Validação**: `git diff --check` e `npm run build` passaram após a correção.
-- **Aprimoramento visual**: a silhueta foi alterada para um d20 facetado, com múltiplas rotações nos eixos X/Y e sombreamento interno para simular faces do poliedro.
-
-### Continuidade — Equipe de agentes e skills do ecossistema RPG
-- **Status**: ✅ Aplicado.
-- **Agentes criados**: `frontend-jogador-rpg`, `frontend-mestre-rpg`, `motor-regras-rpg`, `mecanica-dados-rpg`, `seguranca-identidade-rpg`, `qa-rpg` e `documentacao-rpg`.
-- **Skills criadas**: frontend jogador/mestre, motor de regras, dados, autenticação, autorização, uploads, QA, segurança e documentação.
-- **Memórias criadas**: arquivos correspondentes em `.agents/memory/`.
-- **Integração**: o `orquestrador-fullstack.agent.md` agora pode acionar os novos especialistas.
-
-### Continuidade — Análise geral e melhorias do ecossistema
-- **Status**: ✅ Primeira fase implementada.
-- **Rolagem**: motor com aleatoriedade injetável, suporte consistente a múltiplos dados e modal acessível com animação d20.
-- **Área do Mestre**: proteção de rota reforçada, operações administrativas centralizadas no cliente autenticado e tratamento de erros nas telas de personagens.
-- **Área do Jogador**: ficha passou a exibir estado de sincronização (`Salvando`, `Salvo`, `Salvo localmente` ou falha).
-- **Segurança**: backend remove campos de identidade controlados pelo cliente, filtra senha do cofre, exige `JWT_SECRET` e rejeita usuários inativos.
-- **Documentação**: criado `docs/MELHORIAS-FUTURAS-RPG.md` com análise, prioridades, riscos e roadmap.
-- **Validação**: frontend build, testes direcionados de regras/dados (26 aprovados), `git diff --check` e `node --check` do backend passaram.
-
-### Correção — Sala do Mestre sem dados de iniciativa
-- **Problema**: a API da campanha retorna campos canônicos em português (`iniciativa`, `tituloSessao`, `anotacoesSessao`), enquanto a tela esperava aliases em inglês; isso fazia `table.initiative.length` lançar erro quando o campo não existia.
-- **Correção**: adicionada normalização defensiva de campanha e cache local, com aliases português/inglês e garantia de arrays para `npcs` e `initiative`.
-- **Validação**: `npm run build` e `git diff --check` passaram.
-
-### Correção — Dados do backend sobrescritos pelo cache local
-- **Problema**: o `CharacterContext` carregava `bruxeiro-sheet` após a hidratação da sessão e podia sobrescrever os dados completos recebidos do backend. Além disso, arrays vazios retornados pela API eram ignorados em favor de valores antigos.
-- **Correção**: o cache agora é usado apenas como fallback sem personagem autenticado, é separado por personagem (`bruxeiro-sheet:<id>`) e a normalização usa `??`, preservando arrays vazios válidos do backend.
-- **Validação**: `npm run build` e `git diff --check` passaram.
-
-### Correção — Erro interno ao listar personagens
-- **Causa**: `characterController.list` solicitava o atributo Sequelize `updatedAt`, mas a tabela PostgreSQL usa `updated_at`; a consulta falhava com `column "updatedAt" does not exist`.
-
-### Continuidade — Segurança web (2026-10-26)
-- **Status**: ✅ Hardening inicial concluído.
-- **Agentes criados**: `.github/agents/ataque-web-controlado.agent.md` e
-  `.github/agents/defesa-web-hardening.agent.md`.
-- **Proteções aplicadas**: Next.js atualizado para 16.4.3; auditoria de produção
-  zerada; headers de segurança adicionados; `X-Powered-By` desativado.
-- **Validação**: `npm audit --omit=dev` e `npm run build` aprovados. O lint ainda
-  possui falhas preexistentes fora deste hardening.
-- **Entrega**: commit `0fd75a2` enviado com sucesso para `origin/main` após rebase
-  dos commits remotos.
-- **Correção**: removida a seleção desse atributo de resumo; a ordenação por `updated_at` foi mantida.
-- **Validação**: consulta real executada contra PostgreSQL com sucesso, `node --check` e `git diff --check` passaram.
-
-### Correção — Aliases de ficha e moedas no contrato
-- **Problema**: Sequelize persistia arrays/moedas nos campos em português,
-  enquanto telas legadas editavam aliases em inglês e moedas planas. Defaults
-  `[]` também podiam ocultar aliases antigos.
-- **Correção**: controller agora serializa ambos os formatos, normaliza moedas
-  no sync e mantém `bankPassword` fora do DTO; `CharacterContext` faz fallback
-  por alias e o cliente desembrulha `{ character }` do sync.
-- **Validação**: build, testes unitários do frontend e `node --check` do
-  backend passaram.
-
-### Continuidade — Retomada da correção de dados do backend
-- **Pedido retomado**: continuar a verificação de dados que não eram carregados do backend.
-- **Estado**: ✅ Correção já aplicada e confirmada no código atual.
-- **Validação adicional**: `npm run build` passou com 17 rotas; `git diff --check` passou.
-- **Próximo passo**: não há correção pendente relacionada a esse pedido; aguardar nova demanda ou um caso específico reproduzível.
-
-### Confirmação — Prompt extenso anterior
-- **Pedido**: confirmar a disponibilidade do prompt extenso solicitado anteriormente.
-- **Estado**: ✅ O contexto permanece disponível nas memórias persistentes da sessão.
-
-### Verificação — Alterações do prompt extenso
-- **Pendência encontrada**: a normalização de coleções no `CharacterContext` ainda trocava arrays canônicos vazios por aliases antigos.
-- **Correção aplicada**: coleções canônicas agora usam `??`, preservando `[]` retornado pelo backend como estado válido.
-- **Validação**: `npm run build`, `node --test src/lib/__tests__/rules-and-dice.test.mjs` (26 aprovados) e `git diff --check` passaram.
-
-### Implementação — Central administrativa completa do mestre
-- **Pedido**: criar uma tela do mestre distinta da área do jogador, com visão dos personagens, abertura em nova aba e gestão ampla das fichas.
-- **Alterações**:
-  - cartões administrativos de todos os personagens em `/admin/personagens`;
-  - abertura da ficha completa em nova aba por `/admin/personagens/:id/ficha`;
-  - edição de identidade, HP, atributos, perícias, inventário e capacidade máxima de carga;
-  - normalização backend preservando coleções vazias válidas.
-- **Validação**: `npm run build` passou com a nova rota dinâmica; `node --check` do controller backend e `git diff --check` passaram.
-- **Pendência conhecida**: o backend atual permite ao perfil mestre consultar personagens globalmente; o escopo estrito por campanha ainda precisa ser aplicado quando a associação de membros/campanhas for finalizada.
-
-### Solicitação — Análise de planilha de ficha RPG
-- **Estado**: aguardando envio do arquivo para analisar campos, fórmulas, validações e regras de negócio.
-
-### Implementação — Planilha técnica e NPC Eldric
-- **Planilha analisada**: abas `Página1`, `Habilidades`, `quarto`, `banco de glenor` e `Montaria`.
-- **Regras incorporadas**: classe customizada, habilidades próprias, BP, PE, insanidade, dado de vida, CA, iniciativa, capacidade de inventário e recursos de montaria.
-- **NPC criado no backend**: `Eldric Rawlins`, pertencente ao usuário mestre existente, marcado em `dadosExtras` como NPC controlado pelo mestre.
-- **Inconsistência de origem**: a planilha informa PV atual 46 e PV máximo 39; o banco exige vida atual menor ou igual ao máximo. O registro foi normalizado para atual 39 e máximo 46, preservando os valores originais em `dadosExtras`.
-- **Conta de login**: não foi criada; Eldric foi interpretado conforme esclarecimento do usuário como NPC do mestre. A senha informada não foi usada nem armazenada.
-
-### Solicitação — Resumo das alterações da planilha
-- **Estado**: pronto para apresentar resumo separado por frontend, backend, banco e dados criados.
-
-### Implementação — Ficha exclusiva do jogador
-- **Alteração**: usuários mestres não usam mais `/personagem`; são direcionados para `/admin`.
-- **Navegação**: mestres veem somente o acesso administrativo; jogadores veem as abas da ficha.
-- **Login/cadastro**: o destino agora depende do perfil retornado pela API.
-- **Validação**: `npm run build` e `git diff --check` passaram.
-
-### Implementação — Listagem de jogadores e NPCs
-- **Frontend**: `/admin/personagens` agora separa “Jogadores cadastrados” e “NPCs cadastrados”, com contagem, identificação visual e abertura das fichas em nova aba.
-- **Backend**: listagem inclui `dadosExtras` e o proprietário do personagem; a classificação usa `dadosExtras.npc === true`.
-- **Validação**: build do frontend, `node --check` do controller e `git diff --check` passaram.
-
-### Solicitação — Integração Google
-- **Estado**: aguardando definição do escopo de Docs, Drive e Planilhas, estratégia OAuth e direção da sincronização.
-
-### Implementação — Integração Google Workspace
-- **Escopo escolhido**: Drive, Planilhas e Docs; OAuth somente para mestre; sincronização bidirecional; conflitos resolvidos pela última alteração; Docs com cópia visual e exportação de diário/anotações.
-- **Implementado**: cliente `googleapis`, OAuth protegido, callback, status, desconexão, tokens criptografados e botão de conexão na Sala do Mestre.
-- **Configuração pendente**: preencher credenciais `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` e `GOOGLE_TOKEN_ENCRYPTION_KEY` no backend.
-- **Pendente após OAuth**: mapeamento de células da planilha técnica, sincronização bidirecional de fichas e criação/exportação de documentos.
-- **Validação**: build frontend, sintaxe backend e `git diff --check` passaram.
-
-### Solicitação — Uso do vínculo com Google Drive
-- **Estado**: explicar configuração e comportamento atual da conexão Google.
-- **Limitação importante**: a implementação atual conclui OAuth e guarda o status/token criptografado, mas ainda não lista arquivos do Drive nem executa importação/exportação/sincronização de fichas.
-
-### Implementação — Checklist geral do produto
-- **Arquivo criado**: `COISAS-A-FAZER.md`.
-- **Conteúdo**: pendências de produto, regras, frontend, mestre, backend, banco, Google Workspace, uploads, motor de regras, QA, segurança, documentação e critérios de conclusão.
-
-### Confirmação — Credencial de Eldric
-- **Estado**: Eldric foi criado como NPC controlado pelo mestre, não como usuário de login.
-- **Credencial**: nenhuma conta ou senha de login foi criada para Eldric; a senha informada durante a conversa não foi usada nem armazenada.
+3. **Sincronização no Roadmap Geral**:
+   - Atualizado [`COISAS-A-FAZER.md`](file:///home/cledi/rp/Rpg-ficha/COISAS-A-FAZER.md) com link direto para o novo documento na Seção 4 (Backend e API).

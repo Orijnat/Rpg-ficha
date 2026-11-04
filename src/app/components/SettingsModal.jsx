@@ -22,6 +22,7 @@ import {
 import { useCharacter } from "../context/CharacterContext";
 import { useTheme } from "../context/ThemeContext";
 import { syncCharacterWithBackend } from "../../lib/api";
+import { validateCharacterSchema } from "../../lib/modifiers";
 
 const THEME_ICONS = {
   amber: Flame,
@@ -61,14 +62,22 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
 
   if (!isOpen) return null;
 
-  // Exportar ficha como arquivo JSON
+  // Exportar ficha como arquivo JSON com schema versionado
   const handleExportJSON = () => {
     try {
       const sanitizedName = (data.name || "personagem").toLowerCase().replace(/[^a-z0-9]/g, "-");
       const dateStr = new Date().toISOString().split("T")[0];
       const filename = `ficha-${sanitizedName}-${dateStr}.json`;
 
-      const jsonStr = JSON.stringify(data, null, 2);
+      const { bankPassword: _privateBankPassword, ...exportableData } = data;
+      const exportPayload = {
+        _schemaVersion: 2,
+        exportedAt: new Date().toISOString(),
+        system: "Crônicas do Destino (d20)",
+        character: exportableData,
+      };
+
+      const jsonStr = JSON.stringify(exportPayload, null, 2);
       const blob = new Blob([jsonStr], { type: "application/json" });
       const url = URL.createObjectURL(blob);
 
@@ -81,7 +90,7 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
       URL.revokeObjectURL(url);
 
       setSyncStatus("success");
-      setSyncMessage("Ficha exportada com sucesso como arquivo JSON!");
+      setSyncMessage("Ficha exportada com sucesso como arquivo JSON (Schema v2)!");
       setTimeout(() => setSyncStatus(null), 3500);
     } catch (err) {
       setSyncStatus("error");
@@ -89,7 +98,7 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
     }
   };
 
-  // Importar ficha a partir de arquivo JSON
+  // Importar ficha a partir de arquivo JSON com validação de schema
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -102,9 +111,15 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
           throw new Error("Arquivo JSON inválido ou vazio.");
         }
 
-        loadCharacter(parsed);
+        const rawChar = parsed.character || parsed;
+        const validation = validateCharacterSchema(rawChar);
+        if (!validation.valid) {
+          throw new Error(`Dados corrompidos ou incompatíveis: ${validation.errors.join("; ")}`);
+        }
+
+        loadCharacter(validation.sanitized || rawChar);
         setSyncStatus("success");
-        setSyncMessage(`Ficha de "${parsed.name || "Herói"}" importada com sucesso!`);
+        setSyncMessage(`Ficha de "${rawChar.name || "Herói"}" validada e importada com sucesso (Schema v2)!`);
         setTimeout(() => setSyncStatus(null), 4000);
       } catch (err) {
         setSyncStatus("error");

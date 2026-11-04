@@ -164,14 +164,15 @@ export function calculateCapacity(characterData = {}) {
 
   const carried = inventory.reduce((acc, item) => {
     const qty = Number(item?.qty ?? item?.quantidade ?? 1);
-    return acc + (isNaN(qty) ? 0 : Math.max(0, qty));
+    const weight = Number(item?.weight ?? item?.peso ?? 1);
+    return acc + (isNaN(qty) || isNaN(weight) ? 0 : Math.max(0, qty) * Math.max(0, weight));
   }, 0);
 
   const isOverloaded = carried > max;
   const percentage = Math.min(100, Math.round((carried / max) * 100));
 
   return {
-    carried,
+    carried: Number(carried.toFixed(2)),
     max,
     isOverloaded,
     percentage,
@@ -216,13 +217,26 @@ export function validateCharacterSchema(data) {
   // Sanitiza e valida HP
   const hp = Number(data.hp ?? 70);
   const hpMax = Number(data.hpMax ?? 70);
-  if (isNaN(hp) || hp < 0) errors.push("HP atual deve ser um número não-negativo.");
-  if (isNaN(hpMax) || hpMax <= 0) errors.push("HP máximo deve ser um número maior que zero.");
+  if (!Number.isFinite(hp) || hp < 0) errors.push("HP atual deve ser um número não-negativo.");
+  if (!Number.isFinite(hpMax) || hpMax <= 0) errors.push("HP máximo deve ser um número maior que zero.");
+  if (Number.isFinite(hp) && Number.isFinite(hpMax) && hp > hpMax) {
+    errors.push("HP atual não pode exceder o HP máximo.");
+  }
 
   // Garante integridade de perícias
   const skills = Array.isArray(data.skills) ? data.skills : [];
   const inventory = Array.isArray(data.inventory) ? data.inventory : [];
   const contracts = Array.isArray(data.contracts) ? data.contracts : [];
+
+  const extras = data.dadosExtras && typeof data.dadosExtras === "object" ? data.dadosExtras : {};
+  const numericExtra = (key, fallback, min = 0, max = 999) => {
+    const value = Number(extras[key] ?? fallback);
+    if (!Number.isInteger(value) || value < min || value > max) {
+      errors.push(`${key} deve ser um número inteiro entre ${min} e ${max}.`);
+      return fallback;
+    }
+    return value;
+  };
 
   const sanitized = {
     ...data,
@@ -233,19 +247,32 @@ export function validateCharacterSchema(data) {
     inventory,
     contracts,
     dadosExtras: {
-      inventoryCapacity: Number(data.dadosExtras?.inventoryCapacity || 20),
-      insanityMax: Number(data.dadosExtras?.insanityMax || 0),
-      insanityCurrent: Number(data.dadosExtras?.insanityCurrent || 0),
-      bpMax: Number(data.dadosExtras?.bpMax || 0),
-      bpCurrent: Number(data.dadosExtras?.bpCurrent || 0),
-      peMax: Number(data.dadosExtras?.peMax || 0),
-      peCurrent: Number(data.dadosExtras?.peCurrent || 0),
-      hitDie: data.dadosExtras?.hitDie || "1d10",
-      armorClass: Number(data.dadosExtras?.armorClass || 0),
-      initiative: Number(data.dadosExtras?.initiative || 0),
-      ...(data.dadosExtras || {}),
+      inventoryCapacity: numericExtra("inventoryCapacity", 20, 1, 999),
+      insanityMax: numericExtra("insanityMax", 0),
+      insanityCurrent: numericExtra("insanityCurrent", 0),
+      bpMax: numericExtra("bpMax", 0),
+      bpCurrent: numericExtra("bpCurrent", 0),
+      peMax: numericExtra("peMax", 0),
+      peCurrent: numericExtra("peCurrent", 0),
+      hitDie: typeof extras.hitDie === "string" && /^\d+d\d+(?:[+-]\d+)?$/i.test(extras.hitDie)
+        ? extras.hitDie
+        : "1d10",
+      armorClass: numericExtra("armorClass", 10, 0, 99),
+      initiative: numericExtra("initiative", 0, -30, 30),
+      customAbilities: Array.isArray(extras.customAbilities) ? extras.customAbilities : [],
+      training: Array.isArray(extras.training) ? extras.training : [],
     },
   };
+
+  if (sanitized.dadosExtras.peCurrent > sanitized.dadosExtras.peMax) {
+    errors.push("PE atual não pode exceder o PE máximo.");
+  }
+  if (sanitized.dadosExtras.insanityCurrent > sanitized.dadosExtras.insanityMax) {
+    errors.push("Insanidade atual não pode exceder o máximo.");
+  }
+  if (sanitized.dadosExtras.bpCurrent > sanitized.dadosExtras.bpMax) {
+    errors.push("BP atual não pode exceder o BP máximo.");
+  }
 
   return {
     valid: errors.length === 0,
@@ -327,4 +354,3 @@ export function validateNumericBounds(value, min = 0, max = Infinity, fallback =
   if (isNaN(parsed)) return fallback;
   return Math.max(min, Math.min(max, parsed));
 }
-

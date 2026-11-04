@@ -25,7 +25,19 @@
 - **Médio — pendente:** mestre ainda tem acesso amplo a personagens porque não existe no modelo/API uma relação verificável de campanha e gestão. Não foi inventada uma regra insegura; é necessária modelagem de associação mestre-campanha antes de restringir por campanha.
 - **Médio — pendente:** token fica em `localStorage`, vulnerável a XSS. Migrar para cookie `HttpOnly`, `Secure`, `SameSite` exige mudança coordenada de sessão/CSRF.
 - **Médio — pendente:** `bankPassword` continua armazenada como texto comparável no banco e possui default conhecido no modelo. Deve ser migrada para hash e o default removido em uma alteração de dados planejada.
-- **Baixo — pendente:** não há rota de logout/revogação de JWT; expiração atual é de 7 dias.
+- **Baixo — resolvido:** implementada rota de logout/encerramento de sessão `POST /auth/logout` tanto no backend Express quanto no Next.js Route Handlers.
+- **Implementação Fullstack de Sessão e Perfis via JWT Tokens (2026-10-27)**:
+  * Criação do utilitário `src/lib/jwt.js`: assinatura HMAC-SHA256, verificação, validação temporal/expiração, decodificação segura e normalização canônica de perfis (`mestre` / `jogador`) e roles (`master` / `player`).
+  * Backend Express:
+    - `authController.js`: adicionados `updateProfile` (com renovação de JWT e `PUT /auth/me`) e `logout` (`POST /auth/logout`).
+    - `authMiddleware.js`: payload de token anexado, `req.user.isMestre()`, `req.user.isJogador()`, `requireMaster` e `requirePlayer`.
+    - `authRoutes.js`: expostos `PUT /me` e `POST /logout`.
+  * Next.js App Router (rotas standalone):
+    - `src/app/api/auth/login/route.js`, `register/route.js`, `me/route.js` (GET/PUT), `logout/route.js`.
+  * Frontend:
+    - `AuthContext.jsx`: sessão reativa, extração de claims JWT, suporte a atualização de token renovado e `switchProfile`.
+    - `perfil/page.js`: painel de sessão ativa com ID de sessão, data de expiração do JWT e seletor/atualização de perfil.
+  * Testes automatizados: `src/lib/__tests__/jwt.test.mjs` com 5 testes específicos para JWT e 23 testes gerais 100% aprovados.
 - **Baixo — pendente:** não foram encontradas rotas de upload no backend para validar tamanho, MIME e origem; qualquer futura implementação deve aplicar essas validações no servidor.
 
 ### Arquivos alterados nesta auditoria

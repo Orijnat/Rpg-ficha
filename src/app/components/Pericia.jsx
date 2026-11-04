@@ -27,6 +27,9 @@ export default function Pericia() {
               <div className="flex items-center gap-2.5">
                 <button
                   type="button"
+                  role="checkbox"
+                  aria-checked={skill.trained}
+                  aria-label={`Perícia ${skill.name} (${skill.attr}): ${skill.trained ? "treinada" : "não treinada"}`}
                   onClick={() => updSkill(index, { trained: !skill.trained })}
                   className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors ${
                     skill.trained

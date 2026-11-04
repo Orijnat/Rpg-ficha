@@ -116,6 +116,9 @@ export default function Contratos() {
               <div className="flex items-start gap-3">
                 <button
                   type="button"
+                  role="checkbox"
+                  aria-checked={contract.done}
+                  aria-label={`Contrato ${contract.title || "sem título"}: ${contract.done ? "concluído" : "ativo"}`}
                   onClick={() => updContract(contract.id, { done: !contract.done })}
                   className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-lg border transition-colors ${
                     contract.done

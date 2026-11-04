@@ -49,11 +49,11 @@ export const defaultData = {
   prata: 70,
   cobre: 3,
   inventory: [
-    { id: "1", name: "Espada de Aço", qty: 1 },
-    { id: "2", name: "Espada de Prata", qty: 1 },
-    { id: "3", name: "Óleo contra Espectros", qty: 2 },
-    { id: "4", name: "Poção Andorinha", qty: 3 },
-    { id: "5", name: "Besta de mão com virotes", qty: 1 },
+    { id: "1", name: "Espada de Aço", qty: 1, weight: 1 },
+    { id: "2", name: "Espada de Prata", qty: 1, weight: 1 },
+    { id: "3", name: "Óleo contra Espectros", qty: 2, weight: 0.5 },
+    { id: "4", name: "Poção Andorinha", qty: 3, weight: 0.25 },
+    { id: "5", name: "Besta de mão com virotes", qty: 1, weight: 2 },
   ],
   contracts: [
     { id: "1", title: "O Monstro do Poço", reward: "50 Ouro", done: false },

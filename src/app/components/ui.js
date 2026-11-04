@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Dices } from "lucide-react";
+import { Dices, LockKeyhole } from "lucide-react";
 import { calculateModifier, formatModifier } from "../../lib/modifiers";
 import { useDice } from "../context/DiceContext";
 
@@ -42,7 +42,15 @@ function toSafeString(v) {
   return String(v);
 }
 
-export function EditableText({ value, onChange, className = "", multiline = false, placeholder = "—" }) {
+export function EditableText({
+  value,
+  onChange,
+  className = "",
+  multiline = false,
+  placeholder = "—",
+  disabled = false,
+  label = "Texto editável",
+}) {
   const [editing, setEditing] = useState(false);
   const safeValue = toSafeString(value);
   const [draft, setDraft] = useState(safeValue);
@@ -56,13 +64,34 @@ export function EditableText({ value, onChange, className = "", multiline = fals
     setEditing(false);
   };
 
+  if (disabled) {
+    return (
+      <span
+        className={`cursor-not-allowed opacity-80 ${className}`}
+        title="Campo bloqueado pelo narrador"
+      >
+        {safeValue || <span className="italic text-muted-foreground">{placeholder}</span>}
+      </span>
+    );
+  }
+
   if (!editing) {
     return (
       <span
-        className={`cursor-pointer transition-colors duration-150 hover:text-primary ${className}`}
+        role="button"
+        tabIndex={0}
+        aria-label={`Editar ${label}: ${safeValue || placeholder}`}
+        className={`cursor-pointer rounded transition-colors duration-150 hover:text-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none ${className}`}
         onClick={() => {
           setDraft(safeValue);
           setEditing(true);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setDraft(safeValue);
+            setEditing(true);
+          }
         }}
       >
         {safeValue || <span className="italic text-muted-foreground">{placeholder}</span>}
@@ -74,6 +103,7 @@ export function EditableText({ value, onChange, className = "", multiline = fals
     return (
       <textarea
         autoFocus
+        aria-label={label}
         className={`w-full resize-none rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/20 ${className}`}
         value={draft}
         rows={4}
@@ -86,6 +116,7 @@ export function EditableText({ value, onChange, className = "", multiline = fals
   return (
     <input
       autoFocus
+      aria-label={label}
       className={`w-full rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-foreground shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-ring/20 ${className}`}
       value={draft}
       onBlur={commit}
@@ -95,14 +126,23 @@ export function EditableText({ value, onChange, className = "", multiline = fals
   );
 }
 
-export function EditableNumber({ value, onChange, className = "", min, max }) {
+export function EditableNumber({
+  value,
+  onChange,
+  className = "",
+  min,
+  max,
+  disabled = false,
+  label = "Valor numérico",
+}) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(String(value));
+  const [invalid, setInvalid] = useState(false);
 
   const commit = () => {
-    const parsed = Number.parseInt(draft, 10);
+    const parsed = Number(draft);
 
-    if (!Number.isNaN(parsed)) {
+    if (draft.trim() !== "" && Number.isInteger(parsed) && Number.isFinite(parsed)) {
       const clamped =
         min !== undefined
           ? Math.max(min, max !== undefined ? Math.min(max, parsed) : parsed)
@@ -111,18 +151,46 @@ export function EditableNumber({ value, onChange, className = "", min, max }) {
             : parsed;
 
       onChange(clamped);
+      setInvalid(false);
+    } else {
+      setDraft(String(value));
+      setInvalid(true);
     }
 
     setEditing(false);
   };
 
+  if (disabled) {
+    return (
+      <span
+        className={`inline-flex items-center gap-1 cursor-not-allowed opacity-75 ${className}`}
+        title="Campo bloqueado pelo narrador (apenas o mestre pode alterar)"
+        aria-disabled="true"
+      >
+        <LockKeyhole size={11} aria-hidden="true" />
+        {value}
+      </span>
+    );
+  }
+
   if (!editing) {
     return (
       <span
-        className={`cursor-pointer transition-colors hover:text-primary ${className}`}
+        role="button"
+        tabIndex={0}
+        aria-disabled="false"
+        aria-label={`Editar ${label}: ${value}`}
+        className={`cursor-pointer rounded transition-colors hover:text-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none ${className}`}
         onClick={() => {
           setDraft(String(value));
           setEditing(true);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setDraft(String(value));
+            setEditing(true);
+          }
         }}
       >
         {value}
@@ -134,7 +202,14 @@ export function EditableNumber({ value, onChange, className = "", min, max }) {
     <input
       autoFocus
       type="number"
-      className={`w-16 rounded border border-primary bg-muted px-1 text-center text-foreground ${className}`}
+      min={min}
+      max={max}
+      step="1"
+      aria-label={label}
+      aria-valuemin={min}
+      aria-valuemax={max}
+      aria-invalid={invalid}
+      className={`w-16 rounded border border-primary bg-muted px-1 text-center text-foreground outline-none focus:ring-2 focus:ring-primary ${className}`}
       value={draft}
       onBlur={commit}
       onChange={(event) => setDraft(event.target.value)}

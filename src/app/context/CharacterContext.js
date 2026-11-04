@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { syncCharacterWithBackend } from "../../lib/api";
+import { syncCharacterWithBackend, verifyBankPasswordOnBackend } from "../../lib/api";
 import { useAuth } from "./AuthContext";
 
 import { defaultData } from "../../lib/defaultCharacter";
@@ -120,7 +120,7 @@ export function CharacterProvider({ children }) {
   const addItem = () => {
     setData((current) => ({
       ...current,
-      inventory: [...current.inventory, { id: uid(), name: "Novo item", qty: 1 }],
+      inventory: [...current.inventory, { id: uid(), name: "Novo item", qty: 1, weight: 1 }],
     }));
   };
 
@@ -188,8 +188,13 @@ export function CharacterProvider({ children }) {
     });
   };
 
-  const tryUnlock = () => {
-    if (bankInput === data.bankPassword) {
+  const tryUnlock = async () => {
+    const remoteResult = activeCharacter?.id
+      ? await verifyBankPasswordOnBackend(activeCharacter.id, bankInput)
+      : null;
+    const valid = remoteResult === null ? bankInput === data.bankPassword : remoteResult;
+
+    if (valid) {
       setBankUnlocked(true);
       setBankError(false);
       return;

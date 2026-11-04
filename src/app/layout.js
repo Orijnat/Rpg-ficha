@@ -2,9 +2,10 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Coins, FileText, Footprints, Home, Package, ScrollText, Users } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { BookOpen, Coins, FileText, Footprints, Home, Package, ScrollText, User, Users } from "lucide-react";
 import "./globals.css";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 import { CharacterProvider, useCharacter } from "./context/CharacterContext";
 import { DiceProvider } from "./context/DiceContext";
 import { ThemeProvider } from "./context/ThemeContext";
@@ -17,20 +18,39 @@ const TABS = [
   { id: "personagem", label: "Personagem", icon: <ScrollText size={15} /> },
   { id: "inventario", label: "Inventário", icon: <Package size={15} /> },
   { id: "contratos", label: "Contratos", icon: <FileText size={15} /> },
+  { id: "anotacoes", label: "Diário", icon: <BookOpen size={15} /> },
   { id: "mundo", label: "Mundo", icon: <Users size={15} /> },
   { id: "banco", label: "Banco", icon: <Coins size={15} /> },
   { id: "quarto", label: "Quarto", icon: <Home size={15} /> },
   { id: "montaria", label: "Montaria", icon: <Footprints size={15} /> },
+  { id: "perfil", label: "Perfil", icon: <User size={15} /> },
   { id: "admin", label: "Admin", icon: <Users size={15} /> },
 ];
 
 function AppChrome({ children }) {
   const pathname = usePathname();
+  const router = useRouter();
   const { data, upd } = useCharacter();
+  const { isMaster, isAuthenticated, loading } = useAuth();
+
+  const isAuthRoute = pathname === "/login" || pathname === "/registro";
+  const isStandaloneSheet = Boolean(pathname?.includes("/admin/personagens/") && pathname?.endsWith("/ficha"));
+  const hideNavigation = isAuthRoute || isStandaloneSheet;
 
   useEffect(() => {
     document.title = "Coração da Montanha";
   }, []);
+
+  // Redireciona usuários não autenticados para /login e usuários logados fora das telas de auth
+  useEffect(() => {
+    if (loading) return;
+
+    if (!isAuthenticated && !isAuthRoute && pathname !== "/") {
+      router.replace("/login");
+    } else if (isAuthenticated && isAuthRoute) {
+      router.replace(isMaster ? "/admin" : "/personagem");
+    }
+  }, [loading, isAuthenticated, isAuthRoute, isMaster, pathname, router]);
 
   return (
     <div
@@ -57,38 +77,50 @@ function AppChrome({ children }) {
         style={{ backgroundColor: "var(--theme-glow-3, rgba(79,143,107,0.1))" }}
       />
 
-      <Cabecalho />
+      {!hideNavigation && <Cabecalho />}
 
-      <nav className="sticky top-[93px] z-10 border-b border-white/10 bg-[#0b0d12]/70 backdrop-blur-xl">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <div className="no-scrollbar flex overflow-x-auto rounded-2xl border border-white/10 bg-white/[0.03] px-1 py-1">
-            {TABS.map((item) => {
-              const href = `/${item.id}`;
-              const active = pathname === href;
+      {!hideNavigation && (
+        <nav className="sticky top-[93px] z-10 border-b border-white/10 bg-[#0b0d12]/70 backdrop-blur-xl">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+            <div className="no-scrollbar flex overflow-x-auto rounded-2xl border border-white/10 bg-white/[0.03] px-1 py-1">
+              {TABS.filter((item) => item.id !== "admin" || isMaster).map((item) => {
+                const href = `/${item.id}`;
+                const active = pathname === href;
 
-              return (
-                <Link
-                  key={item.id}
-                  href={href}
-                  className={`flex items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-xs font-medium transition-all sm:px-4 ${
-                    active
-                      ? "bg-[#d69a3d] text-[#17140f] shadow-md shadow-[#d69a3d]/20"
-                      : "text-[#a98b68] hover:bg-white/[0.04] hover:text-[#f5e9d7]"
-                  }`}
-                >
-                  {item.icon}
-                  <span className="hidden sm:inline">{item.label}</span>
-                </Link>
-              );
-            })}
+                return (
+                  <Link
+                    key={item.id}
+                    href={href}
+                    className={`flex items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-xs font-medium transition-all sm:px-4 ${
+                      active
+                        ? "bg-[#d69a3d] text-[#17140f] shadow-md shadow-[#d69a3d]/20"
+                        : "text-[#a98b68] hover:bg-white/[0.04] hover:text-[#f5e9d7]"
+                    }`}
+                  >
+                    {item.icon}
+                    <span className="hidden sm:inline">{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
-        </div>
-      </nav>
+        </nav>
+      )}
 
-      <main className="relative mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">{children}</main>
+      <main
+        className={
+          isAuthRoute
+            ? "relative flex min-h-screen w-full items-center justify-center p-4 sm:p-6"
+            : isStandaloneSheet
+            ? "relative w-full"
+            : "relative mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8"
+        }
+      >
+        {children}
+      </main>
 
       <DiceModal />
-      <DiceFloatingTrigger />
+      {!hideNavigation && <DiceFloatingTrigger />}
 
       <style>{`
         .custom-scroll::-webkit-scrollbar { width: 4px; }
@@ -105,13 +137,15 @@ export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR" className="h-full antialiased">
       <body className="flex min-h-full flex-col">
-        <ThemeProvider>
-          <CharacterProvider>
-            <DiceProvider>
-              <AppChrome>{children}</AppChrome>
-            </DiceProvider>
-          </CharacterProvider>
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider>
+            <CharacterProvider>
+              <DiceProvider>
+                <AppChrome>{children}</AppChrome>
+              </DiceProvider>
+            </CharacterProvider>
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );
