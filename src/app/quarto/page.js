@@ -7,9 +7,13 @@ import { useDice } from "../context/DiceContext";
 import { Card, EditableText, SectionHeader } from "../components/ui";
 
 export default function QuartoPage() {
-  const { data, upd } = useCharacter();
+  const { data, upd, updExtra, trainAbility } = useCharacter();
   const { executeRoll } = useDice();
   const [restNotice, setRestNotice] = useState("");
+
+  const peMax = Number(data.dadosExtras?.peMax ?? 10);
+  const peCurrent = Number(data.dadosExtras?.peCurrent ?? 10);
+  const activeTraining = data.abilities?.find((h) => h.isTraining);
 
   const handleShortRest = () => {
     // Rola 1d8 + mod CON de cura rápida
@@ -24,8 +28,20 @@ export default function QuartoPage() {
 
     const newHp = Math.min(data.hpMax, data.hp + roll.total);
     upd("hp", newHp);
-    setRestNotice(`Descanso Curto realizado! Você recuperou ${roll.total} PV.`);
-    setTimeout(() => setRestNotice(""), 4000);
+
+    // Recupera até 3 PE
+    const newPe = Math.min(peMax, peCurrent + 3);
+    updExtra("peCurrent", newPe);
+
+    // Avança 1 hora na habilidade em foco de treino
+    let trainMsg = "";
+    if (activeTraining) {
+      trainAbility(activeTraining.id, 1);
+      trainMsg = ` e investiu +1h no treino de ${activeTraining.name}`;
+    }
+
+    setRestNotice(`Descanso Curto realizado! Você recuperou ${roll.total} PV, recuperou PE${trainMsg}.`);
+    setTimeout(() => setRestNotice(""), 4500);
   };
 
   const handleLongRest = () => {
@@ -33,8 +49,18 @@ export default function QuartoPage() {
     if (data.mountHPMax) {
       upd("mountHP", data.mountHPMax);
     }
-    setRestNotice("Descanso Longo completo! Todos os Pontos de Vida (seu e da montaria) foram restaurados.");
-    setTimeout(() => setRestNotice(""), 4000);
+    // Restaura 100% dos PE
+    updExtra("peCurrent", peMax);
+
+    // Avança 4 horas de treino intenso na habilidade em foco
+    let trainMsg = "";
+    if (activeTraining) {
+      trainAbility(activeTraining.id, 4);
+      trainMsg = ` e completou +4h de treino dedicado em ${activeTraining.name}`;
+    }
+
+    setRestNotice(`Descanso Longo completo! Todos os Pontos de Vida (seu e da montaria) e PE foram restaurados${trainMsg}.`);
+    setTimeout(() => setRestNotice(""), 4500);
   };
 
   return (
@@ -59,7 +85,7 @@ export default function QuartoPage() {
                 <span>Descanso Curto (1 hora)</span>
               </div>
               <p className="mt-1 text-xs text-[#8a7355]">
-                Pausa para respirar e enfaixar ferimentos. Recupera 1d8 + modificador de CON em vida.
+                Pausa para respirar e meditar. Recupera 1d8 + CON em vida, restaura até 3 PE e avança +1h no treino da habilidade em foco.
               </p>
             </div>
             <button
@@ -79,7 +105,7 @@ export default function QuartoPage() {
                 <span>Descanso Longo (8 horas)</span>
               </div>
               <p className="mt-1 text-xs text-[#8a7355]">
-                Uma boa noite de sono em segurança. Restaura 100% dos Pontos de Vida (seus e da sua montaria).
+                Uma boa noite de sono em segurança. Restaura 100% de PV e PE (seus e da montaria) e avança +4h no treino da habilidade em foco.
               </p>
             </div>
             <button

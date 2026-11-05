@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { syncCharacterWithBackend, verifyBankPasswordOnBackend } from "../../lib/api";
+import { avancarTreinoHabilidade } from "../../lib/abilities";
 import { useAuth } from "./AuthContext";
 
 import { defaultData } from "../../lib/defaultCharacter";
@@ -72,10 +73,20 @@ export function CharacterProvider({ children }) {
       ouro: activeCharacter.ouro ?? moedas.ouro ?? defaultData.ouro,
       prata: activeCharacter.prata ?? moedas.prata ?? defaultData.prata,
       cobre: activeCharacter.cobre ?? moedas.cobre ?? defaultData.cobre,
+      abilities: pickCollection(
+        activeCharacter.dadosExtras?.abilities,
+        activeCharacter.abilities,
+        current.abilities ?? defaultData.abilities
+      ),
       dadosExtras: {
         ...defaultData.dadosExtras,
         ...(current.dadosExtras || {}),
         ...(activeCharacter.dadosExtras || {}),
+        abilities: pickCollection(
+          activeCharacter.dadosExtras?.abilities,
+          activeCharacter.abilities,
+          current.abilities ?? defaultData.abilities
+        ),
       },
     }));
     setHydrated(true);
@@ -218,6 +229,102 @@ export function CharacterProvider({ children }) {
     });
   };
 
+  const addAbility = (ability) => {
+    setData((current) => {
+      const list = current.abilities || defaultData.abilities || [];
+      const newAbility = {
+        id: ability?.id || uid(),
+        name: ability?.name || "Nova Habilidade",
+        type: ability?.type || "ativa",
+        reqLevel: Number(ability?.reqLevel) || 1,
+        cost: ability?.cost || "1 PE",
+        attr: ability?.attr || "FOR",
+        rollFormula: ability?.rollFormula || "",
+        damageType: ability?.damageType || "",
+        range: ability?.range || "Corpo a corpo",
+        description: ability?.description || "",
+        trainingHours: Number(ability?.trainingHours) || 0,
+        masteryLevel: ability?.masteryLevel || "aprendiz",
+        isTraining: Boolean(ability?.isTraining),
+      };
+      const nextAbilities = [...list, newAbility];
+      return {
+        ...current,
+        abilities: nextAbilities,
+        dadosExtras: {
+          ...(current.dadosExtras || {}),
+          abilities: nextAbilities,
+        },
+      };
+    });
+  };
+
+  const removeAbility = (id) => {
+    setData((current) => {
+      const list = current.abilities || defaultData.abilities || [];
+      const nextAbilities = list.filter((hab) => hab.id !== id);
+      return {
+        ...current,
+        abilities: nextAbilities,
+        dadosExtras: {
+          ...(current.dadosExtras || {}),
+          abilities: nextAbilities,
+        },
+      };
+    });
+  };
+
+  const updAbility = (id, patch) => {
+    setData((current) => {
+      const list = current.abilities || defaultData.abilities || [];
+      const nextAbilities = list.map((hab) => (hab.id === id ? { ...hab, ...patch } : hab));
+      return {
+        ...current,
+        abilities: nextAbilities,
+        dadosExtras: {
+          ...(current.dadosExtras || {}),
+          abilities: nextAbilities,
+        },
+      };
+    });
+  };
+
+  const trainAbility = (id, hours = 1) => {
+    setData((current) => {
+      const list = current.abilities || defaultData.abilities || [];
+      const nextAbilities = list.map((hab) => {
+        if (hab.id !== id) return hab;
+        return avancarTreinoHabilidade(hab, hours);
+      });
+      return {
+        ...current,
+        abilities: nextAbilities,
+        dadosExtras: {
+          ...(current.dadosExtras || {}),
+          abilities: nextAbilities,
+        },
+      };
+    });
+  };
+
+  const setAbilityTrainingFocus = (id) => {
+    setData((current) => {
+      const list = current.abilities || defaultData.abilities || [];
+      const nextAbilities = list.map((hab) => ({
+        ...hab,
+        isTraining: hab.id === id ? !hab.isTraining : false,
+      }));
+      return {
+        ...current,
+        abilities: nextAbilities,
+        dadosExtras: {
+          ...(current.dadosExtras || {}),
+          abilities: nextAbilities,
+        },
+      };
+    });
+  };
+
   const tryUnlock = async () => {
     const remoteResult = activeCharacter?.id
       ? await verifyBankPasswordOnBackend(activeCharacter.id, bankInput)
@@ -273,6 +380,11 @@ export function CharacterProvider({ children }) {
     updPerson,
     updBank,
     tryUnlock,
+    addAbility,
+    removeAbility,
+    updAbility,
+    trainAbility,
+    setAbilityTrainingFocus,
   };
 
   return <CharacterContext.Provider value={value}>{children}</CharacterContext.Provider>;

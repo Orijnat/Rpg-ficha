@@ -1,5 +1,31 @@
 # Memória do Agente Orquestrador (@orchestrator)
 
+## Entrega — 2026-11-05 (Área de Habilidades, Treinamento & Desbloqueio por Nível)
+
+- Implementada a Área de Habilidades completa atendendo à solicitação do usuário:
+  1. **Motor de Regras (`src/lib/abilities.js`)**:
+     * 4 Graus de Maestria de Treinamento: Aprendiz (0-10h), Praticante (10-25h), Veterano (25-50h), Mestre (50-100h).
+     * Desbloqueio dinâmico por nível (`reqLevel <= character.level`).
+     * Cálculo de horas para próximo grau e progressão por descanso e testes.
+     * Catálogo canônico de 9 habilidades de Bruxeiro/Aventureiro com custos de PE, fórmulas de dados e efeitos.
+  2. **Área do Jogador e UI Dark Fantasy**:
+     * Nova página `/habilidades` com filtros ("Todas", "Por Nível", "Em Treinamento", "Magias/Sinais", "Ações", "Passivas") e busca.
+     * Componente `AbilityCard.jsx` e modal de criação/edição `AbilityFormModal.jsx`.
+     * Banner de habilidade em foco de treino ativo com botão de teste de treino virtual.
+  3. **Integrações Fullstack**:
+     * `AppShell.jsx`: aba `/habilidades` no menu global `TABS`.
+     * `Personagem`: card de resumo com contagem de habilidades e foco ativo.
+     * `Quarto`: descanso curto (+1h) e descanso longo (+4h) avançam o treinamento e recuperam PE.
+     * `CharacterContext.js`: métodos de gestão de habilidades persistidos em `localStorage` e nuvem (`dadosExtras.abilities`).
+  4. **QA**: 34 testes unitários automatizados 100% aprovados e build Next.js 16 (Turbopack) 26/26 rotas OK.
+
+## Consulta — 2026-11-05 (Definição de Senha do Banco vs Senha de Login)
+
+- Usuário consultou sobre a possibilidade de unificar a senha do banco com a senha de login do usuário.
+- Estruturada a resposta abordando:
+  1. O **Banco do Jogo** (Cofre de moedas/itens em `/banco` com slots e senha `bankPassword`), viabilizando a validação remota direta contra o hash da conta do usuário.
+  2. O **Banco de Dados** (PostgreSQL Supabase via `DATABASE_URL`), explicando a separação entre credencial de infraestrutura e credenciais de usuários finais.
+
 ## Entrega — 2026-11-05 (Identidade Visual Renomeada para Grimorium)
 
 - Aplicação renomeada para **"Grimorium"** em todos os pontos de contato da interface:

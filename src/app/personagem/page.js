@@ -9,10 +9,15 @@ import Pericia from "../components/Pericia";
 import BarraHp from "../components/BarrraHp";
 import RecursosCombate from "../components/RecursosCombate";
 import { calculateCapacity } from "../../lib/modifiers";
+import { DEFAULT_ABILITIES, isHabilidadeDesbloqueada } from "../../lib/abilities";
 
 export default function Personagem() {
   const { data, upd, syncStatus, syncError, retrySync } = useCharacter();
   const capacity = calculateCapacity(data);
+  const abilities = data.abilities && data.abilities.length > 0 ? data.abilities : DEFAULT_ABILITIES;
+  const characterLevel = Math.max(1, Number(data.level) || 1);
+  const activeTraining = abilities.find((h) => h.isTraining);
+  const unlockedCount = abilities.filter((h) => isHabilidadeDesbloqueada(h, characterLevel)).length;
 
   const syncLabels = {
     idle: null,
@@ -95,6 +100,31 @@ export default function Personagem() {
               style={{ width: `${capacity.percentage}%` }}
             />
           </div>
+        </div>
+
+        {/* Atalho de Habilidades & Treinamento */}
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-white/10 pt-3 text-xs">
+          <Link
+            href="/habilidades"
+            className="flex items-center gap-1.5 font-medium text-muted-foreground hover:text-primary transition"
+          >
+            <Sparkles size={13} className="text-amber-400" />
+            <span>Habilidades do Grimório:</span>
+            <strong className="text-foreground">
+              {unlockedCount} / {abilities.length} despertadas
+            </strong>
+            {activeTraining && (
+              <span className="rounded bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-bold text-amber-300">
+                🎯 Treino: {activeTraining.name} ({activeTraining.trainingHours || 0}h)
+              </span>
+            )}
+          </Link>
+          <Link
+            href="/habilidades"
+            className="text-[11px] font-semibold text-primary underline underline-offset-2 hover:text-primary/80"
+          >
+            Acessar Habilidades →
+          </Link>
         </div>
       </Card>
 

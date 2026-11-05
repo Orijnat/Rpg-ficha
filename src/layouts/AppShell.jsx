@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { BookOpen, Coins, FileText, Footprints, Home, Package, ScrollText, User, Users } from "lucide-react";
+import { BookOpen, Coins, FileText, Footprints, Home, Package, ScrollText, Sparkles, User, Users } from "lucide-react";
 import { useAuth } from "../app/context/AuthContext";
 import Cabecalho from "../app/components/Cabecalho";
 import DiceModal from "../app/components/dice/DiceModal";
@@ -11,6 +11,7 @@ import DiceFloatingTrigger from "../app/components/dice/DiceFloatingTrigger";
 
 const TABS = [
   { id: "personagem", label: "Personagem", icon: <ScrollText size={15} /> },
+  { id: "habilidades", label: "Habilidades", icon: <Sparkles size={15} /> },
   { id: "inventario", label: "Inventário", icon: <Package size={15} /> },
   { id: "contratos", label: "Contratos", icon: <FileText size={15} /> },
   { id: "anotacoes", label: "Diário", icon: <BookOpen size={15} /> },

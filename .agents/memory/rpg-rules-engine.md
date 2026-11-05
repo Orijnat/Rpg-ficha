@@ -21,6 +21,8 @@ Especialista em regras matemáticas, cálculos de atributos, modificadores, per�
 
 ## 📂 Arquivos Sob Gestão Deste Sub-agente
 - `src/lib/modifiers.js` (Implementado: cálculo de modificadores, labels, 19 perícias canônicas e validações)
+- `src/lib/abilities.js` (Implementado: motor de regras de habilidades, 4 graus de maestria de treinamento, desbloqueio dinâmico por nível e fórmulas de dados)
+- `src/lib/__tests__/abilities.test.mjs` (7 testes unitários automatizados)
 - `src/models/character.js` (esquema de validação dos dados)
 
 ---

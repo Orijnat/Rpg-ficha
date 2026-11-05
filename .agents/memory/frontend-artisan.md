@@ -23,6 +23,9 @@ UI/UX da Área do Jogador, componentes React 19, Tailwind CSS v4, responsividade
 - `src/app/components/dice/DiceFloatingTrigger.jsx` (Botão flutuante na tela para acesso rápido à mesa de rolagem)
 - `src/app/components/Pericia.jsx` (Cálculo dinâmico e gatilho de rolagem com um toque)
 - `src/app/components/ui.js` (`StatBox` com botão de teste de atributo d20)
+- `src/app/components/habilidades/AbilityCard.jsx` (Card de habilidade Dark Fantasy com PE, nível, rolador e barra de treino)
+- `src/app/components/habilidades/AbilityFormModal.jsx` (Modal de criação/edição de habilidades e magias)
+- `src/app/habilidades/page.js` (Tela completa de Habilidades & Treinamento com filtros, busca e árvore por nível)
 - `src/app/layout.js` (Integração global com `DiceProvider`)
 
 ---

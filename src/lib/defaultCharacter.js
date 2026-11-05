@@ -1,11 +1,14 @@
+import { DEFAULT_ABILITIES } from "./abilities.js";
+
 /**
  * Dados padrão e estrutura canônica do Personagem (7 Atributos, 19 Perícias, 80 Slots de Banco)
- * Mantido por: @rpg-rules-engine
+ * Mantido por: @rpg-rules-engine & @frontend-artisan
  */
 
 export const defaultData = {
   name: "Geralt de Rívia",
   job: "Bruxeiro",
+  level: 2,
   customClass: "",
   hp: 70,
   hpMax: 70,
@@ -79,18 +82,20 @@ export const defaultData = {
   mountHP: 30,
   mountHPMax: 30,
   mountNotes: "Sela de viagem reforçada, alforjes de couro duplo.",
+  abilities: DEFAULT_ABILITIES,
   dadosExtras: {
     inventoryCapacity: 20,
     insanityMax: 0,
     insanityCurrent: 0,
     bpMax: 0,
     bpCurrent: 0,
-    peMax: 0,
-    peCurrent: 0,
+    peMax: 10,
+    peCurrent: 10,
     hitDie: "1d10",
     armorClass: 0,
     initiative: 0,
     customAbilities: [],
     training: [],
+    abilities: DEFAULT_ABILITIES,
   },
 };
