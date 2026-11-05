@@ -113,6 +113,21 @@ UI/UX da Área do Jogador, componentes React 19, Tailwind CSS v4, responsividade
 - `AppShell`, `Cabecalho` e `Card`: alinhados aos tokens semânticos dos temas,
   com navegação, cabeçalho e cartões mais coesos e responsivos.
 - Build aprovado; lint sem erros, mantendo apenas warnings preexistentes.al como fallback, expõe erro/conflito e
+
+### Restauração do Padrão de Cores Dark Fantasy com Sidebar — 2026-11-05
+- Preservada a sidebar desktop fixa (`lg:w-64`) e navegação móvel adaptada em `AppShell.jsx`.
+- Restaurado o padrão de cores dark fantasy anterior em sua totalidade: fontes Cinzel/Inter, auras temáticas, gradientes dinâmicos de glow, fundo `#0b0d12` reativo aos 5 temas e molduras `ornate-frame`.
+- `Cabecalho.jsx` e `Card` em `ui.js` mantidos com a moldura e elevação originais, integrando-se harmonicamente à margem da sidebar.
+- Topo temático adicionado à sidebar desktop ("Grimório - Coração da Montanha").
+- Validação: 27 testes unitários 100% OK, build Next.js (25 rotas) concluído com sucesso e `git diff --check` aprovado.
+
+### Repaginação editorial/tática — 2026-11-05
+- Criada uma direção visual distinta da estética dark-fantasy ornamentada:
+  base clara editorial, terracota, azul-petróleo, tipografia DM Sans/Space
+  Grotesk, cards planos e navegação lateral no desktop.
+- `AppShell`, `Cabecalho`, `Card` e tokens globais foram atualizados sem
+  modificar páginas de domínio ou contratos de API.
+- Build aprovado; lint sem erros, mantendo apenas warnings preexistentes.al como fallback, expõe erro/conflito e
   `retrySync`.
 - `src/app/personagem/page.js`: indicador de sincronização anuncia estado,
   distingue conflito HTTP 409 e oferece tentativa explícita novamente.

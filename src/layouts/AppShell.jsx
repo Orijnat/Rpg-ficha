@@ -73,9 +73,23 @@ export default function AppShell({ children }) {
       {!hideNavigation && <Cabecalho />}
 
       {!hideNavigation && (
-        <nav aria-label="Navegação da ficha" className="sticky top-[93px] z-10 border-b border-border/70 bg-background/75 py-2 backdrop-blur-xl">
-          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-            <div className="no-scrollbar flex overflow-x-auto rounded-2xl border border-border/70 bg-card/60 p-1 shadow-lg shadow-black/10">
+        <nav
+          aria-label="Navegação da ficha"
+          className="sticky top-[88px] z-10 border-b border-border/70 bg-background/80 py-2 backdrop-blur-xl lg:fixed lg:inset-y-0 lg:left-0 lg:top-0 lg:z-30 lg:w-64 lg:border-b-0 lg:border-r lg:bg-card/75 lg:px-4 lg:py-6 lg:shadow-xl"
+        >
+          {/* Topo exclusivo da sidebar no desktop com estética Dark Fantasy */}
+          <div className="mb-4 hidden items-center gap-3 border-b border-border/60 px-2 pb-5 lg:flex">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/40 bg-primary/10 text-primary shadow-[0_0_15px_rgba(214,154,61,0.25)]">
+              <ScrollText size={20} />
+            </div>
+            <div>
+              <h2 className="font-serif text-sm font-bold tracking-wider text-foreground">Grimório</h2>
+              <p className="text-[10px] uppercase tracking-widest text-muted-foreground">Coração da Montanha</p>
+            </div>
+          </div>
+
+          <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:max-w-none lg:px-0">
+            <div className="no-scrollbar flex overflow-x-auto gap-1 lg:flex-col lg:gap-1.5 lg:overflow-visible">
               {TABS.filter((item) => item.id !== "admin" || isMaster).map((item) => {
                 const href = `/${item.id}`;
                 const active = pathname === href;
@@ -85,14 +99,14 @@ export default function AppShell({ children }) {
                     key={item.id}
                     href={href}
                     aria-current={active ? "page" : undefined}
-                    className={`flex min-h-11 items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:px-4 ${
+                    className={`flex min-h-11 items-center gap-2.5 whitespace-nowrap rounded-xl px-3 py-2 text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:px-4 ${
                       active
-                        ? "bg-primary text-primary-foreground shadow-md shadow-primary/25"
+                        ? "bg-primary text-primary-foreground shadow-md shadow-primary/25 font-semibold"
                         : "text-muted-foreground hover:bg-primary/10 hover:text-foreground"
                     }`}
                   >
                     {item.icon}
-                    <span className="hidden sm:inline">{item.label}</span>
+                    <span className="hidden sm:inline lg:inline">{item.label}</span>
                   </Link>
                 );
               })}
@@ -109,7 +123,7 @@ export default function AppShell({ children }) {
               ? "relative w-full"
             : isStandaloneSheet
               ? "relative w-full"
-              : "relative mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8"
+              : "relative mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:ml-64 lg:max-w-none lg:px-10 lg:py-8"
         }
       >
         {children}

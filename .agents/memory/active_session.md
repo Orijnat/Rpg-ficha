@@ -1,5 +1,19 @@
 # Sessão Ativa — Mapeamento Fullstack & Criação do Checklist de Backend
 
+## Publicação e Commit — 2026-11-05 (Sidebar Dark Fantasy)
+
+- Consolidadas as alterações da sidebar desktop integrada ao padrão visual Dark Fantasy.
+- Realizado commit e push para `origin/main` após validação completa de testes e build.
+
+## Restauração do Padrão de Cores Dark Fantasy com Sidebar Mantida — 2026-11-05
+
+- O usuário aprovou a sidebar (rail lateral desktop), mas solicitou o retorno do padrão de cores anterior.
+- Restaurados todos os tokens, fontes (Cinzel / Crimson Text / Inter), auras radiais de iluminação ambiente dinâmicas e o tema Dark Fantasy original (`--theme-bg`, `#0b0d12`, etc.).
+- Preservada a sidebar fixa à esquerda no desktop (`lg:w-64`) e barra móvel horizontal em telas menores no `AppShell.jsx`, com topo temático "Grimório - Coração da Montanha".
+- `Cabecalho.jsx` restaurado com moldura `ornate-frame` e fontes serifadas, mantendo o recuo `lg:ml-64` para perfeita harmonia com a barra lateral.
+- `Card` em `ui.js` e tokens de scrollbar e campos em `globals.css` restaurados para a identidade dark fantasy.
+- Validação: 27 testes unitários aprovados com 100% de sucesso e `git diff --check` aprovado.
+
 ## Continuidade — 2026-11-04 (Frontend vinculado ao Rpg-backend)
 
 - Cliente HTTP confirmado em `src/lib/api.js` com `NEXT_PUBLIC_API_URL`.
@@ -17,6 +31,14 @@
 - Refinados shell, navegação, cabeçalho e componente `Card` sem alterar API ou
   regras de negócio.
 - Build aprovado; lint sem erros com warnings preexistentes.
+
+## Repaginação visual — 2026-11-05
+
+- Alterações anteriores foram commitadas em `06dcdc0`.
+- Nova direção visual aplicada: editorial/tática clara, diferente do tema
+  ornamentado anterior, com navegação lateral desktop e barra horizontal mobile.
+- Build aprovado, lint sem erros e `git diff --check` aprovado.
+- Nova repaginação permanece não commitada para revisão.
 
 ## Correção OAuth Google — 2026-11-04
 

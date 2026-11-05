@@ -38,6 +38,25 @@
 - Validação: build frontend aprovado, lint sem erros e `git diff --check`
   aprovado.
 
+## Entrega — 2026-11-05 (Commit & Push: Sidebar Dark Fantasy)
+
+- Commit e envio das alterações validadas: sidebar fixa no desktop com estética Dark Fantasy restaurada.
+- Branch `main` sincronizada com `origin/main`.
+
+## Entrega — 2026-11-05 (Restauração das Cores Dark Fantasy com Sidebar Mantida)
+
+- Atendendo à preferência do usuário: preservada a nova sidebar desktop e navegação responsiva mobile, com retorno integral do padrão de cores Dark Fantasy anterior.
+- Restaurados tokens, auras de iluminação temática, fundo escuro (`var(--theme-bg, #0b0d12)`), molduras ornamentadas (`ornate-frame`), sombras profundas e tipografia clássica (Cinzel e Inter).
+- Topo da sidebar no desktop estilizado com o brasão/título temático "Grimório - Coração da Montanha".
+- Validação: 27 testes unitários 100% aprovados, build Turbopack Next.js (25 rotas) concluído com sucesso e `git diff --check` aprovado.
+
+## Entrega — 2026-11-05 (Repaginação editorial/tática)
+
+- Commit anterior registrado em `06dcdc0` antes da nova etapa.
+- Aplicada nova linguagem visual global, sem ornamentos de grimório: base clara,
+  contraste editorial, terracota/azul-petróleo, cards planos e rail lateral.
+- Nova etapa ainda não commitada; build e lint aprovados.
+
 Este arquivo é a fonte de memória persistente da liderança técnica do projeto. Deve ser lido no início de cada sessão e atualizado ao final de cada entrega.
 
 ---

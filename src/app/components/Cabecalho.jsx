@@ -14,8 +14,8 @@ export default function Cabecalho() {
 
   return (
     <>
-      <header className="sticky top-0 z-20 border-b border-border/70 bg-background/80 backdrop-blur-xl">
-        <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6 lg:px-8">
+      <header className="sticky top-0 z-20 border-b border-border/70 bg-background/80 backdrop-blur-xl lg:ml-64">
+        <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6 lg:max-w-none lg:px-10">
           <div className="ornate-frame flex flex-col gap-4 rounded-2xl border border-border/80 bg-card/80 px-5 py-4 shadow-[0_18px_60px_rgba(0,0,0,0.24)] sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-[10px] uppercase tracking-[0.32em] text-muted-foreground">Ficha de personagem</p>
