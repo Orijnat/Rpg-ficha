@@ -1,5 +1,12 @@
 # Sessão Ativa — Mapeamento Fullstack & Criação do Checklist de Backend
 
+## Solicitação de Deploy — 2026-11-05 (Upar a Aplicação)
+
+- Usuário solicitou a publicação direta da aplicação na web.
+- Ambos os repositórios (`Rpg-ficha` e `Rpg-backend`) encontram-se comitados, validados e sincronizados em suas respectivas branches `main` no GitHub (`https://github.com/Orijnat/Rpg-ficha` e `https://github.com/Orijnat/Rpg-backend`).
+- Verificada a ausência de tokens pré-autenticados de nuvem (`VERCEL_TOKEN` / `~/.vercel`) no terminal local.
+- Apresentadas as duas vias imediatas: importação via GitHub na Vercel (1 clique) ou autenticação via Vercel CLI com token.
+
 ## Criação das Skills de Deploy Web & Nuvem (Vercel, Supabase, Fullstack) — 2026-11-05
 
 - Criada a skill `vercel-deployment`: procedimentos de deploy de Next.js na Vercel (CLI e Git integration), variáveis de ambiente (`NEXT_PUBLIC_API_URL`), headers e troubleshooting de CORS/build.
