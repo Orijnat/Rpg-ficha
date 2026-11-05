@@ -1,5 +1,42 @@
 # Memória do Agente Orquestrador (@orchestrator)
 
+## Entrega — 2026-11-05 (Identidade Visual Renomeada para Grimorium)
+
+- Aplicação renomeada para **"Grimorium"** em todos os pontos de contato da interface:
+  * `AppShell.jsx` (título da aba do navegador e topo da barra lateral).
+  * `Cabecalho.jsx` (cabeçalho central da ficha).
+  * `page.js` (marca pública, hero e rodapé).
+- 27 testes unitários aprovados com sucesso.
+
+## Entrega — 2026-11-05 (Backend no Ar no Render: rpg-backend-pmhk.onrender.com)
+
+- Backend Express ativo no Render: `https://rpg-backend-pmhk.onrender.com`.
+- Conexão com Supabase e CORS vinculados ao frontend Vercel.
+- Instruído o registro de `NEXT_PUBLIC_API_URL` na Vercel e o redeploy final.
+
+## Entrega — 2026-11-05 (Frontend no Ar na Vercel: rpg-ficha-one.vercel.app)
+
+- Frontend Next.js 16 verificado e ativo em `https://rpg-ficha-one.vercel.app/`.
+- `CORS_ORIGIN` no Render alinhado com o domínio gerado pela Vercel.
+- Aguardando URL final do Render para integração bidirecional com `NEXT_PUBLIC_API_URL`.
+
+## Entrega — 2026-11-05 (Definição de CORS_ORIGIN para Deploy em Nuvem)
+
+- Esclarecido o papel de `CORS_ORIGIN` apontando para o Frontend na Vercel (com suporte a múltiplas URLs separadas por vírgula e validação rigorosa que impede `*`).
+- Próximo passo: conclusão do deploy no Render e geração do domínio da Vercel.
+
+## Entrega — 2026-11-05 (Banco PostgreSQL Supabase Provisionado e Migrado com Sucesso)
+
+- Conexão com o Supabase testada e aprovada com TLS/SSL.
+- Migrações aplicadas com sucesso (`npm run db:migrate`): 20 tabelas relacionais criadas no banco de dados na nuvem.
+- Commit e push realizados no repositório `Rpg-backend` com suporte universal a SSL para ambientes gerenciados.
+- Pronto para o deploy do backend no Render e do frontend na Vercel.
+
+## Entrega — 2026-11-05 (Validação da Connection String do Supabase)
+
+- A Connection String do PostgreSQL foi validada com sucesso: formato Session Pooler (porta 5432), host `aws-0-us-east-1.pooler.supabase.com` e usuário correspondente ao ID do projeto (`postgres.ofkjgxnxmfwjmtscktts`).
+- Pronto para inclusão na `DATABASE_URL` do `Rpg-backend` e execução das migrations Sequelize.
+
 ## Entrega — 2026-11-04 (Vinculação exclusiva ao Rpg-backend)
 
 - O frontend agora removeu os Route Handlers locais em `src/app/api`.

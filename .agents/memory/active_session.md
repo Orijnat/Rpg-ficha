@@ -1,5 +1,69 @@
 # Sessão Ativa — Mapeamento Fullstack & Criação do Checklist de Backend
 
+## Renomeação da Aplicação para Grimorium — 2026-11-05
+
+- Atendendo à solicitação do usuário, o título da aplicação foi atualizado de "Fichas de RPG: Grimório" para **"Grimorium"**.
+- Atualizados os componentes:
+  * [`src/layouts/AppShell.jsx`](../src/layouts/AppShell.jsx): `document.title = "Grimorium"` e título da sidebar desktop.
+  * [`src/app/components/Cabecalho.jsx`](../src/app/components/Cabecalho.jsx): título principal da ficha (`Grimorium`).
+  * [`src/app/page.js`](../src/app/page.js): logotipo, cabeçalho e rodapé da landing page.
+- Validação: 27 testes unitários 100% aprovados e build em execução.
+
+## Backend Publicado no Render & Integração Final com Vercel — 2026-11-05
+
+- Usuário disponibilizou a URL do backend gerada pelo Render: `https://rpg-backend-pmhk.onrender.com`.
+- Confirmada a estrutura das rotas: a base de API é `https://rpg-backend-pmhk.onrender.com/api`.
+- Instruído o usuário a registrar a variável de ambiente `NEXT_PUBLIC_API_URL` na Vercel e disparar o Redeploy para injetar as credenciais no build do Next.js 16.
+- Sistema fullstack completo atingido: Frontend (Vercel) ➔ Backend (Render) ➔ Banco Relacional (Supabase PostgreSQL).
+
+## Frontend Publicado na Vercel — 2026-11-05
+
+- Usuário disponibilizou a URL pública da Vercel: `https://rpg-ficha-one.vercel.app/` (HTTP 200 validado com sucesso).
+- Configuração exata para o `CORS_ORIGIN` no Render: `https://rpg-ficha-one.vercel.app` (ou em conjunto com `http://localhost:3000`).
+- Próximo passo: obter a URL do backend gerada pelo Render para atualizar a variável `NEXT_PUBLIC_API_URL` na Vercel e re-deployar.
+
+## Orientação sobre Configuração de CORS no Render — 2026-11-05
+
+- Usuário questionou qual valor deve ser inserido em `CORS_ORIGIN` no Render.
+- Esclarecido que o CORS precisa ser o endereço do **Frontend** (Vercel), sem wildcard (`*`), pois a validação de segurança em `src/middlewares/security.js` proíbe `*`.
+- Instruído a utilizar inicialmente `http://localhost:3000` e adicionar a URL definitiva da Vercel (separada por vírgula) assim que o deploy do frontend for realizado.
+
+## Execução das Migrations e Criação das Tabelas no Supabase — 2026-11-05
+
+- Usuário salvou a `DATABASE_URL` no arquivo `.env` do backend (`Rpg-backend`).
+- Testada a conectividade com o Supabase: autenticação e conexão estabelecidas com sucesso via Session Pooler (porta 5432).
+- Ajustado `config/config.cjs` no backend com auto-detecção de SSL para Supabase em todos os ambientes e comitado/enviado para o GitHub (`origin/main`).
+- Executada com êxito a migration baseline (`npm run db:migrate`), criando todas as 20 tabelas relacionais do sistema no Supabase:
+  `usuarios`, `personagens`, `campanhas`, `membros_campanha`, `atributos_personagem`, `pericias_personagem`, `itens_inventario`, `contratos`, `npcs`, `encontros`, `iniciativas`, `anotacoes`, `imagens`, `cofres`, `montarias`, `recursos_campanha`, `auditoria`, `sessoes_jogo`, `sessoes_autenticacao`, `SequelizeMeta`.
+- Próximo passo: subir o backend no Render (Web Service) e apontar o frontend na Vercel para a URL gerada.
+
+## Validação da Connection String do Supabase — 2026-11-05
+
+- Usuário forneceu a Connection String obtida no Supabase: `postgresql://postgres.ofkjgxnxmfwjmtscktts:[YOUR-PASSWORD]@aws-0-us-east-1.pooler.supabase.com:5432/postgres`.
+- Confirmada a exatidão da URI (Session Pooler na porta `5432`, com host `aws-0-us-east-1.pooler.supabase.com` e usuário `postgres.ofkjgxnxmfwjmtscktts`).
+- Instruído o preenchimento da senha real no lugar de `[YOUR-PASSWORD]` e os próximos passos para aplicar na `DATABASE_URL` do `Rpg-backend` e rodar as migrações.
+
+## Modal de Conexão do Supabase Localizado — 2026-11-05
+
+- Usuário acessou com sucesso o modal "Connect to your project".
+- Orientado a clicar na opção **"ORM"** (selecionando Sequelize ou Node) ou em **"Direct (Connection string)"** para exibir a string URI do PostgreSQL.
+
+## Navegação no Novo Layout do Supabase — 2026-11-05
+
+- Usuário relatou o menu do novo design do painel Supabase (onde `Database` foi movido ou integrado).
+- Orientado o caminho no novo layout: o botão destacado **"Connect"** no cabeçalho superior do projeto, ou o menu lateral principal **Database** (ícone de cilindro de banco).
+
+## Identificação do Projeto Supabase — 2026-11-05
+
+- Usuário enviou a URL REST do projeto Supabase: `https://ofkjgxnxmfwjmtscktts.supabase.co/rest/v1/`.
+- Identificado o ID do projeto Supabase: `ofkjgxnxmfwjmtscktts`.
+- Orientado o usuário que esta é a URL da API REST (PostgREST), e fornecida a estrutura exata da Connection String PostgreSQL (`DATABASE_URL`) necessária para o Sequelize, faltando apenas a senha definida por ele na criação.
+
+## Guia Rápido: O que é necessário do Supabase — 2026-11-05
+
+- Usuário perguntou objetivamente o que é necessário extrair do Supabase.
+- Sintetizado em um único dado essencial: a **Connection String (URI) do PostgreSQL**, com instruções exatas de onde copiar no painel do Supabase.
+
 ## Renomeação da Aplicação — 2026-11-05 (Fichas de RPG: Grimório)
 
 - Atendendo à solicitação do usuário, o título da aplicação foi alterado de "Coração da Montanha" para "Fichas de RPG: Grimório".

@@ -33,7 +33,7 @@ export default function AppShell({ children }) {
   const hideNavigation = isAuthRoute || isLandingPage || isStandaloneSheet;
 
   useEffect(() => {
-    document.title = "Fichas de RPG: Grimório";
+    document.title = "Grimorium";
   }, []);
 
   useEffect(() => {
@@ -83,7 +83,7 @@ export default function AppShell({ children }) {
               <ScrollText size={20} />
             </div>
             <div>
-              <h2 className="font-serif text-sm font-bold tracking-wider text-foreground">Fichas de RPG</h2>
+              <h2 className="font-serif text-sm font-bold tracking-wider text-foreground">Grimorium</h2>
               <p className="text-[10px] uppercase tracking-widest text-muted-foreground">Grimório Digital</p>
             </div>
           </div>

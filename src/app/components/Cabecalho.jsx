@@ -19,7 +19,7 @@ export default function Cabecalho() {
           <div className="ornate-frame flex flex-col gap-4 rounded-2xl border border-border/80 bg-card/80 px-5 py-4 shadow-[0_18px_60px_rgba(0,0,0,0.24)] sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-[10px] uppercase tracking-[0.32em] text-muted-foreground">Ficha de personagem</p>
-              <h1 className="mt-1 font-serif text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">Fichas de RPG: Grimório</h1>
+              <h1 className="mt-1 font-serif text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">Grimorium</h1>
               <p className="mt-1 text-sm text-muted-foreground">Controle central da ficha, inventário e contratos</p>
             </div>
 
