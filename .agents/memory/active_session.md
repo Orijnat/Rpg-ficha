@@ -1,5 +1,11 @@
 # Sessão Ativa — Mapeamento Fullstack & Criação do Checklist de Backend
 
+## Publicação & Commit das Habilidades — 2026-11-05
+
+- Commit `326fbe8` criado com mensagem: `feat(habilidades): adicionar modulo de habilidades, treinamento e progressao por nivel`.
+- Enviado com sucesso para `origin/main` (`github.com:Orijnat/Rpg-ficha.git`), disparando o deploy automático contínuo na Vercel.
+- Validação final: 34 testes unitários automatizados 100% aprovados, build Next.js 16 (Turbopack) 26 rotas OK e árvore de trabalho limpa.
+
 ## Área de Habilidades, Treinamento de Habilidade e Habilidades por Nível — 2026-11-05
 
 - Atendendo à solicitação do usuário ("falta tambem uma area de habilidade e treinamento de habilidade, alem das habilidade por nivel, que ainda nao existem no sistema"):
