@@ -16,18 +16,8 @@ import {
   ArrowRight,
   Scroll,
   Shield,
+  Crown,
 } from "lucide-react";
-
-const SUGGESTED_JOBS = [
-  "Bruxeiro",
-  "Guerreiro",
-  "Mago",
-  "Ladino",
-  "Clérigo",
-  "Bardo",
-  "Paladino",
-  "Patrulheiro",
-];
 
 /* ─────── Componente reutilizável de campo de formulário ─────── */
 function FormField({ label, icon: Icon, children }) {
@@ -80,10 +70,12 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  // Dados do Primeiro Personagem
+  // Perfil
+  const [isMaster, setIsMaster] = useState(false);
+
+  // Dados do Primeiro Personagem (apenas para jogadores)
   const [characterName, setCharacterName] = useState("");
-  const [characterJob, setCharacterJob] = useState("Bruxeiro");
-  const [customClass, setCustomClass] = useState("");
+  const [characterJob, setCharacterJob] = useState("");
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -113,16 +105,25 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const data = await register({
+      const payload = {
         username: username.trim(),
         email: email.trim(),
         password,
-        characterName: characterName.trim() || "Novo Herói",
-        characterJob: characterJob.trim() || "Aventureiro",
-        customClass: customClass.trim(),
-      });
+        perfil: isMaster ? "mestre" : "jogador",
+      };
 
-      router.push(data.user?.role === "master" || data.user?.perfil === "mestre" ? "/admin" : "/personagem");
+      if (!isMaster) {
+        payload.characterName = characterName.trim() || "Novo Herói";
+        payload.characterJob = characterJob.trim() || "Aventureiro";
+        payload.customClass = characterJob.trim();
+      }
+
+      const data = await register(payload);
+      router.push(
+        isMaster || data.user?.role === "master" || data.user?.perfil === "mestre"
+          ? "/admin"
+          : "/personagem"
+      );
     } catch (err) {
       setError(err.message || "Erro ao realizar o cadastro. Tente novamente.");
     } finally {
@@ -222,7 +223,7 @@ export default function RegisterPage() {
               className="mt-4 text-[10px] font-semibold uppercase tracking-[0.4em] text-[#a97323]"
               style={{ fontFamily: "Cinzel, serif" }}
             >
-              Forja de Aventureiros
+              Grimorium
             </p>
             <h2
               className="mt-1.5 text-center text-2xl font-bold tracking-wide text-[#f5e9d7] sm:text-3xl"
@@ -233,7 +234,7 @@ export default function RegisterPage() {
             <div className="mt-2 flex items-center gap-2">
               <div className="h-px w-10 bg-gradient-to-r from-transparent to-[#d69a3d]/40" />
               <span className="text-[10px] text-[#8a7355]" style={{ fontFamily: "Crimson Text, serif" }}>
-                Cadastre-se e forje o primeiro herói da sua lenda
+                Cadastre-se e forje sua lenda
               </span>
               <div className="h-px w-10 bg-gradient-to-l from-transparent to-[#d69a3d]/40" />
             </div>
@@ -312,78 +313,126 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* ══════ SEÇÃO 2: PERSONAGEM ══════ */}
+            {/* ══════ SEÇÃO 2: PERFIL ══════ */}
             <div className="rounded-xl border border-[#4a3d2a]/40 bg-[#0f0d0a]/30 p-4 sm:p-5">
-              <SectionTitle icon={Sword} number="II" title="Seu Primeiro Personagem" />
+              <SectionTitle icon={Crown} number="II" title="Seu Papel na Mesa" />
 
-              <div className="mt-4 space-y-4">
-                <FormField label="Nome do Herói" icon={Scroll}>
-                  <input
-                    type="text"
-                    value={characterName}
-                    onChange={(e) => setCharacterName(e.target.value)}
-                    placeholder="Ex: Geralt de Rívia (padrão: Novo Herói)"
-                    className={inputBase}
-                    style={inputFont}
-                  />
-                </FormField>
+              <p
+                className="mt-3 mb-4 text-xs text-[#8a7355]"
+                style={{ fontFamily: "Crimson Text, serif" }}
+              >
+                Escolha como deseja participar. Mestres gerenciam campanhas e NPC; jogadores possuem uma ficha de personagem.
+              </p>
 
-                <div>
-                  <label
-                    className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[#b59a6e]"
-                    style={{ fontFamily: "Cinzel, serif" }}
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {/* Botão Jogador */}
+                <button
+                  type="button"
+                  onClick={() => setIsMaster(false)}
+                  className={`flex items-center gap-3 rounded-xl border p-4 text-left transition-all ${
+                    !isMaster
+                      ? "border-[#d69a3d]/70 bg-[#d69a3d]/10 shadow-[0_0_16px_rgba(214,154,61,0.15)]"
+                      : "border-[#4a3d2a]/40 bg-[#0f0d0a]/40 hover:border-[#6b5a3e]"
+                  }`}
+                >
+                  <div
+                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border ${
+                      !isMaster
+                        ? "border-[#d69a3d]/50 bg-[#d69a3d]/15 text-[#d69a3d]"
+                        : "border-[#4a3d2a]/40 bg-[#0f0d0a]/60 text-[#6b5a3e]"
+                    }`}
                   >
-                    Classe / Ocupação
-                  </label>
-                  <input
-                    type="text"
-                    value={characterJob}
-                    onChange={(e) => setCharacterJob(e.target.value)}
-                    placeholder="Ex: Bruxeiro, Feiticeiro, Caçador..."
-                    className="w-full rounded-lg border border-[#4a3d2a]/60 bg-[#0f0d0a]/60 px-3 py-2 text-xs text-[#f1e7d2] placeholder-[#6b5a3e]/50 shadow-inner transition-all focus:border-[#d69a3d]/60 focus:bg-[#0f0d0a]/80 focus:outline-none focus:ring-1 focus:ring-[#d69a3d]/30"
-                    style={inputFont}
-                  />
-
-                  {/* Sugestões como "tags rúnicas" */}
-                  <div className="mt-3 flex flex-wrap gap-1.5">
-                    <span
-                      className="mr-1 self-center text-[10px] text-[#6b5a3e]"
-                      style={{ fontFamily: "Cinzel, serif" }}
-                    >
-                      Classes:
-                    </span>
-                    {SUGGESTED_JOBS.map((job) => (
-                      <button
-                        key={job}
-                        type="button"
-                        onClick={() => setCharacterJob(job)}
-                        className={`rounded-md border px-2.5 py-1 text-[11px] font-medium transition-all ${
-                          characterJob === job
-                            ? "border-[#d69a3d]/60 bg-[#d69a3d]/15 text-[#f0d9a0] shadow-[0_0_8px_rgba(214,154,61,0.15)]"
-                            : "border-[#4a3d2a]/40 bg-[#0f0d0a]/40 text-[#8a7355] hover:border-[#6b5a3e] hover:text-[#c5ab8d]"
-                        }`}
-                        style={{ fontFamily: "Crimson Text, serif" }}
-                      >
-                        {job}
-                      </button>
-                    ))}
+                    <Sword size={18} />
                   </div>
                   <div>
-                    <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[#b59a6e]" style={{ fontFamily: "Cinzel, serif" }}>
-                      Classe customizada
-                    </label>
-                    <input
-                      type="text"
-                      value={customClass}
-                      onChange={(e) => setCustomClass(e.target.value)}
-                      placeholder="Opcional: Pistoleiro Ígneo, Artífice de Guerra..."
-                      className="w-full rounded-lg border border-[#4a3d2a]/60 bg-[#0f0d0a]/60 px-3 py-2 text-xs text-[#f1e7d2] placeholder-[#6b5a3e]/50 shadow-inner transition-all focus:border-[#d69a3d]/60 focus:outline-none"
-                      style={inputFont}
-                    />
+                    <p
+                      className={`text-xs font-bold uppercase tracking-wider ${!isMaster ? "text-[#f0d9a0]" : "text-[#8a7355]"}`}
+                      style={{ fontFamily: "Cinzel, serif" }}
+                    >
+                      Jogador
+                    </p>
+                    <p
+                      className="mt-0.5 text-[11px] text-[#6b5a3e]"
+                      style={{ fontFamily: "Crimson Text, serif" }}
+                    >
+                      Possui ficha de personagem
+                    </p>
                   </div>
-                </div>
+                  {!isMaster && (
+                    <div className="ml-auto h-2 w-2 rounded-full bg-[#d69a3d] shadow-[0_0_6px_rgba(214,154,61,0.6)]" />
+                  )}
+                </button>
+
+                {/* Botão Mestre */}
+                <button
+                  type="button"
+                  onClick={() => setIsMaster(true)}
+                  className={`flex items-center gap-3 rounded-xl border p-4 text-left transition-all ${
+                    isMaster
+                      ? "border-[#d69a3d]/70 bg-[#d69a3d]/10 shadow-[0_0_16px_rgba(214,154,61,0.15)]"
+                      : "border-[#4a3d2a]/40 bg-[#0f0d0a]/40 hover:border-[#6b5a3e]"
+                  }`}
+                >
+                  <div
+                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border ${
+                      isMaster
+                        ? "border-[#d69a3d]/50 bg-[#d69a3d]/15 text-[#d69a3d]"
+                        : "border-[#4a3d2a]/40 bg-[#0f0d0a]/60 text-[#6b5a3e]"
+                    }`}
+                  >
+                    <Crown size={18} />
+                  </div>
+                  <div>
+                    <p
+                      className={`text-xs font-bold uppercase tracking-wider ${isMaster ? "text-[#f0d9a0]" : "text-[#8a7355]"}`}
+                      style={{ fontFamily: "Cinzel, serif" }}
+                    >
+                      Mestre
+                    </p>
+                    <p
+                      className="mt-0.5 text-[11px] text-[#6b5a3e]"
+                      style={{ fontFamily: "Crimson Text, serif" }}
+                    >
+                      Gerencia campanhas e NPCs
+                    </p>
+                  </div>
+                  {isMaster && (
+                    <div className="ml-auto h-2 w-2 rounded-full bg-[#d69a3d] shadow-[0_0_6px_rgba(214,154,61,0.6)]" />
+                  )}
+                </button>
               </div>
             </div>
+
+            {/* ══════ SEÇÃO 3: PERSONAGEM (apenas Jogador) ══════ */}
+            {!isMaster && (
+              <div className="rounded-xl border border-[#4a3d2a]/40 bg-[#0f0d0a]/30 p-4 sm:p-5">
+                <SectionTitle icon={Sword} number="III" title="Seu Primeiro Personagem" />
+
+                <div className="mt-4 space-y-4">
+                  <FormField label="Nome do Herói" icon={Scroll}>
+                    <input
+                      type="text"
+                      value={characterName}
+                      onChange={(e) => setCharacterName(e.target.value)}
+                      placeholder="Ex: Geralt de Rívia (padrão: Novo Herói)"
+                      className={inputBase}
+                      style={inputFont}
+                    />
+                  </FormField>
+
+                  <FormField label="Classe / Ocupação" icon={Sword}>
+                    <input
+                      type="text"
+                      value={characterJob}
+                      onChange={(e) => setCharacterJob(e.target.value)}
+                      placeholder="Ex: Bruxeiro, Pistoleiro Ígneo, Artífice de Guerra..."
+                      className={inputBase}
+                      style={inputFont}
+                    />
+                  </FormField>
+                </div>
+              </div>
+            )}
 
             {/* Botão de Registro */}
             <button
@@ -400,11 +449,11 @@ export default function RegisterPage() {
               {loading ? (
                 <span className="relative flex items-center gap-2">
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#d69a3d] border-t-transparent" />
-                  Forjando Personagem e Conta...
+                  {isMaster ? "Registrando Mestre..." : "Forjando Personagem e Conta..."}
                 </span>
               ) : (
                 <span className="relative flex items-center gap-2">
-                  Concluir Cadastro & Iniciar Aventura
+                  {isMaster ? "Entrar como Mestre" : "Concluir Cadastro & Iniciar Aventura"}
                   <ArrowRight size={16} />
                 </span>
               )}
