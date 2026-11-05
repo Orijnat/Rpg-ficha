@@ -143,3 +143,32 @@ Manter alinhamento entre frontend, backend, banco e regras de autorização.
 - `GET /api/characters` retorna o resumo sem `updatedAt`, pois a coluna física
   é `updated_at` e a seleção do alias Sequelize causava erro SQL.
 - A ordenação continua usando `updated_at DESC`.
+
+## Integração exclusiva com Rpg-backend — 2026-11-04
+
+- O frontend usa `src/lib/api.js` como cliente único para `http://localhost:3333/api`
+  (ou `NEXT_PUBLIC_API_URL`), com normalização de barras finais.
+- Os Route Handlers locais em `src/app/api` foram removidos para impedir que
+  chamadas futuras atinjam mocks ou persistência paralela no Next.js.
+- A tela de sessões passou a usar `/api/campanhas/:campanhaId/sessoes` e
+  `/api/campanhas/sessoes/:id`, persistindo na tabela `sessoes_jogo` do backend.
+- A pasta `src/app/api` foi removida do frontend; não há Route Handlers locais
+  concorrendo com a API Express.
+
+## Correção do OAuth Google — 2026-11-04
+
+- `GET /api/auth/google/url` retorna JSON `{ url }`; o frontend agora busca esse
+  contrato antes de redirecionar o navegador para o Google.
+- O callback lê o fragmento `#token=...` com `URLSearchParams`, preservando o JWT
+  emitido pelo backend e encaminhando a sessão validada para a área correta.
+- Credenciais `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `JWT_SECRET` e
+  `GOOGLE_AUTH_REDIRECT_URI` continuam obrigatórias no `.env` do backend; sem
+  elas o backend responde erro de disponibilidade, sem expor segredos.
+
+## Remoção do Google — 2026-11-04
+
+- O OAuth de login/cadastro e a integração Google Workspace foram removidos do
+  frontend e do backend por decisão de custo.
+- A autenticação oficial agora é somente usuário/e-mail e senha via
+  `/api/auth/login` e `/api/auth/register`; não há rotas OAuth nem variáveis
+  `GOOGLE_*` necessárias.

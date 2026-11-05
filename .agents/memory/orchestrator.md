@@ -1,5 +1,43 @@
 # Memória do Agente Orquestrador (@orchestrator)
 
+## Entrega — 2026-11-04 (Vinculação exclusiva ao Rpg-backend)
+
+- O frontend agora removeu os Route Handlers locais em `src/app/api`.
+- Todas as chamadas usam `src/lib/api.js` e `NEXT_PUBLIC_API_URL`.
+- A tela de sessões consome os endpoints REST de `sessoes_jogo`, sem gravar
+  sessões em `dadosExtras` da campanha.
+- Validação: build do frontend e testes do backend aprovados; lint sem erros,
+  com warnings preexistentes.
+- Worktree contém somente as alterações desta integração; nenhum commit ou push
+  foi criado nesta etapa.
+- A pasta `src/app/api` foi removida fisicamente do frontend, deixando o
+  `Rpg-backend` como única API da aplicação.
+
+## Entrega — 2026-11-04 (OAuth Google)
+
+- Ajustado o fluxo de login/cadastro Google no frontend para consumir
+  `GET /api/auth/google/url` como JSON e redirecionar à URL retornada.
+- Corrigido o callback para extrair corretamente `#token=...`.
+- Validação: build frontend aprovado, testes backend 9/9 aprovados e lint sem
+  erros (warnings preexistentes).
+
+## Entrega — 2026-11-04 (Remoção de integrações Google)
+
+- Removidas as funcionalidades Google OAuth e Google Workspace do frontend e
+  backend, incluindo callback, rotas, services, dependência `googleapis` e
+  configuração `GOOGLE_*`.
+- O login/cadastro permanece disponível por usuário/e-mail e senha.
+- Validação: frontend build/lint aprovados (warnings preexistentes), backend
+  `npm test` 9/9 e `node --check` aprovados.
+
+## Entrega — 2026-11-05 (Refinamento visual transversal)
+
+- Atualizados tokens e acabamentos globais em `globals.css`.
+- Reforçados consistência visual e responsividade em `AppShell`, `Cabecalho` e
+  `Card`; nenhum endpoint ou contrato foi alterado.
+- Validação: build frontend aprovado, lint sem erros e `git diff --check`
+  aprovado.
+
 Este arquivo é a fonte de memória persistente da liderança técnica do projeto. Deve ser lido no início de cada sessão e atualizado ao final de cada entrega.
 
 ---

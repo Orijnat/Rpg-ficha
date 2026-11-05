@@ -3,15 +3,12 @@
  * Protegido contra respostas HTML acidentais (<!DOCTYPE html> em 404/500).
  */
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3333/api";
+const API_BASE_URL = (
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3333/api"
+).replace(/\/+$/, "");
 
 export function getApiBaseUrl() {
   return API_BASE_URL;
-}
-
-export function getGoogleLoginUrl() {
-  return `${API_BASE_URL}/auth/google/url`;
 }
 
 export function getStoredToken() {
@@ -233,26 +230,6 @@ export async function updateCampaignData(campaignData, token = getStoredToken())
   }, "Erro ao salvar os dados da campanha.");
 }
 
-export async function getGoogleWorkspaceAuthUrl(token = getStoredToken()) {
-  const data = await safeFetchJson(`${API_BASE_URL}/google/oauth/url`, {
-    headers: authHeaders(token),
-  }, "Não foi possível iniciar a conexão com o Google.");
-  return data?.url;
-}
-
-export async function getGoogleWorkspaceStatus(token = getStoredToken()) {
-  return safeFetchJson(`${API_BASE_URL}/google/status`, {
-    headers: authHeaders(token),
-  }, "Não foi possível verificar a conexão Google.");
-}
-
-export async function disconnectGoogleWorkspace(token = getStoredToken()) {
-  return safeFetchJson(`${API_BASE_URL}/google/connection`, {
-    method: "DELETE",
-    headers: authHeaders(token),
-  }, "Não foi possível desconectar o Google.");
-}
-
 // ==========================================
 // 🛡️ API DA CÂMARA DO MESTRE & CAMPANHAS
 // ==========================================
@@ -290,6 +267,36 @@ export async function deleteCampaign(id, token = getStoredToken()) {
     method: "DELETE",
     headers: authHeaders(token),
   }, "Erro ao excluir campanha.");
+}
+
+export async function listGameSessions(campanhaId, token = getStoredToken()) {
+  return safeFetchJson(`${API_BASE_URL}/campanhas/${campanhaId}/sessoes`, {
+    headers: authHeaders(token),
+  }, "Erro ao carregar sessões.");
+}
+
+export async function createGameSession(campanhaId, sessionData, token = getStoredToken()) {
+  return safeFetchJson(`${API_BASE_URL}/campanhas/${campanhaId}/sessoes`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify(sessionData),
+  }, "Erro ao criar sessão.");
+}
+
+export async function updateGameSession(id, patch, token = getStoredToken()) {
+  return safeFetchJson(`${API_BASE_URL}/campanhas/sessoes/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify(patch),
+  }, "Erro ao atualizar sessão.");
+}
+
+export async function deleteGameSession(id, token = getStoredToken()) {
+  return safeFetchJson(`${API_BASE_URL}/campanhas/sessoes/${id}`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify({ confirmacao: true }),
+  }, "Erro ao excluir sessão.");
 }
 
 export async function joinCampaign(inviteCode, token = getStoredToken()) {

@@ -137,14 +137,7 @@ Para desenvolvimento:
 3. Configure `CORS_ORIGIN=http://localhost:3000`.
 4. Inicie o backend antes de usar login e sincronização.
 
-Os Route Handlers em `src/app/api` permanecem como superfícies locais de
-desenvolvimento, mas o cliente configurado aponta para o backend Express. Não
-use segredos reais em arquivos versionados.
-
-O botão **Criar ou entrar com Google** usa o fluxo de identidade separado do
-Google Workspace: `GET /api/auth/google/url` inicia OpenID (`openid`, `email`,
-`profile`) e `/api/auth/google/callback` cria ou vincula um jogador pelo
-identificador Google/e-mail verificado. O callback devolve o JWT em fragmento
-(`#token`) para não enviá-lo em query string. Configure
-`GOOGLE_AUTH_REDIRECT_URI` no Google Cloud Console; ele não substitui
-`GOOGLE_REDIRECT_URI`, usado pela integração Workspace do mestre.
+O frontend não possui Route Handlers locais: o cliente configurado aponta
+exclusivamente para o backend Express. A autenticação usa usuário/e-mail e
+senha, sem dependência de provedores OAuth ou serviços pagos de terceiros.
+Não use segredos reais em arquivos versionados.

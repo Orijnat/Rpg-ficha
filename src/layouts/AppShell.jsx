@@ -73,9 +73,9 @@ export default function AppShell({ children }) {
       {!hideNavigation && <Cabecalho />}
 
       {!hideNavigation && (
-        <nav aria-label="Navegação da ficha" className="sticky top-[93px] z-10 border-b border-white/10 bg-[#0b0d12]/70 backdrop-blur-xl">
+        <nav aria-label="Navegação da ficha" className="sticky top-[93px] z-10 border-b border-border/70 bg-background/75 py-2 backdrop-blur-xl">
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-            <div className="no-scrollbar flex overflow-x-auto rounded-2xl border border-white/10 bg-white/[0.03] px-1 py-1">
+            <div className="no-scrollbar flex overflow-x-auto rounded-2xl border border-border/70 bg-card/60 p-1 shadow-lg shadow-black/10">
               {TABS.filter((item) => item.id !== "admin" || isMaster).map((item) => {
                 const href = `/${item.id}`;
                 const active = pathname === href;
@@ -87,8 +87,8 @@ export default function AppShell({ children }) {
                     aria-current={active ? "page" : undefined}
                     className={`flex min-h-11 items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:px-4 ${
                       active
-                        ? "bg-[#d69a3d] text-[#17140f] shadow-md shadow-[#d69a3d]/20"
-                        : "text-[#a98b68] hover:bg-white/[0.04] hover:text-[#f5e9d7]"
+                        ? "bg-primary text-primary-foreground shadow-md shadow-primary/25"
+                        : "text-muted-foreground hover:bg-primary/10 hover:text-foreground"
                     }`}
                   >
                     {item.icon}

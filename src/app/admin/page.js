@@ -9,7 +9,6 @@ import {
   Crown,
   Dices,
   HeartPulse,
-  Link2,
   Play,
   Plus,
   RotateCcw,
@@ -25,7 +24,7 @@ import {
 } from "lucide-react";
 import { Card, SectionHeader } from "../components/ui";
 import { useAuth } from "../context/AuthContext";
-import { fetchCampaignData, getApiBaseUrl, getGoogleWorkspaceAuthUrl, getGoogleWorkspaceStatus, getStoredToken, listCharacters, updateCampaignData } from "../../lib/api";
+import { fetchCampaignData, getApiBaseUrl, getStoredToken, listCharacters, updateCampaignData } from "../../lib/api";
 import { CONDITIONS_LIST, applyHealthChange, advanceTurn } from "../../lib/modifiers";
 import { rollDice } from "../../lib/dice";
 
@@ -78,8 +77,6 @@ export default function AdminIndex() {
   const [campaignLoaded, setCampaignLoaded] = useState(false);
   const [campaignError, setCampaignError] = useState("");
   const { isMaster, loading: authLoading } = useAuth();
-  const [googleStatus, setGoogleStatus] = useState(null);
-  const [googleError, setGoogleError] = useState("");
   const [openConditionPickerId, setOpenConditionPickerId] = useState(null);
 
   useEffect(() => {
@@ -92,20 +89,7 @@ export default function AdminIndex() {
       .then((chars) => setCharacters(Array.isArray(chars) ? chars : []))
       .catch((error) => setCharacterError(error.message))
       .finally(() => setLoadingCharacters(false));
-    getGoogleWorkspaceStatus(getStoredToken())
-      .then(setGoogleStatus)
-      .catch((error) => setGoogleError(error.message));
   }, [authLoading, isMaster]);
-
-  async function connectGoogle() {
-    setGoogleError("");
-    try {
-      const url = await getGoogleWorkspaceAuthUrl(getStoredToken());
-      window.open(url, "_blank", "noopener,noreferrer");
-    } catch (error) {
-      setGoogleError(error.message);
-    }
-  }
 
   useEffect(() => {
     if (!campaignLoaded || !isMaster) return;
@@ -236,19 +220,6 @@ export default function AdminIndex() {
       {isMaster && (
       <>
       {campaignError && <p className="border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive-foreground">{campaignError}</p>}
-      <Card className="border-2 border-primary/25 bg-gradient-to-r from-card to-primary/5">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <div className="flex items-center gap-2 font-serif text-lg font-bold"><Link2 size={18} className="text-primary" /> Google Workspace</div>
-            <p className="mt-1 text-sm text-muted-foreground">Conecte Drive, Planilhas e Docs para preparar exportações e sincronização da campanha.</p>
-            {googleError && <p className="mt-2 text-xs text-destructive">{googleError}</p>}
-          </div>
-          <button type="button" onClick={connectGoogle} className="min-h-11 border border-primary/45 bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-wide text-primary hover:bg-primary/20">
-            {googleStatus?.connected ? "Reconectar Google" : "Conectar Google"}
-          </button>
-        </div>
-        {googleStatus?.connected && <p className="mt-3 text-xs text-emerald-300">Conectado · sincronização bidirecional · última alteração vence</p>}
-      </Card>
       <div className="guild-plaque ornate-frame border-2 border-primary/45 bg-card/95 p-5 shadow-[0_18px_50px_rgba(0,0,0,0.4)] sm:p-7">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>

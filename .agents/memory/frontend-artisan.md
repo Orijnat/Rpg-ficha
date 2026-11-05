@@ -106,6 +106,13 @@ UI/UX da Área do Jogador, componentes React 19, Tailwind CSS v4, responsividade
   offline.
 - `src/app/context/CharacterContext.js`: sincronização debounced recebe
   sequência anti-stale, mantém cache local como fallback, expõe erro/conflito e
+
+### Refinamento visual transversal — 2026-11-05
+- `globals.css`: adicionados textura/iluminação de fundo, seleção, scrollbar,
+  molduras ornamentais, estados de interação e campos com foco consistente.
+- `AppShell`, `Cabecalho` e `Card`: alinhados aos tokens semânticos dos temas,
+  com navegação, cabeçalho e cartões mais coesos e responsivos.
+- Build aprovado; lint sem erros, mantendo apenas warnings preexistentes.al como fallback, expõe erro/conflito e
   `retrySync`.
 - `src/app/personagem/page.js`: indicador de sincronização anuncia estado,
   distingue conflito HTTP 409 e oferece tentativa explícita novamente.

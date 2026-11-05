@@ -18,9 +18,11 @@ import {
 import { Card, SectionHeader } from "../../components/ui";
 import ConfirmDialog from "../../components/admin/ConfirmDialog";
 import {
-  fetchCampaignById,
+  createGameSession,
+  deleteGameSession,
   listCampaigns,
-  updateCampaignById,
+  listGameSessions,
+  updateGameSession,
 } from "../../../lib/api";
 import { useAuth } from "../../context/AuthContext";
 
@@ -29,7 +31,7 @@ export default function AdminSessoesPage() {
 
   const [campaigns, setCampaigns] = useState([]);
   const [selectedCampaignId, setSelectedCampaignId] = useState("");
-  const [campaign, setCampaign] = useState(null);
+  const [sessoes, setSessoes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
@@ -53,6 +55,18 @@ export default function AdminSessoesPage() {
   // Exclusão
   const [sessionToDeleteIndex, setSessionToDeleteIndex] = useState(null);
 
+  const normalizeSession = (session) => ({
+    ...session,
+    data: session.dataAgendada,
+    cenas: session.dadosExtras?.cenas || [],
+    objetivos: (session.dadosExtras?.objetivos || []).map((objetivo, index) => ({
+      ...objetivo,
+      id: objetivo.id || `${session.id}-objetivo-${index}`,
+      texto: objetivo.texto ?? objetivo.descricao ?? "",
+    })),
+    recompensas: session.dadosExtras?.recompensas || {},
+  });
+
   useEffect(() => {
     if (!isMaster) return;
     listCampaigns(token)
@@ -70,10 +84,10 @@ export default function AdminSessoesPage() {
   const loadCampaign = async (campId) => {
     if (!campId) return;
     try {
-      const data = await fetchCampaignById(campId, token);
-      setCampaign(data);
-      const sessoes = data?.dadosExtras?.sessoes || [];
-      setSessionNum(sessoes.length + 1);
+      const data = await listGameSessions(campId, token);
+      const normalized = (Array.isArray(data) ? data : []).map(normalizeSession);
+      setSessoes(normalized);
+      setSessionNum(normalized.length + 1);
     } catch (err) {
       setError(err.message);
     }
@@ -84,8 +98,6 @@ export default function AdminSessoesPage() {
       loadCampaign(selectedCampaignId);
     }
   }, [selectedCampaignId]);
-
-  const sessoes = campaign?.dadosExtras?.sessoes || [];
 
   const handleSaveNewSession = async (e) => {
     e.preventDefault();
@@ -102,27 +114,32 @@ export default function AdminSessoesPage() {
         xp: Number(recompensaXp),
         tesouro: recompensaTesouro.trim(),
       },
-      resumoPosJogo,
-      status: "planejada",
+      resumo: resumoPosJogo,
+      estado: "planejada",
     };
 
-    const updatedSessoes = [...sessoes, novaSessao];
-
     try {
-      await updateCampaignById(
+      await createGameSession(
         selectedCampaignId,
         {
-          dadosExtras: {
-            ...(campaign.dadosExtras || {}),
-            sessoes: updatedSessoes,
-          },
+          titulo: novaSessao.titulo,
+          numero: novaSessao.numero,
+          dataAgendada: novaSessao.data,
+          estado: novaSessao.estado,
+          resumo: novaSessao.resumo,
+          cenas: novaSessao.cenas,
+          objetivos: novaSessao.objetivos.map(({ id, texto, ...objetivo }) => ({
+            ...objetivo,
+            descricao: texto,
+          })),
+          recompensas: novaSessao.recompensas,
         },
         token
       );
       setSessionTitle("");
       setIsCreating(false);
       setSuccessMsg("Sessão planejada com sucesso.");
-      loadCampaign(selectedCampaignId);
+      await loadCampaign(selectedCampaignId);
     } catch (err) {
       setError(err.message);
     }
@@ -137,20 +154,13 @@ export default function AdminSessoesPage() {
     updated[sessionIndex] = sessao;
 
     try {
-      await updateCampaignById(
-        selectedCampaignId,
-        {
-          dadosExtras: {
-            ...(campaign.dadosExtras || {}),
-            sessoes: updated,
-          },
-        },
-        token
-      );
-      setCampaign((prev) => ({
-        ...prev,
-        dadosExtras: { ...(prev.dadosExtras || {}), sessoes: updated },
-      }));
+      await updateGameSession(sessao.id, {
+        objetivos: sessao.objetivos.map(({ id, texto, ...objetivo }) => ({
+          ...objetivo,
+          descricao: texto,
+        })),
+      }, token);
+      setSessoes(updated);
     } catch (err) {
       setError(err.message);
     }
@@ -158,21 +168,12 @@ export default function AdminSessoesPage() {
 
   const deleteSession = async () => {
     if (sessionToDeleteIndex == null) return;
-    const updated = sessoes.filter((_, idx) => idx !== sessionToDeleteIndex);
+    const session = sessoes[sessionToDeleteIndex];
     try {
-      await updateCampaignById(
-        selectedCampaignId,
-        {
-          dadosExtras: {
-            ...(campaign.dadosExtras || {}),
-            sessoes: updated,
-          },
-        },
-        token
-      );
+      await deleteGameSession(session.id, token);
       setSessionToDeleteIndex(null);
       setSuccessMsg("Sessão removida.");
-      loadCampaign(selectedCampaignId);
+      await loadCampaign(selectedCampaignId);
     } catch (err) {
       setError(err.message);
       setSessionToDeleteIndex(null);

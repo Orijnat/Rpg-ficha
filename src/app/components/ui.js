@@ -235,7 +235,7 @@ export function SectionHeader({ title, icon }) {
 
 export function Card({ children, className = "" }) {
   return (
-    <div className={`ornate-frame relative overflow-hidden rounded-sm border-2 border-primary/35 bg-card/95 p-5 shadow-[0_20px_45px_rgba(0,0,0,0.42)] before:pointer-events-none before:absolute before:inset-x-5 before:top-2 before:h-0.5 before:bg-gradient-to-r before:from-transparent before:via-primary before:to-transparent ${className}`}>
+    <div className={`ornate-frame interactive-lift relative overflow-hidden rounded-2xl border border-primary/30 bg-card/90 p-5 shadow-[0_20px_45px_rgba(0,0,0,0.32)] before:pointer-events-none before:absolute before:inset-x-8 before:top-2 before:h-0.5 before:bg-gradient-to-r before:from-transparent before:via-primary before:to-transparent ${className}`}>
       {children}
     </div>
   );

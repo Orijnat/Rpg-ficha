@@ -1,5 +1,39 @@
 # Sessão Ativa — Mapeamento Fullstack & Criação do Checklist de Backend
 
+## Continuidade — 2026-11-04 (Frontend vinculado ao Rpg-backend)
+
+- Cliente HTTP confirmado em `src/lib/api.js` com `NEXT_PUBLIC_API_URL`.
+- Route Handlers locais de `src/app/api` removidos para manter uma única API.
+- Sessões migradas da campanha JSON para os endpoints de sessões do backend.
+- Frontend build aprovado; lint mantém apenas warnings preexistentes.
+- Backend `npm test` aprovado (9 testes).
+- Estado final: `git diff --check`, build do frontend e testes do backend aprovados.
+- A pasta local `src/app/api` foi removida após confirmar que estava vazia e sem
+  consumidores; o frontend permanece dependente de `Rpg-backend`.
+
+## Refinamento visual transversal — 2026-11-05
+
+- Aprimorados tokens globais, textura/iluminação, scrollbar e seleção.
+- Refinados shell, navegação, cabeçalho e componente `Card` sem alterar API ou
+  regras de negócio.
+- Build aprovado; lint sem erros com warnings preexistentes.
+
+## Correção OAuth Google — 2026-11-04
+
+- Corrigida a busca da URL OAuth: o frontend não redireciona mais para o JSON do
+  endpoint; ele extrai `data.url` e segue para o Google.
+- Corrigida a leitura do token no callback, removendo o prefixo `#`.
+- Build, lint e testes do backend aprovados; lint mantém somente warnings
+  preexistentes.
+
+## Remoção do Google — 2026-11-04
+
+- Removido o botão e callback Google do frontend, incluindo Google Workspace da
+  sala do mestre.
+- Removidos rotas, controllers, services, dependência `googleapis` e variáveis
+  Google do backend.
+- Testes backend 9/9, build frontend e diff check aprovados.
+
 **Data/Hora**: 2026-10-27T11:35:30-03:00  
 **Agente Responsável**: `backend-database` + `frontend-artisan`
 
