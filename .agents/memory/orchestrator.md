@@ -38,6 +38,12 @@
 - Validação: build frontend aprovado, lint sem erros e `git diff --check`
   aprovado.
 
+## Entrega — 2026-11-05 (Identidade Visual: Fichas de RPG: Grimório)
+
+- Aplicação renomeada de "Coração da Montanha" para "Fichas de RPG: Grimório".
+- Pontos de contato atualizados: `AppShell.jsx`, `Cabecalho.jsx`, `page.js` e documentação de sessão.
+- Validação: 27 testes unitários aprovados e build Next.js 16 (25 rotas) concluído com sucesso.
+
 ## Entrega — 2026-11-05 (Skills de Publicação Web: Vercel, Supabase e Fullstack)
 
 - Criadas 3 skills especializadas para publicação web e infraestrutura em nuvem:

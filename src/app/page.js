@@ -31,13 +31,13 @@ export default function Home() {
       <div className="pointer-events-none absolute left-1/2 top-20 h-80 w-80 -translate-x-1/2 rounded-full bg-[var(--theme-accent-glow)] blur-3xl" />
 
       <header className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-5 py-5 sm:px-8 lg:px-12">
-        <Link href="/" className="flex items-center gap-3" aria-label="Coração da Montanha, início">
+        <Link href="/" className="flex items-center gap-3" aria-label="Fichas de RPG: Grimório, início">
           <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-[var(--theme-accent)]/40 bg-black/30 text-2xl shadow-[0_0_24px_var(--theme-accent-glow)]">
             ⚔
           </span>
           <span>
             <span className="block font-['Cinzel'] text-sm font-bold tracking-[0.18em] text-[var(--theme-title)]">
-              Coração da Montanha
+              Fichas de RPG: Grimório
             </span>
             <span className="block text-[10px] uppercase tracking-[0.28em] text-[var(--theme-subtitle)]">
               Grimório digital de aventuras
@@ -176,7 +176,7 @@ export default function Home() {
       </main>
 
       <footer className="relative z-10 border-t border-white/10 px-5 py-6 text-center text-xs text-[var(--theme-subtitle)]/70">
-        Coração da Montanha · Seu mundo, suas regras, sua lenda.
+        Fichas de RPG: Grimório · Seu mundo, suas regras, sua lenda.
       </footer>
     </div>
   );

@@ -1,5 +1,35 @@
 # Sessão Ativa — Mapeamento Fullstack & Criação do Checklist de Backend
 
+## Renomeação da Aplicação — 2026-11-05 (Fichas de RPG: Grimório)
+
+- Atendendo à solicitação do usuário, o título da aplicação foi alterado de "Coração da Montanha" para "Fichas de RPG: Grimório".
+- Atualizados: `src/layouts/AppShell.jsx` (título da página e topo da sidebar), `src/app/components/Cabecalho.jsx` (cabeçalho da ficha) e `src/app/page.js` (marca, hero e rodapé da landing page).
+- Validação: 27 testes unitários aprovados, build Next.js 16 (Turbopack) 100% OK e `git diff --check` aprovado.
+
+## Esclarecimento sobre API Key vs Connection String — 2026-11-05
+
+- Usuário perguntou se o valor solicitado seria uma "API Key".
+- Esclarecida a diferença entre:
+  1. Connection String / URI do banco de dados PostgreSQL (que começa com `postgres://...`).
+  2. API Key / Anon Key do Supabase (usada apenas quando se usa o SDK frontend do Supabase, o que não é o caso aqui, pois usamos Sequelize).
+  3. JWT Secret (chave secreta simétrica HMAC-SHA256 para assinatura dos tokens).
+
+## Consulta sobre Hospedagem do Backend — 2026-11-05
+
+- Usuário perguntou como hospedar o backend (`Rpg-backend`).
+- Apresentado o guia passo a passo para hospedar o backend Express no Render (gratuito) conectado ao PostgreSQL no Supabase, utilizando a skill `fullstack-web-publisher`.
+
+## Continuidade — 2026-11-05 (Definição do Método de Hospedagem)
+
+- O usuário escolheu a importação direta pelo site da Vercel conectada ao GitHub.
+- Fornecido o passo a passo com o link direto para publicação e orientações para o backend/banco de dados.
+
+## Consulta sobre Hospedagem — 2026-11-05
+
+- Usuário perguntou se o agente pode hospedar o sistema.
+- Explicada a necessidade de autenticação de conta na nuvem (Vercel/Render) por envolver credenciais pessoais e infraestrutura externa.
+- Disponibilizados os métodos: via Token de API no terminal ou via conexão direta com o repositório GitHub.
+
 ## Solicitação de Deploy — 2026-11-05 (Upar a Aplicação)
 
 - Usuário solicitou a publicação direta da aplicação na web.
