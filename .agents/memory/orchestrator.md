@@ -38,6 +38,16 @@
 - Validação: build frontend aprovado, lint sem erros e `git diff --check`
   aprovado.
 
+## Entrega — 2026-11-05 (Skills de Publicação Web: Vercel, Supabase e Fullstack)
+
+- Criadas 3 skills especializadas para publicação web e infraestrutura em nuvem:
+  1. `vercel-deployment`: deploy de frontend Next.js 16 na Vercel (CLI e Git).
+  2. `supabase-database-config`: PostgreSQL em nuvem no Supabase, Session Pooler, SSL e migrations Sequelize.
+  3. `fullstack-web-publisher`: roteiro completo ponta a ponta (Supabase + Render + Vercel) com CORS e checklist.
+- Criado `vercel.json` na raiz da aplicação.
+- Backend Sequelize atualizado com suporte e auto-detecção nativa a URLs Supabase.
+- Validação: testes front 27/27, testes back 9/9 e build Next.js 25/25 rotas estáticas/dinâmicas 100% OK.
+
 ## Entrega — 2026-11-05 (Commit & Push: Sidebar Dark Fantasy)
 
 - Commit e envio das alterações validadas: sidebar fixa no desktop com estética Dark Fantasy restaurada.

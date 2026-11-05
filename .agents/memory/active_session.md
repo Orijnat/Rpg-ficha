@@ -1,5 +1,15 @@
 # Sessão Ativa — Mapeamento Fullstack & Criação do Checklist de Backend
 
+## Criação das Skills de Deploy Web & Nuvem (Vercel, Supabase, Fullstack) — 2026-11-05
+
+- Criada a skill `vercel-deployment`: procedimentos de deploy de Next.js na Vercel (CLI e Git integration), variáveis de ambiente (`NEXT_PUBLIC_API_URL`), headers e troubleshooting de CORS/build.
+- Criada a skill `supabase-database-config`: provisionamento de PostgreSQL no Supabase, Session Pooler (porta 5432), SSL obrigatório no Sequelize e execução de migrations versionadas.
+- Criada a skill `fullstack-web-publisher`: fluxo integrado de 5 fases para colocar no ar o sistema completo (Supabase DB + Render/Railway Backend + Vercel Frontend), variáveis mútuas e smoke test.
+- Todas as skills foram espelhadas tanto em `.agents/skills/` quanto em `.github/skills/`.
+- Adicionado arquivo `vercel.json` na raiz para compatibilidade otimizada.
+- No backend (`Rpg-backend`), adicionada auto-detecção inteligente de SSL para conexões com Supabase (`pooler.supabase.com`).
+- Validação: 27 testes frontend aprovados, 9 testes backend aprovados e build Turbopack concluído com sucesso.
+
 ## Publicação e Commit — 2026-11-05 (Sidebar Dark Fantasy)
 
 - Consolidadas as alterações da sidebar desktop integrada ao padrão visual Dark Fantasy.
