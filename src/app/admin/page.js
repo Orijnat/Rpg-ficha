@@ -702,13 +702,23 @@ export default function AdminIndex() {
         <SectionHeader title="Heróis da campanha" icon={<Users size={15} />} />
         {loadingCharacters && <p className="text-sm text-muted-foreground">Carregando personagens...</p>}
         {characterError && <p className="border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive-foreground">{characterError}</p>}
-        {!loadingCharacters && !characterError && characters.length === 0 && <p className="text-sm text-muted-foreground">Nenhum personagem encontrado.</p>}
+        {!loadingCharacters && !characterError && displayedCharacters.length === 0 && <p className="text-sm text-muted-foreground">Nenhum personagem encontrado para esta mesa.</p>}
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {characters.map((character) => (
-            <Link key={character.id} href={`/admin/personagens/${character.id}/ficha`} target="_blank" rel="noreferrer" className="border-2 border-border bg-secondary/60 p-4 transition hover:border-primary/60 hover:bg-primary/10">
-              <strong className="font-serif text-base text-foreground">{character.name}</strong>
+          {displayedCharacters.map((character) => (
+            <Link key={character.id} href={`/admin/personagens/${character.id}/ficha`} target="_blank" rel="noreferrer" className="border-2 border-border bg-secondary/60 p-4 transition hover:border-primary/60 hover:bg-primary/10 rounded-xl">
+              <div className="flex items-start justify-between gap-2">
+                <strong className="font-serif text-base text-foreground">{character.name}</strong>
+                {(character.owner?.username || character.user?.username) && (
+                  <span className="text-[10px] text-muted-foreground">
+                    Jogador: <strong className="text-foreground">{character.owner?.username || character.user?.username}</strong>
+                  </span>
+                )}
+              </div>
               <p className="mt-1 text-xs text-muted-foreground">{character.job || "Aventureiro"} · Nível {character.level || 1}</p>
-              <div className="mt-3 flex items-center gap-2 text-xs text-primary"><HeartPulse size={13} /> {character.hp}/{character.hpMax} PV</div>
+              <div className="mt-3 flex items-center justify-between text-xs text-primary">
+                <span className="flex items-center gap-1.5"><HeartPulse size={13} /> {character.hp}/{character.hpMax} PV</span>
+                <span className="text-[10px] uppercase font-bold text-primary underline">Abrir Ficha ↗</span>
+              </div>
             </Link>
           ))}
         </div>

@@ -557,6 +557,37 @@ export default function AdminCampanhasPage() {
                             )}
                           </div>
                           <p className="text-[11px] text-muted-foreground">{m.usuario?.email}</p>
+
+                          {/* Herói vinculado ao jogador */}
+                          {m.usuario?.characters && m.usuario.characters.length > 0 ? (
+                            <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                              {m.usuario.characters.map((hero) => (
+                                <div key={hero.id} className="flex items-center gap-1.5 bg-background/50 border border-primary/30 rounded-lg px-2 py-1">
+                                  <Shield size={12} className="text-primary" />
+                                  <span className="text-xs font-semibold text-foreground">
+                                    {hero.name}
+                                  </span>
+                                  <span className="text-[10px] text-muted-foreground">
+                                    ({hero.job || "Aventureiro"} · Nv {hero.level || 1})
+                                  </span>
+                                  <Link
+                                    href={`/admin/personagens/${hero.id}/ficha`}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="ml-1 inline-flex items-center gap-1 rounded bg-primary/20 border border-primary/40 px-1.5 py-0.5 text-[10px] font-bold uppercase text-primary hover:bg-primary/30 transition"
+                                    title="Abrir Ficha do Jogador"
+                                  >
+                                    <span>Ficha</span>
+                                    <ExternalLink size={10} />
+                                  </Link>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <p className="mt-1 text-[10px] italic text-muted-foreground">
+                              Nenhum personagem registrado nesta conta ainda.
+                            </p>
+                          )}
                         </div>
 
                         {!isCampOwner && (
