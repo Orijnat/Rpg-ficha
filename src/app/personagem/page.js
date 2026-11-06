@@ -6,7 +6,6 @@ import { useCharacter } from "../context/CharacterContext";
 import { Card, EditableText, SectionHeader, StatBox } from "../components/ui";
 import Aparencia from "../components/Aparencia";
 import Pericia from "../components/Pericia";
-import BarraHp from "../components/BarrraHp";
 import RecursosCombate from "../components/RecursosCombate";
 import { calculateCapacity } from "../../lib/modifiers";
 import { DEFAULT_ABILITIES, isHabilidadeDesbloqueada } from "../../lib/abilities";
@@ -137,15 +136,10 @@ export default function Personagem() {
         </div>
       </Card>
 
-      {/* Seção de Vitalidade & Recursos Especiais */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <Card className="border-rose-400/20 bg-gradient-to-r from-rose-950/20 via-card/75 to-card/75">
-          <BarraHp />
-        </Card>
-        <Card>
-          <RecursosCombate />
-        </Card>
-      </div>
+      {/* Seção de Recursos de Combate */}
+      <Card>
+        <RecursosCombate />
+      </Card>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Card><Aparencia /></Card>
