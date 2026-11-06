@@ -1,5 +1,18 @@
 # Memória do Agente Orquestrador (@orchestrator)
 
+## Entrega — 2026-11-06 (Validação e Integração: Banco v2 Supabase, Migrations e Fluxo de Convites)
+
+- **Especialistas Acionados**: `backend-database` (skills `supabase-database-config`, `banco-de-dados-ops`, `sequelize-model-generator`), `qa-tester`.
+- **Implementações Entregues**:
+  * **Idempotência DDL no `banco_v2.sql`**: Adicionados blocos `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` garantindo que instâncias previamente criadas no Supabase recebam colunas canônicas (`pontos_esforco`, `insanidade`, `bonus_pericia`, `classe_armadura`, `dado_vida`, `codigo_convite`, etc.) sem quebra de execução.
+  * **Migration Sequelize Versionada**: Criada migration oficial `database/migrations/20261106150000-banco-v2-reformulacao.js` em `Rpg-backend`, permitindo execução programática via `npm run db:migrate`.
+  * **Blindagem de Serialização no Auth Controller**: Corrigido método `usuarioParaResposta` e resposta de campanha para lidar com objetos normais e instâncias Sequelize (`.toJSON()`), eliminando risco de exceções 500 no registro.
+  * **Suíte de Testes de Integração**: Criado `test/invite_flow.test.js` no backend cobrindo 6 cenários críticos do ciclo de convites e registro (código vazio, código inválido, mesa encerrada, sucesso na consulta pública e criação automática de vínculo de membro e personagem).
+- **Validação**:
+  * Backend: 17/17 testes aprovados (`node --test`).
+  * Frontend: 38/38 testes aprovados (`node --test`).
+  * Build Next.js 16 (Turbopack): 27 rotas compiladas com sucesso sem erros.
+
 ## Entrega — 2026-11-06 (Mecânica de Criação de Mesas, Links de Convite e Vínculo no Cadastro)
 
 - **Especialistas Acionados**: `backend-database` (skill `gm-campaign-orchestrator`), `frontend-artisan` (skill `sheet-component-builder`), `audit-and-security` e `qa-tester`.

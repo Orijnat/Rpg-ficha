@@ -1,41 +1,41 @@
 # 🧠 Sessão Ativa — Grimorium RPG
 
-**Última Atualização**: 2026-11-06T11:48:43Z
-**Commit HEAD**: `68504e1` — `main` em sincronia com `origin/main`
+**Última Atualização**: 2026-11-06T14:23:00-03:00  
+**Branch Atual**: `dev`  
+**Status**: Integração Concluída e Validada  
 
 ---
 
-## ✅ Concluído Nesta Sessão
+## ✅ Concluído Nesta Etapa
 
-| Item | Status |
-|---|---|
-| Sistema de convites de mesa (frontend) | ✅ |
-| Página `/convite/[code]` Dark Fantasy | ✅ |
-| `/registro` com captura de `?invite=` e validação live | ✅ |
-| `/login` preserva parâmetro de convite | ✅ |
-| `/admin/campanhas` botões copiar link/código/WhatsApp | ✅ |
-| `/admin` seletor de mesa ativa | ✅ |
-| `/perfil` ingresso manual via código | ✅ |
-| `api.js`: fetchInviteInfo, generateInviteLink | ✅ |
-| Skill `banco-de-dados-ops` instalada | ✅ |
-| 31 testes unitários passando | ✅ |
-| Build Next.js (25 rotas) | ✅ |
-| **Git commit + push → Vercel redeploy acionado** | ✅ |
+| Item | Status | Especialista / Skill |
+|---|---|---|
+| Idempotência DDL no [`banco_v2.sql`](file:///home/crs/asdas/Rpg-backend/database/banco_v2.sql) | ✅ | `backend-database` (`banco-de-dados-ops`) |
+| Migration Sequelize versionada `20261106150000-banco-v2-reformulacao.js` | ✅ | `backend-database` (`sequelize-model-generator`) |
+| Blindagem no controller [`authController.js`](file:///home/crs/asdas/Rpg-backend/src/controllers/authController.js) (serialização segura de user/campanha) | ✅ | `backend-database` / `audit-and-security` |
+| Testes automatizados do fluxo de convites no backend ([`test/invite_flow.test.js`](file:///home/crs/asdas/Rpg-backend/test/invite_flow.test.js)) | ✅ | `qa-tester` (6 novos testes integrados) |
+| Suíte de testes do Backend aprovada (17/17 testes) | ✅ | `qa-tester` |
+| Suíte de testes do Frontend aprovada (38/38 testes) | ✅ | `qa-tester` |
+| Build de produção Next.js 16 compilado com sucesso (27 rotas) | ✅ | `frontend-artisan` |
 
 ---
 
 ## 📋 Próximos Passos Recomendados
 
-1. **Aplicar `banco_v2.sql` no Supabase** via SQL Editor (DDL idempotente)
-2. **Atualizar modelos Sequelize** (`Character.js`, `User.js`) para novas colunas
-3. **Backend** (`Rpg-backend` não existe localmente) — verificar se está em outro caminho ou criá-lo
-4. Testar fluxo completo: gerar convite → compartilhar link → novo usuário cria conta vinculada à mesa
+1. **Deploy / Migração do Banco no Supabase**:
+   - Rodar `npm run db:migrate` no backend apontando para o Supabase (ou colar o conteúdo de [`database/banco_v2.sql`](file:///home/crs/asdas/Rpg-backend/database/banco_v2.sql) no SQL Editor do Supabase).
+2. **Integração dos Componentes Modulares (Frente B)**:
+   - Integrar os componentes de [`src/app/components/contratos/`](file:///home/crs/asdas/Rpg-ficha/src/app/components/contratos/) na página de contratos preservando filtros e busca.
+   - Integrar os componentes de [`src/app/components/inventario/`](file:///home/crs/asdas/Rpg-ficha/src/app/components/inventario/) no inventário.
+   - Consolidar a navegação de anotações (`/anotacao` vs `/anotacoes`).
+3. **Commit & Push para repositórios remotos**.
 
 ---
 
-## 🗂️ Arquivos Chave
+## 🗂️ Arquivos Chave Desta Etapa
 
-- [`src/app/convite/[code]/page.js`](file:///home/cledi/rp/Rpg-ficha/src/app/convite/[code]/page.js) — landing page de convite
-- [`src/app/registro/page.jsx`](file:///home/cledi/rp/Rpg-ficha/src/app/registro/page.jsx) — registro com convite
-- [`src/lib/api.js`](file:///home/cledi/rp/Rpg-ficha/src/lib/api.js) — funções de convite
-- [`src/app/admin/campanhas/page.js`](file:///home/cledi/rp/Rpg-ficha/src/app/admin/campanhas/page.js) — geração de links
+- [`database/banco_v2.sql`](file:///home/crs/asdas/Rpg-backend/database/banco_v2.sql) — DDL canônico reformulado e idempotente
+- [`database/migrations/20261106150000-banco-v2-reformulacao.js`](file:///home/crs/asdas/Rpg-backend/database/migrations/20261106150000-banco-v2-reformulacao.js) — Migration versionada Sequelize
+- [`src/controllers/authController.js`](file:///home/crs/asdas/Rpg-backend/src/controllers/authController.js) — Registro com vínculo à mesa e auditoria
+- [`src/controllers/campanhaController.js`](file:///home/crs/asdas/Rpg-backend/src/controllers/campanhaController.js) — Consulta pública de convites
+- [`test/invite_flow.test.js`](file:///home/crs/asdas/Rpg-backend/test/invite_flow.test.js) — Testes de unidade e integração do fluxo de convites
