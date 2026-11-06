@@ -1,5 +1,15 @@
 # Memória do Agente Orquestrador (@orchestrator)
 
+## Entrega — 2026-11-06 (Criação da Skill Especialista `token-optimizer`)
+
+- **Skill Adicionada**: [`token-optimizer`](file:///home/crs/asdas/Rpg-ficha/.agents/skills/token-optimizer/SKILL.md) (espelhada em `.github/skills/`).
+- **Recursos Integrados**:
+  * **Claude Prompt Caching**: Diretrizes para estabilidade de prefixo (cache hit de 90%), edições cirúrgicas e leituras paginadas com `StartLine`/`EndLine`.
+  * **Gemini Context Window Optimization**: Controle de thinking budget, delegação para subagentes rápidos (`flash_lite` / `flash`) e poda com `/compact`.
+  * **Comandos de Terminal Filtrados**: Proibição de comandos poluidores de contexto (`cat` de arquivos gigantes, `npm test` sem filtro, `git log` sem `-n`), substituídos por pipes enxutos (`head`, `tail`, `grep -n`).
+  * **Script de Auditoria**: Utilitário [`estimate_tokens.js`](file:///home/crs/asdas/Rpg-ficha/.agents/skills/token-optimizer/scripts/estimate_tokens.js) para auditoria e detecção de arquivos que excedam 5.000 tokens antes da injeção no contexto.
+- **Validação**: Script testado e aprovado; integridade do ecossistema mantida.
+
 ## Entrega — 2026-11-06 (Validação e Integração: Banco v2 Supabase, Migrations e Fluxo de Convites)
 
 - **Especialistas Acionados**: `backend-database` (skills `supabase-database-config`, `banco-de-dados-ops`, `sequelize-model-generator`), `qa-tester`.

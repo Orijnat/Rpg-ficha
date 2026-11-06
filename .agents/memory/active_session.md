@@ -1,41 +1,27 @@
 # 🧠 Sessão Ativa — Grimorium RPG
 
-**Última Atualização**: 2026-11-06T14:23:00-03:00  
+**Última Atualização**: 2026-11-06T14:33:00-03:00  
 **Branch Atual**: `dev`  
-**Status**: Integração Concluída e Validada  
+**Status**: Skill `token-optimizer` Criada e Integrada  
 
 ---
 
 ## ✅ Concluído Nesta Etapa
 
-| Item | Status | Especialista / Skill |
+| Item | Status | Detalhes |
 |---|---|---|
-| Idempotência DDL no [`banco_v2.sql`](file:///home/crs/asdas/Rpg-backend/database/banco_v2.sql) | ✅ | `backend-database` (`banco-de-dados-ops`) |
-| Migration Sequelize versionada `20261106150000-banco-v2-reformulacao.js` | ✅ | `backend-database` (`sequelize-model-generator`) |
-| Blindagem no controller [`authController.js`](file:///home/crs/asdas/Rpg-backend/src/controllers/authController.js) (serialização segura de user/campanha) | ✅ | `backend-database` / `audit-and-security` |
-| Testes automatizados do fluxo de convites no backend ([`test/invite_flow.test.js`](file:///home/crs/asdas/Rpg-backend/test/invite_flow.test.js)) | ✅ | `qa-tester` (6 novos testes integrados) |
-| Suíte de testes do Backend aprovada (17/17 testes) | ✅ | `qa-tester` |
-| Suíte de testes do Frontend aprovada (38/38 testes) | ✅ | `qa-tester` |
-| Build de produção Next.js 16 compilado com sucesso (27 rotas) | ✅ | `frontend-artisan` |
+| Skill [`token-optimizer`](file:///home/crs/asdas/Rpg-ficha/.agents/skills/token-optimizer/SKILL.md) | ✅ | Criada em `.agents/skills/` e `.github/skills/` |
+| Protocolos Claude Prompt Caching | ✅ | Estabilidade de prefixo, edições cirúrgicas e leitura paginada |
+| Protocolos Gemini Context Optimization | ✅ | Gestão de contexto, subagentes `flash_lite` e poda `/compact` |
+| Script Utilitário [`estimate_tokens.js`](file:///home/crs/asdas/Rpg-ficha/.agents/skills/token-optimizer/scripts/estimate_tokens.js) | ✅ | Estimativa de tokens e auditoria de arquivos pesados |
+| Registro em Memória e Orquestrador | ✅ | Atualizados [`active_session.md`](file:///home/crs/asdas/Rpg-ficha/.agents/memory/active_session.md) e [`orchestrator.md`](file:///home/crs/asdas/Rpg-ficha/.agents/memory/orchestrator.md) |
 
 ---
 
 ## 📋 Próximos Passos Recomendados
 
 1. **Deploy / Migração do Banco no Supabase**:
-   - Rodar `npm run db:migrate` no backend apontando para o Supabase (ou colar o conteúdo de [`database/banco_v2.sql`](file:///home/crs/asdas/Rpg-backend/database/banco_v2.sql) no SQL Editor do Supabase).
+   - Rodar o [`banco_v2.sql`](file:///home/crs/asdas/Rpg-backend/database/banco_v2.sql) no SQL Editor do Supabase.
 2. **Integração dos Componentes Modulares (Frente B)**:
-   - Integrar os componentes de [`src/app/components/contratos/`](file:///home/crs/asdas/Rpg-ficha/src/app/components/contratos/) na página de contratos preservando filtros e busca.
-   - Integrar os componentes de [`src/app/components/inventario/`](file:///home/crs/asdas/Rpg-ficha/src/app/components/inventario/) no inventário.
-   - Consolidar a navegação de anotações (`/anotacao` vs `/anotacoes`).
-3. **Commit & Push para repositórios remotos**.
-
----
-
-## 🗂️ Arquivos Chave Desta Etapa
-
-- [`database/banco_v2.sql`](file:///home/crs/asdas/Rpg-backend/database/banco_v2.sql) — DDL canônico reformulado e idempotente
-- [`database/migrations/20261106150000-banco-v2-reformulacao.js`](file:///home/crs/asdas/Rpg-backend/database/migrations/20261106150000-banco-v2-reformulacao.js) — Migration versionada Sequelize
-- [`src/controllers/authController.js`](file:///home/crs/asdas/Rpg-backend/src/controllers/authController.js) — Registro com vínculo à mesa e auditoria
-- [`src/controllers/campanhaController.js`](file:///home/crs/asdas/Rpg-backend/src/controllers/campanhaController.js) — Consulta pública de convites
-- [`test/invite_flow.test.js`](file:///home/crs/asdas/Rpg-backend/test/invite_flow.test.js) — Testes de unidade e integração do fluxo de convites
+   - Integrar componentes modulares de Contratos ([`src/app/components/contratos/`](file:///home/crs/asdas/Rpg-ficha/src/app/components/contratos/)) e Inventário ([`src/app/components/inventario/`](file:///home/crs/asdas/Rpg-ficha/src/app/components/inventario/)).
+3. **Commit & Push para o repositório remoto**.
