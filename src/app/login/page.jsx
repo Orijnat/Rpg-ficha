@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
-import { Lock, User, Eye, EyeOff, LogIn, Sparkles, AlertCircle } from "lucide-react";
+import { Lock, User, Eye, EyeOff, LogIn, Sparkles, AlertCircle, Link2 } from "lucide-react";
 
-export default function LoginPage() {
+function LoginForm() {
+  const searchParams = useSearchParams();
+  const inviteCode = searchParams ? (searchParams.get("invite") || searchParams.get("convite") || searchParams.get("code") || "") : "";
+
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -29,7 +32,11 @@ export default function LoginPage() {
 
     try {
       const data = await login(identifier, password);
-      router.push(data.user?.role === "master" || data.user?.perfil === "mestre" ? "/admin" : "/personagem");
+      if (inviteCode && (data.user?.role !== "master" && data.user?.perfil !== "mestre")) {
+        router.push(`/convite/${encodeURIComponent(inviteCode.trim().toUpperCase())}`);
+      } else {
+        router.push(data.user?.role === "master" || data.user?.perfil === "mestre" ? "/admin" : "/personagem");
+      }
     } catch (err) {
       setError(err.message || "Erro ao conectar. Verifique suas credenciais.");
     } finally {
@@ -249,7 +256,7 @@ export default function LoginPage() {
               É sua primeira vez nestas terras?
             </p>
             <Link
-              href="/registro"
+              href={`/registro${inviteCode ? `?invite=${encodeURIComponent(inviteCode)}` : ""}`}
               className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-[#d69a3d] transition hover:text-[#f0d9a0] hover:drop-shadow-[0_0_6px_rgba(214,154,61,0.4)]"
               style={{ fontFamily: "Cinzel, serif" }}
             >
@@ -279,5 +286,19 @@ export default function LoginPage() {
         }
       `}</style>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="p-8 text-center text-xs text-muted-foreground font-serif">
+          Carregando Portal dos Heróis...
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }

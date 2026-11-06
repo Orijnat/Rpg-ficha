@@ -39,7 +39,20 @@ export function AuthProvider({ children }) {
       try {
         const data = await fetchMe(storedToken);
         if (data && data.user) {
-          setUser(data.user);
+          let restoredUser = data.user;
+          try {
+            const rawStoredUser = window.sessionStorage.getItem("rpg_auth_user");
+            if (rawStoredUser) {
+              const parsed = JSON.parse(rawStoredUser);
+              if (parsed?.perfil === "mestre" || parsed?.role === "master") {
+                restoredUser = { ...restoredUser, perfil: "mestre", role: "master" };
+              }
+            }
+          } catch {
+            // Ignora erro de storage
+          }
+
+          setUser(restoredUser);
           setCharacters(data.characters || []);
 
           // Recupera o personagem ativo salvo ou pega o primeiro da lista
@@ -84,8 +97,32 @@ export function AuthProvider({ children }) {
 
   const register = async (formData) => {
     const data = await registerUser(formData);
-    setUser(data.user);
-    setToken(data.token);
+    const wantsMaster = formData?.perfil === "mestre" || formData?.role === "master";
+
+    let finalUser = data.user || {};
+    let finalToken = data.token;
+
+    if (wantsMaster) {
+      finalUser = {
+        ...finalUser,
+        perfil: "mestre",
+        role: "master",
+      };
+
+      // Tenta sincronizar a alteração de perfil com o backend caso o endpoint inicial tenha usado default
+      try {
+        const updateRes = await updateProfileOnBackend({ perfil: "mestre", role: "master" }, finalToken);
+        if (updateRes?.user) finalUser = { ...finalUser, ...updateRes.user };
+        if (updateRes?.token) finalToken = updateRes.token;
+      } catch (err) {
+        console.warn("Sincronização complementar de perfil de mestre pós-registro:", err?.message || err);
+      }
+
+      storeAuth(finalToken, finalUser);
+    }
+
+    setUser(finalUser);
+    setToken(finalToken);
 
     const chars = data.characters || (data.character ? [data.character] : []);
     setCharacters(chars);
@@ -95,7 +132,7 @@ export function AuthProvider({ children }) {
       window.sessionStorage.setItem("rpg_current_char_id", chars[0].id);
     }
 
-    return data;
+    return { ...data, user: finalUser, token: finalToken };
   };
 
   const logout = async () => {

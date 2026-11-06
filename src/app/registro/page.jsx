@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
+import { fetchInviteInfo } from "../../lib/api";
 import {
   Lock,
   User,
@@ -17,6 +18,9 @@ import {
   Scroll,
   Shield,
   Crown,
+  Link2,
+  CheckCircle2,
+  Loader2,
 } from "lucide-react";
 
 /* ─────── Componente reutilizável de campo de formulário ─────── */
@@ -63,7 +67,11 @@ function SectionTitle({ icon: Icon, number, title }) {
   );
 }
 
-export default function RegisterPage() {
+function RegisterForm() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const { register } = useAuth();
+
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -77,11 +85,52 @@ export default function RegisterPage() {
   const [characterName, setCharacterName] = useState("");
   const [characterJob, setCharacterJob] = useState("");
 
+  // Código de Convite da Mesa
+  const initialInvite = searchParams ? (searchParams.get("invite") || searchParams.get("convite") || searchParams.get("code") || "") : "";
+  const [inviteCode, setInviteCode] = useState(initialInvite);
+  const [inviteCampaign, setInviteCampaign] = useState(null);
+  const [validatingInvite, setValidatingInvite] = useState(false);
+  const [inviteError, setInviteError] = useState("");
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { register } = useAuth();
-  const router = useRouter();
+  useEffect(() => {
+    const code = (inviteCode || "").trim().toUpperCase();
+    if (!code || code.length < 3) {
+      setInviteCampaign(null);
+      setInviteError("");
+      return;
+    }
+
+    let isMounted = true;
+    setValidatingInvite(true);
+    setInviteError("");
+
+    fetchInviteInfo(code)
+      .then((res) => {
+        if (!isMounted) return;
+        if (res?.valido && res.campanha) {
+          setInviteCampaign(res.campanha);
+          setInviteError("");
+        } else {
+          setInviteCampaign(null);
+          setInviteError(res?.error || "Mesa não encontrada com este código.");
+        }
+      })
+      .catch((err) => {
+        if (!isMounted) return;
+        setInviteCampaign(null);
+        setInviteError(err?.message || "Não foi possível validar o convite.");
+      })
+      .finally(() => {
+        if (isMounted) setValidatingInvite(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [inviteCode]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -110,12 +159,16 @@ export default function RegisterPage() {
         email: email.trim(),
         password,
         perfil: isMaster ? "mestre" : "jogador",
+        role: isMaster ? "master" : "player",
       };
 
       if (!isMaster) {
         payload.characterName = characterName.trim() || "Novo Herói";
         payload.characterJob = characterJob.trim() || "Aventureiro";
         payload.customClass = characterJob.trim();
+        if (inviteCode.trim()) {
+          payload.inviteCode = inviteCode.trim().toUpperCase();
+        }
       }
 
       const data = await register(payload);
@@ -324,21 +377,24 @@ export default function RegisterPage() {
                 Escolha como deseja participar. Mestres gerenciam campanhas e NPC; jogadores possuem uma ficha de personagem.
               </p>
 
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2" role="radiogroup" aria-label="Papel na Mesa">
                 {/* Botão Jogador */}
                 <button
                   type="button"
+                  role="radio"
+                  aria-checked={!isMaster}
+                  aria-label="Perfil de Jogador"
                   onClick={() => setIsMaster(false)}
                   className={`flex items-center gap-3 rounded-xl border p-4 text-left transition-all ${
                     !isMaster
-                      ? "border-[#d69a3d]/70 bg-[#d69a3d]/10 shadow-[0_0_16px_rgba(214,154,61,0.15)]"
+                      ? "border-[#d69a3d] bg-[#d69a3d]/15 shadow-[0_0_16px_rgba(214,154,61,0.2)]"
                       : "border-[#4a3d2a]/40 bg-[#0f0d0a]/40 hover:border-[#6b5a3e]"
                   }`}
                 >
                   <div
                     className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border ${
                       !isMaster
-                        ? "border-[#d69a3d]/50 bg-[#d69a3d]/15 text-[#d69a3d]"
+                        ? "border-[#d69a3d] bg-[#d69a3d]/20 text-[#f0d9a0]"
                         : "border-[#4a3d2a]/40 bg-[#0f0d0a]/60 text-[#6b5a3e]"
                     }`}
                   >
@@ -359,24 +415,30 @@ export default function RegisterPage() {
                     </p>
                   </div>
                   {!isMaster && (
-                    <div className="ml-auto h-2 w-2 rounded-full bg-[#d69a3d] shadow-[0_0_6px_rgba(214,154,61,0.6)]" />
+                    <div className="ml-auto flex items-center gap-1.5 rounded-full bg-[#d69a3d]/20 px-2 py-0.5 text-[10px] font-semibold text-[#f0d9a0] border border-[#d69a3d]/40">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#d69a3d]" />
+                      Ativo
+                    </div>
                   )}
                 </button>
 
                 {/* Botão Mestre */}
                 <button
                   type="button"
+                  role="radio"
+                  aria-checked={isMaster}
+                  aria-label="Perfil de Mestre"
                   onClick={() => setIsMaster(true)}
                   className={`flex items-center gap-3 rounded-xl border p-4 text-left transition-all ${
                     isMaster
-                      ? "border-[#d69a3d]/70 bg-[#d69a3d]/10 shadow-[0_0_16px_rgba(214,154,61,0.15)]"
+                      ? "border-[#d69a3d] bg-[#d69a3d]/15 shadow-[0_0_16px_rgba(214,154,61,0.2)]"
                       : "border-[#4a3d2a]/40 bg-[#0f0d0a]/40 hover:border-[#6b5a3e]"
                   }`}
                 >
                   <div
                     className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border ${
                       isMaster
-                        ? "border-[#d69a3d]/50 bg-[#d69a3d]/15 text-[#d69a3d]"
+                        ? "border-[#d69a3d] bg-[#d69a3d]/20 text-[#f0d9a0]"
                         : "border-[#4a3d2a]/40 bg-[#0f0d0a]/60 text-[#6b5a3e]"
                     }`}
                   >
@@ -397,7 +459,10 @@ export default function RegisterPage() {
                     </p>
                   </div>
                   {isMaster && (
-                    <div className="ml-auto h-2 w-2 rounded-full bg-[#d69a3d] shadow-[0_0_6px_rgba(214,154,61,0.6)]" />
+                    <div className="ml-auto flex items-center gap-1.5 rounded-full bg-[#d69a3d]/20 px-2 py-0.5 text-[10px] font-semibold text-[#f0d9a0] border border-[#d69a3d]/40">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#d69a3d]" />
+                      Ativo
+                    </div>
                   )}
                 </button>
               </div>
@@ -431,6 +496,56 @@ export default function RegisterPage() {
                     />
                   </FormField>
                 </div>
+              </div>
+            )}
+
+            {/* ══════ SEÇÃO 4: CONVITE DA MESA (apenas Jogador) ══════ */}
+            {!isMaster && (
+              <div className="rounded-xl border border-[#4a3d2a]/40 bg-[#0f0d0a]/30 p-4 sm:p-5">
+                <SectionTitle icon={Link2} number="IV" title="Mesa de RPG & Convite (Opcional)" />
+
+                <p
+                  className="mt-2.5 mb-3 text-xs text-[#8a7355]"
+                  style={{ fontFamily: "Crimson Text, serif" }}
+                >
+                  Se o seu Mestre lhe forneceu um código ou link de convite, insira abaixo para vincular sua conta e sua ficha diretamente à mesa dele.
+                </p>
+
+                {inviteCampaign && (
+                  <div className="mb-4 rounded-xl border border-emerald-500/40 bg-emerald-950/30 p-3.5 text-xs text-emerald-200 shadow-[0_0_20px_rgba(16,185,129,0.1)]">
+                    <div className="flex items-center gap-2 font-bold uppercase tracking-wider text-emerald-400" style={{ fontFamily: "Cinzel, serif" }}>
+                      <CheckCircle2 size={16} className="text-emerald-400 shrink-0" />
+                      Mesa Convocada: {inviteCampaign.nome}
+                    </div>
+                    <p className="mt-1 text-[11px] text-emerald-300/90" style={{ fontFamily: "Crimson Text, serif" }}>
+                      Mestre: <strong>{inviteCampaign.mestre}</strong> · Ao finalizar o cadastro, seu herói será incluído diretamente nesta mesa!
+                    </p>
+                  </div>
+                )}
+
+                {inviteError && (
+                  <div className="mb-4 rounded-lg border border-amber-600/40 bg-amber-950/20 px-3 py-2 text-xs text-amber-300">
+                    {inviteError}
+                  </div>
+                )}
+
+                <FormField label="Código de Convite da Mesa" icon={Link2}>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={inviteCode}
+                      onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+                      placeholder="Ex: INV-A1B2C3D4 (ou deixe em branco para jogar avulso)"
+                      className={inputBase}
+                      style={{ ...inputFont, letterSpacing: "0.08em" }}
+                    />
+                    {validatingInvite && (
+                      <div className="absolute inset-y-0 right-3 flex items-center">
+                        <Loader2 size={14} className="animate-spin text-[#d69a3d]" />
+                      </div>
+                    )}
+                  </div>
+                </FormField>
               </div>
             )}
 
@@ -468,7 +583,7 @@ export default function RegisterPage() {
             >
               Já possui uma conta registrada?{" "}
               <Link
-                href="/login"
+                href={`/login${inviteCode ? `?invite=${encodeURIComponent(inviteCode)}` : ""}`}
                 className="font-semibold text-[#d69a3d] transition hover:text-[#f0d9a0] hover:drop-shadow-[0_0_6px_rgba(214,154,61,0.4)]"
                 style={{ fontFamily: "Cinzel, serif" }}
               >
@@ -487,5 +602,19 @@ export default function RegisterPage() {
         }
       `}</style>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="p-8 text-center text-xs text-muted-foreground font-serif">
+          Carregando Grimório de Cadastro...
+        </div>
+      }
+    >
+      <RegisterForm />
+    </Suspense>
   );
 }

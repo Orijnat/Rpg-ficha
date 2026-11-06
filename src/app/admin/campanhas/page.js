@@ -8,11 +8,14 @@ import {
   CheckCircle,
   Copy,
   Crown,
+  ExternalLink,
   History,
+  Link2,
   Lock,
   Plus,
   RotateCcw,
   ScrollText,
+  Share2,
   Shield,
   Trash2,
   Unlock,
@@ -26,6 +29,7 @@ import {
   createCampaign,
   deleteCampaign,
   fetchCampaignAudit,
+  generateInviteLink,
   listCampaignMembers,
   listCampaigns,
   removeCampaignMember,
@@ -61,8 +65,36 @@ export default function AdminCampanhasPage() {
   // Exclusão
   const [campaignToDelete, setCampaignToDelete] = useState(null);
 
-  // Cópia de código
+  // Cópia de código e link de convite
   const [copiedCode, setCopiedCode] = useState("");
+  const [copiedLink, setCopiedLink] = useState("");
+  const [copiedMsg, setCopiedMsg] = useState("");
+
+  const handleCopyCode = (code) => {
+    navigator.clipboard.writeText(code);
+    setCopiedCode(code);
+    setTimeout(() => setCopiedCode(""), 2500);
+  };
+
+  const handleCopyLink = (code) => {
+    const link = generateInviteLink(code);
+    navigator.clipboard.writeText(link);
+    setCopiedLink(code);
+    setTimeout(() => setCopiedLink(""), 2500);
+  };
+
+  const handleCopyMessage = (camp) => {
+    const link = generateInviteLink(camp.codigoConvite);
+    const mestreNome = user?.username || camp.proprietario?.username || "Mestre";
+    const msg = `⚔️ *Convocação para a Mesa de RPG — Grimorium* ⚔️\n` +
+      `O Mestre ${mestreNome} está convidando você para a campanha "${camp.nome}".\n` +
+      `Clique no link abaixo para criar sua conta e entrar diretamente na mesa:\n` +
+      `🔗 ${link}\n` +
+      `(Código da Mesa: ${camp.codigoConvite})`;
+    navigator.clipboard.writeText(msg);
+    setCopiedMsg(camp.codigoConvite);
+    setTimeout(() => setCopiedMsg(""), 2500);
+  };
 
   const loadCampaigns = async () => {
     setLoading(true);
@@ -103,12 +135,6 @@ export default function AdminCampanhasPage() {
     } catch (err) {
       setError(err.message);
     }
-  };
-
-  const handleCopyCode = (code) => {
-    navigator.clipboard.writeText(code);
-    setCopiedCode(code);
-    setTimeout(() => setCopiedCode(""), 2000);
   };
 
   const openMembersModal = async (campaign) => {
@@ -369,6 +395,68 @@ export default function AdminCampanhasPage() {
                       <span>
                         Mestre: <strong>{camp.proprietario?.username || "Você"}</strong>
                       </span>
+                    </div>
+
+                    {/* Painel de Convite da Mesa */}
+                    <div className="mt-4 rounded-xl border border-primary/35 bg-primary/5 p-3">
+                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-primary flex items-center gap-1">
+                            <Link2 size={13} /> Link & Convite da Mesa
+                          </span>
+                          <p className="text-[11px] text-muted-foreground mt-0.5">
+                            Envie aos jogadores para que vinculem a conta a esta mesa ao se cadastrar.
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-1.5 self-start sm:self-center">
+                          <span className="font-mono text-xs font-black rounded bg-background/90 border border-border px-2.5 py-1 text-foreground">
+                            {camp.codigoConvite}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleCopyCode(camp.codigoConvite)}
+                            className="flex items-center gap-1 rounded bg-secondary px-2 py-1 text-[11px] font-bold text-foreground hover:bg-secondary/80 transition"
+                            title="Copiar código alfanumérico"
+                          >
+                            {copiedCode === camp.codigoConvite ? (
+                              <Check size={12} className="text-emerald-400" />
+                            ) : (
+                              <Copy size={12} />
+                            )}
+                            <span>{copiedCode === camp.codigoConvite ? "Copiado!" : "Código"}</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="mt-2.5 flex flex-wrap gap-2 pt-2 border-t border-primary/20">
+                        <button
+                          type="button"
+                          onClick={() => handleCopyLink(camp.codigoConvite)}
+                          className="flex items-center gap-1.5 rounded-lg border border-primary/50 bg-primary/20 px-3 py-1.5 text-xs font-bold text-primary hover:bg-primary/30 transition active:scale-95"
+                          title="Copiar URL completa do convite para a área de transferência"
+                        >
+                          {copiedLink === camp.codigoConvite ? (
+                            <Check size={13} className="text-emerald-400" />
+                          ) : (
+                            <Link2 size={13} />
+                          )}
+                          <span>{copiedLink === camp.codigoConvite ? "Link Copiado!" : "Copiar Link de Convite"}</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => handleCopyMessage(camp)}
+                          className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary/80 px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary transition active:scale-95"
+                          title="Copiar texto formatado para enviar no Discord ou WhatsApp"
+                        >
+                          {copiedMsg === camp.codigoConvite ? (
+                            <Check size={13} className="text-emerald-400" />
+                          ) : (
+                            <Share2 size={13} className="text-primary" />
+                          )}
+                          <span>{copiedMsg === camp.codigoConvite ? "Mensagem Copiada!" : "Texto p/ Discord / WhatsApp"}</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
 

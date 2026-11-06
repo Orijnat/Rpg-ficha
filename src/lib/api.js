@@ -114,11 +114,26 @@ export async function loginUser({ login, password }) {
   return data;
 }
 
-export async function registerUser({ username, email, password, characterName, characterJob, customClass }) {
+export async function registerUser(payload) {
+  const { username, email, password, characterName, characterJob, customClass, perfil, role, inviteCode, codigoConvite } = payload || {};
+  const selectedPerfil = perfil || (role === "master" ? "mestre" : "jogador");
+  const selectedRole = role || (selectedPerfil === "mestre" ? "master" : "player");
+  const code = (inviteCode || codigoConvite || "").trim().toUpperCase();
+
   const data = await safeFetchJson(`${API_BASE_URL}/auth/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, email, password, characterName, characterJob, customClass }),
+    body: JSON.stringify({
+      username,
+      email,
+      password,
+      characterName,
+      characterJob,
+      customClass,
+      perfil: selectedPerfil,
+      role: selectedRole,
+      inviteCode: code || undefined,
+    }),
   }, "Erro ao realizar cadastro.");
   storeAuth(data.token, data.user);
   return data;
@@ -297,6 +312,21 @@ export async function deleteGameSession(id, token = getStoredToken()) {
     headers: { "Content-Type": "application/json", ...authHeaders(token) },
     body: JSON.stringify({ confirmacao: true }),
   }, "Erro ao excluir sessão.");
+}
+
+export async function fetchInviteInfo(inviteCode) {
+  if (!inviteCode || !inviteCode.trim()) return null;
+  return safeFetchJson(
+    `${API_BASE_URL}/campanhas/convite/${encodeURIComponent(inviteCode.trim().toUpperCase())}`,
+    {},
+    "Erro ao consultar dados do convite."
+  );
+}
+
+export function generateInviteLink(inviteCode, baseUrl) {
+  if (!inviteCode) return "";
+  const base = baseUrl || (typeof window !== "undefined" ? window.location.origin : "");
+  return `${base.replace(/\/+$/, "")}/convite/${encodeURIComponent(inviteCode.trim().toUpperCase())}`;
 }
 
 export async function joinCampaign(inviteCode, token = getStoredToken()) {

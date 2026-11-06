@@ -1,38 +1,147 @@
 # Sessão Ativa — Mapeamento Fullstack & Criação do Checklist de Backend
 
-## Publicação & Commit das Habilidades — 2026-11-05
+## Reformulação Profissional de Banco de Dados PostgreSQL (`banco-de-dados-ops`) — 2026-11-06
 
-- Commit `326fbe8` criado com mensagem: `feat(habilidades): adicionar modulo de habilidades, treinamento e progressao por nivel`.
-- Enviado com sucesso para `origin/main` (`github.com:Orijnat/Rpg-ficha.git`), disparando o deploy automático contínuo na Vercel.
-- Validação final: 34 testes unitários automatizados 100% aprovados, build Next.js 16 (Turbopack) 26 rotas OK e árvore de trabalho limpa.
+- **Diagnóstico de DBA & Engenharia de Dados**:
+  * Mapeamento completo dos 6 domínios de negócio: IAM/Segurança, Campanhas/Mesas, Ficha/Regras d20, Sessões Narrativas, Tático/Iniciativa e Recursos/Mídia.
+  * Identificação e resolução de anti-patterns:
+    1. Descontinuação do uso de `JSONB` amorfo para colunas funcionais de combate (`pontos_esforco`, `insanidade`, `bonus_pericia`, `classe_armadura`, `moedas`), promovendo-as a colunas fortemente tipadas e validadas com `CHECK`.
+    2. Eliminação da redundância de `usuarios.dados_mestre` em favor das tabelas relacionais dedicadas (`sessoes_jogo`, `npcs`, `encontros`, `iniciativas`).
+    3. Indexação sistemática de todas as Foreign Keys (prevenindo table locks em cascata) e criação de índices parciais para códigos de convite e sessões JWT ativas.
+    4. Garantia estrita do princípio de reversibilidade: DDL estruturado com script bidirecional (`UP` e `DOWN`).
+- **Artefatos Entregues**:
+  * Relatório e Dicionário de Dados 3NF no artefato `reformulacao-postgresql-dba.md`.
+  * Script SQL canônico compilado em [`/home/cledi/rp/Rpg-backend/database/banco_v2.sql`](file:///home/cledi/rp/Rpg-backend/database/banco_v2.sql).
 
-## Área de Habilidades, Treinamento de Habilidade e Habilidades por Nível — 2026-11-05
+## Instalação da Skill Especialista `banco-de-dados-ops` — 2026-11-06
 
-- Atendendo à solicitação do usuário ("falta tambem uma area de habilidade e treinamento de habilidade, alem das habilidade por nivel, que ainda nao existem no sistema"):
-- **Motor de Regras & Habilidades (`src/lib/abilities.js`)**:
-  * 4 Graus de Maestria de Treinamento: Aprendiz (Grau I, 0-10h), Praticante (Grau II, 10-25h, +1 teste / -1 PE), Veterano (Grau III, 25-50h, +2 teste / alcance +50%), Mestre (Grau IV, 50-100h, +3 teste / crítico 19-20).
-  * Desbloqueio dinâmico por nível (`reqLevel` vs `character.level`).
-  * Mecânica de avanço de treino (`avancarTreinoHabilidade`), cálculo de porcentagem para o próximo grau (`calcularProgressoTreino`) e agrupamento hierárquico por nível (`agruparPorNivel`).
-  * Catálogo canônico de habilidades iniciais (Sinal Igni, Quen, Aard, Axii, Yrden, Sentidos de Bruxeiro, Esquiva Fluida, Dança das Lâminas, Execução de Prata).
-- **Componentes React & UI Dark Fantasy**:
-  * [`src/app/components/habilidades/AbilityCard.jsx`](../src/app/components/habilidades/AbilityCard.jsx): Card temático com indicador de nível, custo em PE, bloqueio/desbloqueio visual, botão de rolagem virtual de dados, barra de progresso de treino e botões de +1h/+5h.
-  * [`src/app/components/habilidades/AbilityFormModal.jsx`](../src/app/components/habilidades/AbilityFormModal.jsx): Modal para criar e editar habilidades personalizadas (nome, nível, tipo, custo, dano/efeito, atributo vinculado, horas de treino).
-  * [`src/app/habilidades/page.js`](../src/app/habilidades/page.js): Tela completa com filtros ("Todas", "Por Nível", "Em Treinamento", "Magias/Sinais", "Ações", "Passivas"), barra de pesquisa, estatísticas, banner de foco de treino e botão de simulação/rolagem de sessão de treino.
-- **Integração Global & Sinergias**:
-  * [`src/layouts/AppShell.jsx`](../src/layouts/AppShell.jsx): Aba `/habilidades` adicionada ao menu de navegação rápida (`TABS`) com ícone de `Sparkles`.
-  * [`src/app/personagem/page.js`](../src/app/personagem/page.js): Resumo de habilidades despertadas e habilidade em treino no topo da ficha do herói com link direto.
-  * [`src/app/quarto/page.js`](../src/app/quarto/page.js): Descanso curto avança +1h de treino e recupera PE; descanso longo avança +4h de treino e restaura 100% de PE.
-  * [`src/app/context/CharacterContext.js`](../src/app/context/CharacterContext.js): Adicionados métodos `addAbility`, `removeAbility`, `updAbility`, `trainAbility` e `setAbilityTrainingFocus`, persistindo em `localStorage` e na nuvem em `dadosExtras.abilities`.
-- **Validação de QA**:
-  * 34 testes unitários automatizados 100% aprovados em `node --test src/lib/__tests__/*.test.mjs`.
+- **Origem**: Repositório `flowgrammers-skills` (`https://github.com/ricardonevesbraga/flowgrammers-skills/tree/main/codigo-automacao/banco-de-dados-ops`).
+- **Detecção de Agentes e Ambientes**:
+  * **Claude Code**: Identificado diretório `~/.claude/skills/`. Arquivo gravado em [`~/.claude/skills/banco-de-dados-ops.md`](file:///home/cledi/.claude/skills/banco-de-dados-ops.md).
+  * **Google Antigravity / Projeto RPG**: Gravado e integrado ao ecossistema em [`/home/cledi/rp/Rpg-ficha/.agents/skills/banco-de-dados-ops/SKILL.md`](file:///home/cledi/rp/Rpg-ficha/.agents/skills/banco-de-dados-ops/SKILL.md) e espelhado em [`/home/cledi/rp/Rpg-ficha/.github/skills/banco-de-dados-ops/SKILL.md`](file:///home/cledi/rp/Rpg-ficha/.github/skills/banco-de-dados-ops/SKILL.md).
+- **Conteúdo da Skill**:
+  * Princípios de modelagem relacional (1NF, 2NF, 3NF e desnormalização consciente).
+  * Tipos de dados brasileiros padronizados (CPF, CNPJ, CEP em VARCHAR; moeda em DECIMAL; TIMESTAMPTZ).
+  * Estratégias de indexação e uso mandatório de `EXPLAIN ANALYZE`.
+  * Migrations versionadas estritas com UP e DOWN (rollback garantido).
+  * Boas práticas de LGPD, Charset UTF-8 pt_BR e políticas de retenção.
+- **Validação**: Criação física e integridade dos arquivos confirmadas em todos os diretórios.
 
-## Consulta sobre Senha do Banco vs Senha de Login — 2026-11-05
+## Mecânica Completa de Criação de Mesas, Links de Convite e Vínculo no Cadastro — 2026-11-06
 
-- Usuário perguntou se é possível definir a senha do banco como a mesma senha que o usuário usa para logar no site.
-- Mapeadas as duas interpretações da arquitetura:
-  1. **Banco do RPG (Cofre / `/banco`)**: Unificação da senha de desbloqueio do cofre do personagem com a senha da conta do usuário no backend, autenticando via hash seguro (bcrypt) sem expor senhas em texto puro.
-  2. **Banco de Dados (PostgreSQL / Supabase)**: Distinção entre a credencial mestra de infraestrutura (`DATABASE_URL`) e as senhas individuais dos usuários da aplicação, ressaltando os princípios de segurança e separação de privilégios.
-- Aguardando direcionamento do usuário para aplicar a alteração no cofre do jogo ou sanar a dúvida sobre o Supabase.
+- **Demanda do Usuário**:
+  * Implementação de mecânica de criação de campanhas/mesas ("RPs") e links de convite compartilháveis gerados pelo mestre.
+  * Suporte a múltiplas sessões/mesas simultâneas para evitar que qualquer usuário entre na mesma sessão sem restrição.
+  * O jogador informa o código de convite (ou acessa diretamente via link de convite) ao criar a conta, vinculando a conta e o novo personagem à mesa específica.
+
+- **Arquitetura Implementada**:
+  1. **Backend (`Rpg-backend`)**:
+     - [`src/schemas/apiSchemas.js`](file:///home/cledi/rp/Rpg-backend/src/schemas/apiSchemas.js): `registroSchema` atualizado para aceitar `inviteCode`, `codigoConvite`, `perfil` e `role`.
+     - [`src/controllers/authController.js`](file:///home/cledi/rp/Rpg-backend/src/controllers/authController.js):
+       * `register`: valida o código de convite na tabela `campanhas`.
+       * Se válido, associa imediatamente o novo usuário à mesa via `CampaignMember` (`papel: "jogador"`), vincula a coluna `campanhaId` do primeiro personagem criado à campanha e registra auditoria (`ENTRADA_MEMBRO_CADASTRO`).
+     - [`src/controllers/campanhaController.js`](file:///home/cledi/rp/Rpg-backend/src/controllers/campanhaController.js):
+       * Adicionado método público `consultarConvitePublico`: retorna dados sanitizados da mesa (`nome`, `descricao`, `estado`, `mestre`, `codigoConvite`) sem requerer autenticação prévia.
+       * `entrarPorCodigo`: atualizado para vincular o personagem do usuário à campanha caso ainda esteja sem `campanhaId`.
+     - [`src/routes/campanhaRoutes.js`](file:///home/cledi/rp/Rpg-backend/src/routes/campanhaRoutes.js): registrada rota pública `GET /api/campanhas/convite/:codigo` antes do middleware de autenticação.
+     - [`test/validation.test.js`](file:///home/cledi/rp/Rpg-backend/test/validation.test.js): adicionado teste unitário para cadastro com código de convite.
+  2. **Frontend (`Rpg-ficha`)**:
+     - [`src/lib/api.js`](file:///home/cledi/rp/Rpg-ficha/src/lib/api.js):
+       * `registerUser`: repassa `inviteCode` no payload JSON.
+       * Adicionadas funções `fetchInviteInfo(inviteCode)` e `generateInviteLink(inviteCode)`.
+     - [`src/app/admin/campanhas/page.js`](file:///home/cledi/rp/Rpg-ficha/src/app/admin/campanhas/page.js):
+       * Exibição do código de convite, botão "Copiar Link de Convite" com URL canônica e botão "Texto p/ Discord / WhatsApp" com mensagem pronta de convocação.
+     - [`src/app/admin/page.js`](file:///home/cledi/rp/Rpg-ficha/src/app/admin/page.js):
+       * Adicionado seletor de mesa/sessão ativa ("Todas as Mesas" ou campanhas específicas).
+       * Filtro em tempo real de heróis e iniciativa por campanha.
+       * Botão de cópia rápida do link de convite diretamente na Sala de Guerra do mestre.
+     - [`src/app/registro/page.jsx`](file:///home/cledi/rp/Rpg-ficha/src/app/registro/page.jsx):
+       * Captura automática de `?invite=...` ou `?convite=...` da URL.
+       * Seção IV "Mesa de RPG & Convite" com validação em tempo real e badge ilustrada com o nome da mesa e mestre convocado.
+       * Fallback elegante protegido por `<Suspense>`.
+     - [`src/app/login/page.jsx`](file:///home/cledi/rp/Rpg-ficha/src/app/login/page.jsx):
+       * Preservação do parâmetro de convite e redirecionamento para aceitação de mesa pós-login.
+     - [`src/app/convite/[code]/page.js`](file:///home/cledi/rp/Rpg-ficha/src/app/convite/[code]/page.js):
+       * Nova página temática Dark Fantasy para recepção de convidados.
+       * Para não-autenticados: botão "Criar Conta & Ingressar" (direcionando para cadastro com convite preenchido) e "Fazer Login".
+       * Para autenticados: botão "Aceitar Convocação e Entrar na Mesa" vinculando o herói ativo.
+     - [`src/app/perfil/page.js`](file:///home/cledi/rp/Rpg-ficha/src/app/perfil/page.js):
+       * Seção "Sua Mesa & Convites" para ingresso manual de jogadores já registrados através de código.
+     - [`src/lib/__tests__/invite.test.mjs`](file:///home/cledi/rp/Rpg-ficha/src/lib/__tests__/invite.test.mjs):
+       * 3 testes unitários para geração de links e consumo seguro de dados de convite.
+- **Validação**:
+  * Backend: 10/10 testes unitários aprovados (`npm test`).
+  * Frontend: 31/31 testes unitários aprovados (`node --test`).
+  * Build de produção Next.js 16 (Turbopack): compilado com sucesso com todas as 25 rotas.
+  * Validação de integridade Git (`git diff --check`): 0 erros.
+
+## Blindagem Completa da Atribuição de Perfil Mestre/Jogador no Cadastro — 2026-11-05
+
+- **Ajustes Implementados**:
+  1. [`src/app/registro/page.jsx`](file:///home/cledi/rp/Rpg-ficha/src/app/registro/page.jsx):
+     - Botões de seleção de papel ("Mestre" e "Jogador") reforçados com semântica acessível (`role="radiogroup"`, `role="radio"`, `aria-checked`, `aria-label`).
+     - Badge visual dourada explícita de "Ativo" e realce de borda ao selecionar.
+     - Payload de cadastro atualizado para enviar `perfil` (`mestre`/`jogador`) e `role` (`master`/`player`).
+  2. [`src/lib/api.js`](file:///home/cledi/rp/Rpg-ficha/src/lib/api.js):
+     - `registerUser` agora repassa fielmente `perfil` e `role` no corpo da requisição JSON para o backend.
+  3. [`src/app/context/AuthContext.jsx`](file:///home/cledi/rp/Rpg-ficha/src/app/context/AuthContext.jsx):
+     - Ao cadastrar com a opção Mestre, o contexto garante `perfil: "mestre"` no estado, sincroniza imediatamente com o backend via `updateProfileOnBackend` e persiste em `sessionStorage`.
+     - No `initAuth`, a reidratação preserva o perfil de mestre mesmo em atualizações de página.
+- **Validação**: 27 testes unitários 100% aprovados e build Next.js 16 (25 rotas) compilado sem erros.
+
+
+## Correção de Perfil de Mestre no Cadastro (`registerUser`) — 2026-11-05
+
+- **Problema Reportado**: Ao selecionar a opção "Mestre" na tela de cadastro, o usuário não tem acesso à tela de mestre (`/admin`).
+- **Diagnóstico**:
+  * Em `src/lib/api.js`, a função `registerUser` desestruturava apenas `{ username, email, password, characterName, characterJob, customClass }`, descartando as propriedades `perfil` e `role`.
+  * Com isso, o payload enviado ao backend via `POST /api/auth/register` chegava sem a indicação de perfil, e o backend atribuía o perfil padrão `jogador`.
+- **Correções Aplicadas**:
+  1. `src/lib/api.js`: `registerUser` atualizada para repassar `perfil` (`mestre`/`jogador`) e `role` (`master`/`player`) no body JSON.
+  2. Fornecido comando SQL para promover a conta já criada diretamente no Supabase (`UPDATE usuarios SET role = 'mestre'`).
+  3. Alternativa via tela `/perfil` (seletor de perfil no sistema e salvar).
+- **Validação**: 27 testes unitários aprovados com 100% de sucesso e build Turbopack concluído com 25 rotas.
+
+
+## Resolução de Falha no Schema: Colunas de Atributos Faltantes em `personagens` — 2026-11-05
+
+- **Diagnóstico Preciso via Log do Render**:
+  * Autenticação de usuário e conexão SSL com o Supabase **funcionaram 100%** (usuário `0b1b3bc2-7f3f-41eb-9905-3559b3b6c16c` localizado e validado).
+  * O erro 500 no login ocorreu em `authController.js:156:26` ao executar `Character.findAll`:
+    `SequelizeDatabaseError: column "forca" does not exist` na tabela `personagens`.
+  * **Causa**: O model Sequelize `Character` define os 7 atributos em colunas diretas (`forca`, `destreza`, `constituicao`, `sabedoria`, `espirito`, `carisma`, `inteligencia`) e campos legados em camelCase (`"bankSlots"`, `"bankPassword"`, `"roomNotes"`, `"mountName"`, etc.), mas a tabela baseline `personagens` no Supabase foi criada sem essas colunas.
+- **Solução Arquitetural Aplicada**:
+  * Fornecido script SQL idempotente com `ADD COLUMN IF NOT EXISTS` para ser executado no **SQL Editor** do Supabase.
+  * O script adiciona todos os campos de atributos e metadados que o Sequelize `Character` requisita no `SELECT`, resolvendo a consulta do login e das fichas de uma vez por todas.
+
+
+## Diagnóstico de Erro Interno (HTTP 500) no Login — 2026-11-05
+
+- **Problema Reportado**: "Erro interno no servidor ao tentar login."
+- **Causa Raiz Identificada**:
+  * O erro 500 retornado pelo endpoint `POST /api/auth/login` no backend (`https://rpg-backend-pmhk.onrender.com/api/auth/login`) é a consequência direta do problema de autenticação do PostgreSQL no Supabase (`password authentication failed for user postgres`) ou ausência de variáveis essenciais (`JWT_SECRET` / `DATABASE_URL`) no Render.
+  * Quando a `DATABASE_URL` no Render está com senha incorreta ou caracteres especiais não codificados, ou quando o banco não consegue autenticar, qualquer query (`User.findOne`) falha com `SequelizeConnectionError`, resultando no status HTTP 500.
+  * Se o banco estiver ok mas o usuário tentar fazer login sem antes ter criado a conta (ou rodado seed), um banco conectado normalmente retornaria 401 ("Usuário ou senha incorretos"); o retorno 500 confirma falha na infraestrutura/banco.
+- **Ações Imediatas Orientadas**:
+  1. Corrigir a variável `DATABASE_URL` no painel do Render com a senha redefinida no Supabase;
+  2. Garantir que a variável `JWT_SECRET` esteja preenchida no Render (chave secreta longa para assinatura dos tokens);
+  3. Checar a aba **Logs** do Render para confirmar o status da conexão do Sequelize (`Database connection established`);
+  4. Realizar o primeiro cadastro na tela `/registro` do frontend (Vercel) para criar o usuário inicial.
+
+
+## Resolução de Falha de Autenticação do PostgreSQL (Supabase/Render) — 2026-11-05
+
+- **Diagnóstico do erro `password authentication failed for user postgres`**:
+  * Identificado que o erro ocorre na conexão do backend (`Rpg-backend` no Render ou local) com o PostgreSQL do Supabase via `DATABASE_URL`.
+  * Causas mapeadas com a skill `supabase-database-config` e agente `backend-database`:
+    1. Senha com caracteres especiais (`@`, `#`, `%`, etc.) que não foram codificados via URL-encode na string URI;
+    2. Usuário incompleto no Session Pooler (`postgres` em vez do formato exigido pelo Supavisor: `postgres.ofkjgxnxmfwjmtscktts`);
+    3. Senha incorreta ou divergente da definida no provisionamento do Supabase.
+- **Plano de Resolução**:
+  * Orientar o reset imediato da senha do banco no painel do Supabase (Project Settings ➔ Database ➔ Reset database password).
+  * Instruir o uso de senha alfanumérica limpa e a montagem da `DATABASE_URL` canônica no Render.
+  * Checklist e validação de continuidade.
+
 
 ## Renomeação da Aplicação para Grimorium — 2026-11-05
 

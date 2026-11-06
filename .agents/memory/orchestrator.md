@@ -1,30 +1,53 @@
 # Memória do Agente Orquestrador (@orchestrator)
 
-## Entrega — 2026-11-05 (Área de Habilidades, Treinamento & Desbloqueio por Nível)
+## Entrega — 2026-11-06 (Mecânica de Criação de Mesas, Links de Convite e Vínculo no Cadastro)
 
-- Implementada a Área de Habilidades completa atendendo à solicitação do usuário:
-  1. **Motor de Regras (`src/lib/abilities.js`)**:
-     * 4 Graus de Maestria de Treinamento: Aprendiz (0-10h), Praticante (10-25h), Veterano (25-50h), Mestre (50-100h).
-     * Desbloqueio dinâmico por nível (`reqLevel <= character.level`).
-     * Cálculo de horas para próximo grau e progressão por descanso e testes.
-     * Catálogo canônico de 9 habilidades de Bruxeiro/Aventureiro com custos de PE, fórmulas de dados e efeitos.
-  2. **Área do Jogador e UI Dark Fantasy**:
-     * Nova página `/habilidades` com filtros ("Todas", "Por Nível", "Em Treinamento", "Magias/Sinais", "Ações", "Passivas") e busca.
-     * Componente `AbilityCard.jsx` e modal de criação/edição `AbilityFormModal.jsx`.
-     * Banner de habilidade em foco de treino ativo com botão de teste de treino virtual.
-  3. **Integrações Fullstack**:
-     * `AppShell.jsx`: aba `/habilidades` no menu global `TABS`.
-     * `Personagem`: card de resumo com contagem de habilidades e foco ativo.
-     * `Quarto`: descanso curto (+1h) e descanso longo (+4h) avançam o treinamento e recuperam PE.
-     * `CharacterContext.js`: métodos de gestão de habilidades persistidos em `localStorage` e nuvem (`dadosExtras.abilities`).
-  4. **QA**: 34 testes unitários automatizados 100% aprovados e build Next.js 16 (Turbopack) 26/26 rotas OK.
+- **Especialistas Acionados**: `backend-database` (skill `gm-campaign-orchestrator`), `frontend-artisan` (skill `sheet-component-builder`), `audit-and-security` e `qa-tester`.
+- **Implementações Entregues**:
+  * Geração e cópia de links de convite no painel de campanhas e na Sala de Guerra (`/admin/campanhas` e `/admin`).
+  * Mensagem pronta de convocação para envio em 1 clique via Discord / WhatsApp.
+  * Cadastro integrado (`/registro`): captura automática do parâmetro `?invite=...` ou preenchimento manual do código de convite da mesa, com validação ao vivo e badge de mesa e mestre convocador.
+  * Backend: validação de convite no registro, criação de vínculo em `CampaignMember` e atribuição de `campanhaId` à ficha do novo herói.
+  * Nova página dedicada `/convite/[code]` para recepção de novos jogadores ou aceitação de convite por heróis já existentes.
+  * Área do perfil (`/perfil`) com seção para jogadores entrarem em mesas com código a qualquer momento.
+  * Seletor de mesas/sessões ativas na Sala de Guerra para isolamento de participantes e iniciativa por mesa.
+- **Validação**: 31 testes unitários frontend + 10 testes unitários backend aprovados; build Next.js 16 compilado com sucesso.
 
-## Consulta — 2026-11-05 (Definição de Senha do Banco vs Senha de Login)
+## Entrega — 2026-11-05 (Blindagem da Atribuição de Perfil Mestre no Cadastro)
 
-- Usuário consultou sobre a possibilidade de unificar a senha do banco com a senha de login do usuário.
-- Estruturada a resposta abordando:
-  1. O **Banco do Jogo** (Cofre de moedas/itens em `/banco` com slots e senha `bankPassword`), viabilizando a validação remota direta contra o hash da conta do usuário.
-  2. O **Banco de Dados** (PostgreSQL Supabase via `DATABASE_URL`), explicando a separação entre credencial de infraestrutura e credenciais de usuários finais.
+- Corrigido o fluxo ponta a ponta dos botões de seleção de perfil em `src/app/registro/page.jsx`, `src/lib/api.js` e `src/app/context/AuthContext.jsx`.
+- Garantido que quem selecionar Mestre recebe `isMaster = true` imediatamente, redirecionamento para `/admin` e persistência no banco e na sessão.
+- 27 testes aprovados e build 100% OK.
+
+
+## Entrega — 2026-11-05 (Correção de Perfil no Cadastro)
+
+- Corrigida a função `registerUser` em `src/lib/api.js` para repassar `perfil` e `role` na requisição de cadastro.
+- Disponibilizado o SQL imediato de promoção de conta no Supabase.
+- 27 testes aprovados e build 100% OK.
+
+
+## Entrega — 2026-11-05 (Correção de Schema: Coluna forca Ausente na Tabela personagens)
+
+- Analisado o stack trace do Render: o erro 500 no login provém de `column "forca" does not exist` disparado por `Character.findAll`.
+- Acionado o agente `backend-database` com a skill `supabase-database-config` e `sequelize-model-generator`.
+- Gerado script SQL de migração complementar para o Supabase SQL Editor garantindo alinhamento de 100% entre a tabela física `personagens` e o modelo Sequelize `Character`.
+
+
+## Entrega — 2026-11-05 (Investigação de Erro Interno 500 no Login)
+
+- Acionados os agentes `backend-database` e `qa-tester` com as skills `supabase-database-config` e `fullstack-web-publisher`.
+- Mapeada a correlação direta entre o erro anterior (`password authentication failed for user postgres`) e o HTTP 500 ao tentar login: a query do Sequelize ao banco falha na autenticação ou faltam variáveis obrigatórias (`DATABASE_URL`, `JWT_SECRET`) no painel do Render.
+- Instruído o checklist de verificação de logs no Render e a sequência de revalidação.
+
+
+## Entrega — 2026-11-05 (Diagnóstico de Falha de Autenticação Supabase / Render)
+
+- Analisada a falha `password authentication failed for user postgres`.
+- Acionado o agente `backend-database` com a skill `supabase-database-config`.
+- Mapeado o procedimento de redefinição de senha segura e alinhamento do Session Pooler (`postgres.ofkjgxnxmfwjmtscktts`) com a variável `DATABASE_URL` no Render.
+- Frontend Grimorium validado: 27 testes unitários aprovados e build Next.js 16 (25 rotas) concluído com 100% de sucesso.
+
 
 ## Entrega — 2026-11-05 (Identidade Visual Renomeada para Grimorium)
 

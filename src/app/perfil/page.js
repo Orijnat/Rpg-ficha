@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import {
   Crown,
   HeartPulse,
+  Link2,
   LogOut,
   Palette,
   Plus,
@@ -20,6 +21,7 @@ import { Card, SectionHeader } from "../components/ui";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { useCharacter } from "../context/CharacterContext";
+import { joinCampaign } from "../../lib/api";
 
 export default function PerfilPage() {
   const {
@@ -45,6 +47,30 @@ export default function PerfilPage() {
   const [profileForm, setProfileForm] = useState({ username: "", email: "", perfil: "jogador" });
   const [profileStatus, setProfileStatus] = useState("");
   const [isSavingProfile, setIsSavingProfile] = useState(false);
+
+  // Convite de mesa para jogador
+  const [joinCode, setJoinCode] = useState("");
+  const [joinMsg, setJoinMsg] = useState("");
+  const [joining, setJoining] = useState(false);
+
+  const handleJoinTable = async (e) => {
+    e.preventDefault();
+    if (!joinCode.trim()) return;
+    setJoining(true);
+    setJoinMsg("");
+    try {
+      const res = await joinCampaign(joinCode.trim().toUpperCase());
+      setJoinMsg(`Sucesso: ${res?.message || "Você entrou na mesa com sucesso!"}`);
+      setJoinCode("");
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+    } catch (err) {
+      setJoinMsg(`Erro: ${err?.message || "Código de convite inválido ou expirado."}`);
+    } finally {
+      setJoining(false);
+    }
+  };
 
   React.useEffect(() => {
     setProfileForm({
@@ -334,6 +360,46 @@ export default function PerfilPage() {
             </form>
           </div>
         </Card>
+
+        {/* Vínculo com Mesa / Campanha */}
+        {!isMaster && (
+          <Card className="border-2 border-primary/25">
+            <SectionHeader title="Sua Mesa & Convites" icon={<Link2 size={16} />} />
+            <p className="mt-2 text-xs text-muted-foreground">
+              Vincule sua conta e personagem a uma mesa compartilhada do Mestre usando o código de convite.
+            </p>
+
+            {joinMsg && (
+              <p
+                className={`mt-3 rounded p-2.5 text-xs ${
+                  joinMsg.startsWith("Erro")
+                    ? "bg-rose-500/15 text-rose-300 border border-rose-500/30"
+                    : "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
+                }`}
+              >
+                {joinMsg}
+              </p>
+            )}
+
+            <form onSubmit={handleJoinTable} className="mt-4 flex flex-col sm:flex-row gap-2">
+              <input
+                type="text"
+                placeholder="Código de Convite (ex: INV-VALE-100)"
+                value={joinCode}
+                onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+                className="min-h-10 flex-1 rounded-lg border border-border bg-input-background px-3 text-xs text-foreground uppercase tracking-wider outline-none focus:border-primary font-mono"
+                required
+              />
+              <button
+                type="submit"
+                disabled={joining}
+                className="flex min-h-10 items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2 font-serif text-xs font-bold uppercase tracking-wider text-primary-foreground hover:brightness-110 active:scale-95 disabled:opacity-50"
+              >
+                <Link2 size={13} /> {joining ? "Ingressando..." : "Entrar na Mesa"}
+              </button>
+            </form>
+          </Card>
+        )}
 
         {/* Preferências Visuais e Temas */}
         <Card className="border-2 border-primary/25">

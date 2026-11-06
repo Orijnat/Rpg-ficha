@@ -4,11 +4,14 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   BookOpen,
+  Check,
   ChevronRight,
   Clock3,
+  Copy,
   Crown,
   Dices,
   HeartPulse,
+  Link2,
   Play,
   Plus,
   RotateCcw,
@@ -24,7 +27,15 @@ import {
 } from "lucide-react";
 import { Card, SectionHeader } from "../components/ui";
 import { useAuth } from "../context/AuthContext";
-import { fetchCampaignData, getApiBaseUrl, getStoredToken, listCharacters, updateCampaignData } from "../../lib/api";
+import {
+  fetchCampaignData,
+  generateInviteLink,
+  getApiBaseUrl,
+  getStoredToken,
+  listCampaigns,
+  listCharacters,
+  updateCampaignData,
+} from "../../lib/api";
 import { CONDITIONS_LIST, applyHealthChange, advanceTurn } from "../../lib/modifiers";
 import { rollDice } from "../../lib/dice";
 
@@ -79,17 +90,47 @@ export default function AdminIndex() {
   const { isMaster, loading: authLoading } = useAuth();
   const [openConditionPickerId, setOpenConditionPickerId] = useState(null);
 
+  // Múltiplas mesas / campanhas do mestre
+  const [campaigns, setCampaigns] = useState([]);
+  const [selectedCampaignId, setSelectedCampaignId] = useState("");
+  const [copiedInvite, setCopiedInvite] = useState(false);
+
   useEffect(() => {
     if (authLoading || !isMaster) return;
     fetchCampaignData(getStoredToken())
       .then((campaign) => setTable(normalizeTable(campaign)))
       .catch(() => setTable(loadTable()))
       .finally(() => setCampaignLoaded(true));
+
     listCharacters(getStoredToken())
       .then((chars) => setCharacters(Array.isArray(chars) ? chars : []))
       .catch((error) => setCharacterError(error.message))
       .finally(() => setLoadingCharacters(false));
+
+    listCampaigns(getStoredToken())
+      .then((camps) => {
+        const list = Array.isArray(camps) ? camps : [];
+        setCampaigns(list);
+      })
+      .catch(() => {});
   }, [authLoading, isMaster]);
+
+  const activeCampaign = useMemo(() => {
+    return campaigns.find((c) => c.id === selectedCampaignId) || null;
+  }, [campaigns, selectedCampaignId]);
+
+  const displayedCharacters = useMemo(() => {
+    if (!selectedCampaignId) return characters;
+    return characters.filter((character) => character.campanhaId === selectedCampaignId);
+  }, [characters, selectedCampaignId]);
+
+  const handleCopyInvite = () => {
+    if (!activeCampaign?.codigoConvite) return;
+    const link = generateInviteLink(activeCampaign.codigoConvite);
+    navigator.clipboard.writeText(link);
+    setCopiedInvite(true);
+    setTimeout(() => setCopiedInvite(false), 2500);
+  };
 
   useEffect(() => {
     if (!campaignLoaded || !isMaster) return;
@@ -103,7 +144,10 @@ export default function AdminIndex() {
   }, [table, campaignLoaded, isMaster]);
 
   const updateTable = (patch) => setTable((current) => ({ ...current, ...patch }));
-  const activeCharacters = useMemo(() => characters.filter((character) => character.hp > 0), [characters]);
+  const activeCharacters = useMemo(
+    () => displayedCharacters.filter((character) => character.hp > 0),
+    [displayedCharacters]
+  );
 
   const addNpc = () => {
     updateTable({
@@ -239,12 +283,62 @@ export default function AdminIndex() {
             Novo herói
           </Link>
         </div>
+
+        {/* Barra de Múltiplas Mesas / Campanhas & Convite Rápido */}
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/30 bg-primary/10 p-3.5">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <span className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5 font-serif">
+              <Crown size={14} /> Mesa / Sessão Ativa:
+            </span>
+            <select
+              value={selectedCampaignId}
+              onChange={(e) => setSelectedCampaignId(e.target.value)}
+              className="min-h-9 rounded-lg border border-primary/40 bg-background/90 px-3 py-1 text-xs font-semibold text-foreground outline-none focus:border-primary"
+            >
+              <option value="">Todas as Mesas ({characters.length} heróis)</option>
+              {campaigns.map((camp) => (
+                <option key={camp.id} value={camp.id}>
+                  {camp.nome} ({camp.estado})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {activeCampaign ? (
+              <>
+                <button
+                  type="button"
+                  onClick={handleCopyInvite}
+                  className="flex min-h-9 items-center gap-1.5 rounded-lg border border-primary/50 bg-primary/20 px-3 py-1 text-xs font-bold text-primary hover:bg-primary/30 transition active:scale-95"
+                  title="Copiar link de convite desta mesa para enviar aos jogadores"
+                >
+                  {copiedInvite ? <Check size={13} className="text-emerald-400" /> : <Link2 size={13} />}
+                  <span>{copiedInvite ? "Link Copiado!" : `Copiar Link (${activeCampaign.codigoConvite})`}</span>
+                </button>
+                <Link
+                  href="/admin/campanhas"
+                  className="flex min-h-9 items-center gap-1 rounded-lg border border-border bg-secondary px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground transition"
+                >
+                  Gerenciar
+                </Link>
+              </>
+            ) : (
+              <Link
+                href="/admin/campanhas"
+                className="flex min-h-9 items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-bold text-primary hover:bg-primary/20 transition"
+              >
+                <Plus size={13} /> Gerenciar Campanhas & Convites
+              </Link>
+            )}
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {[
           ["Heróis vivos", activeCharacters.length, Users],
-          ["Personagens", characters.length, ScrollText],
+          ["Personagens", displayedCharacters.length, ScrollText],
           ["NPCs preparados", table.npcs.length, Skull],
           ["Na iniciativa", table.initiative.length, Swords],
         ].map(([label, value, Icon]) => (
@@ -365,7 +459,7 @@ export default function AdminIndex() {
             Adicionar à iniciativa:
           </p>
           <div className="flex flex-wrap gap-2">
-            {characters.map((character) => (
+            {displayedCharacters.map((character) => (
               <button
                 key={character.id}
                 type="button"
