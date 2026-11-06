@@ -87,7 +87,7 @@ export default function AdminIndex() {
   const [characterError, setCharacterError] = useState("");
   const [campaignLoaded, setCampaignLoaded] = useState(false);
   const [campaignError, setCampaignError] = useState("");
-  const { isMaster, loading: authLoading } = useAuth();
+  const { isMaster, loading: authLoading, inspectCharacter } = useAuth();
   const [openConditionPickerId, setOpenConditionPickerId] = useState(null);
 
   // Múltiplas mesas / campanhas do mestre
@@ -705,21 +705,45 @@ export default function AdminIndex() {
         {!loadingCharacters && !characterError && displayedCharacters.length === 0 && <p className="text-sm text-muted-foreground">Nenhum personagem encontrado para esta mesa.</p>}
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {displayedCharacters.map((character) => (
-            <Link key={character.id} href={`/admin/personagens/${character.id}/ficha`} target="_blank" rel="noreferrer" className="border-2 border-border bg-secondary/60 p-4 transition hover:border-primary/60 hover:bg-primary/10 rounded-xl">
-              <div className="flex items-start justify-between gap-2">
-                <strong className="font-serif text-base text-foreground">{character.name}</strong>
-                {(character.owner?.username || character.user?.username) && (
-                  <span className="text-[10px] text-muted-foreground">
-                    Jogador: <strong className="text-foreground">{character.owner?.username || character.user?.username}</strong>
-                  </span>
-                )}
+            <div
+              key={character.id}
+              className="border-2 border-border bg-secondary/60 p-4 transition hover:border-primary/60 hover:bg-primary/10 rounded-xl flex flex-col justify-between"
+            >
+              <div>
+                <div className="flex items-start justify-between gap-2">
+                  <strong className="font-serif text-base text-foreground">{character.name}</strong>
+                  {(character.owner?.username || character.user?.username) && (
+                    <span className="text-[10px] text-muted-foreground">
+                      Jogador: <strong className="text-foreground">{character.owner?.username || character.user?.username}</strong>
+                    </span>
+                  )}
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">{character.job || "Aventureiro"} · Nível {character.level || 1}</p>
+                <div className="mt-3 flex items-center gap-1.5 text-xs text-primary">
+                  <HeartPulse size={13} /> {character.hp}/{character.hpMax} PV
+                </div>
               </div>
-              <p className="mt-1 text-xs text-muted-foreground">{character.job || "Aventureiro"} · Nível {character.level || 1}</p>
-              <div className="mt-3 flex items-center justify-between text-xs text-primary">
-                <span className="flex items-center gap-1.5"><HeartPulse size={13} /> {character.hp}/{character.hpMax} PV</span>
-                <span className="text-[10px] uppercase font-bold text-primary underline">Abrir Ficha ↗</span>
+
+              <div className="mt-4 pt-3 border-t border-border/80 flex items-center justify-between gap-2">
+                <button
+                  type="button"
+                  onClick={() => inspectCharacter(character.id)}
+                  className="flex items-center gap-1 rounded bg-primary px-2.5 py-1 text-xs font-bold text-primary-foreground hover:brightness-110 active:scale-95 transition"
+                >
+                  <ScrollText size={12} />
+                  <span>Acessar Ficha</span>
+                </button>
+                <Link
+                  href={`/admin/personagens/${character.id}/ficha`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[10px] text-muted-foreground hover:text-foreground underline"
+                  title="Visão Administrativa Rápida"
+                >
+                  Visão Rápida ↗
+                </Link>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       </Card>

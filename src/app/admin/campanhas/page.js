@@ -39,7 +39,7 @@ import {
 import { useAuth } from "../../context/AuthContext";
 
 export default function AdminCampanhasPage() {
-  const { token, isMaster, user } = useAuth();
+  const { token, isMaster, user, inspectCharacter } = useAuth();
 
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -570,15 +570,23 @@ export default function AdminCampanhasPage() {
                                   <span className="text-[10px] text-muted-foreground">
                                     ({hero.job || "Aventureiro"} · Nv {hero.level || 1})
                                   </span>
+                                  <button
+                                    type="button"
+                                    onClick={() => inspectCharacter(hero.id)}
+                                    className="ml-1 inline-flex items-center gap-1 rounded bg-primary px-2 py-0.5 text-[10px] font-bold uppercase text-primary-foreground hover:brightness-110 transition active:scale-95 shadow-sm shadow-primary/20"
+                                    title="Abrir a ficha completa do jogador diretamente no aplicativo"
+                                  >
+                                    <ScrollText size={10} />
+                                    <span>Acessar Ficha Completa</span>
+                                  </button>
                                   <Link
                                     href={`/admin/personagens/${hero.id}/ficha`}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="ml-1 inline-flex items-center gap-1 rounded bg-primary/20 border border-primary/40 px-1.5 py-0.5 text-[10px] font-bold uppercase text-primary hover:bg-primary/30 transition"
-                                    title="Abrir Ficha do Jogador"
+                                    className="inline-flex items-center gap-1 rounded bg-secondary border border-border px-1.5 py-0.5 text-[10px] text-muted-foreground hover:text-foreground hover:border-primary transition"
+                                    title="Visualização administrativa rápida"
                                   >
-                                    <span>Ficha</span>
-                                    <ExternalLink size={10} />
+                                    <ExternalLink size={9} />
                                   </Link>
                                 </div>
                               ))}

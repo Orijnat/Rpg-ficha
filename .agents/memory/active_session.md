@@ -1,8 +1,8 @@
 # 🧠 Sessão Ativa — Grimorium RPG
 
-**Última Atualização**: 2026-11-06T15:05:00-03:00  
+**Última Atualização**: 2026-11-06T15:32:00-03:00  
 **Branch Atual**: `dev`  
-**Status**: Correção da busca de heróis de membros da campanha e exibição de mesas para o jogador concluída
+**Status**: Acesso completo e inspeção em tempo real das fichas dos jogadores pelo mestre implementado
 
 ---
 
@@ -10,15 +10,15 @@
 
 | Item | Detalhes |
 |---|---|
-| **Vínculo Automático do Personagem no Backend** | Em [`campanhaController.js:entrarPorCodigo`](file:///home/crs/asdas/Rpg-backend/src/controllers/campanhaController.js), ao ingressar por código, o personagem é associado à campanha (e criado automaticamente caso o jogador ainda não possuísse um). |
-| **Busca de Heróis pelo Mestre** | Em [`characterController.js:list`](file:///home/crs/asdas/Rpg-backend/src/controllers/characterController.js), incluímos os personagens de todos os usuários com registro em `membros_campanha`, garantindo que o mestre veja os heróis mesmo que `campanhaId` estivesse nulo ou filtrado. |
-| **Permissão da Ficha do Mestre** | Em [`characterController.js:canManageCharacter`](file:///home/crs/asdas/Rpg-backend/src/controllers/characterController.js), o mestre agora tem permissão para abrir e editar a ficha de qualquer membro ativo em suas campanhas. |
-| **Herói e Botão Ficha na Modal de Membros** | Em [`src/app/admin/campanhas/page.js`](file:///home/crs/asdas/Rpg-ficha/src/app/admin/campanhas/page.js), a modal de Membros da Mesa agora exibe o herói do jogador com nível, classe, PV e atalho direto para a "Ficha Mestre". |
-| **Filtro no Dashboard do Mestre** | Em [`src/app/admin/page.js`](file:///home/crs/asdas/Rpg-ficha/src/app/admin/page.js), corrigida a exibição dos heróis filtrados por campanha e exibição do nome do jogador associado. |
-| **Exibição de Campanhas para o Jogador** | Em [`src/app/perfil/page.js`](file:///home/crs/asdas/Rpg-ficha/src/app/perfil/page.js), adicionada a seção "Suas Mesas & Campanhas" listando as mesas em que o jogador participa, com mestre, estado, papel e formulário de ingresso. |
+| **Inspeção de Ficha em Tempo Real** | Adicionados `inspectCharacter` e `stopInspecting` em [`AuthContext.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/context/AuthContext.jsx), permitindo que o mestre selecione qualquer herói de jogador de suas mesas e acesse a ficha completa diretamente em `/personagem`, `/inventario`, `/habilidades`, `/contratos`, etc. sem deslogar. |
+| **Banner de Modo Mestre no Layout** | Criado em [`AppShell.jsx`](file:///home/crs/asdas/Rpg-ficha/src/layouts/AppShell.jsx) banner no topo informando o jogador e herói inspecionado, seletor rápido para alternar entre heróis da mesa e botão de retorno direto ao painel do mestre. |
+| **Seletor Rápido de Heróis no Cabeçalho** | Integrado em [`Cabecalho.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/Cabecalho.jsx) um dropdown de heróis para o mestre alternar instantaneamente entre fichas de jogadores sem sair da interface. |
+| **Acesso Completo na Central de Personagens** | Em [`src/app/admin/personagens/page.js`](file:///home/crs/asdas/Rpg-ficha/src/app/admin/personagens/page.js), adicionado botão principal "Acessar Ficha Completa" em cada card de herói. |
+| **Acesso Completo na Modal de Membros** | Em [`src/app/admin/campanhas/page.js`](file:///home/crs/asdas/Rpg-ficha/src/app/admin/campanhas/page.js), cada herói de membro possui o botão "Acessar Ficha Completa". |
+| **Acesso Completo no Painel Sala de Guerra** | Em [`src/app/admin/page.js`](file:///home/crs/asdas/Rpg-ficha/src/app/admin/page.js), cards da seção "Heróis da campanha" agora abrem a ficha completa via `inspectCharacter`. |
 
 ---
 
-## 📋 Próximos Passos Recomendados
-1. Commit e push das alterações no `Rpg-ficha` e `Rpg-backend`.
-2. Testar o fluxo completo em ambiente integrado.
+## 📋 Próximos Passos
+1. Validar a experiência de navegação do mestre entre fichas de diferentes jogadores.
+2. Commit e push das alterações para `dev` e `main`.

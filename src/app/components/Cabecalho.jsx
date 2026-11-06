@@ -1,15 +1,17 @@
 "use client";
 
 import React, { useState } from "react";
-import { Settings } from "lucide-react";
+import { Crown, Settings } from "lucide-react";
 import { useCharacter } from "../context/CharacterContext";
 import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../context/AuthContext";
 import { EditableText, HPBar } from "./ui";
 import SettingsModal from "./SettingsModal";
 
 export default function Cabecalho() {
   const { data, upd } = useCharacter();
   const { activeThemeObj } = useTheme();
+  const { isMaster, playerCharacters, inspectCharacter, activeCharacterId } = useAuth();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   return (
@@ -39,6 +41,26 @@ export default function Cabecalho() {
                   </span>
                 </div>
               </div>
+
+              {/* Seletor rápido de ficha de jogador para o Mestre */}
+              {isMaster && playerCharacters.length > 0 && (
+                <div className="flex items-center gap-1.5 rounded-xl border border-primary/40 bg-secondary/70 px-2.5 py-2 text-xs">
+                  <Crown size={14} className="text-primary shrink-0" />
+                  <select
+                    value={activeCharacterId || ""}
+                    onChange={(e) => inspectCharacter(e.target.value)}
+                    className="bg-transparent text-xs font-semibold text-foreground outline-none cursor-pointer max-w-[130px] truncate"
+                    title="Alternar ficha do jogador"
+                  >
+                    <option value="" disabled className="bg-card text-foreground">Ficha do jogador</option>
+                    {playerCharacters.map((c) => (
+                      <option key={c.id} value={c.id} className="bg-card text-foreground">
+                        {c.name} ({c.owner?.username || "Jogador"})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               {/* Botão de Configurações com indicação visual de tema */}
               <button

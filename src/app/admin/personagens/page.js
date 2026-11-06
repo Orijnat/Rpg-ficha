@@ -30,7 +30,7 @@ import {
 import { useAuth } from "../../context/AuthContext";
 
 export default function PersonagensAdmin() {
-  const { token, isMaster } = useAuth();
+  const { token, isMaster, inspectCharacter } = useAuth();
 
   const [heroes, setHeroes] = useState([]);
   const [npcs, setNpcs] = useState([]);
@@ -482,18 +482,28 @@ export default function PersonagensAdmin() {
                           </>
                         ) : (
                           <>
+                            <button
+                              type="button"
+                              onClick={() => inspectCharacter(item.id)}
+                              className="flex items-center gap-1.5 rounded-lg border border-primary/50 bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground shadow-md shadow-primary/20 hover:brightness-110 active:scale-95 transition"
+                            >
+                              <ScrollText size={13} />
+                              <span>Acessar Ficha Completa</span>
+                            </button>
                             <Link
                               href={`/admin/personagens/${item.id}/ficha`}
                               target="_blank"
                               rel="noreferrer"
-                              className="flex items-center gap-1 rounded-lg border border-primary/50 bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground hover:brightness-110"
+                              className="flex items-center gap-1 rounded-lg border border-border bg-secondary px-2.5 py-1 text-xs text-muted-foreground hover:border-primary hover:text-foreground"
+                              title="Visão Administrativa Rápida"
                             >
-                              <span>Ficha Mestre</span>
-                              <ExternalLink size={12} />
+                              <span>Visão Rápida</span>
+                              <ExternalLink size={10} />
                             </Link>
                             <Link
                               href={`/admin/personagens/${item.id}`}
                               className="rounded-lg border border-border bg-secondary px-2.5 py-1 text-xs text-muted-foreground hover:border-primary hover:text-foreground"
+                              title="Editar configurações"
                             >
                               Editar
                             </Link>
