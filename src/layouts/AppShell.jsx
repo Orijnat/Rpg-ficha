@@ -3,24 +3,54 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ArrowRight, BookOpen, Coins, Crown, FileText, Footprints, Home, Package, ScrollText, Sparkles, User, Users } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpen,
+  Calendar,
+  Coins,
+  Compass,
+  Crown,
+  FileText,
+  Footprints,
+  Home,
+  LayoutDashboard,
+  Package,
+  ScrollText,
+  Skull,
+  Sparkles,
+  Store,
+  Swords,
+  User,
+  Users,
+} from "lucide-react";
 import { useAuth } from "../app/context/AuthContext";
 import Cabecalho from "../app/components/Cabecalho";
 import DiceModal from "../app/components/dice/DiceModal";
 import DiceFloatingTrigger from "../app/components/dice/DiceFloatingTrigger";
 
-const TABS = [
-  { id: "personagem", label: "Personagem", icon: <ScrollText size={15} /> },
-  { id: "habilidades", label: "Habilidades", icon: <Sparkles size={15} /> },
-  { id: "inventario", label: "Inventário", icon: <Package size={15} /> },
-  { id: "contratos", label: "Contratos", icon: <FileText size={15} /> },
-  { id: "anotacoes", label: "Diário", icon: <BookOpen size={15} /> },
-  { id: "mundo", label: "Mundo", icon: <Users size={15} /> },
-  { id: "banco", label: "Banco", icon: <Coins size={15} /> },
-  { id: "quarto", label: "Quarto", icon: <Home size={15} /> },
-  { id: "montaria", label: "Montaria", icon: <Footprints size={15} /> },
-  { id: "perfil", label: "Perfil", icon: <User size={15} /> },
-  { id: "admin", label: "Admin", icon: <Crown size={15} /> },
+const PLAYER_TABS = [
+  { id: "personagem", href: "/personagem", label: "Personagem", icon: <ScrollText size={15} /> },
+  { id: "habilidades", href: "/habilidades", label: "Habilidades", icon: <Sparkles size={15} /> },
+  { id: "inventario", href: "/inventario", label: "Inventário", icon: <Package size={15} /> },
+  { id: "contratos", href: "/contratos", label: "Contratos", icon: <FileText size={15} /> },
+  { id: "anotacoes", href: "/anotacoes", label: "Diário", icon: <BookOpen size={15} /> },
+  { id: "mundo", href: "/mundo", label: "Mundo", icon: <Users size={15} /> },
+  { id: "banco", href: "/banco", label: "Banco", icon: <Coins size={15} /> },
+  { id: "quarto", href: "/quarto", label: "Quarto", icon: <Home size={15} /> },
+  { id: "montaria", href: "/montaria", label: "Montaria", icon: <Footprints size={15} /> },
+  { id: "perfil", href: "/perfil", label: "Perfil", icon: <User size={15} /> },
+];
+
+const MASTER_TABS = [
+  { id: "painel", href: "/admin", label: "Painel", icon: <LayoutDashboard size={15} /> },
+  { id: "campanhas", href: "/admin/campanhas", label: "Campanhas", icon: <Users size={15} /> },
+  { id: "mercado", href: "/admin/mercado", label: "Mercado", icon: <Store size={15} /> },
+  { id: "npcs", href: "/admin/npcs", label: "Bestiário (NPCs)", icon: <Skull size={15} /> },
+  { id: "personagens", href: "/admin/personagens", label: "Ameaças & Heróis", icon: <ScrollText size={15} /> },
+  { id: "encontros", href: "/admin/encontros", label: "Encontros", icon: <Swords size={15} /> },
+  { id: "mapas", href: "/admin/mapas", label: "Mapas & Névoa", icon: <Compass size={15} /> },
+  { id: "notas", href: "/admin/notas", label: "Segredos & Notas", icon: <FileText size={15} /> },
+  { id: "sessoes", href: "/admin/sessoes", label: "Sessões & Cenas", icon: <Calendar size={15} /> },
 ];
 
 export default function AppShell({ children }) {
@@ -85,8 +115,8 @@ export default function AppShell({ children }) {
 
       {!hideNavigation && (
         <nav
-          aria-label="Navegação da ficha"
-          className="sticky top-[88px] z-10 border-b border-border/70 bg-background/80 py-2 backdrop-blur-xl lg:fixed lg:inset-y-0 lg:left-0 lg:top-0 lg:z-30 lg:w-64 lg:border-b-0 lg:border-r lg:bg-card/75 lg:px-4 lg:py-6 lg:shadow-xl"
+          aria-label={isMaster ? "Navegação do Mestre" : "Navegação da ficha"}
+          className="sticky top-[88px] z-10 border-b border-border/70 bg-background/80 py-2 backdrop-blur-xl lg:fixed lg:inset-y-0 lg:left-0 lg:top-0 lg:z-30 lg:w-64 lg:border-b-0 lg:border-r lg:bg-card/75 lg:px-4 lg:py-6 lg:shadow-xl lg:overflow-y-auto custom-scroll"
         >
           {/* Topo exclusivo da sidebar no desktop com estética Dark Fantasy */}
           <div className="mb-4 hidden items-center gap-3 border-b border-border/60 px-2 pb-5 lg:flex">
@@ -103,14 +133,16 @@ export default function AppShell({ children }) {
 
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:max-w-none lg:px-0">
             <div className="no-scrollbar flex overflow-x-auto gap-1 lg:flex-col lg:gap-1.5 lg:overflow-visible">
-              {TABS.filter((item) => (isMaster ? item.id === "admin" : item.id !== "admin")).map((item) => {
-                const href = `/${item.id}`;
-                const active = item.id === "admin" ? pathname.startsWith("/admin") : pathname === href;
+              {(isMaster ? MASTER_TABS : PLAYER_TABS).map((item) => {
+                const active =
+                  item.href === "/admin"
+                    ? pathname === "/admin"
+                    : pathname === item.href || (item.href !== "/" && pathname?.startsWith(item.href));
 
                 return (
                   <Link
-                    key={item.id}
-                    href={href}
+                    key={item.href}
+                    href={item.href}
                     aria-current={active ? "page" : undefined}
                     className={`flex min-h-11 items-center gap-2.5 whitespace-nowrap rounded-xl px-3 py-2 text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:px-4 ${
                       active

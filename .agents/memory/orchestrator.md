@@ -1,15 +1,25 @@
 # Memória do Agente Orquestrador (@orchestrator)
 
-## Entrega — 2026-11-09 (Aba Lateral Exclusiva para Perfil Mestre: Apenas Campo Admin)
+## Entrega — 2026-11-09 (Módulos do Painel Admin Integrados na Sidebar Exclusiva para Mestres)
 
 - **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `qa-tester`.
 - **Implementações Entregues**:
-  * **Ocultação de Abas Comuns a Jogadores**: Em [`src/layouts/AppShell.jsx`](file:///home/crs/asdas/Rpg-ficha/src/layouts/AppShell.jsx), quando logado com perfil de Mestre (`isMaster = true`), a navegação lateral passa a renderizar exclusivamente a aba **Admin** (`/admin`), removendo todas as opções de jogadores (Personagem, Habilidades, Inventário, Contratos, Diário, Mundo, Banco, Quarto, Montaria e Perfil).
-  * **Ícone e Estética Dark Fantasy do Mestre**: O item "Admin" agora exibe o ícone `Crown` correspondente ao Narrador. No topo da barra lateral no desktop, exibe o ícone de coroa dourada e o subtítulo "Câmara do Mestre".
-  * **Destaque Ativo Consistente**: O item Admin permanece destacado como ativo em todas as sub-rotas da Câmara do Mestre (`/admin`, `/admin/campanhas`, `/admin/mercado`, `/admin/npcs`, etc.).
+  * **Integração das Abas do Admin na Sidebar**: Em [`src/layouts/AppShell.jsx`](file:///home/crs/asdas/Rpg-ficha/src/layouts/AppShell.jsx), usuários logados com perfil de Mestre (`isMaster = true`) agora têm acesso direto na barra lateral a todos os 9 módulos da Câmara do Mestre:
+    1. **Painel** (`/admin`, ícone `LayoutDashboard`)
+    2. **Campanhas** (`/admin/campanhas`, ícone `Users`)
+    3. **Mercado** (`/admin/mercado`, ícone `Store`)
+    4. **Bestiário (NPCs)** (`/admin/npcs`, ícone `Skull`)
+    5. **Ameaças & Heróis** (`/admin/personagens`, ícone `ScrollText`)
+    6. **Encontros** (`/admin/encontros`, ícone `Swords`)
+    7. **Mapas & Névoa** (`/admin/mapas`, ícone `Compass`)
+    8. **Segredos & Notas** (`/admin/notas`, ícone `FileText`)
+    9. **Sessões & Cenas** (`/admin/sessoes`, ícone `Calendar`)
+  * **Isolamento de Perfis**: Usuários jogadores (`!isMaster`) continuam com a navegação padrão de sua ficha (`PLAYER_TABS`).
+  * **UX e Scroll Dark Fantasy**: Adicionado `lg:overflow-y-auto custom-scroll` na sidebar para garantir rolagem fluida em diferentes tamanhos de tela.
 - **Validação**:
   * Testes unitários executados com sucesso.
   * Build de produção Next.js 16 compilado com sucesso (28 rotas geradas).
+
 
 ## Entrega — 2026-11-09 (Aba Mercado do Mundo para o Mestre: Regiões, Vendedores, Tipos, Estoque, Preço e Peso)
 

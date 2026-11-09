@@ -1,8 +1,8 @@
 # 🧠 Sessão Ativa — Grimorium RPG
 
-**Última Atualização**: 2026-11-09T17:07:00-03:00  
+**Última Atualização**: 2026-11-09T17:14:00-03:00  
 **Branch Atual**: `main`  
-**Status**: Concluída personalização da aba lateral para o perfil Mestre — agora exibe exclusivamente o campo **Admin**, ocultando todos os itens comuns a jogadores.
+**Status**: Concluída integração de todas as abas da tela de Admin diretamente na barra lateral (sidebar) para usuários mestres.
 
 ---
 
@@ -10,13 +10,13 @@
 
 | Item | Detalhes |
 |---|---|
-| **Isolamento da Aba Lateral para o Mestre** | Atualizado [`src/layouts/AppShell.jsx`](file:///home/crs/asdas/Rpg-ficha/src/layouts/AppShell.jsx) para que usuários com perfil de Mestre (`isMaster = true`) visualizem apenas a aba **Admin** na navegação lateral (desktop e mobile), eliminando as abas exclusivas de jogadores (Personagem, Habilidades, Inventário, Contratos, Diário, Mundo, Banco, Quarto, Montaria e Perfil). |
-| **Identidade Visual Dark Fantasy do Narrador** | Ícone do item Admin atualizado para `Crown` e cabeçalho da sidebar com `Crown` e subtítulo "Câmara do Mestre" quando logado como Mestre. |
-| **Destaque Ativo Consistente** | O item Admin permanece com estado ativo destacado em qualquer rota administrativa (`/admin`, `/admin/campanhas`, `/admin/mercado`, `/admin/npcs`, etc.). |
-| **Validação & Compilação** | Bateria de testes unitários aprovada e build de produção do Next.js gerado com 100% de sucesso. |
+| **Abas do Painel Admin na Sidebar do Mestre** | Atualizado [`src/layouts/AppShell.jsx`](file:///home/crs/asdas/Rpg-ficha/src/layouts/AppShell.jsx) com a lista `MASTER_TABS`, contendo todos os 9 módulos da Câmara do Mestre: **Painel** (`/admin`), **Campanhas** (`/admin/campanhas`), **Mercado** (`/admin/mercado`), **Bestiário (NPCs)** (`/admin/npcs`), **Ameaças & Heróis** (`/admin/personagens`), **Encontros** (`/admin/encontros`), **Mapas & Névoa** (`/admin/mapas`), **Segredos & Notas** (`/admin/notas`) e **Sessões & Cenas** (`/admin/sessoes`). |
+| **Isolamento Estrito por Perfil** | Jogadores continuam visualizando exclusivamente as abas de sua ficha de herói (`PLAYER_TABS`: Personagem, Habilidades, Inventário, Contratos, Diário, Mundo, Banco, Quarto, Montaria, Perfil). |
+| **Scroll e Responsividade Dark Fantasy** | Sidebar desktop com suporte a `lg:overflow-y-auto custom-scroll` para resoluções menores e navegação horizontal com `no-scrollbar` em dispositivos móveis. |
+| **Detecção de Rota Ativa Aprimorada** | O item Painel ativa apenas em `/admin`, enquanto os módulos ativam com correspondência exata ou por sub-rotas (ex: `/admin/mercado`, `/admin/npcs/new`). |
+| **Build & Testes** | Build de produção Next.js 16 compilado com sucesso e bateria de testes 100% aprovada. |
 
 ---
 
 ## 📋 Próximos Passos Recomendados
-1. Realizar eventuais ajustes em outros elementos de navegação conforme feedback do usuário.
-2. Integrar visualizações adicionais para a gestão de campanhas do Mestre.
+1. Validar a experiência de navegação entre os módulos diretamente pela sidebar na visão de Mestre.
