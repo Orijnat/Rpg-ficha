@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   ScrollText,
   Skull,
+  Store,
   Swords,
   Users,
 } from "lucide-react";
@@ -19,6 +20,7 @@ import { useEffect } from "react";
 const NAV_ITEMS = [
   { href: "/admin", label: "Painel", icon: LayoutDashboard },
   { href: "/admin/campanhas", label: "Campanhas", icon: Users },
+  { href: "/admin/mercado", label: "Mercado", icon: Store },
   { href: "/admin/npcs", label: "Bestiário (NPCs)", icon: Skull },
   { href: "/admin/personagens", label: "Ameaças & Heróis", icon: ScrollText },
   { href: "/admin/encontros", label: "Encontros", icon: Swords },

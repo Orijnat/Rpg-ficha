@@ -1,5 +1,26 @@
 # Memória do Agente Orquestrador (@orchestrator)
 
+## Entrega — 2026-11-09 (Aba Mercado do Mundo para o Mestre: Regiões, Vendedores, Tipos, Estoque, Preço e Peso)
+
+- **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `rpg-rules-engine` (skill `rpg-sheet-calculator`), `gm-campaign-orchestrator`, `qa-tester`.
+- **Implementações Entregues**:
+  * **Nova Aba e Rota do Mestre**: Criada a página [`/admin/mercado`](file:///home/crs/asdas/Rpg-ficha/src/app/admin/mercado/page.js) e integrada na barra de navegação da Câmara do Mestre ([`admin/layout.js`](file:///home/crs/asdas/Rpg-ficha/src/app/admin/layout.js)) com ícone `Store` e atalho rápido na Sala de Guerra ([`admin/page.js`](file:///home/crs/asdas/Rpg-ficha/src/app/admin/page.js)).
+  * **Motor do Mercado Canônico ([`market.js`](file:///home/crs/asdas/Rpg-ficha/src/lib/market.js))**:
+    - 5 Regiões Canônicas do Mundo com ambientação e comércio local.
+    - 7 Mercadores e Tendas icônicas com títulos, ocupação e citações de recepção.
+    - 8 Categorias de Itens (Armas, Armaduras, Poções, Grimórios, Equipamento, Munições, Relíquias, Montarias).
+    - 5 Graus de Raridade e 4 Moedas canônicas com conversão de valor de mercado.
+    - 21 Itens padrão ricos e equilibrados com quantidade por vendedor, preço, peso em kg e descrições táticas.
+  * **4 Modos de Listagem**:
+    1. **Catálogo & Filtros**: Busca textual com filtros cruzados de região, vendedor, tipo, raridade, estoque e ordenação.
+    2. **Por Região do Mundo**: Visualização regional com resumo de comerciantes e catálogo local.
+    3. **Por Vendedor / Tendas**: Estandes individuais de cada feirante com seus produtos.
+    4. **Por Tipos de Itens**: Agrupamento por categoria de equipamento.
+  * **Interatividade & Modais**: Modais dedicados [`MarketItemModal.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/admin/MarketItemModal.jsx) e [`VendorModal.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/admin/VendorModal.jsx), ajuste rápido de estoque (+1/-1/esgotado), cópia formatada para o inventário/chat e confirmações seguras via [`ConfirmDialog.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/admin/ConfirmDialog.jsx).
+- **Validação**:
+  * 48 testes unitários aprovados com 100% de sucesso (`node --test`), incluindo [`market.test.mjs`](file:///home/crs/asdas/Rpg-ficha/src/lib/__tests__/market.test.mjs).
+  * Build de produção Next.js 16 compilado com sucesso (28 rotas geradas).
+
 ## Entrega — 2026-11-09 (Segmentação e Identificação das 2 Categorias de Habilidades: Nível 1 a 20 vs Criadas pelo Jogador)
 
 - **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `rpg-rules-engine` (skill `rpg-sheet-calculator`), `gm-campaign-orchestrator`, `qa-tester`.

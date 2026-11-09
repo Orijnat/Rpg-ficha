@@ -1,8 +1,8 @@
 # 🧠 Sessão Ativa — Grimorium RPG
 
-**Última Atualização**: 2026-11-09T14:59:00-03:00  
+**Última Atualização**: 2026-11-09T16:36:00-03:00  
 **Branch Atual**: `main`  
-**Status**: Separação oficial das 2 categorias de habilidades implementada: 1) Habilidades de Nível (1 a 20) e 2) Habilidades Criadas pelo Jogador.
+**Status**: Implementação completa da nova aba do Mestre **Mercado do Mundo** (`/admin/mercado`), com listagem e filtragem por Região, Vendedor e Tipos de Itens, controle de estoque, preço e peso dos itens.
 
 ---
 
@@ -10,14 +10,15 @@
 
 | Item | Detalhes |
 |---|---|
-| **Distinção Canônica dos 2 Tipos de Habilidades** | Criadas as categorias `CATEGORIAS_HABILIDADE` (`nivel` e `criada`) e função `getCategoriaHabilidade` em [`abilities.js`](file:///home/crs/asdas/Rpg-ficha/src/lib/abilities.js). |
-| **Seletor das 2 Categorias no Hub de Habilidades** | Adicionado seletor principal em [`habilidades/page.js`](file:///home/crs/asdas/Rpg-ficha/src/app/habilidades/page.js) permitindo alternar entre **Habilidades de Nível (1 a 20)** e **Habilidades Criadas pelo Jogador**. |
-| **Tipo 1: Habilidades de Nível (1 a 20)** | Visualização dos 20 slots de progressão ([`LevelProgressionGrid.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/habilidades/LevelProgressionGrid.jsx)), com desbloqueio conforme o nível do herói, alocação de técnicas para cada degrau e forja direta por nível. |
-| **Tipo 2: Habilidades Criadas pelo Jogador** | Grimório autoral com formulário de forja e edição ([`AbilityFormModal.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/habilidades/AbilityFormModal.jsx)), moderação obrigatória do Mestre (Aprovar, Editar, Negar com feedback) e sistema de treino (Aprendiz a Mestre). |
-| **Identificação Visual por Badges** | [`AbilityCard.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/habilidades/AbilityCard.jsx) e [`LevelProgressionGrid.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/habilidades/LevelProgressionGrid.jsx) exibem distintivos claros para cada categoria (`Hab. de Nível` em âmbar vs `Criada pelo Jogador` em púrpura). |
-| **Bateria de Testes & Compilação** | 41 suítes de testes unitários aprovadas com 100% de sucesso (`node --test`), incluindo validação das duas categorias. Build de produção Next.js 16 compilado com sucesso (27 rotas). |
+| **Aba Mercado na Navegação do Mestre** | Inserido `{ href: "/admin/mercado", label: "Mercado", icon: Store }` na barra de navegação principal da Câmara do Mestre ([`admin/layout.js`](file:///home/crs/asdas/Rpg-ficha/src/app/admin/layout.js)) e atalho direto na Sala de Guerra ([`admin/page.js`](file:///home/crs/asdas/Rpg-ficha/src/app/admin/page.js)). |
+| **Motor do Mercado Mundial** | Criado [`src/lib/market.js`](file:///home/crs/asdas/Rpg-ficha/src/lib/market.js) contendo constantes canônicas de 5 Regiões do Mundo, 7 Vendedores Padrão com títulos e citações, 8 Categorias de Itens, 5 Raridades, 4 Moedas (Ouro, Prata, Cobre, Latina/Platina) e 21 itens iniciais ricos com preços, pesos e propriedades. Funções puras de filtragem, agrupamentos, estatísticas e cópia formatada. |
+| **4 Modos de Visualização & Listagem** | Página [`src/app/admin/mercado/page.js`](file:///home/crs/asdas/Rpg-ficha/src/app/admin/mercado/page.js) com alternância fluida entre: 1) **Catálogo & Filtros** (busca e filtros cruzados); 2) **Por Região do Mundo** (agrupado por províncias/locais com mercadores locais); 3) **Por Vendedor / Tendas** (bazar de estandes individuais com citações e produtos); 4) **Por Tipos de Itens** (agrupado por armas, armaduras, poções, grimórios, etc.). |
+| **Gestão Completa de Estoque, Preço e Peso** | Controle de quantidade disponível por vendedor com botões rápidos `+1`/`-1` e marcação de "Esgotado", preços em moedas canônicas, pesos formatados para compatibilidade com a capacidade de carga da ficha de RPG, e botão de copiar dados do item formatados para o chat da sessão. |
+| **Modais de Criação & Edição** | [`MarketItemModal.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/admin/MarketItemModal.jsx) e [`VendorModal.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/admin/VendorModal.jsx) com suporte a criação rápida de novas regiões e novos vendedores, e confirmação solene via [`ConfirmDialog.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/admin/ConfirmDialog.jsx). |
+| **Bateria de Testes & Compilação** | Nova suíte de testes unitários [`src/lib/__tests__/market.test.mjs`](file:///home/crs/asdas/Rpg-ficha/src/lib/__tests__/market.test.mjs) aprovada com 100% de sucesso. Total de 48 testes unitários passando. Build de produção Next.js 16 gerado com sucesso (28 rotas). |
 
 ---
 
 ## 📋 Próximos Passos Recomendados
-1. Commit e push das alterações para a branch `main` e `dev`.
+1. Permitir que o jogador acesse uma visualização somente-leitura dos mercadores da região atual em que a sua comitiva se encontra.
+2. Integração com o saldo bancário e moedas da ficha do herói ao realizar compras em tempo real.
