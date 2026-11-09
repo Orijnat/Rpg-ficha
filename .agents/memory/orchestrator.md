@@ -1,5 +1,15 @@
 # Memória do Agente Orquestrador (@orchestrator)
 
+## Entrega — 2026-11-09 (Remoção dos Atalhos Redundantes da Tela de Admin)
+
+- **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `qa-tester`.
+- **Implementações Entregues**:
+  * **Remoção da Barra de Atalhos em [`admin/layout.js`](file:///home/crs/asdas/Rpg-ficha/src/app/admin/layout.js)**: Removida a barra de navegação rápida horizontal e cabeçalho duplicado que continha os atalhos para os módulos do Mestre, despoluindo o topo das páginas administrativas agora que todos os 9 módulos estão permanentemente acessíveis na sidebar.
+  * **Despoluição da Sala de Guerra em [`admin/page.js`](file:///home/crs/asdas/Rpg-ficha/src/app/admin/page.js)**: Removido o botão de atalho duplicado para o Mercado do Mundo, mantendo apenas ações contextuais (como "Novo herói").
+- **Validação**:
+  * Testes unitários executados com sucesso (18/18).
+  * Build de produção Next.js 16 compilado com sucesso (28 rotas geradas).
+
 ## Entrega — 2026-11-09 (Módulos do Painel Admin Integrados na Sidebar Exclusiva para Mestres)
 
 - **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `qa-tester`.

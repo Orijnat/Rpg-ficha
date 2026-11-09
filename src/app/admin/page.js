@@ -20,7 +20,6 @@ import {
   ShieldAlert,
   Skull,
   Sparkles,
-  Store,
   Swords,
   Trash2,
   Users,
@@ -280,10 +279,6 @@ export default function AdminIndex() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <Link href="/admin/mercado" className="flex min-h-11 items-center justify-center gap-2 rounded-lg border border-primary/40 bg-secondary px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-foreground transition hover:border-primary/60 hover:bg-primary/10 active:scale-95">
-              <Store size={15} className="text-primary" />
-              Mercado do Mundo
-            </Link>
             <Link href="/admin/personagens/new" className="flex min-h-11 items-center justify-center gap-2 rounded-lg border-2 border-primary/50 bg-primary px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary-foreground transition hover:brightness-110 active:scale-95">
               <Plus size={15} />
               Novo herói
