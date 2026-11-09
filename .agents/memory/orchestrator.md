@@ -1,5 +1,16 @@
 # Memória do Agente Orquestrador (@orchestrator)
 
+## Entrega — 2026-11-09 (Aba Lateral Exclusiva para Perfil Mestre: Apenas Campo Admin)
+
+- **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `qa-tester`.
+- **Implementações Entregues**:
+  * **Ocultação de Abas Comuns a Jogadores**: Em [`src/layouts/AppShell.jsx`](file:///home/crs/asdas/Rpg-ficha/src/layouts/AppShell.jsx), quando logado com perfil de Mestre (`isMaster = true`), a navegação lateral passa a renderizar exclusivamente a aba **Admin** (`/admin`), removendo todas as opções de jogadores (Personagem, Habilidades, Inventário, Contratos, Diário, Mundo, Banco, Quarto, Montaria e Perfil).
+  * **Ícone e Estética Dark Fantasy do Mestre**: O item "Admin" agora exibe o ícone `Crown` correspondente ao Narrador. No topo da barra lateral no desktop, exibe o ícone de coroa dourada e o subtítulo "Câmara do Mestre".
+  * **Destaque Ativo Consistente**: O item Admin permanece destacado como ativo em todas as sub-rotas da Câmara do Mestre (`/admin`, `/admin/campanhas`, `/admin/mercado`, `/admin/npcs`, etc.).
+- **Validação**:
+  * Testes unitários executados com sucesso.
+  * Build de produção Next.js 16 compilado com sucesso (28 rotas geradas).
+
 ## Entrega — 2026-11-09 (Aba Mercado do Mundo para o Mestre: Regiões, Vendedores, Tipos, Estoque, Preço e Peso)
 
 - **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `rpg-rules-engine` (skill `rpg-sheet-calculator`), `gm-campaign-orchestrator`, `qa-tester`.

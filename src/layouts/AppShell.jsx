@@ -20,7 +20,7 @@ const TABS = [
   { id: "quarto", label: "Quarto", icon: <Home size={15} /> },
   { id: "montaria", label: "Montaria", icon: <Footprints size={15} /> },
   { id: "perfil", label: "Perfil", icon: <User size={15} /> },
-  { id: "admin", label: "Admin", icon: <Users size={15} /> },
+  { id: "admin", label: "Admin", icon: <Crown size={15} /> },
 ];
 
 export default function AppShell({ children }) {
@@ -91,19 +91,21 @@ export default function AppShell({ children }) {
           {/* Topo exclusivo da sidebar no desktop com estética Dark Fantasy */}
           <div className="mb-4 hidden items-center gap-3 border-b border-border/60 px-2 pb-5 lg:flex">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/40 bg-primary/10 text-primary shadow-[0_0_15px_rgba(214,154,61,0.25)]">
-              <ScrollText size={20} />
+              {isMaster ? <Crown size={20} /> : <ScrollText size={20} />}
             </div>
             <div>
               <h2 className="font-serif text-sm font-bold tracking-wider text-foreground">Grimorium</h2>
-              <p className="text-[10px] uppercase tracking-widest text-muted-foreground">Grimório Digital</p>
+              <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                {isMaster ? "Câmara do Mestre" : "Grimório Digital"}
+              </p>
             </div>
           </div>
 
           <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:max-w-none lg:px-0">
             <div className="no-scrollbar flex overflow-x-auto gap-1 lg:flex-col lg:gap-1.5 lg:overflow-visible">
-              {TABS.filter((item) => item.id !== "admin" || isMaster).map((item) => {
+              {TABS.filter((item) => (isMaster ? item.id === "admin" : item.id !== "admin")).map((item) => {
                 const href = `/${item.id}`;
-                const active = pathname === href;
+                const active = item.id === "admin" ? pathname.startsWith("/admin") : pathname === href;
 
                 return (
                   <Link
