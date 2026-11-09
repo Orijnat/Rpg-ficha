@@ -51,6 +51,7 @@ const MASTER_TABS = [
   { id: "mapas", href: "/admin/mapas", label: "Mapas & Névoa", icon: <Compass size={15} /> },
   { id: "notas", href: "/admin/notas", label: "Segredos & Notas", icon: <FileText size={15} /> },
   { id: "sessoes", href: "/admin/sessoes", label: "Sessões & Cenas", icon: <Calendar size={15} /> },
+  { id: "perfil", href: "/perfil", label: "Perfil", icon: <User size={15} /> },
 ];
 
 export default function AppShell({ children }) {

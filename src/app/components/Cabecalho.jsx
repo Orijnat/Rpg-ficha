@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Crown, Settings, Heart, HeartPulse } from "lucide-react";
+import Link from "next/link";
+import { Crown, Settings, Heart, HeartPulse, User } from "lucide-react";
 import { useCharacter } from "../context/CharacterContext";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
@@ -132,6 +133,16 @@ export default function Cabecalho() {
                   </select>
                 </div>
               )}
+
+              {/* Botão de Perfil */}
+              <Link
+                href="/perfil"
+                className="interactive-lift flex items-center gap-1.5 rounded-xl border border-border bg-secondary/60 px-3 py-2 text-xs font-semibold text-muted-foreground transition hover:text-foreground active:scale-95"
+                title="Meu Perfil & Conta"
+              >
+                <User size={15} />
+                <span className="hidden sm:inline">Perfil</span>
+              </Link>
 
               {/* Botão de Configurações com indicação visual de tema */}
               <button

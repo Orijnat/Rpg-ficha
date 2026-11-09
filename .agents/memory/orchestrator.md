@@ -1,5 +1,16 @@
 # Memória do Agente Orquestrador (@orchestrator)
 
+## Entrega — 2026-11-09 (Reintrodução da Tela de Perfil na Sidebar do Mestre e Cabeçalho)
+
+- **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `qa-tester`.
+- **Implementações Entregues**:
+  * **Reintrodução na Sidebar do Mestre (`MASTER_TABS`)**: Em [`src/layouts/AppShell.jsx`](file:///home/crs/asdas/Rpg-ficha/src/layouts/AppShell.jsx), adicionado o item `{ id: "perfil", href: "/perfil", label: "Perfil", icon: User }` à navegação lateral dos mestres, assegurando que o perfil continue acessível independentemente da role ativa.
+  * **Atalho Rápido no Cabeçalho (`Cabecalho.jsx`)**: Em [`src/app/components/Cabecalho.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/Cabecalho.jsx), incluído botão interativo com ícone `User` e label "Perfil", posicionado adjacente ao botão de Configurações para acesso instantâneo a partir de qualquer ponto da aplicação.
+  * **Tela de Perfil Totalmente Funcional**: Validada a página [`src/app/perfil/page.js`](file:///home/crs/asdas/Rpg-ficha/src/app/perfil/page.js) com suporte a gerenciamento de dados de usuário, sessões ativas, criação/seleção de heróis, ingresso em mesas via código de convite e personalização de tema.
+- **Validação**:
+  * Testes unitários executados com sucesso.
+  * Build de produção Next.js 16 compilado com sucesso (28 rotas geradas).
+
 ## Entrega — 2026-11-09 (Remoção dos Atalhos Redundantes da Tela de Admin)
 
 - **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `qa-tester`.
