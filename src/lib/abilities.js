@@ -93,6 +93,28 @@ export const TIPOS_HABILIDADE = {
   },
 };
 
+export const CATEGORIAS_HABILIDADE = {
+  nivel: {
+    id: "nivel",
+    nome: "Habilidade de Nível",
+    descricao: "Poder da progressão do herói (Níveis 1 ao 20)",
+    cor: "text-amber-400",
+    badge: "border-amber-500/50 bg-amber-950/60 text-amber-300",
+  },
+  criada: {
+    id: "criada",
+    nome: "Criada pelo Jogador",
+    descricao: "Técnica própria forjada para aprovação e treino",
+    cor: "text-purple-400",
+    badge: "border-purple-500/50 bg-purple-950/60 text-purple-300",
+  },
+};
+
+export function getCategoriaHabilidade(habilidade) {
+  const cat = habilidade?.category || (habilidade?.isLevelAbility ? "nivel" : "criada");
+  return CATEGORIAS_HABILIDADE[cat] || CATEGORIAS_HABILIDADE.criada;
+}
+
 export const STATUS_APROVACAO = {
   aprovada: {
     id: "aprovada",
@@ -136,6 +158,7 @@ export function criarSolicitacaoHabilidade(ability, isMaster = false) {
   const now = new Date().toISOString();
   return {
     ...ability,
+    category: ability?.category || (ability?.assignToLevel ? "nivel" : "criada"),
     approvalStatus: isMaster ? (ability?.approvalStatus || "aprovada") : "pendente",
     submittedBy: ability?.submittedBy || (isMaster ? "mestre" : "jogador"),
     requestedAt: ability?.requestedAt || now,

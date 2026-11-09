@@ -15,6 +15,7 @@ export function AbilityFormModal({
 }) {
   const [formData, setFormData] = useState({
     name: "",
+    category: assignToLevel ? "nivel" : "criada", // "nivel" | "criada"
     type: "ativa",
     reqLevel: 1,
     cost: "2 PE",
@@ -33,6 +34,7 @@ export function AbilityFormModal({
     if (ability) {
       setFormData({
         name: ability.name || "",
+        category: ability.category || (ability.isLevelAbility ? "nivel" : "criada"),
         type: ability.type || "ativa",
         reqLevel: Number(ability.reqLevel) || 1,
         cost: ability.cost || "2 PE",
@@ -49,6 +51,7 @@ export function AbilityFormModal({
     } else {
       setFormData({
         name: "",
+        category: assignToLevel ? "nivel" : "criada",
         type: "ativa",
         reqLevel: Math.max(1, Number(initialLevel) || 1),
         cost: "2 PE",
@@ -63,7 +66,7 @@ export function AbilityFormModal({
         masterFeedback: "",
       });
     }
-  }, [ability, isOpen, isMaster, initialLevel]);
+  }, [ability, isOpen, isMaster, initialLevel, assignToLevel]);
 
   if (!isOpen) return null;
 
@@ -134,6 +137,40 @@ export function AbilityFormModal({
 
         {/* Formulário */}
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+          {/* Categoria: Criada pelo Jogador OU Habilidade de Nível */}
+          <div className="space-y-1.5">
+            <label className="font-semibold uppercase tracking-wider text-zinc-300">
+              Tipo / Categoria
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, category: "criada" })}
+                className={`flex items-center justify-center gap-1.5 rounded-xl border p-2 text-xs font-bold transition ${
+                  formData.category === "criada"
+                    ? "border-purple-500/60 bg-purple-950/50 text-purple-300 shadow-sm"
+                    : "border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                <Sword size={13} />
+                <span>Criada pelo Jogador</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setFormData({ ...formData, category: "nivel" })}
+                className={`flex items-center justify-center gap-1.5 rounded-xl border p-2 text-xs font-bold transition ${
+                  formData.category === "nivel"
+                    ? "border-amber-500/60 bg-amber-950/50 text-amber-300 shadow-sm"
+                    : "border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:text-zinc-200"
+                }`}
+              >
+                <Sparkles size={13} />
+                <span>Habilidade de Nível</span>
+              </button>
+            </div>
+          </div>
+
           {/* Nome e Nível */}
           <div className="grid grid-cols-3 gap-3">
             <div className="col-span-2 space-y-1">

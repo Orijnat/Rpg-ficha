@@ -140,7 +140,19 @@ export function AbilityCard({
               {tipo.nome}
             </span>
 
-            {/* Badge de Nível */}
+            {/* Categoria */}
+            <span
+              className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-bold ${
+                ability.category === "nivel"
+                  ? "border-amber-500/40 bg-amber-950/40 text-amber-300"
+                  : "border-purple-500/40 bg-purple-950/40 text-purple-300"
+              }`}
+            >
+              {ability.category === "nivel" ? <Sparkles size={10} /> : <Sword size={10} />}
+              {ability.category === "nivel" ? `Hab. Nível ${ability.reqLevel || 1}` : "Criada pelo Jogador"}
+            </span>
+
+            {/* Badge de Nível Desbloqueado/Bloqueado */}
             <span
               className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-bold ${
                 isUnlocked
@@ -149,8 +161,7 @@ export function AbilityCard({
               }`}
             >
               {isUnlocked ? <Sparkles size={10} /> : <Lock size={10} />}
-              Nível {ability.reqLevel || 1}
-              {!isUnlocked && " (Bloqueada)"}
+              {isUnlocked ? "Desbloqueada" : `Requer Nvl ${ability.reqLevel || 1}`}
             </span>
 
             {/* Badge de Aprovação do Mestre */}

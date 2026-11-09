@@ -1,5 +1,19 @@
 # Memória do Agente Orquestrador (@orchestrator)
 
+## Entrega — 2026-11-09 (Segmentação e Identificação das 2 Categorias de Habilidades: Nível 1 a 20 vs Criadas pelo Jogador)
+
+- **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `rpg-rules-engine` (skill `rpg-sheet-calculator`), `gm-campaign-orchestrator`, `qa-tester`.
+- **Implementações Entregues**:
+  * **Categorização Canônica ([`abilities.js`](file:///home/crs/asdas/Rpg-ficha/src/lib/abilities.js))**: Criado `CATEGORIAS_HABILIDADE` definindo os dois tipos oficiais do sistema:
+    1. `nivel`: **Habilidades de Nível** (slots 1 a 20 de progressão do personagem).
+    2. `criada`: **Habilidades Criadas pelo Jogador** (técnicas autorais submetidas à moderação e treino).
+  * **Seletor de Categoria no Hub ([`habilidades/page.js`](file:///home/crs/asdas/Rpg-ficha/src/app/habilidades/page.js))**: Adicionado controle segmentado de alta visibilidade permitindo alternar instantaneamente entre a visualização de **Habilidades de Nível (1 a 20)** e **Habilidades Criadas pelo Jogador**.
+  * **Formulário de Forja ([`AbilityFormModal.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/habilidades/AbilityFormModal.jsx))**: O jogador pode escolher expressamente se está forjando uma Habilidade Criada pelo Jogador ou uma Habilidade de Nível.
+  * **Identificação Visual ([`AbilityCard.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/habilidades/AbilityCard.jsx) & [`LevelProgressionGrid.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/habilidades/LevelProgressionGrid.jsx))**: Badges temáticas diferenciando visualmente as duas categorias em toda a interface da ficha.
+- **Validação**:
+  * 41 suítes de testes unitários aprovadas com 100% de sucesso (`node --test`).
+  * Build de produção Next.js 16 compilado com sucesso (27 rotas geradas).
+
 ## Entrega — 2026-11-09 (Criação Exclusiva de Habilidades pelos Jogadores, Aprovação Obrigatória, Restrição de Treino e Habilidades por Nível 1 a 20)
 
 - **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `rpg-rules-engine` (skill `rpg-sheet-calculator`), `gm-campaign-orchestrator`, `qa-tester`.

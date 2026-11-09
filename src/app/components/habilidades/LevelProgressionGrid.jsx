@@ -365,6 +365,17 @@ export function LevelProgressionGrid({
                           {tipo?.nome || ability.type}
                         </span>
 
+                        <span
+                          className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-bold ${
+                            ability.category === "nivel"
+                              ? "border-amber-500/40 bg-amber-950/40 text-amber-300"
+                              : "border-purple-500/40 bg-purple-950/40 text-purple-300"
+                          }`}
+                        >
+                          {ability.category === "nivel" ? <Sparkles size={10} /> : <Sword size={10} />}
+                          {ability.category === "nivel" ? "Hab. de Nível" : "Criada pelo Jogador"}
+                        </span>
+
                         {ability.cost && (
                           <span className="rounded-md border border-zinc-700 bg-zinc-900/80 px-2 py-0.5 text-[10px] font-mono font-bold text-zinc-300">
                             {ability.cost}

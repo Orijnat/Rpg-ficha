@@ -15,6 +15,8 @@ import {
   aprovarHabilidade,
   rejeitarHabilidade,
   podeTreinarHabilidade,
+  CATEGORIAS_HABILIDADE,
+  getCategoriaHabilidade,
 } from "../abilities.js";
 
 test("Motor de Habilidades & Treinamento", async (t) => {
@@ -195,5 +197,18 @@ test("Motor de Habilidades & Treinamento", async (t) => {
     assert.equal(podeTreinarHabilidade(habAprovada), true);
     const treinoSucesso = avancarTreinoHabilidade(habAprovada, 5);
     assert.equal(treinoSucesso.trainingHours, 5, "Horas de treino devem avançar após aprovação");
+  });
+
+  await t.test("9. Validação das 2 Categorias Canônicas de Habilidades", () => {
+    assert.ok(CATEGORIAS_HABILIDADE.nivel, "Categoria 'nivel' deve existir");
+    assert.ok(CATEGORIAS_HABILIDADE.criada, "Categoria 'criada' deve existir");
+
+    const habNivel = { name: "Poder de Nível 5", category: "nivel", reqLevel: 5 };
+    const habCriada = { name: "Técnica das Sombras", category: "criada" };
+    const habSemCategoria = { name: "Golpe Rápido" };
+
+    assert.equal(getCategoriaHabilidade(habNivel).id, "nivel");
+    assert.equal(getCategoriaHabilidade(habCriada).id, "criada");
+    assert.equal(getCategoriaHabilidade(habSemCategoria).id, "criada", "Habilidades sem categoria definida devem ser tratadas como criadas pelo jogador");
   });
 });
