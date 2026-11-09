@@ -14,6 +14,7 @@ import {
   criarSolicitacaoHabilidade,
   aprovarHabilidade,
   rejeitarHabilidade,
+  podeTreinarHabilidade,
 } from "../abilities.js";
 
 test("Motor de Habilidades & Treinamento", async (t) => {
@@ -170,5 +171,29 @@ test("Motor de Habilidades & Treinamento", async (t) => {
       cost: "3 PE", // jogador ajustou
     }, false);
     assert.equal(habReenviada.approvalStatus, "pendente");
+  });
+
+  await t.test("8. Restrição de Treinamento a Habilidades Aprovadas", () => {
+    const habPendente = criarSolicitacaoHabilidade({
+      name: "Técnica das Sombras",
+      type: "ativa",
+      trainingHours: 0,
+    }, false);
+
+    assert.equal(podeTreinarHabilidade(habPendente), false, "Habilidade pendente não pode ser treinada");
+    const tentativaTreinoPendente = avancarTreinoHabilidade(habPendente, 5);
+    assert.equal(tentativaTreinoPendente.trainingHours, 0, "Horas de treino não devem aumentar para habilidade pendente");
+
+    // Rejeitada também não treina
+    const habRejeitada = rejeitarHabilidade(habPendente);
+    assert.equal(podeTreinarHabilidade(habRejeitada), false);
+    const tentativaTreinoRejeitada = avancarTreinoHabilidade(habRejeitada, 3);
+    assert.equal(tentativaTreinoRejeitada.trainingHours, 0);
+
+    // Quando aprovada pelo Mestre, o jogador pode treinar normalmente
+    const habAprovada = aprovarHabilidade(habPendente);
+    assert.equal(podeTreinarHabilidade(habAprovada), true);
+    const treinoSucesso = avancarTreinoHabilidade(habAprovada, 5);
+    assert.equal(treinoSucesso.trainingHours, 5, "Horas de treino devem avançar após aprovação");
   });
 });

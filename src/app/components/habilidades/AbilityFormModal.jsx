@@ -6,7 +6,9 @@ import { TIPOS_HABILIDADE, STATUS_APROVACAO } from "../../../lib/abilities";
 
 export function AbilityFormModal({
   isOpen,
-  ability,
+  ability = null,
+  initialLevel = 1,
+  assignToLevel = null,
   isMaster = false,
   onClose,
   onSave,
@@ -48,7 +50,7 @@ export function AbilityFormModal({
       setFormData({
         name: "",
         type: "ativa",
-        reqLevel: 1,
+        reqLevel: Math.max(1, Number(initialLevel) || 1),
         cost: "2 PE",
         attr: "FOR",
         rollFormula: "",
@@ -61,7 +63,7 @@ export function AbilityFormModal({
         masterFeedback: "",
       });
     }
-  }, [ability, isOpen, isMaster]);
+  }, [ability, isOpen, isMaster, initialLevel]);
 
   if (!isOpen) return null;
 
@@ -75,6 +77,7 @@ export function AbilityFormModal({
       reqLevel: Math.max(1, parseInt(formData.reqLevel, 10) || 1),
       trainingHours: Math.max(0, parseInt(formData.trainingHours, 10) || 0),
       resubmit: !isMaster, // sinaliza re-submissão para aprovação se for jogador
+      ...(assignToLevel ? { assignToLevel: Number(assignToLevel) } : {}),
     });
     onClose();
   };

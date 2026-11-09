@@ -26,8 +26,8 @@ import { useAuth } from "../context/AuthContext";
 import { Card, SectionHeader } from "../components/ui";
 import { AbilityCard } from "../components/habilidades/AbilityCard";
 import { AbilityFormModal } from "../components/habilidades/AbilityFormModal";
+import { LevelProgressionGrid } from "../components/habilidades/LevelProgressionGrid";
 import {
-  DEFAULT_ABILITIES,
   agruparPorNivel,
   calcularProgressoTreino,
   isHabilidadeDesbloqueada,
@@ -43,26 +43,37 @@ export default function HabilidadesPage() {
     rejectAbility,
     trainAbility,
     setAbilityTrainingFocus,
+    assignLevelAbility,
+    unassignLevelAbility,
     updExtra,
   } = useCharacter();
 
   const { isMaster } = useAuth();
   const { executeRoll } = useDice();
 
-  const [activeTab, setActiveTab] = useState("todas"); // "todas" | "pendentes" | "aprovadas" | "por-nivel" | "treino" | "magias" | "ativas" | "passivas"
+  const [activeTab, setActiveTab] = useState("por-nivel"); // "por-nivel" | "todas" | "pendentes" | "aprovadas" | "rejeitadas" | "treino" | "magias" | "ativas" | "passivas"
   const [searchTerm, setSearchTerm] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingAbility, setEditingAbility] = useState(null);
+  const [modalConfig, setModalConfig] = useState({
+    isOpen: false,
+    ability: null,
+    initialLevel: 1,
+    assignToLevel: null,
+  });
 
   const characterLevel = Math.max(1, Number(data.level) || 1);
-  const abilities = data.abilities && data.abilities.length > 0 ? data.abilities : DEFAULT_ABILITIES;
+  const abilities = Array.isArray(data.abilities) ? data.abilities : [];
+  const levelAbilities = data.levelAbilities || data.dadosExtras?.levelAbilities || {};
 
   const peMax = Number(data.dadosExtras?.peMax ?? 10);
   const peCurrent = Number(data.dadosExtras?.peCurrent ?? 10);
 
-  // Habilidade atualmente em foco de treino
+  // Habilidade atualmente em foco de treino (apenas habilidades aprovadas)
   const activeTrainingAbility = useMemo(() => {
-    return abilities.find((h) => h.isTraining) || null;
+    return (
+      abilities.find(
+        (h) => h.isTraining && (h.approvalStatus || "aprovada") === "aprovada"
+      ) || null
+    );
   }, [abilities]);
 
   // Contadores
@@ -146,7 +157,10 @@ export default function HabilidadesPage() {
 
   // Rolar teste de treino (teste d20 de atributo que concede horas bônus de treino)
   const handleRollTrainingSession = () => {
-    if (!activeTrainingAbility) return;
+    if (!activeTrainingAbility || (activeTrainingAbility.approvalStatus || "aprovada") !== "aprovada") {
+      alert("Apenas habilidades aprovadas pelo Mestre podem ser treinadas.");
+      return;
+    }
 
     const attrKey = activeTrainingAbility.attr || "ESP";
     const attrVal = data[attrKey] ?? 10;
@@ -173,19 +187,27 @@ export default function HabilidadesPage() {
     trainAbility(activeTrainingAbility.id, horasGanhas);
   };
 
-  const handleOpenCreateModal = () => {
-    setEditingAbility(null);
-    setIsModalOpen(true);
+  const handleOpenCreateModal = (ability = null, initialLevel = 1, assignToLevel = null) => {
+    setModalConfig({
+      isOpen: true,
+      ability: ability || null,
+      initialLevel: initialLevel || 1,
+      assignToLevel: assignToLevel || null,
+    });
   };
 
   const handleOpenEditModal = (ability) => {
-    setEditingAbility(ability);
-    setIsModalOpen(true);
+    setModalConfig({
+      isOpen: true,
+      ability,
+      initialLevel: ability?.reqLevel || 1,
+      assignToLevel: null,
+    });
   };
 
   const handleSaveAbility = (abilityData) => {
-    if (editingAbility) {
-      updAbility(editingAbility.id, abilityData, isMaster);
+    if (modalConfig.ability) {
+      updAbility(modalConfig.ability.id, abilityData, isMaster);
     } else {
       addAbility(abilityData, isMaster);
     }
@@ -382,6 +404,20 @@ export default function HabilidadesPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         {/* Abas de Filtro */}
         <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-950/60 p-1">
+          {/* Aba de Destaque: Níveis 1 ao 20 */}
+          <button
+            type="button"
+            onClick={() => setActiveTab("por-nivel")}
+            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+              activeTab === "por-nivel"
+                ? "bg-amber-500/25 text-amber-300 border border-amber-500/50 shadow-sm"
+                : "text-zinc-300 hover:text-amber-300"
+            }`}
+          >
+            <Layers size={13} />
+            <span>Níveis 1 a 20</span>
+          </button>
+
           <button
             type="button"
             onClick={() => setActiveTab("todas")}
@@ -445,18 +481,6 @@ export default function HabilidadesPage() {
 
           <button
             type="button"
-            onClick={() => setActiveTab("por-nivel")}
-            className={`flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium transition ${
-              activeTab === "por-nivel"
-                ? "bg-amber-500/20 text-amber-300 shadow-sm"
-                : "text-zinc-400 hover:text-zinc-200"
-            }`}
-          >
-            <Layers size={13} />
-            Por Nível
-          </button>
-          <button
-            type="button"
             onClick={() => setActiveTab("treino")}
             className={`flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium transition ${
               activeTab === "treino"
@@ -465,7 +489,7 @@ export default function HabilidadesPage() {
             }`}
           >
             <Award size={13} />
-            Em Treinamento ({stats.inTraining})
+            Em Treino ({stats.inTraining})
           </button>
           <button
             type="button"
@@ -520,65 +544,19 @@ export default function HabilidadesPage() {
 
       {/* Conteúdo Principal: Exibição por Nível OU Grade Padrão */}
       {activeTab === "por-nivel" ? (
-        <div className="space-y-6">
-          {gruposNivel.map((grupo) => (
-            <div key={grupo.nivel} className="space-y-3">
-              {/* Cabeçalho da Faixa de Nível */}
-              <div className="flex items-center gap-3">
-                <div
-                  className={`flex h-8 w-8 items-center justify-center rounded-xl border font-serif text-sm font-bold ${
-                    grupo.desbloqueado
-                      ? "border-amber-500/60 bg-amber-500/20 text-amber-300"
-                      : "border-zinc-800 bg-zinc-900 text-zinc-500"
-                  }`}
-                >
-                  {grupo.nivel}
-                </div>
-                <div className="flex items-center gap-2">
-                  <h2 className="font-serif text-base font-bold text-zinc-200">
-                    Nível {grupo.nivel}
-                  </h2>
-                  <span
-                    className={`rounded-md border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
-                      grupo.desbloqueado
-                        ? "border-emerald-500/40 bg-emerald-950/40 text-emerald-300"
-                        : "border-zinc-800 bg-zinc-900/60 text-zinc-500"
-                    }`}
-                  >
-                    {grupo.desbloqueado
-                      ? "Poderes Despertados"
-                      : `Requer Nível ${grupo.nivel}`}
-                  </span>
-                </div>
-                <div className="h-px flex-1 bg-zinc-800/80" />
-              </div>
-
-              {/* Grid de Habilidades daquele Nível */}
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {grupo.habilidades.map((ability) => (
-                  <AbilityCard
-                    key={ability.id}
-                    ability={ability}
-                    characterLevel={characterLevel}
-                    isMaster={isMaster}
-                    onEdit={handleOpenEditModal}
-                    onDelete={handleDeleteAbility}
-                    onTrain={trainAbility}
-                    onToggleTraining={setAbilityTrainingFocus}
-                    onApprove={approveAbility}
-                    onReject={rejectAbility}
-                  />
-                ))}
-              </div>
-            </div>
-          ))}
-
-          {gruposNivel.length === 0 && (
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-950/40 p-12 text-center text-zinc-500">
-              <p className="text-sm">Nenhuma habilidade encontrada para o termo pesquisado.</p>
-            </div>
-          )}
-        </div>
+        <LevelProgressionGrid
+          characterLevel={characterLevel}
+          abilities={abilities}
+          levelAbilities={levelAbilities}
+          isMaster={isMaster}
+          onAssign={assignLevelAbility}
+          onUnassign={unassignLevelAbility}
+          onOpenCreateModal={(ability, initialLevel, assignToLevel) =>
+            handleOpenCreateModal(ability, initialLevel, assignToLevel)
+          }
+          onEditAbility={handleOpenEditModal}
+          onTrain={trainAbility}
+        />
       ) : (
         /* Visualização em Grade Padrão */
         <div>
@@ -600,12 +578,36 @@ export default function HabilidadesPage() {
               ))}
             </div>
           ) : (
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-950/40 p-12 text-center text-zinc-500 space-y-2">
-              <BookOpen size={32} className="mx-auto text-zinc-600" />
-              <p className="text-sm font-medium">Nenhuma habilidade encontrada.</p>
-              <p className="text-xs text-zinc-600">
-                Altere os filtros de busca ou crie uma nova habilidade clicando no botão acima.
-              </p>
+            <div className="rounded-2xl border border-zinc-800 bg-zinc-950/40 p-12 text-center text-zinc-500 space-y-3">
+              <BookOpen size={36} className="mx-auto text-zinc-600" />
+              <div className="space-y-1">
+                <p className="text-sm font-semibold text-zinc-300">
+                  Nenhuma habilidade encontrada neste filtro.
+                </p>
+                <p className="text-xs text-zinc-500 max-w-md mx-auto">
+                  Como jogador, você deve forjar suas habilidades e submetê-las para análise do Mestre.
+                  Após aprovadas, você poderá treiná-las e utilizá-las em combate.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => handleOpenCreateModal(null, characterLevel)}
+                  className="flex items-center gap-1.5 rounded-xl border border-primary/40 bg-primary/20 px-3.5 py-2 text-xs font-bold text-primary hover:bg-primary/30 transition active:scale-95"
+                >
+                  <Plus size={14} />
+                  <span>{isMaster ? "Forjar Nova Habilidade" : "Propor Nova Habilidade"}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("por-nivel")}
+                  className="flex items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs font-semibold text-zinc-300 hover:text-amber-300 transition"
+                >
+                  <Layers size={14} />
+                  <span>Acessar Progressão Nível 1 a 20</span>
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -613,10 +615,12 @@ export default function HabilidadesPage() {
 
       {/* Modal de Criação / Edição */}
       <AbilityFormModal
-        isOpen={isModalOpen}
-        ability={editingAbility}
+        isOpen={modalConfig.isOpen}
+        ability={modalConfig.ability}
+        initialLevel={modalConfig.initialLevel}
+        assignToLevel={modalConfig.assignToLevel}
         isMaster={isMaster}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => setModalConfig((prev) => ({ ...prev, isOpen: false }))}
         onSave={handleSaveAbility}
       />
     </div>

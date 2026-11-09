@@ -1,20 +1,20 @@
 # Memória do Agente Orquestrador (@orchestrator)
 
-## Entrega — 2026-11-09 (Criação de Habilidades por Jogadores com Aprovação e Moderação do Mestre)
+## Entrega — 2026-11-09 (Criação Exclusiva de Habilidades pelos Jogadores, Aprovação Obrigatória, Restrição de Treino e Habilidades por Nível 1 a 20)
 
-- **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `motor-regras-rpg` / `rpg-rules-engine`, `gm-campaign-orchestrator`, `qa-tester`.
+- **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `rpg-rules-engine` (skill `rpg-sheet-calculator`), `gm-campaign-orchestrator`, `qa-tester`.
 - **Implementações Entregues**:
-  * **Ciclo de Vida de Aprovação ([`abilities.js`](file:///home/crs/asdas/Rpg-ficha/src/lib/abilities.js))**: Criado `STATUS_APROVACAO` com três estados canônicos: `aprovada`, `pendente` e `rejeitada`. Habilidades criadas por jogadores nascem com status `pendente` aguardando a decisão do mestre da mesa.
-  * **Formulário de Forja e Edição ([`AbilityFormModal.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/habilidades/AbilityFormModal.jsx))**: Jogadores podem criar e editar habilidades com aviso de submissão ao mestre. Se rejeitada, o jogador pode ajustar a técnica e reenviar. Mestres contam com painel para balancear atributos, custos e definir o status diretamente.
-  * **Card de Habilidade Interativo ([`AbilityCard.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/habilidades/AbilityCard.jsx))**:
-    - Exibe badges de status (`⏳ Pendente`, `✅ Aprovada`, `❌ Rejeitada`).
-    - Para o Mestre: botões de ação rápida para **Aprovar**, **Editar** e **Negar** (com prompt de justificativa/motivo da recusa).
-    - Para o Jogador: se rejeitada, visualiza o parecer do narrador e botão *"Ajustar Proposta e Reenviar"*.
-  * **Navegação & Moderação na Página ([`src/app/habilidades/page.js`](file:///home/crs/asdas/Rpg-ficha/src/app/habilidades/page.js))**: Adicionadas abas de filtro para `Pendentes` e `Rejeitadas`, contadores em tempo real e banner de moderação alertando o Mestre quando houver solicitações pendentes de revisão.
-  * **Contexto ([`CharacterContext.js`](file:///home/crs/asdas/Rpg-ficha/src/app/context/CharacterContext.js))**: Métodos `approveAbility` e `rejectAbility` implementados e persistidos.
+  * **Habilidades Iniciais Vazias**: Removida a injeção automática de habilidades padrão na ficha do jogador (`abilities: []` em [`defaultCharacter.js`](file:///home/crs/asdas/Rpg-ficha/src/lib/defaultCharacter.js), [`habilidades/page.js`](file:///home/crs/asdas/Rpg-ficha/src/app/habilidades/page.js) e [`personagem/page.js`](file:///home/crs/asdas/Rpg-ficha/src/app/personagem/page.js)). O jogador não recebe nenhuma técnica por padrão; todas devem ser criadas pelo herói.
+  * **Treinamento Restrito a Técnicas Aprovadas**: Criada função `podeTreinarHabilidade` em [`abilities.js`](file:///home/crs/asdas/Rpg-ficha/src/lib/abilities.js). O treinamento (`avancarTreinoHabilidade` e `trainAbility`) é estritamente bloqueado para habilidades pendentes ou rejeitadas. O herói só pode treinar e acumular maestria após o parecer favorável do narrador.
+  * **Ciclo de Submissão, Moderação e Edição**: Toda criação ou edição realizada pelo jogador gera uma solicitação pendente para o Mestre. O Mestre pode aprovar, editar e balancear, ou negar com feedback detalhado. Caso o jogador edite a técnica, ela retorna automaticamente ao status pendente para reavaliação.
+  * **Campo de Habilidades de Nível (1 ao 20)**: Desenvolvido o componente [`LevelProgressionGrid.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/habilidades/LevelProgressionGrid.jsx) com visualização dos 20 níveis:
+    - O jogador escolhe/aloca a habilidade desejada para cada degrau de 1 a 20.
+    - Seletor com busca, visualização de técnicas alocadas e botão para forjar nova habilidade diretamente para o nível selecionado.
+    - Indicador de nível desbloqueado/bloqueado conforme o nível atual do herói, atalhos de treino, rolagem de combate e desvinculação.
+  * **Contexto de Personagem ([`CharacterContext.js`](file:///home/crs/asdas/Rpg-ficha/src/app/context/CharacterContext.js))**: Adicionados `levelAbilities`, `assignLevelAbility`, `unassignLevelAbility` com limpeza automática de slots ao deletar uma habilidade.
 - **Validação**:
-  * Testes unitários: 39/39 suítes e 55 asserções aprovadas com 100% de sucesso (`node --test`).
-  * Build Next.js 16 (Turbopack): 27 rotas compiladas com sucesso sem erros.
+  * 40 suítes de testes unitários aprovadas com 100% de sucesso (`node --test`).
+  * Build de produção Next.js 16 compilado com sucesso (27 rotas geradas).
 
 ## Entrega — 2026-11-09 (Automação de Dano Tomado e Cura Recebida)
 

@@ -225,9 +225,24 @@ export function isHabilidadeDesbloqueada(habilidade, nivelPersonagem = 1) {
 }
 
 /**
- * Avança as horas de treino de uma habilidade e atualiza seu grau
+ * Verifica se uma habilidade está apta para ser treinada.
+ * Somente habilidades aprovadas pelo Mestre podem ser treinadas pelos jogadores.
+ */
+export function podeTreinarHabilidade(habilidade) {
+  if (!habilidade) return false;
+  const status = habilidade.approvalStatus || "aprovada";
+  return status === "aprovada";
+}
+
+/**
+ * Avança as horas de treino de uma habilidade e atualiza seu grau.
+ * Bloqueia treino de habilidades pendentes ou rejeitadas.
  */
 export function avancarTreinoHabilidade(habilidade, horasAdicionais = 1) {
+  if (!podeTreinarHabilidade(habilidade)) {
+    return habilidade;
+  }
+
   const horasAtuais = Math.max(0, Number(habilidade.trainingHours || 0));
   const novasHoras = Math.min(100, horasAtuais + Math.max(0, Number(horasAdicionais) || 0));
   const novoGrau = getGrauTreinamento(novasHoras);
