@@ -40,10 +40,15 @@ export default function BarrraHp() {
         <span className="text-muted-foreground">/</span>
         <EditableNumber
           value={data.hpMax}
-          onChange={(value) => upd("hpMax", value)}
-          className="text-muted-foreground"
+          onChange={(value) => {
+            const newMax = Math.max(1, Number(value) || 1);
+            upd("hpMax", newMax);
+            if (data.hp > newMax) {
+              upd("hp", newMax);
+            }
+          }}
+          className="text-muted-foreground hover:text-foreground cursor-pointer"
           min={1}
-          disabled={!isMaster}
           label="HP Máximo"
         />
       </div>

@@ -1,5 +1,45 @@
 # Memória do Agente Orquestrador (@orchestrator)
 
+## Entrega — 2026-11-09 (Criação de Habilidades por Jogadores com Aprovação e Moderação do Mestre)
+
+- **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `motor-regras-rpg` / `rpg-rules-engine`, `gm-campaign-orchestrator`, `qa-tester`.
+- **Implementações Entregues**:
+  * **Ciclo de Vida de Aprovação ([`abilities.js`](file:///home/crs/asdas/Rpg-ficha/src/lib/abilities.js))**: Criado `STATUS_APROVACAO` com três estados canônicos: `aprovada`, `pendente` e `rejeitada`. Habilidades criadas por jogadores nascem com status `pendente` aguardando a decisão do mestre da mesa.
+  * **Formulário de Forja e Edição ([`AbilityFormModal.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/habilidades/AbilityFormModal.jsx))**: Jogadores podem criar e editar habilidades com aviso de submissão ao mestre. Se rejeitada, o jogador pode ajustar a técnica e reenviar. Mestres contam com painel para balancear atributos, custos e definir o status diretamente.
+  * **Card de Habilidade Interativo ([`AbilityCard.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/habilidades/AbilityCard.jsx))**:
+    - Exibe badges de status (`⏳ Pendente`, `✅ Aprovada`, `❌ Rejeitada`).
+    - Para o Mestre: botões de ação rápida para **Aprovar**, **Editar** e **Negar** (com prompt de justificativa/motivo da recusa).
+    - Para o Jogador: se rejeitada, visualiza o parecer do narrador e botão *"Ajustar Proposta e Reenviar"*.
+  * **Navegação & Moderação na Página ([`src/app/habilidades/page.js`](file:///home/crs/asdas/Rpg-ficha/src/app/habilidades/page.js))**: Adicionadas abas de filtro para `Pendentes` e `Rejeitadas`, contadores em tempo real e banner de moderação alertando o Mestre quando houver solicitações pendentes de revisão.
+  * **Contexto ([`CharacterContext.js`](file:///home/crs/asdas/Rpg-ficha/src/app/context/CharacterContext.js))**: Métodos `approveAbility` e `rejectAbility` implementados e persistidos.
+- **Validação**:
+  * Testes unitários: 39/39 suítes e 55 asserções aprovadas com 100% de sucesso (`node --test`).
+  * Build Next.js 16 (Turbopack): 27 rotas compiladas com sucesso sem erros.
+
+## Entrega — 2026-11-09 (Automação de Dano Tomado e Cura Recebida)
+
+- **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `rpg-rules-engine` (skill `rpg-sheet-calculator`), `qa-tester`.
+- **Implementações Entregues**:
+  * **Componente de Gestão de Vitalidade ([`DanoCuraPainel.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/DanoCuraPainel.jsx))**: Permite digitar ou somar valores via atalhos (`+1`, `+5`, `+10`, `+20`) e aplicar **"Tomar Dano"** ou **"Receber Cura"** em 1 clique.
+  * **Regras de Limite e Alertas**: Integração com a função `applyHealthChange`, garantindo que o HP nunca fique abaixo de 0 nem acima de `hpMax`. Alerta em vermelho quando o personagem cai a 0 PV (inconsciente) e aviso de vitalidade completa.
+  * **Atalhos de Descanso**: Botão de **"Cura Total"** e rolagem de **"Dado de Vida"** (com modificador de CON) que já aplica a cura obtida instantaneamente na ficha.
+  * **Acesso Global e Local**: Disponível tanto no cabeçalho superior ([`Cabecalho.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/Cabecalho.jsx)) via botão *"Dano/Cura"* em modal flutuante, quanto na seção de combate da ficha ([`RecursosCombate.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/RecursosCombate.jsx)).
+- **Validação**:
+  * Testes unitários do motor: 55/55 asserções aprovadas com 100% de sucesso.
+  * Build Next.js 16 (Turbopack): 27 rotas geradas com sucesso sem erros.
+
+## Entrega — 2026-11-09 (Edição de Vida Máxima por Jogadores e Central de Perícias Canônicas d20)
+
+- **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `rpg-rules-engine` (skill `rpg-sheet-calculator`), `qa-tester`.
+- **Implementações Entregues**:
+  * **Edição de Vida Máxima (`hpMax`) para Jogadores**: Removido o bloqueio `disabled={!isMaster}` de [`Cabecalho.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/Cabecalho.jsx) e [`BarrraHp.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/BarrraHp.jsx). Qualquer jogador pode alterar diretamente seu HP Máximo, com guarda defensiva que assegura `hp <= hpMax`.
+  * **Garantia das 19 Perícias Canônicas**: Criada a função `ensureCanonicalSkills` em [`modifiers.js`](file:///home/crs/asdas/Rpg-ficha/src/lib/modifiers.js), garantindo que mesmo personagens antigos ou com fichas parciais sempre visualizem e tenham acesso às 19 perícias do sistema, preservando perícias customizadas e bônus existentes. Integrado ao [`CharacterContext.js`](file:///home/crs/asdas/Rpg-ficha/src/app/context/CharacterContext.js).
+  * **Central de Perícias Completa**: Reformulado [`Pericia.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/Pericia.jsx) com tabs de filtro por Atributo (`TODOS`, `FOR`, `DES`, `SAB`, `ESP`, `CAR`, `INT`), status (`Todas`, `Treinadas`, `Não Treinadas`), barra de pesquisa por texto, checkbox de treino/seleção com feedback visual Dark Fantasy, badges de atributos coloridas, decomposição transparente da fórmula (`Mod + Treino + Extra = Total`), edição de bônus adicional e botão de rolagem d20.
+  * **Layout no Grid**: Ajustado [`src/app/personagem/page.js`](file:///home/crs/asdas/Rpg-ficha/src/app/personagem/page.js) para alocar `lg:col-span-7` para as Perícias e `lg:col-span-5` para Aparência.
+- **Validação**:
+  * Testes unitários do motor: 55/55 asserções aprovadas com 100% de sucesso (`node --test`).
+  * Build Next.js 16 (Turbopack): 27 rotas geradas com sucesso sem erros.
+
 ## Entrega — 2026-11-06 (Criação da Skill Especialista `token-optimizer`)
 
 - **Skill Adicionada**: [`token-optimizer`](file:///home/crs/asdas/Rpg-ficha/.agents/skills/token-optimizer/SKILL.md) (espelhada em `.github/skills/`).

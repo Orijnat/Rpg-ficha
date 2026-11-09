@@ -141,9 +141,13 @@ export default function Personagem() {
         <RecursosCombate />
       </Card>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Card><Aparencia /></Card>
-        <Card><Pericia /></Card>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-12">
+        <div className="lg:col-span-5">
+          <Card className="h-full"><Aparencia /></Card>
+        </div>
+        <div className="lg:col-span-7">
+          <Card className="h-full"><Pericia /></Card>
+        </div>
       </div>
       
     </div>

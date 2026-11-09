@@ -2,7 +2,13 @@
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { syncCharacterWithBackend, verifyBankPasswordOnBackend } from "../../lib/api";
-import { avancarTreinoHabilidade } from "../../lib/abilities";
+import {
+  avancarTreinoHabilidade,
+  criarSolicitacaoHabilidade,
+  aprovarHabilidade,
+  rejeitarHabilidade,
+} from "../../lib/abilities";
+import { ensureCanonicalSkills } from "../../lib/modifiers";
 import { useAuth } from "./AuthContext";
 
 import { defaultData } from "../../lib/defaultCharacter";
@@ -63,7 +69,7 @@ export function CharacterProvider({ children }) {
       ...defaultData,
       ...activeCharacter,
       ...atributos,
-      skills: pickCollection(activeCharacter.pericias, activeCharacter.skills, defaultData.skills),
+      skills: ensureCanonicalSkills(pickCollection(activeCharacter.pericias, activeCharacter.skills, defaultData.skills)),
       inventory: pickCollection(activeCharacter.itensInventario, activeCharacter.inventory, defaultData.inventory),
       contracts: pickCollection(activeCharacter.contratosDados, activeCharacter.contracts, defaultData.contracts),
       players: activeCharacter.jogadores ?? activeCharacter.players ?? defaultData.players,
@@ -152,10 +158,30 @@ export function CharacterProvider({ children }) {
 
   const updSkill = (index, patch) => {
     setData((current) => {
-      const next = [...current.skills];
-      next[index] = { ...next[index], ...patch };
+      const next = [...(current.skills || [])];
+      if (next[index]) {
+        next[index] = { ...next[index], ...patch };
+      }
       return { ...current, skills: next };
     });
+  };
+
+  const toggleSkillTrained = (skillName) => {
+    setData((current) => {
+      const next = [...(current.skills || [])];
+      const idx = next.findIndex((s) => s.name.toLowerCase() === String(skillName).toLowerCase());
+      if (idx !== -1) {
+        next[idx] = { ...next[idx], trained: !next[idx].trained };
+      }
+      return { ...current, skills: next };
+    });
+  };
+
+  const setSkills = (newSkills) => {
+    setData((current) => ({
+      ...current,
+      skills: Array.isArray(newSkills) ? newSkills : current.skills,
+    }));
   };
 
   const addItem = () => {
@@ -229,10 +255,10 @@ export function CharacterProvider({ children }) {
     });
   };
 
-  const addAbility = (ability) => {
+  const addAbility = (ability, isMasterActor = false) => {
     setData((current) => {
       const list = current.abilities || defaultData.abilities || [];
-      const newAbility = {
+      const baseAbility = {
         id: ability?.id || uid(),
         name: ability?.name || "Nova Habilidade",
         type: ability?.type || "ativa",
@@ -246,7 +272,9 @@ export function CharacterProvider({ children }) {
         trainingHours: Number(ability?.trainingHours) || 0,
         masteryLevel: ability?.masteryLevel || "aprendiz",
         isTraining: Boolean(ability?.isTraining),
+        ...ability,
       };
+      const newAbility = criarSolicitacaoHabilidade(baseAbility, isMasterActor || isMaster);
       const nextAbilities = [...list, newAbility];
       return {
         ...current,
@@ -274,10 +302,50 @@ export function CharacterProvider({ children }) {
     });
   };
 
-  const updAbility = (id, patch) => {
+  const updAbility = (id, patch, isMasterActor = false) => {
     setData((current) => {
       const list = current.abilities || defaultData.abilities || [];
-      const nextAbilities = list.map((hab) => (hab.id === id ? { ...hab, ...patch } : hab));
+      const isMasterEffective = isMasterActor || isMaster;
+      const nextAbilities = list.map((hab) => {
+        if (hab.id !== id) return hab;
+        const updated = { ...hab, ...patch, updatedAt: new Date().toISOString() };
+        // Se for jogador editando habilidade rejeitada ou reenviando, volta ao status pendente
+        if (!isMasterEffective && (hab.approvalStatus === "rejeitada" || patch.resubmit)) {
+          updated.approvalStatus = "pendente";
+          updated.masterFeedback = null;
+        }
+        return updated;
+      });
+      return {
+        ...current,
+        abilities: nextAbilities,
+        dadosExtras: {
+          ...(current.dadosExtras || {}),
+          abilities: nextAbilities,
+        },
+      };
+    });
+  };
+
+  const approveAbility = (id, feedback = null) => {
+    setData((current) => {
+      const list = current.abilities || defaultData.abilities || [];
+      const nextAbilities = list.map((hab) => (hab.id === id ? aprovarHabilidade(hab, feedback) : hab));
+      return {
+        ...current,
+        abilities: nextAbilities,
+        dadosExtras: {
+          ...(current.dadosExtras || {}),
+          abilities: nextAbilities,
+        },
+      };
+    });
+  };
+
+  const rejectAbility = (id, feedback = "Habilidade desbalanceada ou incompatível.") => {
+    setData((current) => {
+      const list = current.abilities || defaultData.abilities || [];
+      const nextAbilities = list.map((hab) => (hab.id === id ? rejeitarHabilidade(hab, feedback) : hab));
       return {
         ...current,
         abilities: nextAbilities,
@@ -369,6 +437,8 @@ export function CharacterProvider({ children }) {
     upd,
     updExtra,
     updSkill,
+    toggleSkillTrained,
+    setSkills,
     addItem,
     removeItem,
     updItem,
@@ -383,6 +453,8 @@ export function CharacterProvider({ children }) {
     addAbility,
     removeAbility,
     updAbility,
+    approveAbility,
+    rejectAbility,
     trainAbility,
     setAbilityTrainingFocus,
   };

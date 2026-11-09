@@ -9,6 +9,11 @@ import {
   avancarTreinoHabilidade,
   agruparPorNivel,
   DEFAULT_ABILITIES,
+  STATUS_APROVACAO,
+  getStatusAprovacao,
+  criarSolicitacaoHabilidade,
+  aprovarHabilidade,
+  rejeitarHabilidade,
 } from "../abilities.js";
 
 test("Motor de Habilidades & Treinamento", async (t) => {
@@ -119,6 +124,51 @@ test("Motor de Habilidades & Treinamento", async (t) => {
       assert.ok(hab.name, "Habilidade deve ter nome");
       assert.ok(hab.reqLevel > 0, "Habilidade deve ter nível requerido válido");
       assert.ok(TIPOS_HABILIDADE[hab.type], `Tipo ${hab.type} deve ser um tipo reconhecido`);
+      assert.equal(hab.approvalStatus, "aprovada", "Habilidades canônicas devem vir como aprovadas");
     }
+  });
+
+  await t.test("7. Ciclo de Vida e Aprovação de Habilidades pelo Mestre", () => {
+    // 1. Jogador cria nova habilidade -> deve nascer 'pendente'
+    const habJogador = criarSolicitacaoHabilidade({
+      name: "Tiro com Arco Sombrio",
+      type: "ativa",
+      reqLevel: 2,
+      cost: "2 PE",
+    }, false);
+
+    assert.equal(habJogador.approvalStatus, "pendente");
+    assert.equal(habJogador.submittedBy, "jogador");
+    assert.ok(habJogador.requestedAt);
+    assert.equal(getStatusAprovacao(habJogador).id, "pendente");
+
+    // 2. Mestre cria habilidade -> nasce aprovada
+    const habMestre = criarSolicitacaoHabilidade({
+      name: "Bênção da Montanha",
+      type: "magia",
+      reqLevel: 1,
+    }, true);
+    assert.equal(habMestre.approvalStatus, "aprovada");
+
+    // 3. Mestre aprova a habilidade do jogador com feedback
+    const habAprovada = aprovarHabilidade(habJogador, "Técnica balanceada, aprovada para a sessão!");
+    assert.equal(habAprovada.approvalStatus, "aprovada");
+    assert.equal(habAprovada.masterFeedback, "Técnica balanceada, aprovada para a sessão!");
+    assert.ok(habAprovada.approvedAt);
+    assert.equal(getStatusAprovacao(habAprovada).id, "aprovada");
+
+    // 4. Mestre rejeita habilidade com justificativa
+    const habRejeitada = rejeitarHabilidade(habJogador, "Dano muito alto para o nível 2. Reduza para 1d8.");
+    assert.equal(habRejeitada.approvalStatus, "rejeitada");
+    assert.equal(habRejeitada.masterFeedback, "Dano muito alto para o nível 2. Reduza para 1d8.");
+    assert.ok(habRejeitada.rejectedAt);
+    assert.equal(getStatusAprovacao(habRejeitada).id, "rejeitada");
+
+    // 5. Jogador edita e re-submete -> volta para pendente
+    const habReenviada = criarSolicitacaoHabilidade({
+      ...habRejeitada,
+      cost: "3 PE", // jogador ajustou
+    }, false);
+    assert.equal(habReenviada.approvalStatus, "pendente");
   });
 });

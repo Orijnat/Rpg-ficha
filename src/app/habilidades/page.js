@@ -14,9 +14,15 @@ import {
   Crown,
   BookOpen,
   Filter,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  AlertCircle,
+  Send,
 } from "lucide-react";
 import { useCharacter } from "../context/CharacterContext";
 import { useDice } from "../context/DiceContext";
+import { useAuth } from "../context/AuthContext";
 import { Card, SectionHeader } from "../components/ui";
 import { AbilityCard } from "../components/habilidades/AbilityCard";
 import { AbilityFormModal } from "../components/habilidades/AbilityFormModal";
@@ -33,14 +39,17 @@ export default function HabilidadesPage() {
     addAbility,
     removeAbility,
     updAbility,
+    approveAbility,
+    rejectAbility,
     trainAbility,
     setAbilityTrainingFocus,
     updExtra,
   } = useCharacter();
 
+  const { isMaster } = useAuth();
   const { executeRoll } = useDice();
 
-  const [activeTab, setActiveTab] = useState("todas"); // "todas" | "por-nivel" | "treino" | "magias" | "ativas" | "passivas"
+  const [activeTab, setActiveTab] = useState("todas"); // "todas" | "pendentes" | "aprovadas" | "por-nivel" | "treino" | "magias" | "ativas" | "passivas"
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAbility, setEditingAbility] = useState(null);
@@ -61,8 +70,16 @@ export default function HabilidadesPage() {
     let unlocked = 0;
     let locked = 0;
     let inTraining = 0;
+    let pending = 0;
+    let rejected = 0;
+    let approved = 0;
 
     for (const h of abilities) {
+      const status = h.approvalStatus || "aprovada";
+      if (status === "pendente") pending++;
+      else if (status === "rejeitada") rejected++;
+      else approved++;
+
       if (isHabilidadeDesbloqueada(h, characterLevel)) {
         unlocked++;
       } else {
@@ -73,7 +90,7 @@ export default function HabilidadesPage() {
       }
     }
 
-    return { total: abilities.length, unlocked, locked, inTraining };
+    return { total: abilities.length, unlocked, locked, inTraining, pending, rejected, approved };
   }, [abilities, characterLevel]);
 
   // Filtros de habilidades
@@ -86,6 +103,17 @@ export default function HabilidadesPage() {
         (h.damageType && h.damageType.toLowerCase().includes(searchTerm.toLowerCase()));
 
       if (!matchesSearch) return false;
+
+      // Filtro de status de aprovação
+      if (activeTab === "pendentes") {
+        return (h.approvalStatus || "aprovada") === "pendente";
+      }
+      if (activeTab === "rejeitadas") {
+        return h.approvalStatus === "rejeitada";
+      }
+      if (activeTab === "aprovadas") {
+        return (h.approvalStatus || "aprovada") === "aprovada";
+      }
 
       // Filtro de aba
       if (activeTab === "treino") {
@@ -157,9 +185,9 @@ export default function HabilidadesPage() {
 
   const handleSaveAbility = (abilityData) => {
     if (editingAbility) {
-      updAbility(editingAbility.id, abilityData);
+      updAbility(editingAbility.id, abilityData, isMaster);
     } else {
-      addAbility(abilityData);
+      addAbility(abilityData, isMaster);
     }
   };
 
@@ -213,7 +241,7 @@ export default function HabilidadesPage() {
               className="flex items-center gap-2 rounded-xl border border-primary/50 bg-primary/20 px-4 py-2.5 text-xs font-bold text-primary shadow-lg transition hover:bg-primary/30 active:scale-95"
             >
               <Plus size={15} />
-              <span>Nova Habilidade</span>
+              <span>{isMaster ? "Forjar Habilidade" : "Propor Nova Habilidade"}</span>
             </button>
           </div>
         </div>
@@ -224,9 +252,19 @@ export default function HabilidadesPage() {
             Total de Habilidades: <strong className="text-foreground">{stats.total}</strong>
           </span>
           <span className="text-emerald-400">
-            • Desbloqueadas: <strong>{stats.unlocked}</strong>
+            • Aprovadas: <strong>{stats.approved}</strong>
           </span>
-          <span className="text-amber-400">
+          {stats.pending > 0 && (
+            <span className="text-amber-400 font-bold flex items-center gap-1">
+              • Pendentes: <strong>{stats.pending}</strong>
+            </span>
+          )}
+          {stats.rejected > 0 && (
+            <span className="text-rose-400 font-bold flex items-center gap-1">
+              • Rejeitadas: <strong>{stats.rejected}</strong>
+            </span>
+          )}
+          <span className="text-sky-400">
             • Em Treino: <strong>{stats.inTraining}</strong>
           </span>
           {stats.locked > 0 && (
@@ -236,6 +274,53 @@ export default function HabilidadesPage() {
           )}
         </div>
       </Card>
+
+      {/* Alerta / Banner de Moderação de Habilidades Pendentes */}
+      {stats.pending > 0 && (
+        <div
+          className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl border p-4 shadow-lg backdrop-blur-sm ${
+            isMaster
+              ? "border-amber-500/50 bg-amber-950/40 text-amber-200"
+              : "border-amber-500/30 bg-amber-950/20 text-amber-300"
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${
+                isMaster
+                  ? "border-amber-500/50 bg-amber-500/20 text-amber-400"
+                  : "border-amber-500/30 bg-amber-500/10 text-amber-400"
+              }`}
+            >
+              {isMaster ? <Crown size={18} /> : <Clock size={18} />}
+            </div>
+            <div>
+              <h4 className="font-serif text-sm font-bold text-amber-300">
+                {isMaster
+                  ? `Moderação do Mestre: ${stats.pending} ${
+                      stats.pending === 1 ? "Solicitação Pendente" : "Solicitações Pendentes"
+                    }`
+                  : `Aguardando Avaliação: ${stats.pending} ${
+                      stats.pending === 1 ? "Habilidade Pendente" : "Habilidades Pendentes"
+                    }`}
+              </h4>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {isMaster
+                  ? "O jogador enviou propostas de habilidades que requerem seu parecer, balanceamento ou aprovação."
+                  : "Suas propostas foram enviadas ao Mestre e aguardam revisão antes da liberação nos combates."}
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("pendentes")}
+            className="self-start sm:self-center shrink-0 rounded-xl border border-amber-500/60 bg-amber-500/25 px-3 py-1.5 text-xs font-bold text-amber-200 hover:bg-amber-500/40 transition active:scale-95"
+          >
+            Ver Pendentes ({stats.pending})
+          </button>
+        </div>
+      )}
 
       {/* Banner de Destaque: Foco de Treino Ativo */}
       {activeTrainingAbility && (
@@ -308,6 +393,56 @@ export default function HabilidadesPage() {
           >
             Todas ({abilities.length})
           </button>
+
+          {/* Aba de Pendentes com Contador */}
+          <button
+            type="button"
+            onClick={() => setActiveTab("pendentes")}
+            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition ${
+              activeTab === "pendentes"
+                ? "bg-amber-500/25 text-amber-300 border border-amber-500/50 shadow-sm font-bold"
+                : "text-zinc-400 hover:text-zinc-200"
+            }`}
+          >
+            <Clock size={12} />
+            <span>Pendentes</span>
+            {stats.pending > 0 && (
+              <span className="rounded-full bg-amber-500/30 px-1.5 py-0.2 text-[10px] font-bold text-amber-300 animate-pulse">
+                {stats.pending}
+              </span>
+            )}
+          </button>
+
+          {/* Aba de Aprovadas */}
+          <button
+            type="button"
+            onClick={() => setActiveTab("aprovadas")}
+            className={`flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium transition ${
+              activeTab === "aprovadas"
+                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm font-bold"
+                : "text-zinc-400 hover:text-zinc-200"
+            }`}
+          >
+            <CheckCircle2 size={12} />
+            <span>Aprovadas ({stats.approved})</span>
+          </button>
+
+          {/* Aba de Rejeitadas (se houver) */}
+          {stats.rejected > 0 && (
+            <button
+              type="button"
+              onClick={() => setActiveTab("rejeitadas")}
+              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition ${
+                activeTab === "rejeitadas"
+                  ? "bg-rose-500/20 text-rose-300 border border-rose-500/40 shadow-sm font-bold"
+                  : "text-rose-400/70 hover:text-rose-300"
+              }`}
+            >
+              <XCircle size={12} />
+              <span>Rejeitadas ({stats.rejected})</span>
+            </button>
+          )}
+
           <button
             type="button"
             onClick={() => setActiveTab("por-nivel")}
@@ -425,10 +560,13 @@ export default function HabilidadesPage() {
                     key={ability.id}
                     ability={ability}
                     characterLevel={characterLevel}
+                    isMaster={isMaster}
                     onEdit={handleOpenEditModal}
                     onDelete={handleDeleteAbility}
                     onTrain={trainAbility}
                     onToggleTraining={setAbilityTrainingFocus}
+                    onApprove={approveAbility}
+                    onReject={rejectAbility}
                   />
                 ))}
               </div>
@@ -451,10 +589,13 @@ export default function HabilidadesPage() {
                   key={ability.id}
                   ability={ability}
                   characterLevel={characterLevel}
+                  isMaster={isMaster}
                   onEdit={handleOpenEditModal}
                   onDelete={handleDeleteAbility}
                   onTrain={trainAbility}
                   onToggleTraining={setAbilityTrainingFocus}
+                  onApprove={approveAbility}
+                  onReject={rejectAbility}
                 />
               ))}
             </div>
@@ -474,6 +615,7 @@ export default function HabilidadesPage() {
       <AbilityFormModal
         isOpen={isModalOpen}
         ability={editingAbility}
+        isMaster={isMaster}
         onClose={() => setIsModalOpen(false)}
         onSave={handleSaveAbility}
       />

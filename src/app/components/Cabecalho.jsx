@@ -1,18 +1,20 @@
 "use client";
 
 import React, { useState } from "react";
-import { Crown, Settings, Heart } from "lucide-react";
+import { Crown, Settings, Heart, HeartPulse } from "lucide-react";
 import { useCharacter } from "../context/CharacterContext";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 import { EditableText, EditableNumber, HPBar } from "./ui";
 import SettingsModal from "./SettingsModal";
+import DanoCuraPainel from "./DanoCuraPainel";
 
 export default function Cabecalho() {
   const { data, upd } = useCharacter();
   const { activeThemeObj } = useTheme();
   const { isMaster, playerCharacters, inspectCharacter, activeCharacterId } = useAuth();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isHpModalOpen, setIsHpModalOpen] = useState(false);
 
   const hpPct = data.hpMax > 0 ? Math.round((data.hp / data.hpMax) * 100) : 0;
   const hpColor =
@@ -68,11 +70,16 @@ export default function Cabecalho() {
                       <span className="text-muted-foreground text-xs">/</span>
                       <EditableNumber
                         value={data.hpMax}
-                        onChange={(v) => upd("hpMax", v)}
+                        onChange={(v) => {
+                          const newMax = Math.max(1, Number(v) || 1);
+                          upd("hpMax", newMax);
+                          if (data.hp > newMax) {
+                            upd("hp", newMax);
+                          }
+                        }}
                         min={1}
-                        disabled={!isMaster}
                         label="HP Máximo"
-                        className="w-7 text-center text-muted-foreground text-xs"
+                        className="w-7 text-center text-muted-foreground text-xs hover:text-foreground cursor-pointer"
                       />
                     </div>
                     {/* Botão + */}
@@ -86,6 +93,18 @@ export default function Cabecalho() {
                     </button>
                     {/* % */}
                     <span className={`text-[10px] font-semibold ${hpColor}`}>{hpPct}%</span>
+
+                    {/* Botão de Dano / Cura Rápido */}
+                    <button
+                      type="button"
+                      aria-label="Abrir painel de dano e cura automatizados"
+                      onClick={() => setIsHpModalOpen((prev) => !prev)}
+                      className="ml-1 flex items-center gap-1 rounded-md border border-primary/40 bg-primary/15 px-2 py-0.5 text-[10px] font-bold text-primary transition hover:bg-primary/30 active:scale-95 shadow-sm"
+                      title="Abrir painel automatizado de dano e cura"
+                    >
+                      <HeartPulse size={12} />
+                      <span className="hidden sm:inline">Dano/Cura</span>
+                    </button>
                   </div>
                   {/* Barra de HP */}
                   <div className="w-full sm:w-48">
@@ -137,6 +156,20 @@ export default function Cabecalho() {
       </header>
 
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+
+      {isHpModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm animate-in fade-in-50"
+          onClick={() => setIsHpModalOpen(false)}
+        >
+          <div
+            className="w-full max-w-sm"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <DanoCuraPainel compact onClose={() => setIsHpModalOpen(false)} />
+          </div>
+        </div>
+      )}
     </>
   );
 }

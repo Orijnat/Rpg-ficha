@@ -47,6 +47,54 @@ export const DEFAULT_SKILLS = [
 ];
 
 /**
+ * Garante que a lista de perícias contenha todas as 19 perícias canônicas do sistema,
+ * preservando o estado treinado/bônus das perícias existentes e eventuais perícias customizadas.
+ * @param {Array} skills Lista atual de perícias do personagem
+ * @returns {Array} Lista completa com todas as 19 perícias canônicas garantidas
+ */
+export function ensureCanonicalSkills(skills = []) {
+  const currentSkills = Array.isArray(skills) ? skills : [];
+  const skillMap = new Map();
+
+  for (const s of currentSkills) {
+    if (s && typeof s.name === "string") {
+      skillMap.set(s.name.toLowerCase().trim(), s);
+    }
+  }
+
+  const result = DEFAULT_SKILLS.map((canon) => {
+    const existing = skillMap.get(canon.name.toLowerCase().trim());
+    if (existing) {
+      skillMap.delete(canon.name.toLowerCase().trim());
+      return {
+        name: canon.name,
+        attr: existing.attr || canon.attr,
+        trained: Boolean(existing.trained),
+        bonus: typeof existing.bonus === "number" ? existing.bonus : null,
+      };
+    }
+    return {
+      name: canon.name,
+      attr: canon.attr,
+      trained: false,
+      bonus: null,
+    };
+  });
+
+  // Preserva perícias customizadas extras que não estejam na lista canônica
+  for (const [_, extraSkill] of skillMap) {
+    result.push({
+      name: extraSkill.name,
+      attr: extraSkill.attr || "FOR",
+      trained: Boolean(extraSkill.trained),
+      bonus: typeof extraSkill.bonus === "number" ? extraSkill.bonus : null,
+    });
+  }
+
+  return result;
+}
+
+/**
  * Calcula o modificador de um valor de atributo d20: floor((valor - 10) / 2)
  * @param {number|string} attributeValue
  * @returns {number} Modificador inteiro
