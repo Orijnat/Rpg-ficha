@@ -1,8 +1,8 @@
 # 🧠 Sessão Ativa — Grimorium RPG
 
-**Última Atualização**: 2026-11-09T17:32:00-03:00  
+**Última Atualização**: 2026-11-10T19:30:00-03:00  
 **Branch Atual**: `main`  
-**Status**: Concluída a reintrodução da tela de Perfil (`/perfil`) na barra lateral do Mestre (`MASTER_TABS`) e no cabeçalho superior (`Cabecalho`).
+**Status**: Concluída a expansão do motor de regras em `src/lib/modifiers.js` com 17 novas funções/constantes.
 
 ---
 
@@ -10,12 +10,29 @@
 
 | Item | Detalhes |
 |---|---|
-| **Aba Perfil na Sidebar do Mestre** | Em [`src/layouts/AppShell.jsx`](file:///home/crs/asdas/Rpg-ficha/src/layouts/AppShell.jsx), adicionado o item `{ id: "perfil", href: "/perfil", label: "Perfil", icon: User }` na lista `MASTER_TABS`, restabelecendo o acesso à tela de perfil tanto para mestres quanto para jogadores na navegação lateral (desktop e mobile). |
-| **Atalho Direto no Cabeçalho Superior** | Em [`src/app/components/Cabecalho.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/Cabecalho.jsx), adicionado botão interativo com ícone `User` e atalho direto para `/perfil` ao lado do botão de Configurações, permitindo acesso imediato à conta a partir de qualquer página. |
-| **Página de Perfil Operacional** | A página [`src/app/perfil/page.js`](file:///home/crs/asdas/Rpg-ficha/src/app/perfil/page.js) fornece gerenciamento completo da conta (nome, e-mail, perfil de mestre/jogador), sessões JWT, alternância e criação de heróis, ingresso em mesas e personalização de tema visual. |
-| **Compilação & Testes** | Build Next.js 16 compilado com 100% de sucesso (28 rotas estáticas e dinâmicas) e testes unitários aprovados. |
+| **calculateArmorClass** | CA = 10 + Mod(DES) + extra (dadosExtras.armorClass) |
+| **calculatePE** | PE Max = Nível + Mod(ESP), mínimo 0 |
+| **calculateBP** | BP Max = Nível + Mod(CAR), mínimo 0 |
+| **calculateInsanity** | Insanidade Max = 10 + Mod(SAB), mínimo 0 |
+| **calculateDerivedResources** | Agregador: HP, PE, BP, Insanidade, CA, Iniciativa, hitDie |
+| **XP_TABLE** | Tabela de XP acumulado (20 níveis) |
+| **calculateLevelFromXP** | Nível, XP atual, próximo nível, progresso % |
+| **calculateXPForLevel** | XP necessário para um dado nível |
+| **applyShortRest** | Rola dado de vida + Mod(CON) HP, restaura 25% PE |
+| **applyLongRest** | 100% HP, 100% PE, reduz insanidade em 1 |
+| **consumeAmmunition** | Consome qty do item, marca esgotado se 0 |
+| **CURRENCY_RATES** | Taxas: latina=1000, ouro=100, prata=10, cobre=1 |
+| **convertCurrency** | Converte entre moedas com fórmula |
+| **totalWealthInCopper** | Riqueza total em cobres |
+| **applyCondition** | Adiciona condição (sem duplicata) |
+| **removeCondition** | Remove condição da lista ativa |
+| **hasCondition** | Verifica se condição está ativa |
 
 ---
 
 ## 📋 Próximos Passos Recomendados
-1. Validar a experiência de navegação e edição de perfil na interface.
+1. Integrar `calculateDerivedResources` nos componentes da ficha de personagem.
+2. Criar UI de descanso curto/longo usando `applyShortRest` / `applyLongRest`.
+3. Integrar `consumeAmmunition` no painel de inventário.
+4. Adicionar conversor de moedas na UI de economia.
+5. Conectar `calculateLevelFromXP` à barra de progresso de XP.

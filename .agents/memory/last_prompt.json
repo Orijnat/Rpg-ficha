@@ -1,4 +1,8 @@
 {
-  "last_prompt": "re adicione a tela d perfil",
-  "timestamp": "2026-11-09T17:26:28-03:00"
+  "timestamp": "2026-11-10T19:30:00-03:00",
+  "agent": "rpg-rules-engine",
+  "skill": "rpg-sheet-calculator",
+  "action": "Expansão do motor de regras em modifiers.js — 17 novas funções/constantes adicionadas (CA, PE, BP, Insanidade, Recursos Derivados, XP/Nível, Descanso, Munição, Moedas, Condições).",
+  "files_changed": ["src/lib/modifiers.js"],
+  "tests": "smoke test passed (17/17 exports + lógica validada)"
 }
