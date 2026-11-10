@@ -144,3 +144,34 @@ UI/UX da Área do Jogador, componentes React 19, Tailwind CSS v4, responsividade
   silenciosamente.
 - `AppShell` oculta cabeçalho, navegação autenticada e botão de dados na rota
   pública, preservando o layout de autenticação.
+
+### Reformulação Visual de Alta Fidelidade (Jogador & Mestre) — 2026-11-09
+- Ativação da skill `frontend-design` para dar identidade artesanal única (Grimório Vivo + Sala de Guerra Tática):
+  * **Tipografia Imersiva**: Vinculação real de `Cinzel`, `Cinzel Decorative` e `Crimson Text` no CSS base e tokens semânticos (`font-cinzel`, `font-decorative`, `font-journal`).
+  * **Tokens e Superfícies Folio**: Criação das classes `.grimoire-card` (cartões de pergaminho/velino com cantoneiras de ferro/bronze) e `.war-room-card` (consoles com acabamento obsidiana e chanfro tático).
+  * **Cabeçalho Contextual (`Cabecalho.jsx`)**: Distingue visualmente o papel de Jogador (nome do aventureiro, nível, frasco de PV e tema) do Mestre (insígnia da Soberania do Narrador, título da sessão e atalhos rápidos).
+  * **Sidebar Distinta (`AppShell.jsx`)**: Separação clara entre a jornada do herói ("Folio do Jogador") e a seção de comando ("Narrador / Câmara do Mestre").
+  * **Medalhões de Atributo Arcanos (`StatBox` em `ui.js`)**: O modificador (ex: `+3`, `-1`) é destacado como elemento central e clicável para rolagem imediata, com d20 animado e escore base preservado.
+  * **Sala de Guerra Tática (`admin/page.js` e `admin/layout.js`)**: Iniciativa com indicação luminosa do turno ativo, botões táteis de PV (`-5`, `-1`, `+1`, `+5`) e fichas de condição em formato de selo de cera (`.wax-seal`).
+  * **Limpeza de Hardcoded Colors**: Telas de Perícias, Quarto, Montaria e Mundo migradas para tokens do sistema de temas.
+- Validação: 38 testes de regras/dados 100% aprovados, build Turbopack Next.js 16 (26 rotas) executado sem nenhum erro.
+
+### Reformulação "Grimório Vivo" (Atmosfera & Alma Dark Fantasy) — 2026-11-09
+- Resposta à demanda de visual sem alma/estéril:
+  * **Luz de Tocha e Atmosfera**: Implementadas animações `@keyframes torch-flicker` e `@keyframes rune-pulse`, vinheta focal de candeia e textura tátil de pergaminho/grain escuro no `body`.
+  * **Gradientes Metálicos Nobres**: Criadas classes `.gold-gradient-text`, `.ruby-gradient-text` e `.arcane-gradient-text` aplicadas nos nomes de personagens, títulos principais e valores de atributos.
+  * **Superfícies de Pergaminho e Bronze**: `.grimoire-card` reconstruído com iluminação interna de velino, sombra profunda 3D, filigrana dourada central e cantos de bronze forjado reativos ao hover (`.bracket-corners`).
+  * **Medalhões dos 7 Atributos**: `StatBox` redesenhado como selos arcanos escavados em relevo com modificador destacado em ouro, d20 interativo com rotação no hover.
+  * **Frascos Alquímicos de Vitalidade**: `HPBar` reconstruída com reflexo de vidro alquímico (`.alchemy-vial`), brilho volumétrico do líquido vital e pulso de urgência (`.pulsing-danger`).
+  * **Console do Códice na Sidebar & Cabeçalho**: Navegação com itens em placas de guilda, divisores com nós rúnicos e selos de cera com relevo real.
+- Validação: Next.js 16 build (28 rotas) concluído com 100% de sucesso. Lint 0 erros.
+
+### Temas Claros & Blindagem da Tela Inicial Pública — 2026-11-10
+- **Novos Temas Claros Temáticos**:
+  * `parchment` (Pergaminho Antigo): Fundo papiro claro envelhecido (`#f4eedd`), texto nanquim sépia (`#2a1a0f`), bordas de couro/bronze e medalhões em relevo escuro.
+  * `sunlight` (Catedral da Luz): Mármore sacro (`#f8fafc`), texto chumbo/ônix (`#0f172a`), filigranas solares douradas reluzentes e aço polido.
+- **Blindagem Canônica da Landing Page (`/`)**:
+  * A tela inicial nunca herda nem é corrompida por temas claros ou alternativos quando o usuário está logado ou alterna o tema na ficha.
+  * `ThemeContext.jsx` monitora `pathname` via `usePathname()` e força `data-theme="amber"` no `document.documentElement` ao acessar `/`, restaurando instantaneamente o tema preferido do jogador ao navegar para `/personagem`, `/admin`, etc.
+  * `src/app/page.js` e `src/layouts/AppShell.jsx` foram encapsulados com atributo explícito `data-theme="amber"`, plano de fundo fixo `#090b0e` e auras místicas âmbar canônicas, prevenindo qualquer FOUC ou vazamento visual.
+- **Validação**: Testes unitários de temas 100% aprovados, ESLint 0 erros/0 warnings e build Next.js 16 em 2.4s.

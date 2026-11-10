@@ -109,37 +109,39 @@ export default function RecursosCombate() {
       {/* Grade de Defesa, Iniciativa e Dado de Vida */}
       <div className="grid grid-cols-3 gap-2 sm:gap-3">
         {/* Classe de Armadura (CA) */}
-        <div className="flex flex-col items-center justify-center rounded-xl border border-white/10 bg-background/50 p-3 text-center shadow-inner">
-          <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-            <Shield size={12} className="text-amber-400" />
+        <div className="medallion-plate flex flex-col items-center justify-center rounded-xl p-3 text-center shadow-md">
+          <div className="flex items-center gap-1 font-cinzel text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+            <Shield size={13} className="text-amber-400" />
             <span>CA</span>
           </div>
           <EditableNumber
             value={armorClass}
             onChange={(val) => updExtra("armorClass", val)}
-            className="mt-1 font-serif text-2xl font-black text-foreground"
+            className="mt-1 font-cinzel text-2xl font-black text-foreground font-tabular"
             min={0}
             max={99}
             disabled={!isMaster}
+            label="Classe de Armadura"
           />
-          <span className="text-[9px] text-muted-foreground uppercase">Armadura</span>
+          <span className="font-cinzel text-[9px] text-muted-foreground uppercase tracking-wider">Armadura</span>
         </div>
 
         {/* Iniciativa com Rolagem Rápida e Envio à Mesa */}
-        <div className="flex flex-col items-center justify-center rounded-xl border border-white/10 bg-background/50 p-3 text-center shadow-inner group">
-          <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-            <Flame size={12} className="text-primary" />
+        <div className="medallion-plate flex flex-col items-center justify-center rounded-xl p-3 text-center shadow-md group">
+          <div className="flex items-center gap-1 font-cinzel text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+            <Flame size={13} className="text-primary" />
             <span>Iniciativa</span>
           </div>
           <div className="mt-1 flex items-center justify-center gap-1">
-            <span className="font-serif text-2xl font-black text-foreground">
+            <span className="font-cinzel text-2xl font-black text-foreground font-tabular">
               {initiativeData.formatted}
             </span>
             <button
               type="button"
               onClick={handleRollInitiative}
-              className="rounded-lg border border-primary/30 bg-primary/10 p-1.5 text-primary hover:bg-primary/25 active:scale-95 transition"
+              className="rounded-lg border border-primary/40 bg-primary/10 p-1.5 text-primary hover:bg-primary/25 active:scale-95 transition"
               title={`Rolar Iniciativa (d20 ${initiativeData.formatted})`}
+              aria-label="Rolar iniciativa"
             >
               <Dices size={14} />
             </button>
@@ -149,39 +151,41 @@ export default function RecursosCombate() {
               disabled={sendingInit}
               className={`rounded-lg border p-1.5 transition active:scale-95 ${
                 sentSuccess
-                  ? "border-emerald-500/50 bg-emerald-950/40 text-emerald-300"
+                  ? "border-emerald-500/50 bg-emerald-950/40 text-emerald-300 shadow-[0_0_10px_#10b981]"
                   : "border-primary/40 bg-primary/20 text-primary hover:bg-primary/30"
               }`}
               title="Rolar e enviar iniciativa diretamente para a mesa ativa do mestre"
+              aria-label="Enviar iniciativa ao mestre"
             >
               {sentSuccess ? <Check size={14} /> : <Send size={14} />}
             </button>
           </div>
-          <span className="text-[9px] text-muted-foreground uppercase">
+          <span className="font-cinzel text-[9px] text-muted-foreground uppercase tracking-wider">
             {sentSuccess ? "Enviado à mesa!" : "DES + Bônus"}
           </span>
         </div>
 
         {/* Dado de Vida com Rolagem de Cura */}
-        <div className="flex flex-col items-center justify-center rounded-xl border border-white/10 bg-background/50 p-3 text-center shadow-inner">
-          <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-            <HeartPulse size={12} className="text-rose-400" />
+        <div className="medallion-plate flex flex-col items-center justify-center rounded-xl p-3 text-center shadow-md">
+          <div className="flex items-center gap-1 font-cinzel text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+            <HeartPulse size={13} className="text-rose-400" />
             <span>Dado Vida</span>
           </div>
           <div className="mt-1 flex items-center justify-center gap-1">
-            <span className="font-serif text-lg font-black text-foreground truncate max-w-[4rem]">
+            <span className="font-cinzel text-lg font-black text-foreground truncate max-w-[4rem]">
               {hitDie}
             </span>
             <button
               type="button"
               onClick={handleRollHitDie}
-              className="rounded-lg border border-rose-400/30 bg-rose-950/30 p-1.5 text-rose-300 hover:bg-rose-900/40 active:scale-95 transition"
+              className="rounded-lg border border-rose-400/40 bg-rose-950/30 p-1.5 text-rose-300 hover:bg-rose-900/50 active:scale-95 transition"
               title={`Rolar Cura com Dado de Vida (${hitDie})`}
+              aria-label="Rolar dado de vida"
             >
               <Dices size={14} />
             </button>
           </div>
-          <span className="text-[9px] text-muted-foreground uppercase">Descanso</span>
+          <span className="font-cinzel text-[9px] text-muted-foreground uppercase tracking-wider">Descanso</span>
         </div>
       </div>
 
@@ -189,8 +193,12 @@ export default function RecursosCombate() {
       <DanoCuraPainel />
 
       {/* Barras de Recursos: PE, Insanidade e BP */}
-      <div className="space-y-3 rounded-xl border border-white/10 bg-background/40 p-3.5">
-        <SectionHeader title="Recursos Especiais & Vigor" icon={<Zap size={14} />} />
+      <div className="space-y-3.5 rounded-2xl border border-primary/20 bg-background/50 p-4 shadow-inner">
+        <SectionHeader
+          title="Recursos Especiais & Vigor"
+          subtitle="Energia arcana, integridade mental e bravura"
+          icon={<Zap size={14} />}
+        />
 
         {/* PE - Pontos de Energia */}
         <div>

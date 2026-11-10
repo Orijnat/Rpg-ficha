@@ -264,7 +264,7 @@ export function AbilityCard({
             </div>
             {ability.masterFeedback && (
               <p className="text-[11px] text-rose-300/90 italic">
-                "{ability.masterFeedback}"
+                &ldquo;{ability.masterFeedback}&rdquo;
               </p>
             )}
             <button

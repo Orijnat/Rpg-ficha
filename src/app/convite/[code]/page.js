@@ -199,7 +199,7 @@ export default function ConvitePage({ params }) {
                     className="mt-1 text-sm text-[#e8d5b0] leading-relaxed italic"
                     style={{ fontFamily: "Crimson Text, serif", fontSize: "15px" }}
                   >
-                    "{campaign.descricao || "Uma nova jornada épica aguarda por valorosos aventureiros..."}"
+                    &ldquo;{campaign.descricao || "Uma nova jornada épica aguarda por valorosos aventureiros..."}&rdquo;
                   </p>
                 </div>
               </div>
@@ -243,7 +243,7 @@ export default function ConvitePage({ params }) {
                     </div>
                     <p className="mt-1 text-xs text-muted-foreground">
                       Você está conectado como <strong>{user?.username}</strong>. O herói{" "}
-                      <strong className="text-foreground">"{activeChar?.name || "Seu Herói"}"</strong> será vinculado à mesa.
+                      <strong className="text-foreground">&ldquo;{activeChar?.name || "Seu Herói"}&rdquo;</strong> será vinculado à mesa.
                     </p>
                   </div>
 

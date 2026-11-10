@@ -17,6 +17,71 @@ export { defaultData };
 
 const CharacterContext = createContext(null);
 
+const ATTRIBUTE_ALIASES = {
+  FOR: "forca",
+  DES: "destreza",
+  CON: "constituicao",
+  SAB: "sabedoria",
+  ESP: "espirito",
+  CAR: "carisma",
+  INT: "inteligencia",
+  forca: "FOR",
+  destreza: "DES",
+  constituicao: "CON",
+  sabedoria: "SAB",
+  espirito: "ESP",
+  carisma: "CAR",
+  inteligencia: "INT",
+};
+
+function normalizeCharacterForSync(charData, activeChar) {
+  if (!charData) return charData;
+  const forca = Number(charData.FOR ?? charData.forca ?? 10);
+  const destreza = Number(charData.DES ?? charData.destreza ?? 10);
+  const constituicao = Number(charData.CON ?? charData.constituicao ?? 10);
+  const sabedoria = Number(charData.SAB ?? charData.sabedoria ?? 10);
+  const espirito = Number(charData.ESP ?? charData.espirito ?? 10);
+  const carisma = Number(charData.CAR ?? charData.carisma ?? 10);
+  const inteligencia = Number(charData.INT ?? charData.inteligencia ?? 10);
+
+  return {
+    ...charData,
+    id: charData.id || activeChar?.id,
+    name: charData.name || activeChar?.name,
+    FOR: forca,
+    DES: destreza,
+    CON: constituicao,
+    SAB: sabedoria,
+    ESP: espirito,
+    CAR: carisma,
+    INT: inteligencia,
+    forca,
+    destreza,
+    constituicao,
+    sabedoria,
+    espirito,
+    carisma,
+    inteligencia,
+    attributes: {
+      ...(charData.attributes || {}),
+      FOR: forca,
+      DES: destreza,
+      CON: constituicao,
+      SAB: sabedoria,
+      ESP: espirito,
+      CAR: carisma,
+      INT: inteligencia,
+      forca,
+      destreza,
+      constituicao,
+      sabedoria,
+      espirito,
+      carisma,
+      inteligencia,
+    },
+  };
+}
+
 export function CharacterProvider({ children }) {
   const [data, setData] = useState(defaultData);
   const [hydrated, setHydrated] = useState(false);
@@ -29,7 +94,7 @@ export function CharacterProvider({ children }) {
   const latestData = useRef(data);
   const syncSequence = useRef(0);
 
-  const { activeCharacter, token, user, loading: authLoading } = useAuth();
+  const { activeCharacter, token, user, loading: authLoading, isMaster } = useAuth();
 
   const cacheKey = `bruxeiro-sheet:${user?.id || "anonymous"}:${activeCharacter?.id || "default"}`;
 
@@ -118,12 +183,13 @@ export function CharacterProvider({ children }) {
     latestData.current = data;
     window.localStorage.setItem(cacheKey, JSON.stringify(data));
 
-    // Sincronização em segundo plano com o backend (debounce de 1.2s)
+    // Sincronização em segundo plano com o backend (debounce de 800ms)
     const sequence = ++syncSequence.current;
     setSyncStatus("saving");
     setSyncError(null);
     const timer = setTimeout(() => {
-      syncCharacterWithBackend(data, token)
+      const payload = normalizeCharacterForSync(data, activeCharacter);
+      syncCharacterWithBackend(payload, token)
         .then((result) => {
           if (sequence === syncSequence.current) setSyncStatus(result ? "saved" : "offline");
         })
@@ -132,17 +198,18 @@ export function CharacterProvider({ children }) {
           setSyncError(error);
           setSyncStatus(error.status === 409 ? "conflict" : "error");
         });
-    }, 1200);
+    }, 800);
 
     return () => clearTimeout(timer);
-  }, [cacheKey, data, hydrated, hydratedKey, token]);
+  }, [cacheKey, data, hydrated, hydratedKey, token, activeCharacter]);
 
   const retrySync = async () => {
     const sequence = ++syncSequence.current;
     setSyncStatus("saving");
     setSyncError(null);
     try {
-      const result = await syncCharacterWithBackend(latestData.current, token);
+      const payload = normalizeCharacterForSync(latestData.current, activeCharacter);
+      const result = await syncCharacterWithBackend(payload, token);
       if (sequence === syncSequence.current) setSyncStatus(result ? "saved" : "offline");
     } catch (error) {
       if (sequence === syncSequence.current) {
@@ -152,9 +219,21 @@ export function CharacterProvider({ children }) {
     }
   };
 
-
   const upd = (key, value) => {
-    setData((current) => ({ ...current, [key]: value }));
+    setData((current) => {
+      const parsedVal = typeof value === "number" ? value : (Number(value) || value);
+      const next = { ...current, [key]: parsedVal };
+      const alias = ATTRIBUTE_ALIASES[key];
+      if (alias) {
+        next[alias] = parsedVal;
+        next.attributes = {
+          ...(current.attributes || {}),
+          [key]: parsedVal,
+          [alias]: parsedVal,
+        };
+      }
+      return next;
+    });
   };
 
   const updExtra = (key, value) => {

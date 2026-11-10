@@ -11,6 +11,8 @@ import {
   Trees,
   Sword,
   Snowflake,
+  BookOpen,
+  Sun,
   Download,
   Upload,
   RefreshCw,
@@ -30,6 +32,8 @@ const THEME_ICONS = {
   forest: Trees,
   crimson: Sword,
   frost: Snowflake,
+  parchment: BookOpen,
+  sunlight: Sun,
 };
 
 export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }) {
@@ -215,7 +219,7 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
             <Palette size={15} />
             <span>Temas Visuais</span>
             <span className="rounded-full bg-white/10 px-1.5 py-0.2 font-mono text-[10px] text-[#d69a3d]">
-              5
+              {themes.length}
             </span>
           </button>
 
@@ -261,12 +265,12 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
                     Escolha a Atmosfera
                   </h4>
                   <p className="mt-0.5 text-xs text-[#8a7355]">
-                    Alterne o esquema de cores e a identidade da ficha em tempo real.
+                    Alterne o esquema de cores e a identidade da ficha em tempo real (Escuros & Claros).
                   </p>
                 </div>
                 <div className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[11px] font-medium text-[#f5e9d7]">
                   <Sparkles size={12} className="text-[#d69a3d]" />
-                  <span>5 Temas RPG</span>
+                  <span>{themes.length} Temas RPG</span>
                 </div>
               </div>
 

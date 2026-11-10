@@ -1,144 +1,51 @@
 # Memória do Agente Orquestrador (@orchestrator)
 
-## Entrega — 2026-11-09 (Reintrodução da Tela de Perfil na Sidebar do Mestre e Cabeçalho)
+## Entrega — 2026-11-10 (Blindagem Canônica da Tela Inicial & Temas Claros de RPG)
 
-- **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `qa-tester`.
+- **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder` e `frontend-design`), `qa-tester`.
+- **Demanda do Usuário**: Fazer com que a tela inicial pública (`/`) nunca sofra alteração de estilo ao mudar de tema na ficha enquanto logado.
 - **Implementações Entregues**:
-  * **Reintrodução na Sidebar do Mestre (`MASTER_TABS`)**: Em [`src/layouts/AppShell.jsx`](file:///home/crs/asdas/Rpg-ficha/src/layouts/AppShell.jsx), adicionado o item `{ id: "perfil", href: "/perfil", label: "Perfil", icon: User }` à navegação lateral dos mestres, assegurando que o perfil continue acessível independentemente da role ativa.
-  * **Atalho Rápido no Cabeçalho (`Cabecalho.jsx`)**: Em [`src/app/components/Cabecalho.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/Cabecalho.jsx), incluído botão interativo com ícone `User` e label "Perfil", posicionado adjacente ao botão de Configurações para acesso instantâneo a partir de qualquer ponto da aplicação.
-  * **Tela de Perfil Totalmente Funcional**: Validada a página [`src/app/perfil/page.js`](file:///home/crs/asdas/Rpg-ficha/src/app/perfil/page.js) com suporte a gerenciamento de dados de usuário, sessões ativas, criação/seleção de heróis, ingresso em mesas via código de convite e personalização de tema.
-- **Validação**:
-  * Testes unitários executados com sucesso.
-  * Build de produção Next.js 16 compilado com sucesso (28 rotas geradas).
+  * **Isolamento de Rota em `ThemeContext.jsx`**: Implementado efeito baseado em `usePathname()`. Sempre que a rota ativa for `"/"`, o atributo `data-theme` de `document.documentElement` é forçado para `"amber"`. Ao navegar para qualquer outra rota (ficha, painel, inventário, etc.), o tema configurado pelo jogador é restaurado instantaneamente.
+  * **Casulo Canônico em `AppShell.jsx`**: Aplicação condicional de `data-theme={isLandingPage ? "amber" : undefined}`, cores fixas de fundo (`#090b0e`), texto canônico (`#ebd9be`) e auras de iluminação mística âmbar quando na landing page.
+  * **Blindagem Raiz em `src/app/page.js`**: Elemento container raiz explicitamente configurado com `data-theme="amber"`, cores de fundo e texto fixas e auras de fundo em Âmbar Vulcânico, impossibilitando qualquer herança espúria ou vazamento de temas claros/alternativos.
+  * **Suporte Prévio a Temas Claros**: Criação e integração dos temas `parchment` (Pergaminho Antigo) e `sunlight` (Catedral da Luz) no catálogo e nas variáveis globais CSS.
+- **Validação de Integridade**:
+  * ESLint: **0 erros, 0 avisos** nos arquivos alterados.
+  * Testes Unitários de Temas: **100% aprovados** (`node --test src/lib/__tests__/themes.test.mjs`).
+  * Next.js 16 Production Build: **28/28 rotas geradas com sucesso** em 2.4s.
 
-## Entrega — 2026-11-09 (Remoção dos Atalhos Redundantes da Tela de Admin)
+## Entrega — 2026-11-09 (Mapeamento Completo da Aplicação e Correção de Erros de Runtime & Lint)
 
-- **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `qa-tester`.
+- **Especialistas Acionados**: `qa-tester`, `frontend-artisan` (skill `sheet-component-builder`).
+- **Problema Inicial**: Erro em runtime `Crown is not defined` em `src/app/admin/layout.js:26:16`.
+- **Diagnóstico & Causa Raiz**:
+  * Em commit recente, o cabeçalho e navegação de `AdminLayout` foram reescritos utilizando componentes (`Crown`, `Link`), hooks (`usePathname`) e constantes (`NAV_ITEMS`), mas os respectivos `import` e declaração da constante não estavam presentes no arquivo.
+  * O erro não quebrava o build SSG estático porque a linha `if (loading || !isAuthenticated || !isMaster) return null;` retornava `null` no SSR/prerender, manifestando-se apenas quando o usuário mestre autenticado navegava para `/admin`.
+- **Varredura Completa da Aplicação**:
+  * Desenvolvido e executado scanner AST em Babel percorrendo todos os arquivos `.js` e `.jsx` em busca de variáveis/identificadores não declarados no escopo.
+  * Detectado e corrigido bug crítico similar em `CharacterContext.js`: `isMaster` não estava sendo extraído de `useAuth()`, provocando falhas ao aprovar/solicitar habilidades.
+  * Detectado e corrigido erro sintático de parser `CoinDisplay has already been declared` em `Coin.jsx`.
+  * Detectados e corrigidos caminhos relativos de importação quebrados em `AnotacoesImproved.jsx` (`./ui` e `../context/CharacterContext`).
+  * Corrigidos erros de entidades não escapadas no JSX em `convite/[code]/page.js` e `AbilityCard.jsx`.
+- **Validação de Integridade**:
+  * ESLint: **0 erros** (reduzido de 11 erros para zero).
+  * Scanner de identificadores não declarados: **0 erros**.
+  * Scanner de imports e exports locais: **0 erros**.
+  * 48 testes unitários passando (100%).
+  * Build Next.js 16 (Turbopack): **28/28 rotas geradas com sucesso** em 4.3s.
+
+## Entrega — 2026-11-09 (Reformulação Visual Artesanal Dark Fantasy: Jogador & Mestre)
+
+- **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder` e `frontend-design`), `dice-mechanic` (skill `dice-roller`) e `qa-tester`.
 - **Implementações Entregues**:
-  * **Remoção da Barra de Atalhos em [`admin/layout.js`](file:///home/crs/asdas/Rpg-ficha/src/app/admin/layout.js)**: Removida a barra de navegação rápida horizontal e cabeçalho duplicado que continha os atalhos para os módulos do Mestre, despoluindo o topo das páginas administrativas agora que todos os 9 módulos estão permanentemente acessíveis na sidebar.
-  * **Despoluição da Sala de Guerra em [`admin/page.js`](file:///home/crs/asdas/Rpg-ficha/src/app/admin/page.js)**: Removido o botão de atalho duplicado para o Mercado do Mundo, mantendo apenas ações contextuais (como "Novo herói").
-- **Validação**:
-  * Testes unitários executados com sucesso (18/18).
-  * Build de produção Next.js 16 compilado com sucesso (28 rotas geradas).
-
-## Entrega — 2026-11-09 (Módulos do Painel Admin Integrados na Sidebar Exclusiva para Mestres)
-
-- **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `qa-tester`.
-- **Implementações Entregues**:
-  * **Integração das Abas do Admin na Sidebar**: Em [`src/layouts/AppShell.jsx`](file:///home/crs/asdas/Rpg-ficha/src/layouts/AppShell.jsx), usuários logados com perfil de Mestre (`isMaster = true`) agora têm acesso direto na barra lateral a todos os 9 módulos da Câmara do Mestre:
-    1. **Painel** (`/admin`, ícone `LayoutDashboard`)
-    2. **Campanhas** (`/admin/campanhas`, ícone `Users`)
-    3. **Mercado** (`/admin/mercado`, ícone `Store`)
-    4. **Bestiário (NPCs)** (`/admin/npcs`, ícone `Skull`)
-    5. **Ameaças & Heróis** (`/admin/personagens`, ícone `ScrollText`)
-    6. **Encontros** (`/admin/encontros`, ícone `Swords`)
-    7. **Mapas & Névoa** (`/admin/mapas`, ícone `Compass`)
-    8. **Segredos & Notas** (`/admin/notas`, ícone `FileText`)
-    9. **Sessões & Cenas** (`/admin/sessoes`, ícone `Calendar`)
-  * **Isolamento de Perfis**: Usuários jogadores (`!isMaster`) continuam com a navegação padrão de sua ficha (`PLAYER_TABS`).
-  * **UX e Scroll Dark Fantasy**: Adicionado `lg:overflow-y-auto custom-scroll` na sidebar para garantir rolagem fluida em diferentes tamanhos de tela.
-- **Validação**:
-  * Testes unitários executados com sucesso.
-  * Build de produção Next.js 16 compilado com sucesso (28 rotas geradas).
-
-
-## Entrega — 2026-11-09 (Aba Mercado do Mundo para o Mestre: Regiões, Vendedores, Tipos, Estoque, Preço e Peso)
-
-- **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `rpg-rules-engine` (skill `rpg-sheet-calculator`), `gm-campaign-orchestrator`, `qa-tester`.
-- **Implementações Entregues**:
-  * **Nova Aba e Rota do Mestre**: Criada a página [`/admin/mercado`](file:///home/crs/asdas/Rpg-ficha/src/app/admin/mercado/page.js) e integrada na barra de navegação da Câmara do Mestre ([`admin/layout.js`](file:///home/crs/asdas/Rpg-ficha/src/app/admin/layout.js)) com ícone `Store` e atalho rápido na Sala de Guerra ([`admin/page.js`](file:///home/crs/asdas/Rpg-ficha/src/app/admin/page.js)).
-  * **Motor do Mercado Canônico ([`market.js`](file:///home/crs/asdas/Rpg-ficha/src/lib/market.js))**:
-    - 5 Regiões Canônicas do Mundo com ambientação e comércio local.
-    - 7 Mercadores e Tendas icônicas com títulos, ocupação e citações de recepção.
-    - 8 Categorias de Itens (Armas, Armaduras, Poções, Grimórios, Equipamento, Munições, Relíquias, Montarias).
-    - 5 Graus de Raridade e 4 Moedas canônicas com conversão de valor de mercado.
-    - 21 Itens padrão ricos e equilibrados com quantidade por vendedor, preço, peso em kg e descrições táticas.
-  * **4 Modos de Listagem**:
-    1. **Catálogo & Filtros**: Busca textual com filtros cruzados de região, vendedor, tipo, raridade, estoque e ordenação.
-    2. **Por Região do Mundo**: Visualização regional com resumo de comerciantes e catálogo local.
-    3. **Por Vendedor / Tendas**: Estandes individuais de cada feirante com seus produtos.
-    4. **Por Tipos de Itens**: Agrupamento por categoria de equipamento.
-  * **Interatividade & Modais**: Modais dedicados [`MarketItemModal.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/admin/MarketItemModal.jsx) e [`VendorModal.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/admin/VendorModal.jsx), ajuste rápido de estoque (+1/-1/esgotado), cópia formatada para o inventário/chat e confirmações seguras via [`ConfirmDialog.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/admin/ConfirmDialog.jsx).
-- **Validação**:
-  * 48 testes unitários aprovados com 100% de sucesso (`node --test`), incluindo [`market.test.mjs`](file:///home/crs/asdas/Rpg-ficha/src/lib/__tests__/market.test.mjs).
-  * Build de produção Next.js 16 compilado com sucesso (28 rotas geradas).
-
-## Entrega — 2026-11-09 (Segmentação e Identificação das 2 Categorias de Habilidades: Nível 1 a 20 vs Criadas pelo Jogador)
-
-- **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `rpg-rules-engine` (skill `rpg-sheet-calculator`), `gm-campaign-orchestrator`, `qa-tester`.
-- **Implementações Entregues**:
-  * **Categorização Canônica ([`abilities.js`](file:///home/crs/asdas/Rpg-ficha/src/lib/abilities.js))**: Criado `CATEGORIAS_HABILIDADE` definindo os dois tipos oficiais do sistema:
-    1. `nivel`: **Habilidades de Nível** (slots 1 a 20 de progressão do personagem).
-    2. `criada`: **Habilidades Criadas pelo Jogador** (técnicas autorais submetidas à moderação e treino).
-  * **Seletor de Categoria no Hub ([`habilidades/page.js`](file:///home/crs/asdas/Rpg-ficha/src/app/habilidades/page.js))**: Adicionado controle segmentado de alta visibilidade permitindo alternar instantaneamente entre a visualização de **Habilidades de Nível (1 a 20)** e **Habilidades Criadas pelo Jogador**.
-  * **Formulário de Forja ([`AbilityFormModal.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/habilidades/AbilityFormModal.jsx))**: O jogador pode escolher expressamente se está forjando uma Habilidade Criada pelo Jogador ou uma Habilidade de Nível.
-  * **Identificação Visual ([`AbilityCard.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/habilidades/AbilityCard.jsx) & [`LevelProgressionGrid.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/habilidades/LevelProgressionGrid.jsx))**: Badges temáticas diferenciando visualmente as duas categorias em toda a interface da ficha.
-- **Validação**:
-  * 41 suítes de testes unitários aprovadas com 100% de sucesso (`node --test`).
-  * Build de produção Next.js 16 compilado com sucesso (27 rotas geradas).
-
-## Entrega — 2026-11-09 (Criação Exclusiva de Habilidades pelos Jogadores, Aprovação Obrigatória, Restrição de Treino e Habilidades por Nível 1 a 20)
-
-- **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `rpg-rules-engine` (skill `rpg-sheet-calculator`), `gm-campaign-orchestrator`, `qa-tester`.
-- **Implementações Entregues**:
-  * **Habilidades Iniciais Vazias**: Removida a injeção automática de habilidades padrão na ficha do jogador (`abilities: []` em [`defaultCharacter.js`](file:///home/crs/asdas/Rpg-ficha/src/lib/defaultCharacter.js), [`habilidades/page.js`](file:///home/crs/asdas/Rpg-ficha/src/app/habilidades/page.js) e [`personagem/page.js`](file:///home/crs/asdas/Rpg-ficha/src/app/personagem/page.js)). O jogador não recebe nenhuma técnica por padrão; todas devem ser criadas pelo herói.
-  * **Treinamento Restrito a Técnicas Aprovadas**: Criada função `podeTreinarHabilidade` em [`abilities.js`](file:///home/crs/asdas/Rpg-ficha/src/lib/abilities.js). O treinamento (`avancarTreinoHabilidade` e `trainAbility`) é estritamente bloqueado para habilidades pendentes ou rejeitadas. O herói só pode treinar e acumular maestria após o parecer favorável do narrador.
-  * **Ciclo de Submissão, Moderação e Edição**: Toda criação ou edição realizada pelo jogador gera uma solicitação pendente para o Mestre. O Mestre pode aprovar, editar e balancear, ou negar com feedback detalhado. Caso o jogador edite a técnica, ela retorna automaticamente ao status pendente para reavaliação.
-  * **Campo de Habilidades de Nível (1 ao 20)**: Desenvolvido o componente [`LevelProgressionGrid.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/habilidades/LevelProgressionGrid.jsx) com visualização dos 20 níveis:
-    - O jogador escolhe/aloca a habilidade desejada para cada degrau de 1 a 20.
-    - Seletor com busca, visualização de técnicas alocadas e botão para forjar nova habilidade diretamente para o nível selecionado.
-    - Indicador de nível desbloqueado/bloqueado conforme o nível atual do herói, atalhos de treino, rolagem de combate e desvinculação.
-  * **Contexto de Personagem ([`CharacterContext.js`](file:///home/crs/asdas/Rpg-ficha/src/app/context/CharacterContext.js))**: Adicionados `levelAbilities`, `assignLevelAbility`, `unassignLevelAbility` com limpeza automática de slots ao deletar uma habilidade.
-- **Validação**:
-  * 40 suítes de testes unitários aprovadas com 100% de sucesso (`node --test`).
-  * Build de produção Next.js 16 compilado com sucesso (27 rotas geradas).
-
-## Entrega — 2026-11-09 (Automação de Dano Tomado e Cura Recebida)
-
-- **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `rpg-rules-engine` (skill `rpg-sheet-calculator`), `qa-tester`.
-- **Implementações Entregues**:
-  * **Componente de Gestão de Vitalidade ([`DanoCuraPainel.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/DanoCuraPainel.jsx))**: Permite digitar ou somar valores via atalhos (`+1`, `+5`, `+10`, `+20`) e aplicar **"Tomar Dano"** ou **"Receber Cura"** em 1 clique.
-  * **Regras de Limite e Alertas**: Integração com a função `applyHealthChange`, garantindo que o HP nunca fique abaixo de 0 nem acima de `hpMax`. Alerta em vermelho quando o personagem cai a 0 PV (inconsciente) e aviso de vitalidade completa.
-  * **Atalhos de Descanso**: Botão de **"Cura Total"** e rolagem de **"Dado de Vida"** (com modificador de CON) que já aplica a cura obtida instantaneamente na ficha.
-  * **Acesso Global e Local**: Disponível tanto no cabeçalho superior ([`Cabecalho.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/Cabecalho.jsx)) via botão *"Dano/Cura"* em modal flutuante, quanto na seção de combate da ficha ([`RecursosCombate.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/RecursosCombate.jsx)).
-- **Validação**:
-  * Testes unitários do motor: 55/55 asserções aprovadas com 100% de sucesso.
-  * Build Next.js 16 (Turbopack): 27 rotas geradas com sucesso sem erros.
-
-## Entrega — 2026-11-09 (Edição de Vida Máxima por Jogadores e Central de Perícias Canônicas d20)
-
-- **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `rpg-rules-engine` (skill `rpg-sheet-calculator`), `qa-tester`.
-- **Implementações Entregues**:
-  * **Edição de Vida Máxima (`hpMax`) para Jogadores**: Removido o bloqueio `disabled={!isMaster}` de [`Cabecalho.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/Cabecalho.jsx) e [`BarrraHp.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/BarrraHp.jsx). Qualquer jogador pode alterar diretamente seu HP Máximo, com guarda defensiva que assegura `hp <= hpMax`.
-  * **Garantia das 19 Perícias Canônicas**: Criada a função `ensureCanonicalSkills` em [`modifiers.js`](file:///home/crs/asdas/Rpg-ficha/src/lib/modifiers.js), garantindo que mesmo personagens antigos ou com fichas parciais sempre visualizem e tenham acesso às 19 perícias do sistema, preservando perícias customizadas e bônus existentes. Integrado ao [`CharacterContext.js`](file:///home/crs/asdas/Rpg-ficha/src/app/context/CharacterContext.js).
-  * **Central de Perícias Completa**: Reformulado [`Pericia.jsx`](file:///home/crs/asdas/Rpg-ficha/src/app/components/Pericia.jsx) com tabs de filtro por Atributo (`TODOS`, `FOR`, `DES`, `SAB`, `ESP`, `CAR`, `INT`), status (`Todas`, `Treinadas`, `Não Treinadas`), barra de pesquisa por texto, checkbox de treino/seleção com feedback visual Dark Fantasy, badges de atributos coloridas, decomposição transparente da fórmula (`Mod + Treino + Extra = Total`), edição de bônus adicional e botão de rolagem d20.
-  * **Layout no Grid**: Ajustado [`src/app/personagem/page.js`](file:///home/crs/asdas/Rpg-ficha/src/app/personagem/page.js) para alocar `lg:col-span-7` para as Perícias e `lg:col-span-5` para Aparência.
-- **Validação**:
-  * Testes unitários do motor: 55/55 asserções aprovadas com 100% de sucesso (`node --test`).
-  * Build Next.js 16 (Turbopack): 27 rotas geradas com sucesso sem erros.
-
-## Entrega — 2026-11-06 (Criação da Skill Especialista `token-optimizer`)
-
-- **Skill Adicionada**: [`token-optimizer`](file:///home/crs/asdas/Rpg-ficha/.agents/skills/token-optimizer/SKILL.md) (espelhada em `.github/skills/`).
-- **Recursos Integrados**:
-  * **Claude Prompt Caching**: Diretrizes para estabilidade de prefixo (cache hit de 90%), edições cirúrgicas e leituras paginadas com `StartLine`/`EndLine`.
-  * **Gemini Context Window Optimization**: Controle de thinking budget, delegação para subagentes rápidos (`flash_lite` / `flash`) e poda com `/compact`.
-  * **Comandos de Terminal Filtrados**: Proibição de comandos poluidores de contexto (`cat` de arquivos gigantes, `npm test` sem filtro, `git log` sem `-n`), substituídos por pipes enxutos (`head`, `tail`, `grep -n`).
-  * **Script de Auditoria**: Utilitário [`estimate_tokens.js`](file:///home/crs/asdas/Rpg-ficha/.agents/skills/token-optimizer/scripts/estimate_tokens.js) para auditoria e detecção de arquivos que excedam 5.000 tokens antes da injeção no contexto.
-- **Validação**: Script testado e aprovado; integridade do ecossistema mantida.
-
-## Entrega — 2026-11-06 (Validação e Integração: Banco v2 Supabase, Migrations e Fluxo de Convites)
-
-- **Especialistas Acionados**: `backend-database` (skills `supabase-database-config`, `banco-de-dados-ops`, `sequelize-model-generator`), `qa-tester`.
-- **Implementações Entregues**:
-  * **Idempotência DDL no `banco_v2.sql`**: Adicionados blocos `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` garantindo que instâncias previamente criadas no Supabase recebam colunas canônicas (`pontos_esforco`, `insanidade`, `bonus_pericia`, `classe_armadura`, `dado_vida`, `codigo_convite`, etc.) sem quebra de execução.
-  * **Migration Sequelize Versionada**: Criada migration oficial `database/migrations/20261106150000-banco-v2-reformulacao.js` em `Rpg-backend`, permitindo execução programática via `npm run db:migrate`.
-  * **Blindagem de Serialização no Auth Controller**: Corrigido método `usuarioParaResposta` e resposta de campanha para lidar com objetos normais e instâncias Sequelize (`.toJSON()`), eliminando risco de exceções 500 no registro.
-  * **Suíte de Testes de Integração**: Criado `test/invite_flow.test.js` no backend cobrindo 6 cenários críticos do ciclo de convites e registro (código vazio, código inválido, mesa encerrada, sucesso na consulta pública e criação automática de vínculo de membro e personagem).
-- **Validação**:
-  * Backend: 17/17 testes aprovados (`node --test`).
-  * Frontend: 38/38 testes aprovados (`node --test`).
-  * Build Next.js 16 (Turbopack): 27 rotas compiladas com sucesso sem erros.
+  * **Tipografia e Tokens Globais (`globals.css`)**: Ativação das famílias `Cinzel`, `Cinzel Decorative` e `Crimson Text` registradas no `@theme inline` com classes semânticas (`font-cinzel`, `font-decorative`, `font-journal`).
+  * **Superfícies Folio & War Room**: Classes estruturais `.grimoire-card` (cartões velino com cantoneiras de metal e gradiente artesanal) e `.war-room-card` (acabamento obsidiana tático).
+  * **Cabeçalho Contextual Inteligente (`Cabecalho.jsx`)**: Distingue a visão do Jogador (nome do aventureiro, nível, frasco de PV com gradiente fluido e tema) da visão do Mestre (insígnia da Soberania do Narrador, título de mesa e atalhos rápidos).
+  * **Sidebar do Grimório (`AppShell.jsx`)**: Separação visual entre "Folio do Jogador" e a seção destacada "Narrador (Câmara do Mestre)" com glow âmbar realçado.
+  * **Medalhões dos 7 Atributos (`StatBox` em `ui.js`)**: O modificador (ex: `+3`, `-1`) foi transformado no centro visual de ação, permitindo rolagem de teste com 1 clique direto e animação de d20.
+  * **Sala de Guerra do Mestre (`admin/page.js` e `admin/layout.js`)**: Ribbon tático de navegação entre módulos, combate com indicação destacada de turno ativo, botões táteis de PV (`-5`, `-1`, `+1`, `+5`) e chips de condição em formato de selo de cera (`.wax-seal`).
+  * **Alinhamento de Telas Secundárias**: Perícias, Quarto, Montaria e Mundo sem cores hexadecimais soltas, 100% integrados à paleta semântica dos 5 temas dinâmicos.
+- **Validação**: 38 testes de regras/dados aprovados; build Next.js 16 (26 rotas) executado com sucesso em 4.1s; `git diff --check` sem erros.
 
 ## Entrega — 2026-11-06 (Mecânica de Criação de Mesas, Links de Convite e Vínculo no Cadastro)
 
