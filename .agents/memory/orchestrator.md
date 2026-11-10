@@ -1,5 +1,39 @@
 # Memória do Agente Orquestrador (@orchestrator)
 
+## Entrega — 2026-11-10 (Blindagem Canônica da Tela Inicial & Temas Claros de RPG)
+
+- **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder` e `frontend-design`), `qa-tester`.
+- **Demanda do Usuário**: Fazer com que a tela inicial pública (`/`) nunca sofra alteração de estilo ao mudar de tema na ficha enquanto logado.
+- **Implementações Entregues**:
+  * **Isolamento de Rota em `ThemeContext.jsx`**: Implementado efeito baseado em `usePathname()`. Sempre que a rota ativa for `"/"`, o atributo `data-theme` de `document.documentElement` é forçado para `"amber"`. Ao navegar para qualquer outra rota (ficha, painel, inventário, etc.), o tema configurado pelo jogador é restaurado instantaneamente.
+  * **Casulo Canônico em `AppShell.jsx`**: Aplicação condicional de `data-theme={isLandingPage ? "amber" : undefined}`, cores fixas de fundo (`#090b0e`), texto canônico (`#ebd9be`) e auras de iluminação mística âmbar quando na landing page.
+  * **Blindagem Raiz em `src/app/page.js`**: Elemento container raiz explicitamente configurado com `data-theme="amber"`, cores de fundo e texto fixas e auras de fundo em Âmbar Vulcânico, impossibilitando qualquer herança espúria ou vazamento de temas claros/alternativos.
+  * **Suporte Prévio a Temas Claros**: Criação e integração dos temas `parchment` (Pergaminho Antigo) e `sunlight` (Catedral da Luz) no catálogo e nas variáveis globais CSS.
+- **Validação de Integridade**:
+  * ESLint: **0 erros, 0 avisos** nos arquivos alterados.
+  * Testes Unitários de Temas: **100% aprovados** (`node --test src/lib/__tests__/themes.test.mjs`).
+  * Next.js 16 Production Build: **28/28 rotas geradas com sucesso** em 2.4s.
+
+## Entrega — 2026-11-09 (Mapeamento Completo da Aplicação e Correção de Erros de Runtime & Lint)
+
+- **Especialistas Acionados**: `qa-tester`, `frontend-artisan` (skill `sheet-component-builder`).
+- **Problema Inicial**: Erro em runtime `Crown is not defined` em `src/app/admin/layout.js:26:16`.
+- **Diagnóstico & Causa Raiz**:
+  * Em commit recente, o cabeçalho e navegação de `AdminLayout` foram reescritos utilizando componentes (`Crown`, `Link`), hooks (`usePathname`) e constantes (`NAV_ITEMS`), mas os respectivos `import` e declaração da constante não estavam presentes no arquivo.
+  * O erro não quebrava o build SSG estático porque a linha `if (loading || !isAuthenticated || !isMaster) return null;` retornava `null` no SSR/prerender, manifestando-se apenas quando o usuário mestre autenticado navegava para `/admin`.
+- **Varredura Completa da Aplicação**:
+  * Desenvolvido e executado scanner AST em Babel percorrendo todos os arquivos `.js` e `.jsx` em busca de variáveis/identificadores não declarados no escopo.
+  * Detectado e corrigido bug crítico similar em `CharacterContext.js`: `isMaster` não estava sendo extraído de `useAuth()`, provocando falhas ao aprovar/solicitar habilidades.
+  * Detectado e corrigido erro sintático de parser `CoinDisplay has already been declared` em `Coin.jsx`.
+  * Detectados e corrigidos caminhos relativos de importação quebrados em `AnotacoesImproved.jsx` (`./ui` e `../context/CharacterContext`).
+  * Corrigidos erros de entidades não escapadas no JSX em `convite/[code]/page.js` e `AbilityCard.jsx`.
+- **Validação de Integridade**:
+  * ESLint: **0 erros** (reduzido de 11 erros para zero).
+  * Scanner de identificadores não declarados: **0 erros**.
+  * Scanner de imports e exports locais: **0 erros**.
+  * 48 testes unitários passando (100%).
+  * Build Next.js 16 (Turbopack): **28/28 rotas geradas com sucesso** em 4.3s.
+
 ## Entrega — 2026-11-09 (Reformulação Visual Artesanal Dark Fantasy: Jogador & Mestre)
 
 - **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder` e `frontend-design`), `dice-mechanic` (skill `dice-roller`) e `qa-tester`.

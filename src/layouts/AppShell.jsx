@@ -6,15 +6,19 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   ArrowRight,
   BookOpen,
+  Calendar,
   Coins,
   Compass,
   Crown,
   FileText,
   Footprints,
   Home,
+  LayoutDashboard,
   Package,
   ScrollText,
+  Skull,
   Sparkles,
+  Store,
   Swords,
   User,
   Users,
@@ -37,7 +41,17 @@ const PLAYER_TABS = [
   { id: "perfil", href: "/perfil", label: "Perfil", icon: <User size={16} /> },
 ];
 
-const MASTER_TAB = { id: "admin", href: "/admin", label: "Câmara do Mestre", icon: <Crown size={16} /> };
+const MASTER_NAV_ITEMS = [
+  { id: "painel", href: "/admin", label: "Painel", icon: <LayoutDashboard size={16} /> },
+  { id: "campanhas", href: "/admin/campanhas", label: "Campanhas", icon: <Users size={16} /> },
+  { id: "mercado", href: "/admin/mercado", label: "Mercado", icon: <Store size={16} /> },
+  { id: "npcs", href: "/admin/npcs", label: "Bestiário (NPCs)", icon: <Skull size={16} /> },
+  { id: "personagens", href: "/admin/personagens", label: "Ameaças & Heróis", icon: <ScrollText size={16} /> },
+  { id: "encontros", href: "/admin/encontros", label: "Encontros", icon: <Swords size={16} /> },
+  { id: "mapas", href: "/admin/mapas", label: "Mapas & Névoa", icon: <Compass size={16} /> },
+  { id: "notas", href: "/admin/notas", label: "Segredos & Notas", icon: <FileText size={16} /> },
+  { id: "sessoes", href: "/admin/sessoes", label: "Sessões & Cenas", icon: <Calendar size={16} /> },
+];
 
 export default function AppShell({ children }) {
   const pathname = usePathname();
@@ -75,26 +89,29 @@ export default function AppShell({ children }) {
 
   return (
     <div
+      data-theme={isLandingPage ? "amber" : undefined}
       className="relative min-h-screen overflow-hidden text-[var(--theme-body)] transition-colors duration-300"
       style={{
-        backgroundColor: "var(--theme-bg, #0b0d12)",
+        backgroundColor: isLandingPage ? "#090b0e" : "var(--theme-bg, #0b0d12)",
+        color: isLandingPage ? "#ebd9be" : "var(--theme-body, #e8d5b0)",
         fontFamily: "'Inter', sans-serif",
       }}
     >
       <div
         className="pointer-events-none absolute inset-0 transition-opacity duration-500"
         style={{
-          background:
-            "radial-gradient(circle at top left, var(--theme-glow-1, rgba(214,154,61,0.13)), transparent 35%), radial-gradient(circle at top right, var(--theme-glow-2, rgba(120,97,255,0.08)), transparent 30%), linear-gradient(180deg, rgba(255,255,255,0.02), transparent 18%)",
+          background: isLandingPage
+            ? "radial-gradient(circle at top left, rgba(214,154,61,0.13), transparent 35%), radial-gradient(circle at top right, rgba(120,97,255,0.08), transparent 30%), linear-gradient(180deg, rgba(255,255,255,0.02), transparent 18%)"
+            : "radial-gradient(circle at top left, var(--theme-glow-1, rgba(214,154,61,0.13)), transparent 35%), radial-gradient(circle at top right, var(--theme-glow-2, rgba(120,97,255,0.08)), transparent 30%), linear-gradient(180deg, rgba(255,255,255,0.02), transparent 18%)",
         }}
       />
       <div
         className="pointer-events-none absolute -left-24 top-24 h-72 w-72 rounded-full blur-3xl transition-colors duration-500"
-        style={{ backgroundColor: "var(--theme-glow-1, rgba(214,154,61,0.1))" }}
+        style={{ backgroundColor: isLandingPage ? "rgba(214,154,61,0.1)" : "var(--theme-glow-1, rgba(214,154,61,0.1))" }}
       />
       <div
         className="pointer-events-none absolute right-0 top-80 h-96 w-96 rounded-full blur-3xl transition-colors duration-500"
-        style={{ backgroundColor: "var(--theme-glow-3, rgba(79,143,107,0.1))" }}
+        style={{ backgroundColor: isLandingPage ? "rgba(79,143,107,0.1)" : "var(--theme-glow-3, rgba(79,143,107,0.1))" }}
       />
 
       {!hideNavigation && <Cabecalho />}
@@ -102,82 +119,127 @@ export default function AppShell({ children }) {
       {!hideNavigation && (
         <nav
           aria-label="Navegação da ficha"
-          className="sticky top-[73px] z-10 border-b border-border/80 bg-background/90 py-2 backdrop-blur-xl lg:fixed lg:inset-y-0 lg:left-0 lg:top-0 lg:z-30 lg:w-64 lg:border-b-0 lg:border-r lg:bg-card/90 lg:px-4 lg:py-6 lg:shadow-2xl"
+          className="sticky top-[73px] z-10 border-b border-primary/25 bg-background/95 py-2 backdrop-blur-2xl lg:fixed lg:inset-y-0 lg:left-0 lg:top-0 lg:z-30 lg:w-64 lg:border-b-0 lg:border-r lg:bg-card/95 lg:px-4 lg:py-6 lg:shadow-[4px_0_35px_rgba(0,0,0,0.85)]"
+          style={{
+            boxShadow: "4px 0 40px rgba(0,0,0,0.85), inset -1px 0 0 color-mix(in srgb, var(--primary) 22%, transparent)",
+            backgroundImage: "radial-gradient(circle at 10% 0%, color-mix(in srgb, var(--primary) 8%, transparent) 0%, transparent 40%)"
+          }}
         >
           {/* Topo exclusivo da sidebar no desktop com estética Dark Fantasy */}
-          <div className="mb-5 hidden items-center gap-3 border-b border-primary/20 px-2 pb-5 lg:flex">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-primary/45 bg-primary/10 text-primary shadow-[0_0_18px_color-mix(in_srgb,var(--primary)_25%,transparent)]">
-              <ScrollText size={22} />
+          <div className="mb-5 hidden items-center gap-3 border-b border-primary/25 px-2 pb-5 lg:flex">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-primary/60 bg-gradient-to-b from-primary/30 to-primary/10 text-primary shadow-[0_0_22px_color-mix(in_srgb,var(--primary)_40%,transparent)]">
+              <ScrollText size={22} className="text-primary drop-shadow-[0_0_8px_var(--primary)]" />
             </div>
             <div>
-              <h2 className="font-cinzel text-base font-bold tracking-wider text-foreground">Grimorium</h2>
-              <p className="font-journal text-[11px] italic text-muted-foreground">Códice & Sala de Guerra</p>
+              <h2 className="font-decorative text-lg font-black tracking-wider gold-gradient-text">Grimorium</h2>
+              <p className="font-journal text-xs italic text-amber-100/70">Códice &amp; Sala de Guerra</p>
             </div>
           </div>
 
           <div className="mx-auto max-w-6xl px-3 sm:px-6 lg:max-w-none lg:px-0">
-            {/* Seção Desktop: Grimório do Jogador */}
-            <div className="hidden lg:block mb-2 px-3">
-              <span className="font-cinzel text-[9px] font-bold uppercase tracking-[0.25em] text-muted-foreground/75">
-                Folio do Jogador
-              </span>
-            </div>
 
-            <div className="no-scrollbar flex overflow-x-auto gap-1 lg:flex-col lg:gap-1 lg:overflow-visible">
-              {PLAYER_TABS.map((item) => {
-                const active = pathname === item.href;
-
-                return (
-                  <Link
-                    key={item.id}
-                    href={item.href}
-                    aria-current={active ? "page" : undefined}
-                    className={`group flex min-h-11 items-center gap-2.5 whitespace-nowrap rounded-xl px-3 py-2 text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:px-3.5 ${
-                      active
-                        ? "border border-primary/50 bg-primary/20 text-primary font-bold shadow-md shadow-primary/15"
-                        : "text-muted-foreground hover:bg-primary/10 hover:text-foreground"
-                    }`}
-                  >
-                    <span className={`transition-transform group-hover:scale-110 ${active ? "text-primary" : "opacity-75"}`}>
-                      {item.icon}
-                    </span>
-                    <span className="font-cinzel tracking-wider">{item.label}</span>
-                    {active && (
-                      <span className="ml-auto hidden h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_6px_var(--primary)] lg:block" />
-                    )}
-                  </Link>
-                );
-              })}
-
-              {/* Seção do Mestre (quando autenticado como mestre) */}
-              {isMaster && (
-                <>
-                  <div className="my-2 hidden border-t border-primary/20 pt-3 px-3 lg:block">
-                    <span className="font-cinzel text-[9px] font-bold uppercase tracking-[0.25em] text-amber-400/90 flex items-center gap-1.5">
-                      <Crown size={12} /> Narrador
+            {/* ── MESTRE: Exibe módulos do admin na sidebar ── */}
+            {isMaster && !isInspecting ? (
+              <>
+                <div className="hidden lg:block mb-3 px-3">
+                  <div className="flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rotate-45 bg-amber-400 shadow-[0_0_6px_#f59e0b]" />
+                    <span className="font-cinzel text-[9px] font-bold uppercase tracking-[0.25em] text-amber-300/90 flex items-center gap-1.5">
+                      <Crown size={11} className="text-amber-400" /> Câmara do Mestre
                     </span>
                   </div>
+                </div>
 
-                  <Link
-                    href="/admin"
-                    aria-current={pathname?.startsWith("/admin") ? "page" : undefined}
-                    className={`group flex min-h-11 items-center gap-2.5 whitespace-nowrap rounded-xl px-3 py-2 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 sm:px-3.5 ${
-                      pathname?.startsWith("/admin")
-                        ? "border border-amber-400/60 bg-amber-500/20 text-amber-300 shadow-md shadow-amber-500/20"
-                        : "border border-amber-400/20 text-amber-400/80 hover:bg-amber-500/10 hover:text-amber-300"
-                    }`}
-                  >
-                    <span className="transition-transform group-hover:rotate-6 text-amber-400">
-                      {MASTER_TAB.icon}
+                <div className="no-scrollbar flex overflow-x-auto gap-1 lg:flex-col lg:gap-1.5 lg:overflow-visible">
+                  {MASTER_NAV_ITEMS.map((item) => {
+                    const active =
+                      item.href === "/admin"
+                        ? pathname === "/admin"
+                        : pathname?.startsWith(item.href);
+
+                    return (
+                      <Link
+                        key={item.id}
+                        href={item.href}
+                        aria-current={active ? "page" : undefined}
+                        className={`group flex min-h-11 items-center gap-2.5 whitespace-nowrap rounded-xl px-3.5 py-2.5 text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
+                          active
+                            ? "border border-amber-400/70 bg-gradient-to-r from-amber-500/25 via-amber-500/15 to-transparent text-amber-200 font-bold shadow-[0_0_18px_rgba(245,158,11,0.25)]"
+                            : "text-muted-foreground hover:bg-amber-500/10 hover:text-amber-100 hover:border-amber-500/20 border border-transparent"
+                        }`}
+                      >
+                        <span className={`transition-transform duration-200 group-hover:scale-110 ${active ? "text-amber-300 drop-shadow-[0_0_8px_#f59e0b]" : "opacity-75"}`}>
+                          {item.icon}
+                        </span>
+                        <span className="font-cinzel tracking-wider">{item.label}</span>
+                        {active && (
+                          <span className="ml-auto hidden h-2 w-2 rotate-45 bg-amber-400 shadow-[0_0_8px_#f59e0b] lg:block" />
+                        )}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </>
+            ) : (
+              <>
+                {/* ── JOGADOR ou MESTRE inspecionando ficha ── */}
+                <div className="hidden lg:block mb-3 px-3">
+                  <div className="flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rotate-45 bg-primary shadow-[0_0_6px_var(--primary)]" />
+                    <span className="font-cinzel text-[9px] font-bold uppercase tracking-[0.25em] text-primary/90">
+                      {isMaster ? "Ficha do Jogador" : "Folio do Jogador"}
                     </span>
-                    <span className="font-cinzel tracking-wider">{MASTER_TAB.label}</span>
-                    {pathname?.startsWith("/admin") && (
-                      <span className="ml-auto hidden h-1.5 w-1.5 rounded-full bg-amber-400 shadow-[0_0_6px_#f59e0b] lg:block" />
-                    )}
-                  </Link>
-                </>
-              )}
-            </div>
+                  </div>
+                </div>
+
+                <div className="no-scrollbar flex overflow-x-auto gap-1 lg:flex-col lg:gap-1.5 lg:overflow-visible">
+                  {PLAYER_TABS.map((item) => {
+                    const active = pathname === item.href;
+
+                    return (
+                      <Link
+                        key={item.id}
+                        href={item.href}
+                        aria-current={active ? "page" : undefined}
+                        className={`group flex min-h-11 items-center gap-2.5 whitespace-nowrap rounded-xl px-3.5 py-2.5 text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                          active
+                            ? "border border-primary/70 bg-gradient-to-r from-primary/30 via-primary/15 to-transparent text-primary font-bold shadow-[0_0_20px_color-mix(in_srgb,var(--primary)_30%,transparent)]"
+                            : "text-muted-foreground hover:bg-primary/10 hover:text-foreground hover:border-primary/25 border border-transparent"
+                        }`}
+                      >
+                        <span className={`transition-transform duration-200 group-hover:scale-110 ${active ? "text-primary drop-shadow-[0_0_8px_var(--primary)]" : "opacity-75"}`}>
+                          {item.icon}
+                        </span>
+                        <span className="font-cinzel tracking-wider">{item.label}</span>
+                        {active && (
+                          <span className="ml-auto hidden h-2 w-2 rotate-45 bg-primary shadow-[0_0_8px_var(--primary)] lg:block" />
+                        )}
+                      </Link>
+                    );
+                  })}
+
+                  {/* Botão de volta ao painel quando mestre está inspecionando */}
+                  {isMaster && isInspecting && (
+                    <>
+                      <div className="my-2.5 hidden border-t border-amber-400/25 pt-3 px-3 lg:block">
+                        <span className="font-cinzel text-[9px] font-bold uppercase tracking-[0.25em] text-amber-400/90 flex items-center gap-1.5">
+                          <Crown size={10} /> Mestre
+                        </span>
+                      </div>
+                      <Link
+                        href="/admin"
+                        className="group flex min-h-11 items-center gap-2.5 whitespace-nowrap rounded-xl px-3.5 py-2 text-xs font-bold transition-all border border-amber-400/40 text-amber-300 hover:bg-amber-500/15 hover:border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+                      >
+                        <span className="transition-transform group-hover:rotate-12 text-amber-400 drop-shadow-[0_0_8px_#f59e0b]">
+                          <Crown size={16} />
+                        </span>
+                        <span className="font-cinzel tracking-wider">Câmara do Mestre</span>
+                      </Link>
+                    </>
+                  )}
+                </div>
+              </>
+            )}
           </div>
         </nav>
       )}

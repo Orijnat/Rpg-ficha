@@ -1,7 +1,7 @@
 # 🧠 Sessão Ativa — Grimorium RPG
 
-**Última Atualização**: 2026-11-09T23:03:00-03:00
-**Objetivo Atual**: Correção do erro de prerenderização `isHpModalOpen is not defined` e validação do build Next.js 16.
+**Última Atualização**: 2026-11-10T00:20:00-03:00
+**Objetivo Atual**: Blindagem de estilo permanente e canônico na tela inicial pública (`/`), garantindo que ela nunca sofra alteração de estilo ou vazamento de temas claros/alternativos quando o usuário estiver logado ou mudar de tema.
 
 ---
 
@@ -9,17 +9,34 @@
 
 | Item | Status |
 |---|---|
-| Adicionado `const [isHpModalOpen, setIsHpModalOpen] = useState(false)` em `Cabecalho.jsx` | ✅ |
-| Vinculado clique no frasco de PV e botão "Dano/Cura" ao `DanoCuraPainel` no `Cabecalho.jsx` | ✅ |
-| Corrigido `item.href` e `key={item.id}` na iteração de tabs de `AppShell.jsx` (prevenindo quebra de URL parsing do Next.js) | ✅ |
-| Importado `ArrowRight` ausente em `AppShell.jsx` | ✅ |
-| Importado `BarraHp` em `src/app/personagem/page.js` | ✅ |
-| 48 testes unitários passando (100%) | ✅ |
-| **Build de produção Next.js 16 (Turbopack): 28/28 rotas compiladas com sucesso** | ✅ |
+| Diagnóstico e correção de `Crown is not defined` em `src/app/admin/layout.js` | ✅ |
+| Separação e orquestração de rotas na sidebar para mestres e jogadores | ✅ |
+| Barra de Pontos de Vida (PV) movida para o cabeçalho universal com controles rápidos | ✅ |
+| Reformulação de estilo Dark Fantasy "Grimório Vivo" em todo o design system | ✅ |
+| Inversão da ordem dos atributos (Valor em destaque principal + Bônus visível com gatilho de rolagem d20) | ✅ |
+| Garantia de persistência universal de atributos e colunas no PostgreSQL/Sequelize | ✅ |
+| Criação e Integração de Temas Claros de RPG (`parchment` e `sunlight`) | ✅ |
+| **Blindagem Canônica da Tela Inicial (`/`)**: | ✅ |
+| *`ThemeContext.jsx`*: Força reativamente `data-theme="amber"` no `document.documentElement` quando na rota `/`, restaurando instantaneamente o tema preferido do jogador ao navegar para a ficha ou painel | ✅ |
+| *`AppShell.jsx`*: Atributo `data-theme="amber"` e background `#090b0e` / auras canônicas fixas quando `isLandingPage === true` | ✅ |
+| *`src/app/page.js`*: Container raiz encapsulado com `data-theme="amber"`, paleta base `#090b0e` / `#ebd9be` e glows fixos de Âmbar Vulcânico | ✅ |
+| *Refatoração de ESLint*: Remoção de warnings de `setState` em efeitos no `ThemeContext.jsx` com inicialização limpa | ✅ |
+| ESLint: 0 erros, 0 avisos nos arquivos alterados | ✅ |
+| Testes Unitários de Temas: 100% aprovados (`node --test src/lib/__tests__/themes.test.mjs`) | ✅ |
+| Next.js 16 Production Build: 100% aprovado em 2.4s nas 28 rotas | ✅ |
+| Commit e push das implementações no repositório remoto | 🔄 |
 
 ---
 
-## 📋 Próximos Passos Recomendados
-
-1. **Testar abertura do modal de Dano/Cura** ao clicar no frasco de vida no cabeçalho.
-2. **Git commit e push** para que o deploy na Vercel seja acionado com a correção.
+## 📋 Arquivos Alterados
+- `src/app/context/ThemeContext.jsx`
+- `src/layouts/AppShell.jsx`
+- `src/app/page.js`
+- `src/lib/themes.js`
+- `src/lib/__tests__/themes.test.mjs`
+- `src/app/globals.css`
+- `src/app/components/SettingsModal.jsx`
+- `src/app/components/ThemeSelector.jsx`
+- `.agents/memory/active_session.md`
+- `.agents/memory/last_prompt.json`
+- `.agents/memory/frontend-artisan.md`

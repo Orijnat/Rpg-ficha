@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { SectionHeader, EditableText } from "./ui";
-import { useCharacter } from "../context/CharacterContext";
+import { SectionHeader, EditableText } from "../ui";
+import { useCharacter } from "../../context/CharacterContext";
 
 export default function AnotacoesImproved() {
   const { data, upd } = useCharacter();
@@ -111,7 +111,7 @@ export default function AnotacoesImproved() {
               ))}
           </div>
           <p className="mt-2 text-[10px] text-[#8a7355] italic">
-            👉 Vá até "Caderno de Anotações" para ver todas as notas
+            👉 Vá até &quot;Caderno de Anotações&quot; para ver todas as notas
           </p>
         </div>
       )}

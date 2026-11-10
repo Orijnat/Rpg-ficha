@@ -1,26 +1,8 @@
-import  { EditableNumber } from "../ui";
-import { COINS, COIN_STYLES, INVENTORY_STYLES } from "./consts";
+import { Coins } from "lucide-react";
+import { Card, SectionHeader, EditableNumber } from "../ui";
+import { COINS, COIN_STYLES } from "./consts";
 
 export function CoinDisplay({ label, color, value, onChange }) {
-  return (
-    <div className={COIN_STYLES.container}>
-      <span 
-        className={COIN_STYLES.label} 
-        style={{ color, fontFamily: COIN_STYLES.labelFont }}
-      >
-        {label}
-      </span>
-      <EditableNumber 
-        value={value} 
-        onChange={onChange} 
-        className="text-lg font-bold" 
-        min={0} 
-      />
-    </div>
-  );
-}
-
-  export function CoinDisplay({ label, color, value, onChange }) {
   return (
     <div className={COIN_STYLES.container}>
       <span 
@@ -42,7 +24,7 @@ export function CoinDisplay({ label, color, value, onChange }) {
 /**
  * Seção de moedas do inventário
  */
-  export function CoinsSection({ data, onUpdate }) {
+export function CoinsSection({ data, onUpdate }) {
   return (
     <Card>
       <SectionHeader title="Moedas" icon={<Coins size={14} />} />
@@ -59,15 +41,4 @@ export function CoinDisplay({ label, color, value, onChange }) {
       </div>
     </Card>
   );
-}
-
- export function QuantityControls({ itemId, quantity, onQuantityChange }) {
-  const decreaseQuantity = () => {
-    onQuantityChange(itemId, Math.max(0, quantity - 1));
-  };
-
-  const increaseQuantity = () => {
-    onQuantityChange(itemId, quantity + 1);
-  };
-
 }

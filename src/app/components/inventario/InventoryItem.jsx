@@ -1,6 +1,6 @@
-import {EditableText} from "../ui";
+import { EditableText } from "../ui";
 import { Trash2 } from "lucide-react";
-import { INVENTORY_STYLES, QuantityControls } from "../../inventario/page";
+import { INVENTORY_STYLES } from "./consts";
 
 export default function InventoryItem({ item, onNameChange, onQuantityChange, onDelete }) {
   return (
@@ -15,14 +15,27 @@ export default function InventoryItem({ item, onNameChange, onQuantityChange, on
       </div>
 
       {/* Controles de quantidade */}
-      <QuantityControls
-        itemId={item.id}
-        quantity={item.qty}
-        onQuantityChange={(id, qty) => onQuantityChange(id, { qty })}
-      />
+      <div className="flex items-center gap-1">
+        <button
+          type="button"
+          onClick={() => onQuantityChange(item.id, { qty: Math.max(0, (item.qty || 1) - 1) })}
+          className={INVENTORY_STYLES.quantityButton}
+        >
+          -
+        </button>
+        <span className={INVENTORY_STYLES.quantityInput}>{item.qty || 1}</span>
+        <button
+          type="button"
+          onClick={() => onQuantityChange(item.id, { qty: (item.qty || 1) + 1 })}
+          className={INVENTORY_STYLES.quantityButton}
+        >
+          +
+        </button>
+      </div>
 
       {/* Botão de deletar */}
       <button 
+        type="button"
         onClick={() => onDelete(item.id)} 
         className={INVENTORY_STYLES.deleteButton}
         aria-label="Remover item"

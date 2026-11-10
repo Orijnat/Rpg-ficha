@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { THEMES } from "../../lib/themes";
 
 export { THEMES };
@@ -8,32 +9,39 @@ export { THEMES };
 const ThemeContext = createContext(null);
 
 export function ThemeProvider({ children }) {
-  const [currentTheme, setCurrentTheme] = useState("amber");
-
-  useEffect(() => {
-    const timeout = window.setTimeout(() => {
+  const [currentTheme, setCurrentTheme] = useState(() => {
+    if (typeof window !== "undefined") {
       try {
         const saved = window.localStorage.getItem("rpg-sheet-theme");
         if (saved && THEMES.some((t) => t.id === saved)) {
-          setCurrentTheme(saved);
-          document.documentElement.setAttribute("data-theme", saved);
-        } else {
-          document.documentElement.setAttribute("data-theme", "amber");
+          return saved;
         }
       } catch {
         // Fallback
       }
-    }, 0);
+    }
+    return "amber";
+  });
+  const pathname = usePathname();
 
-    return () => window.clearTimeout(timeout);
-  }, []);
+  // Controla o atributo data-theme no documentElement conforme a rota
+  useEffect(() => {
+    // A tela inicial ("/") sempre mantém a identidade canônica "amber" e nunca sofre alteração de estilo
+    if (pathname === "/") {
+      document.documentElement.setAttribute("data-theme", "amber");
+    } else {
+      document.documentElement.setAttribute("data-theme", currentTheme);
+    }
+  }, [pathname, currentTheme]);
 
   const changeTheme = (themeId) => {
     if (!THEMES.some((t) => t.id === themeId)) return;
     setCurrentTheme(themeId);
     try {
       window.localStorage.setItem("rpg-sheet-theme", themeId);
-      document.documentElement.setAttribute("data-theme", themeId);
+      if (pathname !== "/") {
+        document.documentElement.setAttribute("data-theme", themeId);
+      }
     } catch {
       // Fallback
     }

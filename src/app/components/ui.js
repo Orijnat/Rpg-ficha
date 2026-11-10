@@ -18,25 +18,33 @@ export function HPBar({ hp, max }) {
   const current = Number(hp) || 0;
   const maximum = Math.max(1, Number(max) || 1);
   const pct = Math.max(0, Math.min(100, (current / maximum) * 100));
+  const isCritical = pct <= 25;
 
   const bgStyle =
     pct > 50
-      ? "linear-gradient(90deg, #15803d 0%, #22c55e 100%)"
+      ? "linear-gradient(90deg, #15803d 0%, #22c55e 50%, #4ade80 100%)"
       : pct > 25
-        ? "linear-gradient(90deg, #b45309 0%, var(--primary) 100%)"
-        : "linear-gradient(90deg, #991b1b 0%, #ef4444 100%)";
+        ? "linear-gradient(90deg, #b45309 0%, var(--primary) 50%, #fde047 100%)"
+        : "linear-gradient(90deg, #881337 0%, #e11d48 50%, #fb7185 100%)";
+
+  const glowShadow =
+    pct > 50
+      ? "0 0 14px rgba(34, 197, 94, 0.55), inset 0 1px 2px rgba(255,255,255,0.4)"
+      : pct > 25
+        ? "0 0 14px rgba(216, 155, 56, 0.5), inset 0 1px 2px rgba(255,255,255,0.4)"
+        : "0 0 16px rgba(225, 29, 72, 0.75), inset 0 1px 2px rgba(255,255,255,0.5)";
 
   return (
-    <div className="relative h-3 w-full overflow-hidden rounded-full border border-white/15 bg-black/60 shadow-inner">
+    <div className="alchemy-vial relative h-3.5 w-full">
       <div
-        className="h-full rounded-full transition-all duration-300 ease-out"
+        className={`h-full rounded-full transition-all duration-300 ease-out${isCritical ? " pulsing-danger" : ""}`}
         style={{
           width: `${pct}%`,
           background: bgStyle,
-          boxShadow: pct > 25 ? "0 0 10px rgba(34, 197, 94, 0.3)" : "0 0 10px rgba(239, 68, 68, 0.4)",
+          boxShadow: glowShadow,
         }}
       />
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-b from-white/25 to-transparent rounded-t-full" />
+      <div className="alchemy-vial-glass" />
     </div>
   );
 }
@@ -219,10 +227,8 @@ export function EditableNumber({
       max={max}
       step="1"
       aria-label={label}
-      aria-valuemin={min}
-      aria-valuemax={max}
       aria-invalid={invalid}
-      className={`w-16 rounded border border-primary bg-muted px-1 text-center text-foreground outline-none focus:ring-2 focus:ring-primary ${className}`}
+      className="w-14 max-w-full rounded-md border border-primary/70 bg-black/95 px-1 py-0.5 text-center font-cinzel font-black text-amber-200 text-lg sm:text-xl outline-none focus:ring-2 focus:ring-primary font-tabular shadow-inner mx-auto block"
       value={draft}
       onBlur={commit}
       onChange={(event) => setDraft(event.target.value)}
@@ -233,23 +239,24 @@ export function EditableNumber({
 
 export function SectionHeader({ title, icon, subtitle }) {
   return (
-    <div className="mb-4 sm:mb-5 border-b border-primary/25 pb-3">
+    <div className="mb-4 sm:mb-5 border-b border-primary/30 pb-3">
       <div className="flex items-center gap-3">
         {icon ? (
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-primary/40 bg-primary/10 text-primary shadow-[0_0_15px_color-mix(in_srgb,var(--primary)_20%,transparent)]">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-primary/60 bg-gradient-to-b from-primary/25 to-primary/5 text-primary shadow-[0_0_20px_color-mix(in_srgb,var(--primary)_35%,transparent)] transition-transform hover:scale-110">
             {icon}
           </span>
         ) : null}
         <div className="min-w-0 flex-1">
-          <h3 className="font-cinzel text-xs sm:text-sm font-bold uppercase tracking-[0.24em] text-foreground">
-            {title}
+          <h3 className="font-cinzel text-xs sm:text-sm font-bold uppercase tracking-[0.24em] text-foreground flex items-center gap-2">
+            <span>{title}</span>
+            <span className="text-[10px] text-primary/60 hidden sm:inline">✦</span>
           </h3>
           {subtitle && (
-            <p className="font-journal text-xs italic text-muted-foreground">{subtitle}</p>
+            <p className="font-journal text-xs italic text-muted-foreground/90 mt-0.5">{subtitle}</p>
           )}
         </div>
-        <div className="hidden h-px w-14 bg-gradient-to-r from-primary/35 via-primary/10 to-transparent sm:block" />
-        <span className="h-2 w-2 rotate-45 border border-primary/60 bg-primary/20" />
+        <div className="hidden h-px w-20 bg-gradient-to-r from-primary/60 via-primary/20 to-transparent sm:block" />
+        <span className="h-2 w-2 rotate-45 border border-primary/80 bg-primary/40 shadow-[0_0_8px_var(--primary)]" />
       </div>
     </div>
   );
@@ -259,7 +266,7 @@ export function Card({ children, className = "", variant = "grimoire" }) {
   const cardClass = variant === "war-room" ? "war-room-card" : "grimoire-card";
   return (
     <div
-      className={`${cardClass} bracket-corners interactive-lift relative overflow-hidden rounded-2xl p-5 shadow-[0_20px_45px_rgba(0,0,0,0.38)] transition-all ${className}`}
+      className={`${cardClass} bracket-corners interactive-lift relative overflow-hidden rounded-2xl p-5 sm:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all ${className}`}
     >
       {children}
     </div>
@@ -268,55 +275,82 @@ export function Card({ children, className = "", variant = "grimoire" }) {
 
 export function StatBox({ label, value, onChange }) {
   const { promptRoll } = useDice();
-  const mod = calculateModifier(value);
+  const numValue = Math.max(1, Math.min(30, Number(value) || 10));
+  const mod = calculateModifier(numValue);
   const formattedMod = formatModifier(mod);
   const isPositive = mod > 0;
   const isNegative = mod < 0;
 
+  const handleDecrement = (e) => {
+    e.stopPropagation();
+    onChange(Math.max(1, numValue - 1));
+  };
+
+  const handleIncrement = (e) => {
+    e.stopPropagation();
+    onChange(Math.min(30, numValue + 1));
+  };
+
   return (
-    <div className="medallion-plate group relative flex min-w-[70px] sm:min-w-[76px] flex-col items-center rounded-xl p-2.5 sm:p-3 shadow-md">
-      {/* Rótulo do Atributo */}
-      <span className="font-cinzel text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em] text-primary/90">
+    <div className="medallion-plate group relative flex min-w-[76px] sm:min-w-[84px] flex-col items-center rounded-xl p-2 sm:p-2.5 shadow-md transition-all">
+      {/* 1. Rótulo do Atributo */}
+      <span className="font-cinzel text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.24em] text-primary/95 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
         {label}
       </span>
 
-      {/* Botão de Rolagem com Modificador em Destaque */}
+      {/* 2. VALOR DO ATRIBUTO EM DESTAQUE PRINCIPAL (Ordem Invertida) */}
+      <div className="my-1 flex items-center justify-between w-full px-0.5">
+        <button
+          type="button"
+          onClick={handleDecrement}
+          aria-label={`Diminuir ${label}`}
+          title={`Diminuir ${label} (-1)`}
+          className="flex h-6 w-5 shrink-0 items-center justify-center rounded border border-primary/25 bg-gradient-to-b from-primary/15 to-primary/5 text-xs font-black text-muted-foreground hover:bg-primary/25 hover:text-primary hover:border-primary/50 active:scale-90 transition-all cursor-pointer"
+        >
+          −
+        </button>
+
+        <div className="flex-1 text-center px-0.5">
+          <EditableNumber
+            value={numValue}
+            onChange={onChange}
+            className="font-cinzel text-2xl sm:text-3xl font-black gold-gradient-text tracking-tight font-tabular cursor-pointer hover:scale-110 transition-transform block"
+            min={1}
+            max={30}
+            label={`Pontos de ${label}`}
+          />
+        </div>
+
+        <button
+          type="button"
+          onClick={handleIncrement}
+          aria-label={`Aumentar ${label}`}
+          title={`Aumentar ${label} (+1)`}
+          className="flex h-6 w-5 shrink-0 items-center justify-center rounded border border-primary/25 bg-gradient-to-b from-primary/15 to-primary/5 text-xs font-black text-muted-foreground hover:bg-primary/25 hover:text-primary hover:border-primary/50 active:scale-90 transition-all cursor-pointer"
+        >
+          +
+        </button>
+      </div>
+
+      {/* 3. BÔNUS / MODIFICADOR VISÍVEL (Selo de Rolagem do d20) */}
       <button
         type="button"
         onClick={() => promptRoll(`Teste de ${label}`, mod)}
-        className="my-1.5 flex w-full flex-col items-center justify-center rounded-lg border border-primary/25 bg-primary/10 py-1 transition-all group-hover:border-primary/60 group-hover:bg-primary/20 active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
-        title={`Rolar teste de ${label} (${formattedMod})`}
-        aria-label={`Rolar teste de ${label} com modificador ${formattedMod}`}
+        className={`w-full mt-0.5 flex items-center justify-center gap-1 rounded-lg border py-1 px-1.5 transition-all group/btn active:scale-95 shadow-sm cursor-pointer ${
+          isPositive
+            ? "border-emerald-500/40 bg-gradient-to-b from-emerald-950/60 to-emerald-900/30 text-emerald-300 hover:border-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.4)]"
+            : isNegative
+              ? "border-rose-500/40 bg-gradient-to-b from-rose-950/60 to-rose-900/30 text-rose-300 hover:border-rose-400 hover:shadow-[0_0_12px_rgba(244,63,94,0.4)]"
+              : "border-primary/30 bg-gradient-to-b from-primary/15 to-primary/5 text-foreground hover:border-primary/60 hover:shadow-[0_0_10px_color-mix(in_srgb,var(--primary)_30%,transparent)]"
+        }`}
+        title={`Rolar d20 com Bônus de ${label} (${formattedMod})`}
+        aria-label={`Rolar teste de ${label} com bônus ${formattedMod}`}
       >
-        <span
-          className={`font-cinzel text-lg sm:text-xl font-black leading-none tracking-tight font-tabular ${
-            isPositive
-              ? "text-primary"
-              : isNegative
-                ? "text-rose-400"
-                : "text-foreground"
-          }`}
-        >
+        <Dices size={12} className="shrink-0 text-primary opacity-80 group-hover/btn:rotate-45 transition-transform" />
+        <span className="font-mono text-xs sm:text-sm font-black tracking-tight font-tabular">
           {formattedMod}
         </span>
-        <span className="mt-0.5 flex items-center gap-1 text-[9px] uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors">
-          <Dices size={10} className="opacity-70 group-hover:rotate-12 transition-transform" />
-          <span>rolar</span>
-        </span>
       </button>
-
-      {/* Valor Base Editável */}
-      <div className="flex items-center gap-1 text-[11px] text-muted-foreground/80">
-        <span className="text-[9px] uppercase tracking-wider opacity-60">Base:</span>
-        <EditableNumber
-          value={value}
-          onChange={onChange}
-          className="font-mono text-xs font-semibold text-foreground/90 hover:text-primary"
-          min={1}
-          max={30}
-          label={`Pontos de ${label}`}
-        />
-      </div>
     </div>
   );
 }

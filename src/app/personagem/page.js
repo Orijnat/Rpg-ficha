@@ -6,7 +6,6 @@ import { useCharacter } from "../context/CharacterContext";
 import { Card, EditableText, SectionHeader, StatBox } from "../components/ui";
 import Aparencia from "../components/Aparencia";
 import Pericia from "../components/Pericia";
-import BarraHp from "../components/BarrraHp";
 import RecursosCombate from "../components/RecursosCombate";
 import { calculateCapacity } from "../../lib/modifiers";
 import { DEFAULT_ABILITIES, isHabilidadeDesbloqueada } from "../../lib/abilities";
@@ -36,15 +35,17 @@ export default function Personagem() {
         <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0">
             <div className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-primary">
-              <Crown size={14} />
-              Registro do aventureiro
+              <span>✦</span>
+              <Crown size={14} className="text-primary drop-shadow-[0_0_6px_var(--primary)]" />
+              <span>Registro do aventureiro</span>
+              <span>✦</span>
             </div>
-            <h2 className="font-cinzel text-3xl sm:text-5xl font-black tracking-tight text-foreground">
+            <h2 className="font-cinzel text-3xl sm:text-5xl font-black tracking-tight gold-gradient-text">
               <EditableText value={data.name} onChange={(value) => upd("name", value)} label="Nome do aventureiro" />
             </h2>
-            <p className="mt-2 flex items-center gap-2 font-journal text-sm sm:text-base italic text-muted-foreground">
-              <Sparkles size={14} className="text-primary" />
-              Um novo capítulo aguarda ser inscrito neste códice.
+            <p className="mt-2.5 flex items-center gap-2 font-journal text-sm sm:text-base italic text-amber-100/80">
+              <Sparkles size={15} className="text-primary animate-pulse" />
+              Um novo capítulo aguarda ser inscrito neste códice vivo.
             </p>
           </div>
           <div className="flex flex-col gap-2.5 sm:items-end">
@@ -59,70 +60,71 @@ export default function Personagem() {
                 )}
               </span>
             )}
-            <div className="grid grid-cols-2 gap-2 sm:min-w-56">
-              <div className="medallion-plate rounded-xl p-2.5 text-center">
-                <span className="block font-cinzel text-[10px] uppercase tracking-wider text-muted-foreground">Nível</span>
-                <span className="font-cinzel text-xl sm:text-2xl font-black text-primary font-tabular">{data.level || 1}</span>
+            <div className="grid grid-cols-2 gap-2.5 sm:min-w-56">
+              <div className="medallion-plate rounded-xl p-3 text-center">
+                <span className="block font-cinzel text-[10px] uppercase tracking-wider text-muted-foreground/80">Nível</span>
+                <span className="font-cinzel text-2xl sm:text-3xl font-black gold-gradient-text font-tabular">{data.level || 1}</span>
               </div>
-              <div className="medallion-plate rounded-xl p-2.5 text-center">
-                <span className="block font-cinzel text-[10px] uppercase tracking-wider text-muted-foreground">Ofício / Classe</span>
-                <EditableText value={data.customClass || data.job || "Aventureiro"} onChange={(value) => upd("customClass", value)} className="font-cinzel text-xs sm:text-sm font-bold text-foreground" label="Classe ou ofício" />
+              <div className="medallion-plate rounded-xl p-3 text-center">
+                <span className="block font-cinzel text-[10px] uppercase tracking-wider text-muted-foreground/80">Ofício / Classe</span>
+                <EditableText value={data.customClass || data.job || "Aventureiro"} onChange={(value) => upd("customClass", value)} className="font-cinzel text-xs sm:text-sm font-bold text-foreground hover:text-primary transition-colors" label="Classe ou ofício" />
               </div>
             </div>
           </div>
         </div>
 
         {/* Barra resumida de Carga do Inventário */}
-        <div className="mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-primary/20 pt-3.5 text-xs">
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-2 border-t border-primary/25 pt-4 text-xs">
           <Link
             href="/inventario"
             className="flex items-center gap-2 font-medium text-muted-foreground hover:text-primary transition"
           >
-            <Package size={14} className="text-primary" />
+            <Package size={15} className="text-primary" />
             <span className="font-cinzel text-[11px] uppercase tracking-wider">Carga da Mochila:</span>
             <strong className={`font-mono font-tabular ${capacity.isOverloaded ? "text-rose-400" : "text-foreground"}`}>
               {capacity.carried} / {capacity.max} unidades
             </strong>
             {capacity.isOverloaded && (
-              <span className="wax-seal bg-rose-950/70 text-rose-300 border border-rose-500/50">
+              <span className="wax-seal bg-rose-950/80 text-rose-300 border border-rose-500/60 shadow-[0_0_10px_#f43f5e]">
                 Sobrecarregado!
               </span>
             )}
           </Link>
-          <div className="relative h-2 w-32 sm:w-44 overflow-hidden rounded-full border border-white/10 bg-black/60 p-0.5">
+          <div className="alchemy-vial relative h-2.5 w-32 sm:w-48 overflow-hidden rounded-full border border-white/10 bg-black/70 p-0.5">
             <div
               className={`h-full rounded-full transition-all duration-300 ${
                 capacity.isOverloaded
-                  ? "bg-rose-500 shadow-[0_0_8px_#f43f5e]"
+                  ? "bg-rose-500 shadow-[0_0_10px_#f43f5e]"
                   : capacity.percentage > 80
-                  ? "bg-amber-400 shadow-[0_0_8px_#fbbf24]"
-                  : "bg-primary shadow-[0_0_8px_var(--primary)]"
+                  ? "bg-amber-400 shadow-[0_0_10px_#fbbf24]"
+                  : "bg-primary shadow-[0_0_10px_var(--primary)]"
               }`}
               style={{ width: `${capacity.percentage}%` }}
             />
+            <div className="alchemy-vial-glass" />
           </div>
         </div>
 
         {/* Atalho de Habilidades & Treinamento */}
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-primary/15 pt-3 text-xs">
+        <div className="mt-3.5 flex flex-wrap items-center justify-between gap-2 border-t border-primary/20 pt-3.5 text-xs">
           <Link
             href="/habilidades"
             className="flex items-center gap-2 font-medium text-muted-foreground hover:text-primary transition"
           >
-            <Sparkles size={14} className="text-amber-400" />
+            <Sparkles size={15} className="text-amber-400" />
             <span className="font-cinzel text-[11px] uppercase tracking-wider">Grimório de Habilidades:</span>
             <strong className="text-foreground font-tabular">
               {unlockedCount} / {abilities.length} despertadas
             </strong>
             {activeTraining && (
-              <span className="wax-seal bg-amber-500/20 text-amber-300 border border-amber-400/40">
+              <span className="wax-seal bg-amber-500/25 text-amber-200 border border-amber-400/50 shadow-[0_0_10px_rgba(245,158,11,0.25)]">
                 🎯 Treino: {activeTraining.name} ({activeTraining.trainingHours || 0}h)
               </span>
             )}
           </Link>
           <Link
             href="/habilidades"
-            className="font-cinzel text-[11px] font-bold text-primary underline underline-offset-4 hover:text-primary/80 transition"
+            className="btn-rpg !px-3 !py-1 !text-[10px] !normal-case"
           >
             Ver Grimório Completo →
           </Link>
@@ -143,15 +145,10 @@ export default function Personagem() {
         </div>
       </Card>
 
-      {/* Seção de Vitalidade & Recursos Especiais */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <Card className="border-rose-500/30 bg-gradient-to-br from-rose-950/20 via-card to-card">
-          <BarraHp />
-        </Card>
-        <Card>
-          <RecursosCombate />
-        </Card>
-      </div>
+      {/* Seção de Recursos de Combate */}
+      <Card>
+        <RecursosCombate />
+      </Card>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Card><Aparencia /></Card>
