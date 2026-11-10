@@ -9,6 +9,8 @@ import {
   loginUser,
   registerUser,
   fetchMe,
+  fetchCharacterFromBackend,
+  listCharacters,
   createCharacterOnBackend,
   updateProfileOnBackend,
   logoutUser,
@@ -53,17 +55,33 @@ export function AuthProvider({ children }) {
           }
 
           setUser(restoredUser);
-          setCharacters(data.characters || []);
+          let allChars = data.characters || [];
+          const isMasterUser = restoredUser?.perfil === "mestre" || restoredUser?.role === "master";
+          if (isMasterUser) {
+            try {
+              const campaignChars = await listCharacters(storedToken);
+              if (Array.isArray(campaignChars)) {
+                campaignChars.forEach((cc) => {
+                  if (!allChars.some((c) => c.id === cc.id)) {
+                    allChars.push(cc);
+                  }
+                });
+              }
+            } catch (e) {
+              console.warn("Falha ao carregar heróis das campanhas para o mestre:", e);
+            }
+          }
+          setCharacters(allChars);
 
           // Recupera o personagem ativo salvo ou pega o primeiro da lista
           const savedCharId = window.sessionStorage.getItem("rpg_current_char_id")
             || window.localStorage.getItem("rpg_current_char_id");
-          const found = (data.characters || []).find((c) => c.id === savedCharId);
+          const found = allChars.find((c) => c.id === savedCharId);
           if (found) {
             setActiveCharacterId(found.id);
-          } else if (data.characters && data.characters.length > 0) {
-            setActiveCharacterId(data.characters[0].id);
-            window.sessionStorage.setItem("rpg_current_char_id", data.characters[0].id);
+          } else if (allChars.length > 0) {
+            setActiveCharacterId(allChars[0].id);
+            window.sessionStorage.setItem("rpg_current_char_id", allChars[0].id);
           }
         } else {
           clearAuth();
@@ -84,10 +102,27 @@ export function AuthProvider({ children }) {
     const data = await loginUser({ login: identifier, password });
     setUser(data.user);
     setToken(data.token);
-    setCharacters(data.characters || []);
 
-    if (data.characters && data.characters.length > 0) {
-      const firstChar = data.characters[0];
+    let allChars = data.characters || [];
+    const isMasterUser = data.user?.perfil === "mestre" || data.user?.role === "master";
+    if (isMasterUser) {
+      try {
+        const campaignChars = await listCharacters(data.token);
+        if (Array.isArray(campaignChars)) {
+          campaignChars.forEach((cc) => {
+            if (!allChars.some((c) => c.id === cc.id)) {
+              allChars.push(cc);
+            }
+          });
+        }
+      } catch (e) {
+        console.warn("Falha ao carregar heróis pós-login:", e);
+      }
+    }
+    setCharacters(allChars);
+
+    if (allChars.length > 0) {
+      const firstChar = allChars[0];
       setActiveCharacterId(firstChar.id);
       window.sessionStorage.setItem("rpg_current_char_id", firstChar.id);
     }
@@ -176,6 +211,50 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const inspectCharacter = async (characterId, redirectToSheet = true) => {
+    try {
+      let fullChar = await fetchCharacterFromBackend(characterId, token);
+      if (!fullChar) {
+        fullChar = characters.find((c) => c.id === characterId);
+      }
+      if (fullChar) {
+        setCharacters((prev) => {
+          const exists = prev.some((c) => c.id === fullChar.id);
+          if (exists) {
+            return prev.map((c) => (c.id === fullChar.id ? { ...c, ...fullChar } : c));
+          }
+          return [fullChar, ...prev];
+        });
+        setActiveCharacterId(fullChar.id);
+        if (typeof window !== "undefined") {
+          window.sessionStorage.setItem("rpg_current_char_id", fullChar.id);
+        }
+        if (redirectToSheet) {
+          router.push("/personagem");
+        }
+        return fullChar;
+      }
+    } catch (err) {
+      console.error("Falha ao inspecionar personagem:", err);
+    }
+  };
+
+  const stopInspecting = () => {
+    const myChar = characters.find((c) => c.userId === user?.id);
+    if (myChar) {
+      setActiveCharacterId(myChar.id);
+      if (typeof window !== "undefined") {
+        window.sessionStorage.setItem("rpg_current_char_id", myChar.id);
+      }
+    } else {
+      setActiveCharacterId(null);
+      if (typeof window !== "undefined") {
+        window.sessionStorage.removeItem("rpg_current_char_id");
+      }
+    }
+    router.push("/admin");
+  };
+
   const createCharacter = async (charData) => {
     const newChar = await createCharacterOnBackend(charData, token);
     setCharacters((prev) => [newChar, ...prev]);
@@ -188,23 +267,29 @@ export function AuthProvider({ children }) {
   const isMaster = profileInfo.isMaster;
   const isPlayer = profileInfo.isPlayer;
   const activeCharacter = characters.find((c) => c.id === activeCharacterId) || null;
+  const playerCharacters = isMaster ? characters.filter((c) => c.userId !== user?.id) : [];
+  const isInspecting = Boolean(isMaster && activeCharacter && activeCharacter.userId !== user?.id);
 
   const value = {
     user,
     token,
     sessionInfo,
     characters,
+    playerCharacters,
     activeCharacter,
     activeCharacterId,
     loading,
     isAuthenticated: Boolean(user && token && !sessionInfo?.isExpired),
     isMaster,
     isPlayer,
+    isInspecting,
     profileInfo,
     login,
     register,
     logout,
     selectCharacter,
+    inspectCharacter,
+    stopInspecting,
     createCharacter,
     updateProfile,
     switchProfile,

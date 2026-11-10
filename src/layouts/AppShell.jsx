@@ -41,7 +41,17 @@ const MASTER_TAB = { id: "admin", label: "Câmara do Mestre", icon: <Crown size=
 export default function AppShell({ children }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { isMaster, isAuthenticated, loading } = useAuth();
+  const {
+    isMaster,
+    isAuthenticated,
+    loading,
+    isInspecting,
+    activeCharacter,
+    activeCharacterId,
+    playerCharacters,
+    inspectCharacter,
+    stopInspecting,
+  } = useAuth();
 
   const isAuthRoute = pathname === "/login" || pathname === "/registro";
   const isLandingPage = pathname === "/";
@@ -119,8 +129,8 @@ export default function AppShell({ children }) {
 
                 return (
                   <Link
-                    key={item.id}
-                    href={href}
+                    key={item.href}
+                    href={item.href}
                     aria-current={active ? "page" : undefined}
                     className={`group flex min-h-11 items-center gap-2.5 whitespace-nowrap rounded-xl px-3 py-2 text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:px-3.5 ${
                       active
@@ -183,6 +193,63 @@ export default function AppShell({ children }) {
               : "relative mx-auto max-w-6xl px-4 py-6 sm:px-6 lg:ml-64 lg:max-w-none lg:px-10 lg:py-8"
         }
       >
+        {isInspecting && !hideNavigation && (
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border-2 border-primary/50 bg-card/95 p-4 shadow-xl backdrop-blur-md">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-primary/50 bg-primary/20 text-primary shadow-md">
+                <Crown size={22} />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="font-serif text-xs font-bold uppercase tracking-wider text-primary">
+                    Modo Mestre · Inspecionando Ficha do Jogador
+                  </span>
+                  <span className="rounded-full bg-primary/20 border border-primary/40 px-2 py-0.2 text-[9px] font-bold text-primary animate-pulse">
+                    Ao Vivo
+                  </span>
+                </div>
+                <p className="text-xs text-foreground mt-0.5">
+                  Visualizando e editando a ficha completa de <strong>{activeCharacter?.name}</strong>{" "}
+                  {activeCharacter?.owner?.username && (
+                    <span className="text-muted-foreground">
+                      (Jogador: <strong className="text-foreground">{activeCharacter.owner.username}</strong>)
+                    </span>
+                  )}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2.5">
+              {playerCharacters.length > 1 && (
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] font-bold uppercase text-muted-foreground hidden sm:inline">
+                    Trocar Herói:
+                  </span>
+                  <select
+                    value={activeCharacterId || ""}
+                    onChange={(e) => inspectCharacter(e.target.value, false)}
+                    className="min-h-9 rounded-lg border border-primary/40 bg-background/90 px-2.5 py-1 text-xs font-semibold text-foreground outline-none focus:border-primary"
+                  >
+                    {playerCharacters.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name} ({c.owner?.username || "Jogador"})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              <button
+                type="button"
+                onClick={stopInspecting}
+                className="flex min-h-9 items-center gap-1.5 rounded-lg border border-border bg-secondary px-3 py-1.5 text-xs font-bold text-foreground hover:border-primary transition active:scale-95"
+              >
+                <span>Voltar ao Painel do Mestre</span>
+                <ArrowRight size={13} />
+              </button>
+            </div>
+          </div>
+        )}
         {children}
       </main>
 

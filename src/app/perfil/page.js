@@ -21,11 +21,12 @@ import { Card, SectionHeader } from "../components/ui";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { useCharacter } from "../context/CharacterContext";
-import { joinCampaign } from "../../lib/api";
+import { joinCampaign, listCampaigns } from "../../lib/api";
 
 export default function PerfilPage() {
   const {
     user,
+    token,
     isMaster,
     sessionInfo,
     isAuthenticated,
@@ -48,10 +49,29 @@ export default function PerfilPage() {
   const [profileStatus, setProfileStatus] = useState("");
   const [isSavingProfile, setIsSavingProfile] = useState(false);
 
-  // Convite de mesa para jogador
+  // Convite e campanhas do jogador
   const [joinCode, setJoinCode] = useState("");
   const [joinMsg, setJoinMsg] = useState("");
   const [joining, setJoining] = useState(false);
+  const [userCampaigns, setUserCampaigns] = useState([]);
+  const [loadingCampaigns, setLoadingCampaigns] = useState(false);
+
+  const loadUserCampaigns = React.useCallback(async () => {
+    if (!token || isMaster) return;
+    setLoadingCampaigns(true);
+    try {
+      const data = await listCampaigns(token);
+      setUserCampaigns(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.warn("Falha ao carregar campanhas do jogador:", err);
+    } finally {
+      setLoadingCampaigns(false);
+    }
+  }, [token, isMaster]);
+
+  React.useEffect(() => {
+    loadUserCampaigns();
+  }, [loadUserCampaigns]);
 
   const handleJoinTable = async (e) => {
     e.preventDefault();
@@ -62,6 +82,7 @@ export default function PerfilPage() {
       const res = await joinCampaign(joinCode.trim().toUpperCase());
       setJoinMsg(`Sucesso: ${res?.message || "Você entrou na mesa com sucesso!"}`);
       setJoinCode("");
+      await loadUserCampaigns();
       setTimeout(() => {
         window.location.reload();
       }, 1500);
@@ -364,40 +385,119 @@ export default function PerfilPage() {
         {/* Vínculo com Mesa / Campanha */}
         {!isMaster && (
           <Card className="border-2 border-primary/25">
-            <SectionHeader title="Sua Mesa & Convites" icon={<Link2 size={16} />} />
+            <SectionHeader title="Suas Mesas & Campanhas" icon={<Link2 size={16} />} />
             <p className="mt-2 text-xs text-muted-foreground">
-              Vincule sua conta e personagem a uma mesa compartilhada do Mestre usando o código de convite.
+              Mesas de RPG às quais sua conta e herói estão vinculados atualmente.
             </p>
 
-            {joinMsg && (
-              <p
-                className={`mt-3 rounded p-2.5 text-xs ${
-                  joinMsg.startsWith("Erro")
-                    ? "bg-rose-500/15 text-rose-300 border border-rose-500/30"
-                    : "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
-                }`}
-              >
-                {joinMsg}
-              </p>
-            )}
+            {/* Listagem de campanhas */}
+            <div className="mt-4 space-y-3">
+              {loadingCampaigns ? (
+                <p className="py-4 text-center text-xs text-muted-foreground">
+                  Consultando suas campanhas...
+                </p>
+              ) : userCampaigns.length > 0 ? (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {userCampaigns.map((camp) => {
+                    const memberInfo = camp.membrosCampanha?.find((m) => m.usuarioId === user?.id);
+                    const papel = memberInfo?.papel || "jogador";
 
-            <form onSubmit={handleJoinTable} className="mt-4 flex flex-col sm:flex-row gap-2">
-              <input
-                type="text"
-                placeholder="Código de Convite (ex: INV-VALE-100)"
-                value={joinCode}
-                onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
-                className="min-h-10 flex-1 rounded-lg border border-border bg-input-background px-3 text-xs text-foreground uppercase tracking-wider outline-none focus:border-primary font-mono"
-                required
-              />
-              <button
-                type="submit"
-                disabled={joining}
-                className="flex min-h-10 items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2 font-serif text-xs font-bold uppercase tracking-wider text-primary-foreground hover:brightness-110 active:scale-95 disabled:opacity-50"
-              >
-                <Link2 size={13} /> {joining ? "Ingressando..." : "Entrar na Mesa"}
-              </button>
-            </form>
+                    return (
+                      <div
+                        key={camp.id}
+                        className="rounded-xl border border-primary/30 bg-secondary/50 p-3.5 shadow-sm space-y-2 hover:border-primary/60 transition"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <span className="font-serif text-sm font-bold text-foreground block">
+                              {camp.nome}
+                            </span>
+                            <span className="text-[11px] text-muted-foreground flex items-center gap-1 mt-0.5">
+                              <Crown size={12} className="text-primary" /> Mestre:{" "}
+                              <strong className="text-foreground">
+                                {camp.proprietario?.username || "Mestre"}
+                              </strong>
+                            </span>
+                          </div>
+                          <span
+                            className={`rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
+                              camp.estado === "ativa"
+                                ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                                : "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                            }`}
+                          >
+                            {camp.estado}
+                          </span>
+                        </div>
+
+                        {camp.descricao && (
+                          <p className="text-xs text-muted-foreground/90 line-clamp-2">
+                            {camp.descricao}
+                          </p>
+                        )}
+
+                        <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-muted-foreground">
+                          <span className="capitalize">
+                            Papel: <strong className="text-foreground">{papel}</strong>
+                          </span>
+                          {camp.codigoConvite && (
+                            <span className="font-mono bg-background/60 px-1.5 py-0.5 rounded border border-border">
+                              Cód: {camp.codigoConvite}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="rounded-xl border border-dashed border-border p-4 text-center bg-secondary/20">
+                  <p className="text-xs text-muted-foreground">
+                    Você ainda não está participando de nenhuma mesa de RPG.
+                  </p>
+                  <p className="text-[11px] text-muted-foreground/80 mt-1">
+                    Informe o código de convite fornecido pelo seu Mestre abaixo para entrar!
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Formulário para entrar em nova mesa */}
+            <div className="mt-5 border-t border-border pt-4">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+                Ingressar em Nova Mesa com Código
+              </label>
+
+              {joinMsg && (
+                <p
+                  className={`mb-3 rounded p-2.5 text-xs ${
+                    joinMsg.startsWith("Erro")
+                      ? "bg-rose-500/15 text-rose-300 border border-rose-500/30"
+                      : "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30"
+                  }`}
+                >
+                  {joinMsg}
+                </p>
+              )}
+
+              <form onSubmit={handleJoinTable} className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="text"
+                  placeholder="Código de Convite (ex: INV-VALE-100)"
+                  value={joinCode}
+                  onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+                  className="min-h-10 flex-1 rounded-lg border border-border bg-input-background px-3 text-xs text-foreground uppercase tracking-wider outline-none focus:border-primary font-mono"
+                  required
+                />
+                <button
+                  type="submit"
+                  disabled={joining}
+                  className="flex min-h-10 items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2 font-serif text-xs font-bold uppercase tracking-wider text-primary-foreground hover:brightness-110 active:scale-95 disabled:opacity-50"
+                >
+                  <Link2 size={13} /> {joining ? "Ingressando..." : "Entrar na Mesa"}
+                </button>
+              </form>
+            </div>
           </Card>
         )}
 

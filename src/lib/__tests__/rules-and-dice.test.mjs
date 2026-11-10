@@ -13,6 +13,7 @@ import {
   validateNumericBounds,
   DEFAULT_SKILLS,
   ATTRIBUTES,
+  ensureCanonicalSkills,
 } from "../modifiers.js";
 
 import {
@@ -209,6 +210,23 @@ assert(validateNumericBounds(15, 1, 30, 10) === 15, "Número dentro dos limites 
 assert(validateNumericBounds(-5, 0, 100, 0) === 0, "Número abaixo do mínimo fixado no mínimo");
 assert(validateNumericBounds(150, 0, 100, 0) === 100, "Número acima do máximo fixado no máximo");
 assert(validateNumericBounds("abc", 0, 100, 10) === 10, "Valor NaN substituído pelo fallback");
+
+// 12. Garantia de 19 Perícias Canônicas e Preservação de Customizadas
+console.log("\n--- 12. Garantia de 19 Perícias Canônicas (ensureCanonicalSkills) ---");
+const fromEmpty = ensureCanonicalSkills([]);
+assert(fromEmpty.length === 19, "Array vazio gera exatamente as 19 perícias canônicas");
+assert(fromEmpty.every((s) => s.trained === false), "Todas as perícias geradas do vazio iniciam não treinadas");
+
+const partialSkills = [
+  { name: "Atletismo", trained: true, bonus: 3 },
+  { name: "Perícia Feitiçaria Caseira", attr: "INT", trained: true, bonus: 2 },
+];
+const normalized = ensureCanonicalSkills(partialSkills);
+assert(normalized.length === 20, "19 perícias canônicas + 1 customizada preservada = 20 perícias");
+const atletismo = normalized.find((s) => s.name === "Atletismo");
+assert(atletismo && atletismo.trained === true && atletismo.bonus === 3, "Preserva treino e bônus de perícia existente");
+const customSkill = normalized.find((s) => s.name === "Perícia Feitiçaria Caseira");
+assert(customSkill && customSkill.trained === true, "Perícia customizada fora do cânone é preservada");
 
 console.log(`\n========================================`);
 console.log(`📊 Resultado dos Testes: ${testsPassed} passaram, ${testsFailed} falharam.`);

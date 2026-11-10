@@ -6,7 +6,6 @@ import { useCharacter } from "../context/CharacterContext";
 import { Card, EditableText, SectionHeader, StatBox } from "../components/ui";
 import Aparencia from "../components/Aparencia";
 import Pericia from "../components/Pericia";
-import BarraHp from "../components/BarrraHp";
 import RecursosCombate from "../components/RecursosCombate";
 import { calculateCapacity } from "../../lib/modifiers";
 import { DEFAULT_ABILITIES, isHabilidadeDesbloqueada } from "../../lib/abilities";
@@ -14,10 +13,10 @@ import { DEFAULT_ABILITIES, isHabilidadeDesbloqueada } from "../../lib/abilities
 export default function Personagem() {
   const { data, upd, syncStatus, syncError, retrySync } = useCharacter();
   const capacity = calculateCapacity(data);
-  const abilities = data.abilities && data.abilities.length > 0 ? data.abilities : DEFAULT_ABILITIES;
+  const abilities = Array.isArray(data.abilities) ? data.abilities : [];
   const characterLevel = Math.max(1, Number(data.level) || 1);
-  const activeTraining = abilities.find((h) => h.isTraining);
-  const unlockedCount = abilities.filter((h) => isHabilidadeDesbloqueada(h, characterLevel)).length;
+  const activeTraining = abilities.find((h) => h.isTraining && (h.approvalStatus || "aprovada") === "aprovada");
+  const unlockedCount = abilities.filter((h) => isHabilidadeDesbloqueada(h, characterLevel) && (h.approvalStatus || "aprovada") === "aprovada").length;
 
   const syncLabels = {
     idle: null,

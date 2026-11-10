@@ -1,36 +1,12 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import {
-  Calendar,
-  Compass,
-  Crown,
-  FileText,
-  LayoutDashboard,
-  ScrollText,
-  Skull,
-  Swords,
-  Users,
-} from "lucide-react";
-import { useAuth } from "../context/AuthContext";
 import { useEffect } from "react";
-
-const NAV_ITEMS = [
-  { href: "/admin", label: "Painel", icon: LayoutDashboard },
-  { href: "/admin/campanhas", label: "Campanhas", icon: Users },
-  { href: "/admin/npcs", label: "Bestiário (NPCs)", icon: Skull },
-  { href: "/admin/personagens", label: "Ameaças & Heróis", icon: ScrollText },
-  { href: "/admin/encontros", label: "Encontros", icon: Swords },
-  { href: "/admin/mapas", label: "Mapas & Névoa", icon: Compass },
-  { href: "/admin/notas", label: "Segredos & Notas", icon: FileText },
-  { href: "/admin/sessoes", label: "Sessões & Cenas", icon: Calendar },
-];
+import { useRouter } from "next/navigation";
+import { useAuth } from "../context/AuthContext";
 
 export default function AdminLayout({ children }) {
   const { isMaster, loading, isAuthenticated } = useAuth();
   const router = useRouter();
-  const pathname = usePathname();
 
   useEffect(() => {
     if (!loading && (!isAuthenticated || !isMaster)) {

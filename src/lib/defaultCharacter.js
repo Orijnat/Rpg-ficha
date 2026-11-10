@@ -82,7 +82,8 @@ export const defaultData = {
   mountHP: 30,
   mountHPMax: 30,
   mountNotes: "Sela de viagem reforçada, alforjes de couro duplo.",
-  abilities: DEFAULT_ABILITIES,
+  abilities: [],
+  levelAbilities: {},
   dadosExtras: {
     inventoryCapacity: 20,
     insanityMax: 0,
@@ -96,6 +97,7 @@ export const defaultData = {
     initiative: 0,
     customAbilities: [],
     training: [],
-    abilities: DEFAULT_ABILITIES,
+    abilities: [],
+    levelAbilities: {},
   },
 };

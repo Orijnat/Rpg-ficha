@@ -93,6 +93,104 @@ export const TIPOS_HABILIDADE = {
   },
 };
 
+export const CATEGORIAS_HABILIDADE = {
+  nivel: {
+    id: "nivel",
+    nome: "Habilidade de Nível",
+    descricao: "Poder da progressão do herói (Níveis 1 ao 20)",
+    cor: "text-amber-400",
+    badge: "border-amber-500/50 bg-amber-950/60 text-amber-300",
+  },
+  criada: {
+    id: "criada",
+    nome: "Criada pelo Jogador",
+    descricao: "Técnica própria forjada para aprovação e treino",
+    cor: "text-purple-400",
+    badge: "border-purple-500/50 bg-purple-950/60 text-purple-300",
+  },
+};
+
+export function getCategoriaHabilidade(habilidade) {
+  const cat = habilidade?.category || (habilidade?.isLevelAbility ? "nivel" : "criada");
+  return CATEGORIAS_HABILIDADE[cat] || CATEGORIAS_HABILIDADE.criada;
+}
+
+export const STATUS_APROVACAO = {
+  aprovada: {
+    id: "aprovada",
+    nome: "Aprovada pelo Mestre",
+    cor: "text-emerald-300",
+    bg: "bg-emerald-950/40",
+    borda: "border-emerald-500/40",
+    badge: "border-emerald-500/50 bg-emerald-950/60 text-emerald-300",
+  },
+  pendente: {
+    id: "pendente",
+    nome: "Pendente de Aprovação",
+    cor: "text-amber-300",
+    bg: "bg-amber-950/40",
+    borda: "border-amber-500/40",
+    badge: "border-amber-500/50 bg-amber-950/60 text-amber-300",
+  },
+  rejeitada: {
+    id: "rejeitada",
+    nome: "Rejeitada",
+    cor: "text-rose-300",
+    bg: "bg-rose-950/40",
+    borda: "border-rose-500/40",
+    badge: "border-rose-500/50 bg-rose-950/60 text-rose-300",
+  },
+};
+
+/**
+ * Retorna metadados do status de aprovação de uma habilidade
+ */
+export function getStatusAprovacao(habilidade) {
+  const status = habilidade?.approvalStatus || "aprovada";
+  return STATUS_APROVACAO[status] || STATUS_APROVACAO.aprovada;
+}
+
+/**
+ * Cria ou re-submete uma solicitação de habilidade.
+ * Jogadores geram habilidades 'pendente', enquanto Mestres podem aprová-las diretamente.
+ */
+export function criarSolicitacaoHabilidade(ability, isMaster = false) {
+  const now = new Date().toISOString();
+  return {
+    ...ability,
+    category: ability?.category || (ability?.assignToLevel ? "nivel" : "criada"),
+    approvalStatus: isMaster ? (ability?.approvalStatus || "aprovada") : "pendente",
+    submittedBy: ability?.submittedBy || (isMaster ? "mestre" : "jogador"),
+    requestedAt: ability?.requestedAt || now,
+    updatedAt: now,
+    masterFeedback: ability?.masterFeedback || null,
+  };
+}
+
+/**
+ * Aprova uma habilidade (ação do mestre)
+ */
+export function aprovarHabilidade(habilidade, feedback = null) {
+  return {
+    ...habilidade,
+    approvalStatus: "aprovada",
+    approvedAt: new Date().toISOString(),
+    masterFeedback: feedback || null,
+  };
+}
+
+/**
+ * Rejeita uma habilidade (ação do mestre) com justificativa
+ */
+export function rejeitarHabilidade(habilidade, feedback = "Habilidade desbalanceada ou incompatível.") {
+  return {
+    ...habilidade,
+    approvalStatus: "rejeitada",
+    rejectedAt: new Date().toISOString(),
+    masterFeedback: feedback,
+  };
+}
+
 /**
  * Retorna as informações do grau atual com base nas horas treinadas
  */
@@ -150,9 +248,24 @@ export function isHabilidadeDesbloqueada(habilidade, nivelPersonagem = 1) {
 }
 
 /**
- * Avança as horas de treino de uma habilidade e atualiza seu grau
+ * Verifica se uma habilidade está apta para ser treinada.
+ * Somente habilidades aprovadas pelo Mestre podem ser treinadas pelos jogadores.
+ */
+export function podeTreinarHabilidade(habilidade) {
+  if (!habilidade) return false;
+  const status = habilidade.approvalStatus || "aprovada";
+  return status === "aprovada";
+}
+
+/**
+ * Avança as horas de treino de uma habilidade e atualiza seu grau.
+ * Bloqueia treino de habilidades pendentes ou rejeitadas.
  */
 export function avancarTreinoHabilidade(habilidade, horasAdicionais = 1) {
+  if (!podeTreinarHabilidade(habilidade)) {
+    return habilidade;
+  }
+
   const horasAtuais = Math.max(0, Number(habilidade.trainingHours || 0));
   const novasHoras = Math.min(100, horasAtuais + Math.max(0, Number(horasAdicionais) || 0));
   const novoGrau = getGrauTreinamento(novasHoras);
@@ -328,4 +441,7 @@ export const DEFAULT_ABILITIES = [
     masteryLevel: "aprendiz",
     isTraining: false,
   },
-];
+].map((h) => ({
+  approvalStatus: "aprovada",
+  ...h,
+}));

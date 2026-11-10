@@ -9,6 +9,14 @@ import {
   avancarTreinoHabilidade,
   agruparPorNivel,
   DEFAULT_ABILITIES,
+  STATUS_APROVACAO,
+  getStatusAprovacao,
+  criarSolicitacaoHabilidade,
+  aprovarHabilidade,
+  rejeitarHabilidade,
+  podeTreinarHabilidade,
+  CATEGORIAS_HABILIDADE,
+  getCategoriaHabilidade,
 } from "../abilities.js";
 
 test("Motor de Habilidades & Treinamento", async (t) => {
@@ -119,6 +127,88 @@ test("Motor de Habilidades & Treinamento", async (t) => {
       assert.ok(hab.name, "Habilidade deve ter nome");
       assert.ok(hab.reqLevel > 0, "Habilidade deve ter nível requerido válido");
       assert.ok(TIPOS_HABILIDADE[hab.type], `Tipo ${hab.type} deve ser um tipo reconhecido`);
+      assert.equal(hab.approvalStatus, "aprovada", "Habilidades canônicas devem vir como aprovadas");
     }
+  });
+
+  await t.test("7. Ciclo de Vida e Aprovação de Habilidades pelo Mestre", () => {
+    // 1. Jogador cria nova habilidade -> deve nascer 'pendente'
+    const habJogador = criarSolicitacaoHabilidade({
+      name: "Tiro com Arco Sombrio",
+      type: "ativa",
+      reqLevel: 2,
+      cost: "2 PE",
+    }, false);
+
+    assert.equal(habJogador.approvalStatus, "pendente");
+    assert.equal(habJogador.submittedBy, "jogador");
+    assert.ok(habJogador.requestedAt);
+    assert.equal(getStatusAprovacao(habJogador).id, "pendente");
+
+    // 2. Mestre cria habilidade -> nasce aprovada
+    const habMestre = criarSolicitacaoHabilidade({
+      name: "Bênção da Montanha",
+      type: "magia",
+      reqLevel: 1,
+    }, true);
+    assert.equal(habMestre.approvalStatus, "aprovada");
+
+    // 3. Mestre aprova a habilidade do jogador com feedback
+    const habAprovada = aprovarHabilidade(habJogador, "Técnica balanceada, aprovada para a sessão!");
+    assert.equal(habAprovada.approvalStatus, "aprovada");
+    assert.equal(habAprovada.masterFeedback, "Técnica balanceada, aprovada para a sessão!");
+    assert.ok(habAprovada.approvedAt);
+    assert.equal(getStatusAprovacao(habAprovada).id, "aprovada");
+
+    // 4. Mestre rejeita habilidade com justificativa
+    const habRejeitada = rejeitarHabilidade(habJogador, "Dano muito alto para o nível 2. Reduza para 1d8.");
+    assert.equal(habRejeitada.approvalStatus, "rejeitada");
+    assert.equal(habRejeitada.masterFeedback, "Dano muito alto para o nível 2. Reduza para 1d8.");
+    assert.ok(habRejeitada.rejectedAt);
+    assert.equal(getStatusAprovacao(habRejeitada).id, "rejeitada");
+
+    // 5. Jogador edita e re-submete -> volta para pendente
+    const habReenviada = criarSolicitacaoHabilidade({
+      ...habRejeitada,
+      cost: "3 PE", // jogador ajustou
+    }, false);
+    assert.equal(habReenviada.approvalStatus, "pendente");
+  });
+
+  await t.test("8. Restrição de Treinamento a Habilidades Aprovadas", () => {
+    const habPendente = criarSolicitacaoHabilidade({
+      name: "Técnica das Sombras",
+      type: "ativa",
+      trainingHours: 0,
+    }, false);
+
+    assert.equal(podeTreinarHabilidade(habPendente), false, "Habilidade pendente não pode ser treinada");
+    const tentativaTreinoPendente = avancarTreinoHabilidade(habPendente, 5);
+    assert.equal(tentativaTreinoPendente.trainingHours, 0, "Horas de treino não devem aumentar para habilidade pendente");
+
+    // Rejeitada também não treina
+    const habRejeitada = rejeitarHabilidade(habPendente);
+    assert.equal(podeTreinarHabilidade(habRejeitada), false);
+    const tentativaTreinoRejeitada = avancarTreinoHabilidade(habRejeitada, 3);
+    assert.equal(tentativaTreinoRejeitada.trainingHours, 0);
+
+    // Quando aprovada pelo Mestre, o jogador pode treinar normalmente
+    const habAprovada = aprovarHabilidade(habPendente);
+    assert.equal(podeTreinarHabilidade(habAprovada), true);
+    const treinoSucesso = avancarTreinoHabilidade(habAprovada, 5);
+    assert.equal(treinoSucesso.trainingHours, 5, "Horas de treino devem avançar após aprovação");
+  });
+
+  await t.test("9. Validação das 2 Categorias Canônicas de Habilidades", () => {
+    assert.ok(CATEGORIAS_HABILIDADE.nivel, "Categoria 'nivel' deve existir");
+    assert.ok(CATEGORIAS_HABILIDADE.criada, "Categoria 'criada' deve existir");
+
+    const habNivel = { name: "Poder de Nível 5", category: "nivel", reqLevel: 5 };
+    const habCriada = { name: "Técnica das Sombras", category: "criada" };
+    const habSemCategoria = { name: "Golpe Rápido" };
+
+    assert.equal(getCategoriaHabilidade(habNivel).id, "nivel");
+    assert.equal(getCategoriaHabilidade(habCriada).id, "criada");
+    assert.equal(getCategoriaHabilidade(habSemCategoria).id, "criada", "Habilidades sem categoria definida devem ser tratadas como criadas pelo jogador");
   });
 });

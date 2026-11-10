@@ -5,13 +5,16 @@ import { usePathname } from "next/navigation";
 import { Crown, ScrollText, Settings, Shield } from "lucide-react";
 import { useCharacter } from "../context/CharacterContext";
 import { useTheme } from "../context/ThemeContext";
-import { EditableText, HPBar } from "./ui";
+import { useAuth } from "../context/AuthContext";
+import { EditableText, EditableNumber, HPBar } from "./ui";
 import SettingsModal from "./SettingsModal";
+import DanoCuraPainel from "./DanoCuraPainel";
 
 export default function Cabecalho() {
   const pathname = usePathname();
   const { data, upd } = useCharacter();
   const { activeThemeObj } = useTheme();
+  const { isMaster, playerCharacters, inspectCharacter, activeCharacterId } = useAuth();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const isMasterView = pathname?.startsWith("/admin");
@@ -103,6 +106,20 @@ export default function Cabecalho() {
       </header>
 
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+
+      {isHpModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm animate-in fade-in-50"
+          onClick={() => setIsHpModalOpen(false)}
+        >
+          <div
+            className="w-full max-w-sm"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <DanoCuraPainel compact onClose={() => setIsHpModalOpen(false)} />
+          </div>
+        </div>
+      )}
     </>
   );
 }

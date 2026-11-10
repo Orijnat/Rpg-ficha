@@ -2,7 +2,14 @@
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { syncCharacterWithBackend, verifyBankPasswordOnBackend } from "../../lib/api";
-import { avancarTreinoHabilidade } from "../../lib/abilities";
+import {
+  avancarTreinoHabilidade,
+  criarSolicitacaoHabilidade,
+  aprovarHabilidade,
+  rejeitarHabilidade,
+  podeTreinarHabilidade,
+} from "../../lib/abilities";
+import { ensureCanonicalSkills } from "../../lib/modifiers";
 import { useAuth } from "./AuthContext";
 
 import { defaultData } from "../../lib/defaultCharacter";
@@ -63,7 +70,7 @@ export function CharacterProvider({ children }) {
       ...defaultData,
       ...activeCharacter,
       ...atributos,
-      skills: pickCollection(activeCharacter.pericias, activeCharacter.skills, defaultData.skills),
+      skills: ensureCanonicalSkills(pickCollection(activeCharacter.pericias, activeCharacter.skills, defaultData.skills)),
       inventory: pickCollection(activeCharacter.itensInventario, activeCharacter.inventory, defaultData.inventory),
       contracts: pickCollection(activeCharacter.contratosDados, activeCharacter.contracts, defaultData.contracts),
       players: activeCharacter.jogadores ?? activeCharacter.players ?? defaultData.players,
@@ -76,7 +83,12 @@ export function CharacterProvider({ children }) {
       abilities: pickCollection(
         activeCharacter.dadosExtras?.abilities,
         activeCharacter.abilities,
-        current.abilities ?? defaultData.abilities
+        current.abilities ?? defaultData.abilities ?? []
+      ),
+      levelAbilities: pickCollection(
+        activeCharacter.dadosExtras?.levelAbilities,
+        activeCharacter.levelAbilities,
+        current.levelAbilities ?? defaultData.levelAbilities ?? {}
       ),
       dadosExtras: {
         ...defaultData.dadosExtras,
@@ -85,7 +97,12 @@ export function CharacterProvider({ children }) {
         abilities: pickCollection(
           activeCharacter.dadosExtras?.abilities,
           activeCharacter.abilities,
-          current.abilities ?? defaultData.abilities
+          current.abilities ?? defaultData.abilities ?? []
+        ),
+        levelAbilities: pickCollection(
+          activeCharacter.dadosExtras?.levelAbilities,
+          activeCharacter.levelAbilities,
+          current.levelAbilities ?? defaultData.levelAbilities ?? {}
         ),
       },
     }));
@@ -152,10 +169,30 @@ export function CharacterProvider({ children }) {
 
   const updSkill = (index, patch) => {
     setData((current) => {
-      const next = [...current.skills];
-      next[index] = { ...next[index], ...patch };
+      const next = [...(current.skills || [])];
+      if (next[index]) {
+        next[index] = { ...next[index], ...patch };
+      }
       return { ...current, skills: next };
     });
+  };
+
+  const toggleSkillTrained = (skillName) => {
+    setData((current) => {
+      const next = [...(current.skills || [])];
+      const idx = next.findIndex((s) => s.name.toLowerCase() === String(skillName).toLowerCase());
+      if (idx !== -1) {
+        next[idx] = { ...next[idx], trained: !next[idx].trained };
+      }
+      return { ...current, skills: next };
+    });
+  };
+
+  const setSkills = (newSkills) => {
+    setData((current) => ({
+      ...current,
+      skills: Array.isArray(newSkills) ? newSkills : current.skills,
+    }));
   };
 
   const addItem = () => {
@@ -229,40 +266,88 @@ export function CharacterProvider({ children }) {
     });
   };
 
-  const addAbility = (ability) => {
+  const addAbility = (ability, isMasterActor = false) => {
+    const id = ability?.id || uid();
+    const baseAbility = {
+      id,
+      name: ability?.name || "Nova Habilidade",
+      type: ability?.type || "ativa",
+      reqLevel: Number(ability?.reqLevel) || 1,
+      cost: ability?.cost || "1 PE",
+      attr: ability?.attr || "FOR",
+      rollFormula: ability?.rollFormula || "",
+      damageType: ability?.damageType || "",
+      range: ability?.range || "Corpo a corpo",
+      description: ability?.description || "",
+      trainingHours: Number(ability?.trainingHours) || 0,
+      masteryLevel: ability?.masteryLevel || "aprendiz",
+      isTraining: false,
+      ...ability,
+    };
+    const newAbility = criarSolicitacaoHabilidade(baseAbility, isMasterActor || isMaster);
     setData((current) => {
-      const list = current.abilities || defaultData.abilities || [];
-      const newAbility = {
-        id: ability?.id || uid(),
-        name: ability?.name || "Nova Habilidade",
-        type: ability?.type || "ativa",
-        reqLevel: Number(ability?.reqLevel) || 1,
-        cost: ability?.cost || "1 PE",
-        attr: ability?.attr || "FOR",
-        rollFormula: ability?.rollFormula || "",
-        damageType: ability?.damageType || "",
-        range: ability?.range || "Corpo a corpo",
-        description: ability?.description || "",
-        trainingHours: Number(ability?.trainingHours) || 0,
-        masteryLevel: ability?.masteryLevel || "aprendiz",
-        isTraining: Boolean(ability?.isTraining),
-      };
+      const list = current.abilities || [];
       const nextAbilities = [...list, newAbility];
+      let nextLevelAbilities = current.levelAbilities || current.dadosExtras?.levelAbilities || {};
+      if (ability?.assignToLevel) {
+        nextLevelAbilities = {
+          ...nextLevelAbilities,
+          [Number(ability.assignToLevel)]: newAbility.id,
+        };
+      }
       return {
         ...current,
         abilities: nextAbilities,
+        levelAbilities: nextLevelAbilities,
         dadosExtras: {
           ...(current.dadosExtras || {}),
           abilities: nextAbilities,
+          levelAbilities: nextLevelAbilities,
         },
       };
     });
+    return newAbility;
   };
 
   const removeAbility = (id) => {
     setData((current) => {
-      const list = current.abilities || defaultData.abilities || [];
+      const list = current.abilities || [];
       const nextAbilities = list.filter((hab) => hab.id !== id);
+      const prevLevelAbilities = current.levelAbilities || current.dadosExtras?.levelAbilities || {};
+      const nextLevelAbilities = { ...prevLevelAbilities };
+      for (const [lvl, habId] of Object.entries(nextLevelAbilities)) {
+        if (habId === id) {
+          delete nextLevelAbilities[lvl];
+        }
+      }
+      return {
+        ...current,
+        abilities: nextAbilities,
+        levelAbilities: nextLevelAbilities,
+        dadosExtras: {
+          ...(current.dadosExtras || {}),
+          abilities: nextAbilities,
+          levelAbilities: nextLevelAbilities,
+        },
+      };
+    });
+  };
+
+  const updAbility = (id, patch, isMasterActor = false) => {
+    setData((current) => {
+      const list = current.abilities || [];
+      const isMasterEffective = isMasterActor || isMaster;
+      const nextAbilities = list.map((hab) => {
+        if (hab.id !== id) return hab;
+        const updated = { ...hab, ...patch, updatedAt: new Date().toISOString() };
+        // Toda edição realizada por jogador re-submete a habilidade para aprovação do Mestre
+        if (!isMasterEffective) {
+          updated.approvalStatus = "pendente";
+          updated.submittedBy = "jogador";
+          updated.masterFeedback = null;
+        }
+        return updated;
+      });
       return {
         ...current,
         abilities: nextAbilities,
@@ -274,10 +359,25 @@ export function CharacterProvider({ children }) {
     });
   };
 
-  const updAbility = (id, patch) => {
+  const approveAbility = (id, feedback = null) => {
     setData((current) => {
-      const list = current.abilities || defaultData.abilities || [];
-      const nextAbilities = list.map((hab) => (hab.id === id ? { ...hab, ...patch } : hab));
+      const list = current.abilities || [];
+      const nextAbilities = list.map((hab) => (hab.id === id ? aprovarHabilidade(hab, feedback) : hab));
+      return {
+        ...current,
+        abilities: nextAbilities,
+        dadosExtras: {
+          ...(current.dadosExtras || {}),
+          abilities: nextAbilities,
+        },
+      };
+    });
+  };
+
+  const rejectAbility = (id, feedback = "Habilidade desbalanceada ou incompatível.") => {
+    setData((current) => {
+      const list = current.abilities || [];
+      const nextAbilities = list.map((hab) => (hab.id === id ? rejeitarHabilidade(hab, feedback) : hab));
       return {
         ...current,
         abilities: nextAbilities,
@@ -291,9 +391,12 @@ export function CharacterProvider({ children }) {
 
   const trainAbility = (id, hours = 1) => {
     setData((current) => {
-      const list = current.abilities || defaultData.abilities || [];
+      const list = current.abilities || [];
       const nextAbilities = list.map((hab) => {
         if (hab.id !== id) return hab;
+        if (!podeTreinarHabilidade(hab)) {
+          return hab;
+        }
         return avancarTreinoHabilidade(hab, hours);
       });
       return {
@@ -309,7 +412,11 @@ export function CharacterProvider({ children }) {
 
   const setAbilityTrainingFocus = (id) => {
     setData((current) => {
-      const list = current.abilities || defaultData.abilities || [];
+      const list = current.abilities || [];
+      const target = list.find((h) => h.id === id);
+      if (target && !podeTreinarHabilidade(target)) {
+        return current;
+      }
       const nextAbilities = list.map((hab) => ({
         ...hab,
         isTraining: hab.id === id ? !hab.isTraining : false,
@@ -320,6 +427,44 @@ export function CharacterProvider({ children }) {
         dadosExtras: {
           ...(current.dadosExtras || {}),
           abilities: nextAbilities,
+        },
+      };
+    });
+  };
+
+  const assignLevelAbility = (level, abilityId) => {
+    const lvlNum = Number(level);
+    if (!lvlNum || lvlNum < 1 || lvlNum > 20) return;
+    setData((current) => {
+      const prev = current.levelAbilities || current.dadosExtras?.levelAbilities || {};
+      const nextLevelAbilities = {
+        ...prev,
+        [lvlNum]: abilityId,
+      };
+      return {
+        ...current,
+        levelAbilities: nextLevelAbilities,
+        dadosExtras: {
+          ...(current.dadosExtras || {}),
+          levelAbilities: nextLevelAbilities,
+        },
+      };
+    });
+  };
+
+  const unassignLevelAbility = (level) => {
+    const lvlNum = Number(level);
+    if (!lvlNum) return;
+    setData((current) => {
+      const prev = current.levelAbilities || current.dadosExtras?.levelAbilities || {};
+      const nextLevelAbilities = { ...prev };
+      delete nextLevelAbilities[lvlNum];
+      return {
+        ...current,
+        levelAbilities: nextLevelAbilities,
+        dadosExtras: {
+          ...(current.dadosExtras || {}),
+          levelAbilities: nextLevelAbilities,
         },
       };
     });
@@ -369,6 +514,8 @@ export function CharacterProvider({ children }) {
     upd,
     updExtra,
     updSkill,
+    toggleSkillTrained,
+    setSkills,
     addItem,
     removeItem,
     updItem,
@@ -383,8 +530,12 @@ export function CharacterProvider({ children }) {
     addAbility,
     removeAbility,
     updAbility,
+    approveAbility,
+    rejectAbility,
     trainAbility,
     setAbilityTrainingFocus,
+    assignLevelAbility,
+    unassignLevelAbility,
   };
 
   return <CharacterContext.Provider value={value}>{children}</CharacterContext.Provider>;

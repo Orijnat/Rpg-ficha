@@ -13,6 +13,7 @@ import {
   Check,
 } from "lucide-react";
 import { SectionHeader, EditableNumber } from "./ui";
+import DanoCuraPainel from "./DanoCuraPainel";
 import { useCharacter } from "../context/CharacterContext";
 import { useDice } from "../context/DiceContext";
 import { useAuth } from "../context/AuthContext";
@@ -187,6 +188,9 @@ export default function RecursosCombate() {
           <span className="font-cinzel text-[9px] text-muted-foreground uppercase tracking-wider">Descanso</span>
         </div>
       </div>
+
+      {/* Painel de Gestão de Vitalidade, Dano Tomado e Cura Recebida */}
+      <DanoCuraPainel />
 
       {/* Barras de Recursos: PE, Insanidade e BP */}
       <div className="space-y-3.5 rounded-2xl border border-primary/20 bg-background/50 p-4 shadow-inner">

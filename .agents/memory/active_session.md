@@ -5,9 +5,9 @@
 
 ---
 
-## ✅ Concluído Nesta Sessão
+## ✅ Concluído Nesta Etapa
 
-| Item | Status |
+| Item | Detalhes |
 |---|---|
 | Tipografia canônica Cinzel & Crimson Text registrada no `@theme inline` | ✅ |
 | Componentes `grimoire-card`, `war-room-card`, `medallion-plate` e `wax-seal` | ✅ |
