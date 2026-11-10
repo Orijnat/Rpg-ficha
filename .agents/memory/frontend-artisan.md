@@ -144,3 +144,14 @@ UI/UX da Área do Jogador, componentes React 19, Tailwind CSS v4, responsividade
   silenciosamente.
 - `AppShell` oculta cabeçalho, navegação autenticada e botão de dados na rota
   pública, preservando o layout de autenticação.
+
+### Reformulação Visual de Alta Fidelidade (Jogador & Mestre) — 2026-11-09
+- Ativação da skill `frontend-design` para dar identidade artesanal única (Grimório Vivo + Sala de Guerra Tática):
+  * **Tipografia Imersiva**: Vinculação real de `Cinzel`, `Cinzel Decorative` e `Crimson Text` no CSS base e tokens semânticos (`font-cinzel`, `font-decorative`, `font-journal`).
+  * **Tokens e Superfícies Folio**: Criação das classes `.grimoire-card` (cartões de pergaminho/velino com cantoneiras de ferro/bronze) e `.war-room-card` (consoles com acabamento obsidiana e chanfro tático).
+  * **Cabeçalho Contextual (`Cabecalho.jsx`)**: Distingue visualmente o papel de Jogador (nome do aventureiro, nível, frasco de PV e tema) do Mestre (insígnia da Soberania do Narrador, título da sessão e atalhos rápidos).
+  * **Sidebar Distinta (`AppShell.jsx`)**: Separação clara entre a jornada do herói ("Folio do Jogador") e a seção de comando ("Narrador / Câmara do Mestre").
+  * **Medalhões de Atributo Arcanos (`StatBox` em `ui.js`)**: O modificador (ex: `+3`, `-1`) é destacado como elemento central e clicável para rolagem imediata, com d20 animado e escore base preservado.
+  * **Sala de Guerra Tática (`admin/page.js` e `admin/layout.js`)**: Iniciativa com indicação luminosa do turno ativo, botões táteis de PV (`-5`, `-1`, `+1`, `+5`) e fichas de condição em formato de selo de cera (`.wax-seal`).
+  * **Limpeza de Hardcoded Colors**: Telas de Perícias, Quarto, Montaria e Mundo migradas para tokens do sistema de temas.
+- Validação: 38 testes de regras/dados 100% aprovados, build Turbopack Next.js 16 (26 rotas) executado sem nenhum erro.

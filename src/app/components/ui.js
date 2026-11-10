@@ -15,15 +15,28 @@ export function uid() {
 }
 
 export function HPBar({ hp, max }) {
-  const pct = Math.max(0, Math.min(100, (hp / max) * 100));
-  const color = pct > 60 ? "#4f8f6b" : pct > 30 ? "var(--primary)" : "#b24a3d";
+  const current = Number(hp) || 0;
+  const maximum = Math.max(1, Number(max) || 1);
+  const pct = Math.max(0, Math.min(100, (current / maximum) * 100));
+
+  const bgStyle =
+    pct > 50
+      ? "linear-gradient(90deg, #15803d 0%, #22c55e 100%)"
+      : pct > 25
+        ? "linear-gradient(90deg, #b45309 0%, var(--primary) 100%)"
+        : "linear-gradient(90deg, #991b1b 0%, #ef4444 100%)";
 
   return (
-    <div className="h-3 w-full overflow-hidden rounded-full border border-white/10 bg-white/5 shadow-inner">
+    <div className="relative h-3 w-full overflow-hidden rounded-full border border-white/15 bg-black/60 shadow-inner">
       <div
-        className="h-full rounded-full shadow-[0_0_18px_color-mix(in_srgb,var(--primary)_25%,transparent)] transition-all duration-300"
-        style={{ width: `${pct}%`, backgroundColor: color }}
+        className="h-full rounded-full transition-all duration-300 ease-out"
+        style={{
+          width: `${pct}%`,
+          background: bgStyle,
+          boxShadow: pct > 25 ? "0 0 10px rgba(34, 197, 94, 0.3)" : "0 0 10px rgba(239, 68, 68, 0.4)",
+        }}
       />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-b from-white/25 to-transparent rounded-t-full" />
     </div>
   );
 }
@@ -218,24 +231,36 @@ export function EditableNumber({
   );
 }
 
-export function SectionHeader({ title, icon }) {
+export function SectionHeader({ title, icon, subtitle }) {
   return (
-    <div className="mb-5 flex items-center gap-3 border-b-2 border-primary/30 pb-3">
-      {icon ? (
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-primary/50 bg-primary/15 text-primary shadow-[0_0_18px_color-mix(in_srgb,var(--primary)_18%,transparent)]">
-          {icon}
-        </span>
-      ) : null}
-      <h3 className="font-serif text-sm font-bold uppercase tracking-[0.24em] text-primary">{title}</h3>
-      <div className="h-px flex-1 bg-gradient-to-r from-primary/45 via-primary/15 to-transparent" />
-      <span className="h-3 w-3 rotate-45 border-2 border-primary/60 bg-background" />
+    <div className="mb-4 sm:mb-5 border-b border-primary/25 pb-3">
+      <div className="flex items-center gap-3">
+        {icon ? (
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-primary/40 bg-primary/10 text-primary shadow-[0_0_15px_color-mix(in_srgb,var(--primary)_20%,transparent)]">
+            {icon}
+          </span>
+        ) : null}
+        <div className="min-w-0 flex-1">
+          <h3 className="font-cinzel text-xs sm:text-sm font-bold uppercase tracking-[0.24em] text-foreground">
+            {title}
+          </h3>
+          {subtitle && (
+            <p className="font-journal text-xs italic text-muted-foreground">{subtitle}</p>
+          )}
+        </div>
+        <div className="hidden h-px w-14 bg-gradient-to-r from-primary/35 via-primary/10 to-transparent sm:block" />
+        <span className="h-2 w-2 rotate-45 border border-primary/60 bg-primary/20" />
+      </div>
     </div>
   );
 }
 
-export function Card({ children, className = "" }) {
+export function Card({ children, className = "", variant = "grimoire" }) {
+  const cardClass = variant === "war-room" ? "war-room-card" : "grimoire-card";
   return (
-    <div className={`ornate-frame interactive-lift relative overflow-hidden rounded-2xl border border-primary/30 bg-card/90 p-5 shadow-[0_20px_45px_rgba(0,0,0,0.32)] before:pointer-events-none before:absolute before:inset-x-8 before:top-2 before:h-0.5 before:bg-gradient-to-r before:from-transparent before:via-primary before:to-transparent ${className}`}>
+    <div
+      className={`${cardClass} bracket-corners interactive-lift relative overflow-hidden rounded-2xl p-5 shadow-[0_20px_45px_rgba(0,0,0,0.38)] transition-all ${className}`}
+    >
       {children}
     </div>
   );
@@ -245,25 +270,53 @@ export function StatBox({ label, value, onChange }) {
   const { promptRoll } = useDice();
   const mod = calculateModifier(value);
   const formattedMod = formatModifier(mod);
+  const isPositive = mod > 0;
+  const isNegative = mod < 0;
 
   return (
-    <div className="group relative flex min-w-[68px] flex-col items-center gap-1 rounded-xl border border-white/10 bg-background/45 p-3 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:bg-primary/5">
-      <span className="font-serif text-[10px] font-bold uppercase tracking-[0.22em] text-muted-foreground">{label}</span>
-      <EditableNumber
-        value={value}
-        onChange={onChange}
-        className="text-center text-xl font-bold text-foreground"
-        min={1}
-        max={30}
-      />
+    <div className="medallion-plate group relative flex min-w-[70px] sm:min-w-[76px] flex-col items-center rounded-xl p-2.5 sm:p-3 shadow-md">
+      {/* Rótulo do Atributo */}
+      <span className="font-cinzel text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em] text-primary/90">
+        {label}
+      </span>
+
+      {/* Botão de Rolagem com Modificador em Destaque */}
       <button
+        type="button"
         onClick={() => promptRoll(`Teste de ${label}`, mod)}
-        className="mt-0.5 flex items-center gap-1 rounded-md border border-white/5 bg-white/[0.02] px-2 py-0.5 font-mono text-xs font-semibold text-primary transition-all hover:border-primary/50 hover:bg-primary/15 hover:text-foreground active:scale-95"
+        className="my-1.5 flex w-full flex-col items-center justify-center rounded-lg border border-primary/25 bg-primary/10 py-1 transition-all group-hover:border-primary/60 group-hover:bg-primary/20 active:scale-95 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary"
         title={`Rolar teste de ${label} (${formattedMod})`}
+        aria-label={`Rolar teste de ${label} com modificador ${formattedMod}`}
       >
-        <Dices size={11} className="opacity-60 group-hover:opacity-100" />
-        <span>{formattedMod}</span>
+        <span
+          className={`font-cinzel text-lg sm:text-xl font-black leading-none tracking-tight font-tabular ${
+            isPositive
+              ? "text-primary"
+              : isNegative
+                ? "text-rose-400"
+                : "text-foreground"
+          }`}
+        >
+          {formattedMod}
+        </span>
+        <span className="mt-0.5 flex items-center gap-1 text-[9px] uppercase tracking-wider text-muted-foreground group-hover:text-primary transition-colors">
+          <Dices size={10} className="opacity-70 group-hover:rotate-12 transition-transform" />
+          <span>rolar</span>
+        </span>
       </button>
+
+      {/* Valor Base Editável */}
+      <div className="flex items-center gap-1 text-[11px] text-muted-foreground/80">
+        <span className="text-[9px] uppercase tracking-wider opacity-60">Base:</span>
+        <EditableNumber
+          value={value}
+          onChange={onChange}
+          className="font-mono text-xs font-semibold text-foreground/90 hover:text-primary"
+          min={1}
+          max={30}
+          label={`Pontos de ${label}`}
+        />
+      </div>
     </div>
   );
 }

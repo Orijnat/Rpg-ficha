@@ -264,36 +264,39 @@ export default function AdminIndex() {
       {isMaster && (
       <>
       {campaignError && <p className="border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive-foreground">{campaignError}</p>}
-      <div className="guild-plaque ornate-frame border-2 border-primary/45 bg-card/95 p-5 shadow-[0_18px_50px_rgba(0,0,0,0.4)] sm:p-7">
+      <div className="war-room-card bracket-corners rounded-2xl border border-primary/40 p-5 sm:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.32em] text-primary">
-              <Crown size={14} />
-              Câmara do mestre
+              <Crown size={14} className="text-amber-400" />
+              Soberania do Narrador
             </div>
-            <h1 className="mt-2 font-serif text-3xl font-black uppercase tracking-[0.12em] text-foreground sm:text-4xl">
+            <h1 className="mt-1 font-cinzel text-2xl sm:text-4xl font-black uppercase tracking-[0.08em] text-foreground">
               Sala de Guerra
             </h1>
-            <p className="mt-2 max-w-2xl font-serif text-base text-muted-foreground">
-              Prepare encontros, acompanhe heróis e conduza o próximo capítulo da campanha.
+            <p className="mt-1.5 max-w-2xl font-journal text-sm sm:text-base italic text-muted-foreground">
+              Conduza o combate tático em tempo real, gerencie ameaças e orquestre o próximo capítulo da mesa.
             </p>
           </div>
-          <Link href="/admin/personagens/new" className="flex min-h-11 items-center justify-center gap-2 rounded-lg border-2 border-primary/50 bg-primary px-4 py-2 text-xs font-bold uppercase tracking-wider text-primary-foreground transition hover:brightness-110 active:scale-95">
+          <Link
+            href="/admin/personagens/new"
+            className="flex min-h-11 items-center justify-center gap-2 rounded-xl border border-primary/50 bg-primary/20 px-4 py-2 font-cinzel text-xs font-bold uppercase tracking-wider text-primary transition hover:bg-primary/30 active:scale-95 shadow-md shadow-primary/15"
+          >
             <Plus size={15} />
             Novo herói
           </Link>
         </div>
 
         {/* Barra de Múltiplas Mesas / Campanhas & Convite Rápido */}
-        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/30 bg-primary/10 p-3.5">
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/25 bg-primary/10 p-3 sm:p-3.5">
           <div className="flex flex-wrap items-center gap-2.5">
-            <span className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5 font-serif">
-              <Crown size={14} /> Mesa / Sessão Ativa:
+            <span className="font-cinzel text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
+              <Crown size={14} className="text-amber-400" /> Mesa Ativa:
             </span>
             <select
               value={selectedCampaignId}
               onChange={(e) => setSelectedCampaignId(e.target.value)}
-              className="min-h-9 rounded-lg border border-primary/40 bg-background/90 px-3 py-1 text-xs font-semibold text-foreground outline-none focus:border-primary"
+              className="min-h-9 rounded-lg border border-primary/40 bg-background/95 px-3 py-1 font-cinzel text-xs font-bold text-foreground outline-none focus:border-primary shadow-inner"
             >
               <option value="">Todas as Mesas ({characters.length} heróis)</option>
               {campaigns.map((camp) => (
@@ -310,15 +313,15 @@ export default function AdminIndex() {
                 <button
                   type="button"
                   onClick={handleCopyInvite}
-                  className="flex min-h-9 items-center gap-1.5 rounded-lg border border-primary/50 bg-primary/20 px-3 py-1 text-xs font-bold text-primary hover:bg-primary/30 transition active:scale-95"
+                  className="flex min-h-9 items-center gap-1.5 rounded-lg border border-amber-400/50 bg-amber-500/15 px-3 py-1 font-cinzel text-xs font-bold text-amber-300 hover:bg-amber-500/25 transition active:scale-95 shadow-sm"
                   title="Copiar link de convite desta mesa para enviar aos jogadores"
                 >
                   {copiedInvite ? <Check size={13} className="text-emerald-400" /> : <Link2 size={13} />}
-                  <span>{copiedInvite ? "Link Copiado!" : `Copiar Link (${activeCampaign.codigoConvite})`}</span>
+                  <span>{copiedInvite ? "Link Copiado!" : `Copiar Convite (${activeCampaign.codigoConvite})`}</span>
                 </button>
                 <Link
                   href="/admin/campanhas"
-                  className="flex min-h-9 items-center gap-1 rounded-lg border border-border bg-secondary px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground transition"
+                  className="flex min-h-9 items-center gap-1 rounded-lg border border-border bg-secondary/80 px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground transition"
                 >
                   Gerenciar
                 </Link>
@@ -326,7 +329,7 @@ export default function AdminIndex() {
             ) : (
               <Link
                 href="/admin/campanhas"
-                className="flex min-h-9 items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-bold text-primary hover:bg-primary/20 transition"
+                className="flex min-h-9 items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/15 px-3 py-1 font-cinzel text-xs font-bold text-primary hover:bg-primary/25 transition"
               >
                 <Plus size={13} /> Gerenciar Campanhas & Convites
               </Link>
@@ -337,17 +340,17 @@ export default function AdminIndex() {
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {[
-          ["Heróis vivos", activeCharacters.length, Users],
-          ["Personagens", displayedCharacters.length, ScrollText],
-          ["NPCs preparados", table.npcs.length, Skull],
-          ["Na iniciativa", table.initiative.length, Swords],
-        ].map(([label, value, Icon]) => (
-          <Card key={label} className="p-4">
+          ["Heróis vivos", activeCharacters.length, Users, "text-emerald-400"],
+          ["Personagens", displayedCharacters.length, ScrollText, "text-primary"],
+          ["NPCs preparados", table.npcs.length, Skull, "text-rose-400"],
+          ["Na iniciativa", table.initiative.length, Swords, "text-amber-400"],
+        ].map(([label, value, Icon, colorClass]) => (
+          <Card key={label} variant="war-room" className="p-4 sm:p-5">
             <div className="flex items-center justify-between">
-              <span className="font-serif text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{label}</span>
-              <Icon size={17} className="text-primary" />
+              <span className="font-cinzel text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{label}</span>
+              <Icon size={17} className={colorClass} />
             </div>
-            <strong className="mt-2 block font-serif text-3xl text-foreground">{value}</strong>
+            <strong className="mt-2 block font-cinzel text-3xl font-bold text-foreground font-tabular">{value}</strong>
           </Card>
         ))}
       </div>
@@ -407,19 +410,19 @@ export default function AdminIndex() {
       </div>
 
       {/* Rastreador de Iniciativa e Combate Tático */}
-      <Card className="border-2 border-primary/30">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/70 pb-4">
+      <Card variant="war-room">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-primary/20 pb-4">
           <div>
             <div className="flex items-center gap-2">
               <SectionHeader title="Iniciativa do Encontro" icon={<Dices size={16} />} />
               {table.initiative.length > 0 && (
-                <span className="rounded-full border border-primary/40 bg-primary/15 px-2.5 py-0.5 font-serif text-xs font-bold text-primary">
+                <span className="rounded-full border border-amber-400/50 bg-amber-500/15 px-3 py-0.5 font-cinzel text-xs font-bold text-amber-300 shadow-sm">
                   Rodada {table.combatRound || 1}
                 </span>
               )}
             </div>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Ordem dos turnos, PV em tempo real e condições ativas.
+            <p className="font-journal text-xs italic text-muted-foreground">
+              Ordem dos combatentes, pontos de vida em tempo real e condições ativas da batalha.
             </p>
           </div>
 
@@ -429,15 +432,15 @@ export default function AdminIndex() {
                 <button
                   type="button"
                   onClick={rollAllInitiatives}
-                  className="flex min-h-10 items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary transition hover:bg-primary/20 active:scale-95"
-                  title="Rola 1d20 para todos os combatentes e ordena"
+                  className="flex min-h-10 items-center gap-1.5 rounded-xl border border-primary/40 bg-primary/10 px-3.5 py-1.5 font-cinzel text-xs font-bold text-primary transition hover:bg-primary/20 active:scale-95"
+                  title="Rola 1d20 para todos os combatentes e reordena"
                 >
                   <Dices size={14} /> Rolar Todos
                 </button>
                 <button
                   type="button"
                   onClick={handleAdvanceTurn}
-                  className="flex min-h-10 items-center gap-1.5 rounded-lg border border-primary/50 bg-primary px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider text-primary-foreground transition hover:brightness-110 active:scale-95 shadow-sm shadow-primary/30"
+                  className="flex min-h-10 items-center gap-1.5 rounded-xl border border-amber-400/60 bg-amber-500/25 px-4 py-1.5 font-cinzel text-xs font-bold uppercase tracking-wider text-amber-200 transition hover:bg-amber-500/35 active:scale-95 shadow-md shadow-amber-500/20"
                 >
                   <Play size={13} /> Avançar Turno
                 </button>
@@ -446,7 +449,7 @@ export default function AdminIndex() {
             <button
               type="button"
               onClick={handleResetCombat}
-              className="flex min-h-10 items-center gap-1.5 rounded-lg border border-border bg-secondary px-3 py-1.5 text-xs font-semibold text-secondary-foreground transition hover:border-destructive/40 hover:text-destructive active:scale-95"
+              className="flex min-h-10 items-center gap-1.5 rounded-xl border border-border bg-secondary/80 px-3 py-1.5 text-xs font-semibold text-muted-foreground transition hover:border-destructive/40 hover:text-destructive active:scale-95"
             >
               <RotateCcw size={13} /> Limpar
             </button>
@@ -455,7 +458,7 @@ export default function AdminIndex() {
 
         {/* Adicionar participantes ao combate */}
         <div className="mt-4">
-          <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+          <p className="mb-2 font-cinzel text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
             Adicionar à iniciativa:
           </p>
           <div className="flex flex-wrap gap-2">
@@ -472,7 +475,7 @@ export default function AdminIndex() {
                     hpMax: character.hpMax,
                   })
                 }
-                className="flex min-h-9 items-center gap-1.5 rounded-lg border border-primary/30 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary transition hover:bg-primary/20 active:scale-95"
+                className="flex min-h-9 items-center gap-1.5 rounded-xl border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary transition hover:border-primary/60 hover:bg-primary/20 active:scale-95"
               >
                 <Shield size={12} /> + {character.name}
               </button>
@@ -488,7 +491,7 @@ export default function AdminIndex() {
                     hpMax: npc.hpMax || npc.hp || 10,
                   })
                 }
-                className="flex min-h-9 items-center gap-1.5 rounded-lg border border-accent/30 bg-accent/10 px-2.5 py-1 text-xs font-semibold text-accent transition hover:bg-accent/20 active:scale-95"
+                className="flex min-h-9 items-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-950/20 px-3 py-1 text-xs font-semibold text-rose-300 transition hover:border-rose-500/60 hover:bg-rose-900/30 active:scale-95"
               >
                 <Skull size={12} /> + {npc.name}
               </button>
@@ -498,11 +501,11 @@ export default function AdminIndex() {
 
         {/* Lista de Combatentes */}
         {table.initiative.length === 0 ? (
-          <div className="mt-6 rounded-lg border-2 border-dashed border-border p-8 text-center text-sm text-muted-foreground">
-            Adicione heróis ou NPCs acima para montar a ordem do combate tático.
+          <div className="mt-6 rounded-2xl border-2 border-dashed border-primary/20 p-8 text-center font-journal text-sm italic text-muted-foreground bg-primary/[0.02]">
+            Nenhum combatente na arena. Adicione heróis ou NPCs acima para orquestrar os turnos de combate.
           </div>
         ) : (
-          <div className="mt-5 space-y-3">
+          <div className="mt-5 space-y-2.5">
             {table.initiative.map((item, index) => {
               const isActiveTurn = index === (table.activeTurnIndex % table.initiative.length);
               const isNpc = item.type === "NPC";
@@ -516,19 +519,19 @@ export default function AdminIndex() {
               return (
                 <div
                   key={item.id}
-                  className={`relative rounded-xl border-2 p-3 transition-all ${
+                  className={`relative rounded-xl border p-3.5 transition-all ${
                     isActiveTurn
-                      ? "border-primary bg-primary/10 shadow-lg shadow-primary/15 ring-2 ring-primary/30"
-                      : "border-border bg-secondary/50"
+                      ? "border-amber-400/80 bg-gradient-to-r from-amber-500/15 via-card to-card shadow-[0_0_24px_rgba(245,158,11,0.2)] ring-1 ring-amber-400/50"
+                      : "border-border/80 bg-secondary/40 hover:bg-secondary/60"
                   }`}
                 >
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     {/* Identidade e Turno */}
                     <div className="flex items-center gap-3 min-w-0">
                       <div
-                        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg font-serif text-sm font-black ${
+                        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-cinzel text-sm font-black ${
                           isActiveTurn
-                            ? "bg-primary text-primary-foreground shadow-md"
+                            ? "bg-amber-400 text-black font-extrabold shadow-md shadow-amber-400/30"
                             : "border border-border bg-background text-muted-foreground"
                         }`}
                       >
@@ -537,32 +540,32 @@ export default function AdminIndex() {
 
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
-                          <strong className="truncate text-sm font-semibold text-foreground">
+                          <strong className="truncate font-cinzel text-sm font-bold text-foreground">
                             {item.name}
                           </strong>
                           <span
-                            className={`rounded px-1.5 py-0.2 text-[9px] font-bold uppercase tracking-wider ${
+                            className={`rounded-md px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
                               isNpc
-                                ? "bg-accent/20 text-accent border border-accent/40"
+                                ? "bg-rose-950/40 text-rose-300 border border-rose-500/30"
                                 : "bg-primary/20 text-primary border border-primary/40"
                             }`}
                           >
                             {item.type}
                           </span>
                           {isActiveTurn && (
-                            <span className="animate-pulse rounded bg-primary/25 px-1.5 py-0.2 text-[9px] font-extrabold uppercase tracking-widest text-primary border border-primary">
+                            <span className="animate-pulse rounded-md bg-amber-400/25 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-widest text-amber-300 border border-amber-400/60 shadow-sm">
                               Turno Ativo
                             </span>
                           )}
                           {isDead && (
-                            <span className="rounded bg-rose-500/20 px-1.5 py-0.2 text-[9px] font-bold uppercase text-rose-400 border border-rose-500/30">
+                            <span className="rounded-md bg-rose-500/25 px-1.5 py-0.5 text-[9px] font-bold uppercase text-rose-300 border border-rose-500/40">
                               0 PV
                             </span>
                           )}
                         </div>
 
                         {/* Chips de Condições */}
-                        <div className="mt-1.5 flex flex-wrap items-center gap-1">
+                        <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
                           {itemConditions.map((condId) => {
                             const cond = CONDITIONS_LIST.find((c) => c.id === condId);
                             if (!cond) return null;
@@ -571,11 +574,11 @@ export default function AdminIndex() {
                                 key={condId}
                                 type="button"
                                 onClick={() => toggleCombatantCondition(item.id, condId)}
-                                className="group inline-flex items-center gap-1 rounded bg-rose-950/40 px-1.5 py-0.5 text-[9px] font-semibold text-rose-300 border border-rose-500/30 hover:bg-rose-900/60 transition"
+                                className="wax-seal bg-rose-950/60 text-rose-200 border border-rose-500/40 hover:bg-rose-900/80 transition"
                                 title={`${cond.description} (clique para remover)`}
                               >
                                 <span>{cond.name}</span>
-                                <X size={9} className="opacity-60 group-hover:opacity-100" />
+                                <X size={10} className="opacity-70 hover:opacity-100" />
                               </button>
                             );
                           })}
@@ -585,7 +588,7 @@ export default function AdminIndex() {
                             onClick={() =>
                               setOpenConditionPickerId(isConditionPickerOpen ? null : item.id)
                             }
-                            className="inline-flex items-center gap-0.5 rounded border border-white/10 bg-white/5 px-1.5 py-0.5 text-[9px] text-muted-foreground hover:border-primary/40 hover:text-foreground transition"
+                            className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[9px] font-semibold text-primary/90 hover:bg-primary/20 hover:text-foreground transition"
                           >
                             <Plus size={9} /> Condição
                           </button>
@@ -596,7 +599,7 @@ export default function AdminIndex() {
                     {/* Controles de Iniciativa e PV */}
                     <div className="flex flex-wrap items-center gap-3">
                       {/* Entrada de Iniciativa */}
-                      <label className="flex items-center gap-1 text-[11px] font-semibold text-muted-foreground">
+                      <label className="flex items-center gap-1 text-[11px] font-semibold text-muted-foreground font-cinzel">
                         <span>INI:</span>
                         <input
                           type="number"
@@ -604,22 +607,22 @@ export default function AdminIndex() {
                           onChange={(e) =>
                             updateInitiative(item.id, { initiative: Number(e.target.value) })
                           }
-                          className="h-8 w-14 rounded border border-border bg-input-background px-1 text-center font-mono text-xs text-foreground outline-none focus:border-primary"
+                          className="h-8 w-14 rounded-lg border border-primary/40 bg-input-background px-1 text-center font-mono text-xs font-bold text-foreground outline-none focus:border-primary"
                         />
                       </label>
 
-                      {/* Controle Rápido de PV */}
-                      <div className="flex items-center gap-1 rounded-lg border border-border/80 bg-background/80 px-2 py-1">
-                        <HeartPulse size={12} className={isDead ? "text-rose-500" : "text-emerald-400"} />
-                        <span className="font-mono text-xs font-semibold text-foreground mr-1">
+                      {/* Controle Rápido de PV com botões táteis */}
+                      <div className="flex items-center gap-1.5 rounded-xl border border-border bg-background/90 px-2.5 py-1 shadow-inner">
+                        <HeartPulse size={13} className={isDead ? "text-rose-500 animate-pulse" : "text-emerald-400"} />
+                        <span className="font-mono text-xs font-bold text-foreground mr-1.5 font-tabular">
                           {item.hp}/{item.hpMax}
                         </span>
 
-                        <div className="flex items-center gap-0.5">
+                        <div className="flex items-center gap-1">
                           <button
                             type="button"
                             onClick={() => adjustCombatantHp(item.id, -5)}
-                            className="rounded px-1 text-[10px] font-bold text-rose-400 hover:bg-rose-500/20 active:scale-95"
+                            className="rounded-md bg-rose-950/50 border border-rose-500/30 px-1.5 py-0.5 text-[10px] font-bold text-rose-300 hover:bg-rose-900/70 active:scale-95 transition"
                             title="Dano -5"
                           >
                             -5
@@ -627,7 +630,7 @@ export default function AdminIndex() {
                           <button
                             type="button"
                             onClick={() => adjustCombatantHp(item.id, -1)}
-                            className="rounded px-1 text-[10px] font-bold text-rose-400 hover:bg-rose-500/20 active:scale-95"
+                            className="rounded-md bg-rose-950/50 border border-rose-500/30 px-1.5 py-0.5 text-[10px] font-bold text-rose-300 hover:bg-rose-900/70 active:scale-95 transition"
                             title="Dano -1"
                           >
                             -1
@@ -635,7 +638,7 @@ export default function AdminIndex() {
                           <button
                             type="button"
                             onClick={() => adjustCombatantHp(item.id, +1)}
-                            className="rounded px-1 text-[10px] font-bold text-emerald-400 hover:bg-emerald-500/20 active:scale-95"
+                            className="rounded-md bg-emerald-950/50 border border-emerald-500/30 px-1.5 py-0.5 text-[10px] font-bold text-emerald-300 hover:bg-emerald-900/70 active:scale-95 transition"
                             title="Cura +1"
                           >
                             +1
@@ -643,7 +646,7 @@ export default function AdminIndex() {
                           <button
                             type="button"
                             onClick={() => adjustCombatantHp(item.id, +5)}
-                            className="rounded px-1 text-[10px] font-bold text-emerald-400 hover:bg-emerald-500/20 active:scale-95"
+                            className="rounded-md bg-emerald-950/50 border border-emerald-500/30 px-1.5 py-0.5 text-[10px] font-bold text-emerald-300 hover:bg-emerald-900/70 active:scale-95 transition"
                             title="Cura +5"
                           >
                             +5
@@ -655,7 +658,7 @@ export default function AdminIndex() {
                       <button
                         type="button"
                         onClick={() => removeFromInitiative(item.id)}
-                        className="rounded p-1.5 text-muted-foreground hover:bg-destructive/15 hover:text-destructive active:scale-95"
+                        className="rounded-lg p-2 text-muted-foreground hover:bg-destructive/20 hover:text-destructive active:scale-95 transition"
                         title="Remover da iniciativa"
                       >
                         <Trash2 size={13} />
@@ -665,11 +668,11 @@ export default function AdminIndex() {
 
                   {/* Popover Seletor de Condições */}
                   {isConditionPickerOpen && (
-                    <div className="mt-3 border-t border-white/10 pt-2">
-                      <p className="mb-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                        Selecione as condições ativas:
+                    <div className="mt-3 border-t border-primary/20 pt-2.5">
+                      <p className="mb-1.5 font-cinzel text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        Aplicar condição tática:
                       </p>
-                      <div className="flex flex-wrap gap-1">
+                      <div className="flex flex-wrap gap-1.5">
                         {CONDITIONS_LIST.map((cond) => {
                           const active = itemConditions.includes(cond.id);
                           return (
@@ -677,10 +680,10 @@ export default function AdminIndex() {
                               key={cond.id}
                               type="button"
                               onClick={() => toggleCombatantCondition(item.id, cond.id)}
-                              className={`rounded px-2 py-0.5 text-[10px] font-medium transition ${
+                              className={`wax-seal transition ${
                                 active
-                                  ? "bg-rose-600 text-white font-bold shadow-sm"
-                                  : "border border-border bg-secondary/80 text-muted-foreground hover:border-primary/40 hover:text-foreground"
+                                  ? "bg-rose-600 text-white font-black shadow-md border-rose-400"
+                                  : "border border-border bg-secondary/80 text-muted-foreground hover:border-primary/50 hover:text-foreground"
                               }`}
                               title={cond.description}
                             >

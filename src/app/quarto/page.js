@@ -67,52 +67,56 @@ export default function QuartoPage() {
     <div className="space-y-4">
       {/* Painel de Descanso e Recuperação */}
       <Card>
-        <SectionHeader title="Aposentos & Descanso" icon={<Bed size={14} />} />
+        <SectionHeader
+          title="Aposentos & Descanso"
+          subtitle="Recupere o vigor físico, pontos de energia e avance seus estudos arcanos"
+          icon={<Bed size={15} />}
+        />
 
         {restNotice && (
-          <div className="mb-4 flex items-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3 text-xs font-semibold text-emerald-300">
+          <div className="mb-4 flex items-center gap-2 rounded-xl border border-emerald-500/50 bg-emerald-950/40 p-3 text-xs font-semibold text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
             <Check size={14} />
             <span>{restNotice}</span>
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {/* Descanso Curto */}
-          <div className="flex flex-col justify-between rounded-xl border border-white/5 bg-white/[0.02] p-4 transition-all hover:border-[#d69a3d]/30">
+          <div className="medallion-plate flex flex-col justify-between rounded-xl p-4 sm:p-5">
             <div>
-              <div className="flex items-center gap-2 text-sm font-bold text-[#f5e9d7]">
-                <Sun size={16} className="text-amber-400" />
+              <div className="flex items-center gap-2 font-cinzel text-sm font-bold text-foreground">
+                <Sun size={17} className="text-amber-400" />
                 <span>Descanso Curto (1 hora)</span>
               </div>
-              <p className="mt-1 text-xs text-[#8a7355]">
-                Pausa para respirar e meditar. Recupera 1d8 + CON em vida, restaura até 3 PE e avança +1h no treino da habilidade em foco.
+              <p className="mt-2 font-journal text-xs sm:text-sm italic leading-relaxed text-muted-foreground">
+                Pausa breve para respirar e meditar. Recupera 1d8 + CON em vida, restaura até 3 PE e avança +1h no treino da habilidade em foco.
               </p>
             </div>
             <button
               onClick={handleShortRest}
-              className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-primary/40 bg-primary/15 py-2.5 text-xs font-bold text-primary transition hover:bg-primary/25 active:scale-95"
+              className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-primary/50 bg-primary/20 py-2.5 font-cinzel text-xs font-bold uppercase tracking-wider text-primary transition hover:bg-primary/30 active:scale-95 shadow-md shadow-primary/15"
             >
-              <Sparkles size={13} />
+              <Sparkles size={14} />
               Realizar Descanso Curto
             </button>
           </div>
 
           {/* Descanso Longo */}
-          <div className="flex flex-col justify-between rounded-xl border border-white/5 bg-white/[0.02] p-4 transition-all hover:border-indigo-500/30">
+          <div className="medallion-plate flex flex-col justify-between rounded-xl p-4 sm:p-5">
             <div>
-              <div className="flex items-center gap-2 text-sm font-bold text-[#f5e9d7]">
-                <Moon size={16} className="text-indigo-400" />
+              <div className="flex items-center gap-2 font-cinzel text-sm font-bold text-foreground">
+                <Moon size={17} className="text-indigo-400" />
                 <span>Descanso Longo (8 horas)</span>
               </div>
-              <p className="mt-1 text-xs text-[#8a7355]">
-                Uma boa noite de sono em segurança. Restaura 100% de PV e PE (seus e da montaria) e avança +4h no treino da habilidade em foco.
+              <p className="mt-2 font-journal text-xs sm:text-sm italic leading-relaxed text-muted-foreground">
+                Uma noite de sono profundo em segurança. Restaura 100% de PV e PE (seus e da montaria) e avança +4h no treino da habilidade em foco.
               </p>
             </div>
             <button
               onClick={handleLongRest}
-              className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-accent/50 bg-accent/15 py-2.5 text-xs font-bold text-accent transition hover:bg-accent/25 active:scale-95"
+              className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-indigo-400/50 bg-indigo-500/20 py-2.5 font-cinzel text-xs font-bold uppercase tracking-wider text-indigo-300 transition hover:bg-indigo-500/30 active:scale-95 shadow-md shadow-indigo-500/20"
             >
-              <Sparkles size={13} />
+              <Sparkles size={14} />
               Realizar Descanso Longo
             </button>
           </div>
@@ -121,14 +125,19 @@ export default function QuartoPage() {
 
       {/* Anotações do Quarto */}
       <Card>
-        <SectionHeader title="Diário do Quarto & Pertences Guardados" icon={<Home size={14} />} />
-        <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3">
+        <SectionHeader
+          title="Diário do Quarto & Baú de Pertences"
+          subtitle="Itens deixados em segurança, cartas e lembranças de jornadas passadas"
+          icon={<Home size={15} />}
+        />
+        <div className="rounded-xl border border-primary/20 bg-background/50 p-3.5">
           <EditableText
             value={data.roomNotes}
             onChange={(value) => upd("roomNotes", value)}
-            className="w-full text-sm text-[#e8d5b0]"
+            className="w-full font-journal text-sm sm:text-base leading-relaxed text-foreground"
             multiline
             placeholder="Itens deixados no baú do dormitório, cartas recebidas, mobília, segredos guardados..."
+            label="Notas do quarto"
           />
         </div>
       </Card>

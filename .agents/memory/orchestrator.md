@@ -1,5 +1,18 @@
 # Memória do Agente Orquestrador (@orchestrator)
 
+## Entrega — 2026-11-09 (Reformulação Visual Artesanal Dark Fantasy: Jogador & Mestre)
+
+- **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder` e `frontend-design`), `dice-mechanic` (skill `dice-roller`) e `qa-tester`.
+- **Implementações Entregues**:
+  * **Tipografia e Tokens Globais (`globals.css`)**: Ativação das famílias `Cinzel`, `Cinzel Decorative` e `Crimson Text` registradas no `@theme inline` com classes semânticas (`font-cinzel`, `font-decorative`, `font-journal`).
+  * **Superfícies Folio & War Room**: Classes estruturais `.grimoire-card` (cartões velino com cantoneiras de metal e gradiente artesanal) e `.war-room-card` (acabamento obsidiana tático).
+  * **Cabeçalho Contextual Inteligente (`Cabecalho.jsx`)**: Distingue a visão do Jogador (nome do aventureiro, nível, frasco de PV com gradiente fluido e tema) da visão do Mestre (insígnia da Soberania do Narrador, título de mesa e atalhos rápidos).
+  * **Sidebar do Grimório (`AppShell.jsx`)**: Separação visual entre "Folio do Jogador" e a seção destacada "Narrador (Câmara do Mestre)" com glow âmbar realçado.
+  * **Medalhões dos 7 Atributos (`StatBox` em `ui.js`)**: O modificador (ex: `+3`, `-1`) foi transformado no centro visual de ação, permitindo rolagem de teste com 1 clique direto e animação de d20.
+  * **Sala de Guerra do Mestre (`admin/page.js` e `admin/layout.js`)**: Ribbon tático de navegação entre módulos, combate com indicação destacada de turno ativo, botões táteis de PV (`-5`, `-1`, `+1`, `+5`) e chips de condição em formato de selo de cera (`.wax-seal`).
+  * **Alinhamento de Telas Secundárias**: Perícias, Quarto, Montaria e Mundo sem cores hexadecimais soltas, 100% integrados à paleta semântica dos 5 temas dinâmicos.
+- **Validação**: 38 testes de regras/dados aprovados; build Next.js 16 (26 rotas) executado com sucesso em 4.1s; `git diff --check` sem erros.
+
 ## Entrega — 2026-11-06 (Mecânica de Criação de Mesas, Links de Convite e Vínculo no Cadastro)
 
 - **Especialistas Acionados**: `backend-database` (skill `gm-campaign-orchestrator`), `frontend-artisan` (skill `sheet-component-builder`), `audit-and-security` e `qa-tester`.

@@ -41,26 +41,24 @@ export default function AdminLayout({ children }) {
   if (loading || !isAuthenticated || !isMaster) return null;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-      <div className="mb-6 flex flex-col gap-4 border-b-2 border-primary/35 pb-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/50 bg-primary/10 text-primary shadow-md">
-              <Crown size={22} />
-            </div>
-            <div>
-              <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">
-                Soberania do Narrador
-              </span>
-              <h2 className="font-serif text-xl font-black uppercase tracking-wider text-foreground">
-                Câmara do Mestre
-              </h2>
-            </div>
+    <div className="mx-auto max-w-7xl px-2 py-4 sm:px-4 lg:px-6">
+      {/* Barra de Navegação Tática da Câmara do Mestre */}
+      <div className="mb-6 rounded-2xl border border-primary/30 bg-card/90 p-2 shadow-[0_12px_36px_rgba(0,0,0,0.4)] backdrop-blur-md">
+        <div className="flex items-center justify-between px-3 py-1.5 border-b border-primary/15 mb-1.5">
+          <div className="flex items-center gap-2">
+            <span className="flex h-5 w-5 items-center justify-center rounded bg-amber-500/20 text-amber-400">
+              <Crown size={12} />
+            </span>
+            <span className="font-cinzel text-[10px] font-bold uppercase tracking-[0.22em] text-amber-300">
+              Console de Comando do Mestre
+            </span>
           </div>
+          <span className="font-journal text-xs italic text-muted-foreground hidden sm:inline">
+            Gestão da mesa, encontros e crônicas
+          </span>
         </div>
 
-        {/* Barra de Navegação Rápida entre os Módulos do Mestre */}
-        <nav className="no-scrollbar flex overflow-x-auto gap-1.5 rounded-xl border border-border bg-secondary/40 p-1.5">
+        <nav aria-label="Módulos da Câmara do Mestre" className="no-scrollbar flex overflow-x-auto gap-1">
           {NAV_ITEMS.map((item) => {
             const Icon = item.icon;
             const active = pathname === item.href;
@@ -68,20 +66,22 @@ export default function AdminLayout({ children }) {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-xs font-bold uppercase tracking-wider transition ${
+                aria-current={active ? "page" : undefined}
+                className={`flex shrink-0 items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold tracking-wider transition-all focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary ${
                   active
-                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-                    : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    ? "border border-primary/60 bg-primary text-primary-foreground font-bold shadow-md shadow-primary/25"
+                    : "text-muted-foreground hover:bg-primary/10 hover:text-foreground"
                 }`}
               >
-                <Icon size={14} />
-                <span>{item.label}</span>
+                <Icon size={14} className={active ? "text-primary-foreground" : "text-primary/70"} />
+                <span className="font-cinzel">{item.label}</span>
               </Link>
             );
           })}
         </nav>
       </div>
-      <div>{children}</div>
+
+      <div className="relative">{children}</div>
     </div>
   );
 }
