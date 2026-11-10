@@ -1,6 +1,5 @@
 {
-  "timestamp": "2026-11-09T22:31:00-03:00",
-  "prompt": "/frontend-design poderia melorar o visual do meu site, tanto para os joadores como para o mestre,",
-  "skill": "frontend-design",
-  "objective": "Melhorar o design visual do site para jogadores e mestres com identidade visual marcante e intencional"
+  "timestamp": "2026-11-09T23:03:00-03:00",
+  "prompt": "Error occurred prerendering page \"/_not-found\". ReferenceError: isHpModalOpen is not defined at <unknown> (src/app/components/Cabecalho.jsx:110:8)",
+  "resolution": "Declarado estado isHpModalOpen no Cabecalho, corrigido item.href no AppShell e import de BarraHp no personagem/page.js. Build 100% OK (28/28 rotas)."
 }

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { usePathname } from "next/navigation";
-import { Crown, ScrollText, Settings, Shield } from "lucide-react";
+import { Crown, HeartPulse, ScrollText, Settings, Shield } from "lucide-react";
 import { useCharacter } from "../context/CharacterContext";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
@@ -14,8 +14,9 @@ export default function Cabecalho() {
   const pathname = usePathname();
   const { data, upd } = useCharacter();
   const { activeThemeObj } = useTheme();
-  const { isMaster, playerCharacters, inspectCharacter, activeCharacterId } = useAuth();
+  const { isMaster, playerCharacters = [], inspectCharacter, activeCharacterId } = useAuth();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isHpModalOpen, setIsHpModalOpen] = useState(false);
 
   const isMasterView = pathname?.startsWith("/admin");
 
@@ -64,13 +65,31 @@ export default function Cabecalho() {
                       Nv. {data.level || 1}
                     </span>
                   </div>
-                  <div className="mt-1 flex items-center gap-2.5 sm:justify-end">
-                    <div className="w-24 sm:w-32">
-                      <HPBar hp={data.hp} max={data.hpMax} />
-                    </div>
-                    <span className="font-mono text-xs font-semibold text-foreground/90">
-                      {data.hp}/{data.hpMax} <span className="text-[10px] text-muted-foreground">PV</span>
-                    </span>
+                  <div className="mt-1 flex items-center gap-2 sm:justify-end">
+                    <button
+                      type="button"
+                      onClick={() => setIsHpModalOpen(true)}
+                      className="cursor-pointer group flex items-center gap-2 hover:opacity-95 transition"
+                      title="Clique para abrir painel de Dano e Cura rápida"
+                      aria-label="Painel de dano e cura rápida"
+                    >
+                      <div className="w-24 sm:w-28 transition-transform group-hover:scale-[1.02]">
+                        <HPBar hp={data.hp} max={data.hpMax} />
+                      </div>
+                      <span className="font-mono text-xs font-semibold text-foreground/90 group-hover:text-primary transition-colors">
+                        {data.hp}/{data.hpMax} <span className="text-[10px] text-muted-foreground">PV</span>
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsHpModalOpen(true)}
+                      className="flex items-center gap-1 rounded-lg border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary transition hover:border-primary/60 hover:bg-primary/20 active:scale-95"
+                      title="Abrir painel rápido de Dano & Cura"
+                      aria-label="Abrir painel rápido de Dano e Cura"
+                    >
+                      <HeartPulse size={11} />
+                      <span className="hidden sm:inline">Dano/Cura</span>
+                    </button>
                   </div>
                 </div>
               ) : (

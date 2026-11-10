@@ -6,6 +6,7 @@ import { useCharacter } from "../context/CharacterContext";
 import { Card, EditableText, SectionHeader, StatBox } from "../components/ui";
 import Aparencia from "../components/Aparencia";
 import Pericia from "../components/Pericia";
+import BarraHp from "../components/BarrraHp";
 import RecursosCombate from "../components/RecursosCombate";
 import { calculateCapacity } from "../../lib/modifiers";
 import { DEFAULT_ABILITIES, isHabilidadeDesbloqueada } from "../../lib/abilities";

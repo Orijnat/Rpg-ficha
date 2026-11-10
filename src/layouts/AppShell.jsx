@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  ArrowRight,
   BookOpen,
   Coins,
   Compass,
@@ -24,19 +25,19 @@ import DiceModal from "../app/components/dice/DiceModal";
 import DiceFloatingTrigger from "../app/components/dice/DiceFloatingTrigger";
 
 const PLAYER_TABS = [
-  { id: "personagem", label: "Personagem", icon: <ScrollText size={16} /> },
-  { id: "habilidades", label: "Habilidades", icon: <Sparkles size={16} /> },
-  { id: "inventario", label: "Inventário", icon: <Package size={16} /> },
-  { id: "contratos", label: "Contratos", icon: <FileText size={16} /> },
-  { id: "anotacoes", label: "Diário", icon: <BookOpen size={16} /> },
-  { id: "mundo", label: "Mundo", icon: <Compass size={16} /> },
-  { id: "banco", label: "Banco", icon: <Coins size={16} /> },
-  { id: "quarto", label: "Quarto", icon: <Home size={16} /> },
-  { id: "montaria", label: "Montaria", icon: <Footprints size={16} /> },
-  { id: "perfil", label: "Perfil", icon: <User size={16} /> },
+  { id: "personagem", href: "/personagem", label: "Personagem", icon: <ScrollText size={16} /> },
+  { id: "habilidades", href: "/habilidades", label: "Habilidades", icon: <Sparkles size={16} /> },
+  { id: "inventario", href: "/inventario", label: "Inventário", icon: <Package size={16} /> },
+  { id: "contratos", href: "/contratos", label: "Contratos", icon: <FileText size={16} /> },
+  { id: "anotacoes", href: "/anotacoes", label: "Diário", icon: <BookOpen size={16} /> },
+  { id: "mundo", href: "/mundo", label: "Mundo", icon: <Compass size={16} /> },
+  { id: "banco", href: "/banco", label: "Banco", icon: <Coins size={16} /> },
+  { id: "quarto", href: "/quarto", label: "Quarto", icon: <Home size={16} /> },
+  { id: "montaria", href: "/montaria", label: "Montaria", icon: <Footprints size={16} /> },
+  { id: "perfil", href: "/perfil", label: "Perfil", icon: <User size={16} /> },
 ];
 
-const MASTER_TAB = { id: "admin", label: "Câmara do Mestre", icon: <Crown size={16} /> };
+const MASTER_TAB = { id: "admin", href: "/admin", label: "Câmara do Mestre", icon: <Crown size={16} /> };
 
 export default function AppShell({ children }) {
   const pathname = usePathname();
@@ -124,12 +125,11 @@ export default function AppShell({ children }) {
 
             <div className="no-scrollbar flex overflow-x-auto gap-1 lg:flex-col lg:gap-1 lg:overflow-visible">
               {PLAYER_TABS.map((item) => {
-                const href = `/${item.id}`;
-                const active = pathname === href;
+                const active = pathname === item.href;
 
                 return (
                   <Link
-                    key={item.href}
+                    key={item.id}
                     href={item.href}
                     aria-current={active ? "page" : undefined}
                     className={`group flex min-h-11 items-center gap-2.5 whitespace-nowrap rounded-xl px-3 py-2 text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:px-3.5 ${

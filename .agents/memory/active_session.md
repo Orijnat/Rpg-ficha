@@ -1,45 +1,25 @@
 # 🧠 Sessão Ativa — Grimorium RPG
 
-**Última Atualização**: 2026-11-09T22:45:00-03:00
-**Objetivo Atual**: Reformulação visual Dark Fantasy artesanal para Jogadores e Mestres (`frontend-design`)
+**Última Atualização**: 2026-11-09T23:03:00-03:00
+**Objetivo Atual**: Correção do erro de prerenderização `isHpModalOpen is not defined` e validação do build Next.js 16.
 
 ---
 
-## ✅ Concluído Nesta Etapa
+## ✅ Concluído Nesta Sessão
 
-| Item | Detalhes |
+| Item | Status |
 |---|---|
-| Tipografia canônica Cinzel & Crimson Text registrada no `@theme inline` | ✅ |
-| Componentes `grimoire-card`, `war-room-card`, `medallion-plate` e `wax-seal` | ✅ |
-| Reformulação do `Cabecalho.jsx`: adaptativo para Jogador vs. Mestre | ✅ |
-| Sidebar `AppShell.jsx`: divisão clara "Folio do Jogador" e "Narrador (Sala de Guerra)" | ✅ |
-| Medalhões dos 7 Atributos (`StatBox` em `ui.js`) com destaque de modificador e 1 clique | ✅ |
-| Barra de Vitalidade fluida e status de ferimento em `BarrraHp.jsx` | ✅ |
-| Recursos de Combate (`RecursosCombate.jsx`): CA, Iniciativa e Dado de Vida em medalhões | ✅ |
-| Lista de Perícias (`Pericia.jsx`): remoção de hex hardcoded, selos dourados e rolagens | ✅ |
-| Console da Câmara do Mestre (`admin/layout.js`): ribbon tático de módulos | ✅ |
-| Sala de Guerra (`admin/page.js`): combatentes com turno ativo luminoso e botões táteis | ✅ |
-| Aposentos, Montaria e Mundo (`quarto`, `montaria`, `mundo`): alinhamento dark fantasy | ✅ |
-| 38 baterias de testes unitários passando (100%) | ✅ |
-| Build Turbopack Next.js 16 (26 rotas aprovadas) | ✅ |
+| Adicionado `const [isHpModalOpen, setIsHpModalOpen] = useState(false)` em `Cabecalho.jsx` | ✅ |
+| Vinculado clique no frasco de PV e botão "Dano/Cura" ao `DanoCuraPainel` no `Cabecalho.jsx` | ✅ |
+| Corrigido `item.href` e `key={item.id}` na iteração de tabs de `AppShell.jsx` (prevenindo quebra de URL parsing do Next.js) | ✅ |
+| Importado `ArrowRight` ausente em `AppShell.jsx` | ✅ |
+| Importado `BarraHp` em `src/app/personagem/page.js` | ✅ |
+| 48 testes unitários passando (100%) | ✅ |
+| **Build de produção Next.js 16 (Turbopack): 28/28 rotas compiladas com sucesso** | ✅ |
 
 ---
 
 ## 📋 Próximos Passos Recomendados
 
-1. **Testar interativamente o fluxo de rolagem** nas novas interfaces dos atributos e perícias.
-2. **Revisar responsividade em dispositivos móveis** na Sala de Guerra e na Ficha de Personagem.
-3. **Aplicar `banco_v2.sql` no Supabase** via SQL Editor (DDL idempotente).
-4. **Git commit + push** para deploy automático na Vercel quando o usuário aprovar.
-
----
-
-## 🗂️ Arquivos Chave Alterados
-
-- [`src/app/globals.css`](file:///home/cledi/rp/Rpg-ficha/src/app/globals.css) — tokens tipográficos e classes `grimoire-card` / `war-room-card`
-- [`src/app/components/ui.js`](file:///home/cledi/rp/Rpg-ficha/src/app/components/ui.js) — `Card`, `SectionHeader`, `StatBox`, `HPBar`
-- [`src/app/components/Cabecalho.jsx`](file:///home/cledi/rp/Rpg-ficha/src/app/components/Cabecalho.jsx) — cabeçalho dinâmico Jogador vs. Mestre
-- [`src/layouts/AppShell.jsx`](file:///home/cledi/rp/Rpg-ficha/src/layouts/AppShell.jsx) — barra de navegação com seções distintas
-- [`src/app/personagem/page.js`](file:///home/cledi/rp/Rpg-ficha/src/app/personagem/page.js) — registro do aventureiro e atributos
-- [`src/app/admin/layout.js`](file:///home/cledi/rp/Rpg-ficha/src/app/admin/layout.js) — console de comando do mestre
-- [`src/app/admin/page.js`](file:///home/cledi/rp/Rpg-ficha/src/app/admin/page.js) — sala de guerra e iniciativa de combate
+1. **Testar abertura do modal de Dano/Cura** ao clicar no frasco de vida no cabeçalho.
+2. **Git commit e push** para que o deploy na Vercel seja acionado com a correção.
