@@ -402,3 +402,490 @@ export function validateNumericBounds(value, min = 0, max = Infinity, fallback =
   if (isNaN(parsed)) return fallback;
   return Math.max(min, Math.min(max, parsed));
 }
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// Motor de Regras Expandido — Mecânicas Derivadas, Descanso, Moedas, Condições
+// Adicionado por: @rpg-rules-engine + skill rpg-sheet-calculator
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ─────────────────────────────────────────────
+// 6. Progressão de Nível — Tabela de XP
+// ─────────────────────────────────────────────
+
+/**
+ * Tabela de XP necessário acumulado para cada nível (índice = nível).
+ * Nível 1 = 0 XP, Nível 20 = 355.000 XP.
+ * @type {readonly number[]}
+ */
+export const XP_TABLE = Object.freeze([
+  0, 300, 900, 2700, 6500, 14000, 23000, 34000, 48000, 64000,
+  85000, 100000, 120000, 140000, 165000, 195000, 225000, 265000, 305000, 355000,
+]);
+
+// ─────────────────────────────────────────────
+// 9. Conversão de Moedas — Taxas
+// ─────────────────────────────────────────────
+
+/**
+ * Taxas de câmbio do sistema monetário em unidades de cobre.
+ * latina (platina) = 1000 cobres, ouro = 100, prata = 10, cobre = 1.
+ * @type {Readonly<Record<string, number>>}
+ */
+export const CURRENCY_RATES = Object.freeze({
+  latina: 1000,
+  ouro: 100,
+  prata: 10,
+  cobre: 1,
+});
+
+// ─────────────────────────────────────────────
+// 2. Classe de Armadura (CA)
+// ─────────────────────────────────────────────
+
+/**
+ * Calcula a Classe de Armadura do personagem.
+ * CA = 10 + Mod(DES) + bônus extra de armadura (dadosExtras.armorClass − 10, se > 10, ou 0).
+ * O campo `dadosExtras.armorClass` é tratado como bônus extra adicional à base.
+ * @param {Object} characterData Dados do personagem
+ * @returns {{ base: number, desMod: number, extra: number, total: number, formula: string }}
+ */
+export function calculateArmorClass(characterData = {}) {
+  const base = 10;
+  const desMod = calculateModifier(characterData?.DES ?? 10);
+  const extra = Number(characterData?.dadosExtras?.armorClass ?? 0) || 0;
+  const total = base + desMod + extra;
+
+  return {
+    base,
+    desMod,
+    extra,
+    total,
+    formula: `10 + Mod(DES)[${desMod}] + Extra[${extra}] = ${total}`,
+  };
+}
+
+// ─────────────────────────────────────────────
+// 3. Pontos de Esforço (PE)
+// ─────────────────────────────────────────────
+
+/**
+ * Calcula os Pontos de Esforço do personagem.
+ * PE Max = Nível + Mod(ESP). Mínimo 0.
+ * @param {Object} characterData Dados do personagem (precisa de nivel/level e ESP)
+ * @returns {{ current: number, max: number, formula: string }}
+ */
+export function calculatePE(characterData = {}) {
+  const level = Number(characterData?.nivel ?? characterData?.level ?? 1) || 1;
+  const espMod = calculateModifier(characterData?.ESP ?? 10);
+  const max = Math.max(0, level + espMod);
+  const current = Math.max(0, Math.min(
+    Number(characterData?.dadosExtras?.peCurrent ?? max),
+    max
+  ));
+
+  return {
+    current,
+    max,
+    formula: `Nível[${level}] + Mod(ESP)[${espMod}] = ${max}`,
+  };
+}
+
+// ─────────────────────────────────────────────
+// 4. Bônus de Proficiência / Bravura (BP)
+// ─────────────────────────────────────────────
+
+/**
+ * Calcula os Pontos de Bravura / Bônus de Proficiência.
+ * BP Max = Nível + Mod(CAR). Mínimo 0.
+ * @param {Object} characterData Dados do personagem (precisa de nivel/level e CAR)
+ * @returns {{ current: number, max: number, formula: string }}
+ */
+export function calculateBP(characterData = {}) {
+  const level = Number(characterData?.nivel ?? characterData?.level ?? 1) || 1;
+  const carMod = calculateModifier(characterData?.CAR ?? 10);
+  const max = Math.max(0, level + carMod);
+  const current = Math.max(0, Math.min(
+    Number(characterData?.dadosExtras?.bpCurrent ?? max),
+    max
+  ));
+
+  return {
+    current,
+    max,
+    formula: `Nível[${level}] + Mod(CAR)[${carMod}] = ${max}`,
+  };
+}
+
+// ─────────────────────────────────────────────
+// 5. Insanidade
+// ─────────────────────────────────────────────
+
+/**
+ * Calcula o limiar de Insanidade do personagem.
+ * Insanidade Max = 10 + Mod(SAB). Mínimo 0.
+ * @param {Object} characterData Dados do personagem (precisa de SAB)
+ * @returns {{ current: number, max: number, formula: string }}
+ */
+export function calculateInsanity(characterData = {}) {
+  const sabMod = calculateModifier(characterData?.SAB ?? 10);
+  const max = Math.max(0, 10 + sabMod);
+  const current = Math.max(0, Math.min(
+    Number(characterData?.dadosExtras?.insanityCurrent ?? 0),
+    max
+  ));
+
+  return {
+    current,
+    max,
+    formula: `10 + Mod(SAB)[${sabMod}] = ${max}`,
+  };
+}
+
+// ─────────────────────────────────────────────
+// 1. Recursos Derivados (agregador)
+// ─────────────────────────────────────────────
+
+/**
+ * Calcula todos os recursos derivados de um personagem em uma única chamada.
+ * Agrega HP, PE, BP, Insanidade, CA, Iniciativa e Dado de Vida.
+ * @param {Object} characterData Dados completos do personagem
+ * @returns {{
+ *   hp: { current: number, max: number },
+ *   pe: { current: number, max: number, formula: string },
+ *   bp: { current: number, max: number, formula: string },
+ *   insanity: { current: number, max: number, formula: string },
+ *   ca: { base: number, desMod: number, extra: number, total: number, formula: string },
+ *   initiative: { desMod: number, extra: number, total: number },
+ *   hitDie: string
+ * }}
+ */
+export function calculateDerivedResources(characterData = {}) {
+  const hp = {
+    current: Math.max(0, Number(characterData?.hp ?? 0)),
+    max: Math.max(1, Number(characterData?.hpMax ?? 1)),
+  };
+
+  const pe = calculatePE(characterData);
+  const bp = calculateBP(characterData);
+  const insanity = calculateInsanity(characterData);
+  const ca = calculateArmorClass(characterData);
+
+  const initData = calculateInitiative(characterData);
+  const initiative = {
+    desMod: initData.desMod,
+    extra: initData.extra,
+    total: initData.total,
+  };
+
+  const hitDie = (typeof characterData?.dadosExtras?.hitDie === "string" &&
+    /^\d+d\d+(?:[+-]\d+)?$/i.test(characterData.dadosExtras.hitDie))
+    ? characterData.dadosExtras.hitDie
+    : "1d10";
+
+  return { hp, pe, bp, insanity, ca, initiative, hitDie };
+}
+
+// ─────────────────────────────────────────────
+// 6. Progressão de Nível — Funções
+// ─────────────────────────────────────────────
+
+/**
+ * Determina o nível atual com base no XP acumulado consultando a XP_TABLE.
+ * @param {number|string} xp Experiência acumulada
+ * @returns {{
+ *   level: number,
+ *   currentXP: number,
+ *   nextLevelXP: number|null,
+ *   xpForCurrent: number,
+ *   progress: number
+ * }}
+ */
+export function calculateLevelFromXP(xp = 0) {
+  const totalXP = Math.max(0, Number(xp) || 0);
+
+  let level = 1;
+  for (let i = XP_TABLE.length - 1; i >= 0; i--) {
+    if (totalXP >= XP_TABLE[i]) {
+      level = i + 1;
+      break;
+    }
+  }
+
+  // Clamp ao nível 20
+  level = Math.min(level, 20);
+
+  const xpForCurrent = XP_TABLE[level - 1] ?? 0;
+  const nextLevelXP = level < 20 ? XP_TABLE[level] : null;
+  const progress = nextLevelXP !== null
+    ? Math.min(100, Math.round(((totalXP - xpForCurrent) / (nextLevelXP - xpForCurrent)) * 100))
+    : 100;
+
+  return {
+    level,
+    currentXP: totalXP,
+    nextLevelXP,
+    xpForCurrent,
+    progress,
+  };
+}
+
+/**
+ * Retorna o XP total necessário para atingir um dado nível.
+ * @param {number} level Nível desejado (1-20)
+ * @returns {number} XP acumulado necessário
+ */
+export function calculateXPForLevel(level = 1) {
+  const lvl = Math.max(1, Math.min(20, Math.floor(Number(level) || 1)));
+  return XP_TABLE[lvl - 1] ?? 0;
+}
+
+// ─────────────────────────────────────────────
+// 7. Descanso (Curto e Longo)
+// ─────────────────────────────────────────────
+
+/**
+ * Simula a rolagem de um dado de vida (ex: "1d10", "2d8+3").
+ * Usa Math.random para simulação — função pura (determinística dado o RNG).
+ * @param {string} hitDieStr Dado de vida no formato XdY[+/-Z]
+ * @returns {number} Resultado da rolagem
+ * @private
+ */
+function rollHitDie(hitDieStr = "1d10") {
+  const match = String(hitDieStr).match(/^(\d+)d(\d+)([+-]\d+)?$/i);
+  if (!match) return 0;
+
+  const count = Math.max(1, Number(match[1]));
+  const sides = Math.max(1, Number(match[2]));
+  const bonus = Number(match[3] ?? 0) || 0;
+
+  let total = bonus;
+  for (let i = 0; i < count; i++) {
+    total += Math.floor(Math.random() * sides) + 1;
+  }
+  return total;
+}
+
+/**
+ * Aplica descanso curto ao personagem.
+ * - Rola o dado de vida (hitDie) + Mod(CON) para recuperar HP.
+ * - Restaura 25% do PE máximo (arredondado para baixo).
+ * @param {Object} characterData Dados completos do personagem
+ * @returns {{ hpHealed: number, peRestored: number, description: string }}
+ */
+export function applyShortRest(characterData = {}) {
+  const hitDie = (typeof characterData?.dadosExtras?.hitDie === "string" &&
+    /^\d+d\d+(?:[+-]\d+)?$/i.test(characterData.dadosExtras.hitDie))
+    ? characterData.dadosExtras.hitDie
+    : "1d10";
+
+  const conMod = calculateModifier(characterData?.CON ?? 10);
+  const dieRoll = rollHitDie(hitDie);
+  const rawHeal = dieRoll + conMod;
+  const hpHealed = Math.max(0, rawHeal);
+
+  const pe = calculatePE(characterData);
+  const peRestored = Math.max(0, Math.floor(pe.max * 0.25));
+
+  return {
+    hpHealed,
+    peRestored,
+    description:
+      `Descanso Curto: Dado de Vida (${hitDie}) rolou ${dieRoll} + Mod(CON)[${conMod}] = ${hpHealed} HP curados. ` +
+      `PE restaurados: ${peRestored} (25% de ${pe.max}).`,
+  };
+}
+
+/**
+ * Aplica descanso longo ao personagem.
+ * - Recupera 100% HP (current = max).
+ * - Recupera 100% PE (current = max).
+ * - Reduz insanidade atual em 1 (mínimo 0).
+ * @param {Object} characterData Dados completos do personagem
+ * @returns {{ hpRestored: number, peRestored: number, insanityReduced: number, description: string }}
+ */
+export function applyLongRest(characterData = {}) {
+  const hpCurrent = Math.max(0, Number(characterData?.hp ?? 0));
+  const hpMax = Math.max(1, Number(characterData?.hpMax ?? 1));
+  const hpRestored = hpMax - hpCurrent;
+
+  const pe = calculatePE(characterData);
+  const peCurrent = Number(characterData?.dadosExtras?.peCurrent ?? 0) || 0;
+  const peRestored = Math.max(0, pe.max - peCurrent);
+
+  const insanityCurrent = Number(characterData?.dadosExtras?.insanityCurrent ?? 0) || 0;
+  const insanityReduced = insanityCurrent > 0 ? 1 : 0;
+
+  return {
+    hpRestored: Math.max(0, hpRestored),
+    peRestored,
+    insanityReduced,
+    description:
+      `Descanso Longo: HP restaurado para ${hpMax}/${hpMax} (+${Math.max(0, hpRestored)}). ` +
+      `PE restaurado para ${pe.max}/${pe.max} (+${peRestored}). ` +
+      `Insanidade reduzida em ${insanityReduced} (${Math.max(0, insanityCurrent - insanityReduced)}/${calculateInsanity(characterData).max}).`,
+  };
+}
+
+// ─────────────────────────────────────────────
+// 8. Munição e Consumo de Inventário
+// ─────────────────────────────────────────────
+
+/**
+ * Consome munição ou item consumível do inventário do personagem.
+ * Reduz a quantidade pelo valor informado. Se qty chegar a 0, marca como esgotado.
+ * Retorna um NOVO array (não muta o original).
+ * @param {Array} inventory Array de itens do inventário
+ * @param {string|number} itemId Identificador do item (id ou index)
+ * @param {number} [amount=1] Quantidade a consumir
+ * @returns {{ success: boolean, remaining: number, item: Object|null, inventory: Array, error: string|null }}
+ */
+export function consumeAmmunition(inventory = [], itemId, amount = 1) {
+  if (!Array.isArray(inventory)) {
+    return { success: false, remaining: 0, item: null, inventory: [], error: "Inventário inválido." };
+  }
+
+  const consumeAmount = Math.max(0, Math.floor(Number(amount) || 1));
+  if (consumeAmount <= 0) {
+    return { success: false, remaining: 0, item: null, inventory: [...inventory], error: "Quantidade a consumir deve ser maior que zero." };
+  }
+
+  const index = inventory.findIndex((item, idx) => {
+    if (item?.id !== undefined && item.id === itemId) return true;
+    if (typeof itemId === "number" && idx === itemId) return true;
+    if (typeof itemId === "string" && (item?.name === itemId || item?.nome === itemId)) return true;
+    return false;
+  });
+
+  if (index === -1) {
+    return { success: false, remaining: 0, item: null, inventory: [...inventory], error: `Item "${itemId}" não encontrado no inventário.` };
+  }
+
+  const newInventory = inventory.map((item, idx) => {
+    if (idx !== index) return { ...item };
+    const currentQty = Number(item.qty ?? item.quantidade ?? 1) || 0;
+    const newQty = Math.max(0, currentQty - consumeAmount);
+    return {
+      ...item,
+      qty: newQty,
+      quantidade: newQty,
+      esgotado: newQty === 0,
+      depleted: newQty === 0,
+    };
+  });
+
+  const updatedItem = newInventory[index];
+
+  return {
+    success: true,
+    remaining: updatedItem.qty,
+    item: updatedItem,
+    inventory: newInventory,
+    error: null,
+  };
+}
+
+// ─────────────────────────────────────────────
+// 9. Conversão de Moedas — Funções
+// ─────────────────────────────────────────────
+
+/**
+ * Converte uma quantia de uma moeda para outra usando as taxas do sistema.
+ * @param {number} amount Quantia a converter
+ * @param {string} from Moeda de origem ("latina" | "ouro" | "prata" | "cobre")
+ * @param {string} to Moeda de destino ("latina" | "ouro" | "prata" | "cobre")
+ * @returns {{ result: number, formula: string }}
+ */
+export function convertCurrency(amount = 0, from = "ouro", to = "cobre") {
+  const safeAmount = Number(amount) || 0;
+  const fromRate = CURRENCY_RATES[from];
+  const toRate = CURRENCY_RATES[to];
+
+  if (fromRate === undefined || toRate === undefined) {
+    return {
+      result: 0,
+      formula: `Moeda inválida: "${fromRate === undefined ? from : to}". Moedas válidas: ${Object.keys(CURRENCY_RATES).join(", ")}.`,
+    };
+  }
+
+  const copperValue = safeAmount * fromRate;
+  const result = copperValue / toRate;
+
+  return {
+    result,
+    formula: `${safeAmount} ${from} × ${fromRate} = ${copperValue} cobre ÷ ${toRate} = ${result} ${to}`,
+  };
+}
+
+/**
+ * Calcula a riqueza total do personagem convertida para cobre.
+ * @param {Object} currencies Objeto com as moedas { latina, ouro, prata, cobre }
+ * @returns {number} Valor total em cobres
+ */
+export function totalWealthInCopper(currencies = {}) {
+  if (!currencies || typeof currencies !== "object") return 0;
+
+  let total = 0;
+  for (const [coin, rate] of Object.entries(CURRENCY_RATES)) {
+    const qty = Number(currencies[coin] ?? 0) || 0;
+    total += Math.max(0, qty) * rate;
+  }
+  return total;
+}
+
+// ─────────────────────────────────────────────
+// 10. Gerenciamento de Condições Táticas
+// ─────────────────────────────────────────────
+
+/**
+ * Adiciona uma condição à lista de condições ativas do personagem (sem duplicatas).
+ * Retorna um NOVO array (imutável).
+ * @param {Array<string>} activeConditions Lista atual de IDs de condições ativas
+ * @param {string} conditionId ID da condição a aplicar (ex: "atordoado")
+ * @returns {Array<string>} Nova lista de condições ativas
+ */
+export function applyCondition(activeConditions = [], conditionId = "") {
+  const conditions = Array.isArray(activeConditions) ? [...activeConditions] : [];
+  const id = String(conditionId).trim().toLowerCase();
+
+  if (!id) return conditions;
+
+  // Verifica se é uma condição válida
+  const isValid = CONDITIONS_LIST.some((c) => c.id === id);
+  if (!isValid) return conditions;
+
+  // Não duplicar
+  if (conditions.includes(id)) return conditions;
+
+  return [...conditions, id];
+}
+
+/**
+ * Remove uma condição da lista de condições ativas do personagem.
+ * Retorna um NOVO array (imutável).
+ * @param {Array<string>} activeConditions Lista atual de IDs de condições ativas
+ * @param {string} conditionId ID da condição a remover
+ * @returns {Array<string>} Nova lista de condições ativas
+ */
+export function removeCondition(activeConditions = [], conditionId = "") {
+  const conditions = Array.isArray(activeConditions) ? activeConditions : [];
+  const id = String(conditionId).trim().toLowerCase();
+
+  if (!id) return [...conditions];
+
+  return conditions.filter((c) => c !== id);
+}
+
+/**
+ * Verifica se uma condição está ativa no personagem.
+ * @param {Array<string>} activeConditions Lista de IDs de condições ativas
+ * @param {string} conditionId ID da condição a verificar
+ * @returns {boolean} Verdadeiro se a condição estiver ativa
+ */
+export function hasCondition(activeConditions = [], conditionId = "") {
+  const conditions = Array.isArray(activeConditions) ? activeConditions : [];
+  const id = String(conditionId).trim().toLowerCase();
+
+  if (!id) return false;
+  return conditions.includes(id);
+}
