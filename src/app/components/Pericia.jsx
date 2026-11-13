@@ -20,6 +20,7 @@ import {
   calculateSkillBonus,
   calculateModifier,
   ensureCanonicalSkills,
+  calculateProficiencyBonusByLevel,
   DEFAULT_SKILLS,
   ATTRIBUTES,
   ATTRIBUTE_LABELS,
@@ -99,8 +100,8 @@ export default function Pericia() {
     }
   }, [data.skills, canonicalSkills, setSkills]);
 
-  // Bônus de proficiência/bravura do personagem (BP) ou padrão +2
-  const proficiencyBonus = Math.max(2, Number(data.dadosExtras?.bpCurrent || 2));
+  // Bônus de proficiência/bravura do personagem (BP) calculado pelo nível
+  const proficiencyBonus = calculateProficiencyBonusByLevel(data.level ?? 1);
 
   // Estatísticas de perícias
   const totalCount = canonicalSkills.length;

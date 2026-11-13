@@ -9,6 +9,7 @@ export const defaultData = {
   name: "Geralt de Rívia",
   job: "Bruxeiro",
   level: 2,
+  xp: 300,
   customClass: "",
   hp: 70,
   hpMax: 70,

@@ -17,7 +17,7 @@ import {
 import { useCharacter } from "../context/CharacterContext";
 import { useDice } from "../context/DiceContext";
 import { Card, EditableNumber, EditableText, SectionHeader } from "../components/ui";
-import { calculateCapacity } from "../../lib/modifiers";
+import { calculateCapacity, consumeAmmunition } from "../../lib/modifiers";
 
 export default function InventarioPage() {
   const { data, upd, addItem, removeItem, updItem } = useCharacter();
@@ -287,6 +287,37 @@ export default function InventarioPage() {
                   >
                     <Dices size={10} />
                     <span>{formula}</span>
+                  </button>
+                )}
+
+                {/* Botão "Usar 1" para munições e consumíveis */}
+                {isConsumableOrAmmo(item.name) && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const result = consumeAmmunition(data.inventory, item.id, 1);
+                      if (result.success) {
+                        result.inventory.forEach((updatedItem, idx) => {
+                          if (idx === data.inventory.findIndex((i) => i.id === item.id)) {
+                            updItem(item.id, {
+                              qty: updatedItem.qty,
+                              quantidade: updatedItem.quantidade,
+                              esgotado: updatedItem.esgotado,
+                              depleted: updatedItem.depleted,
+                            });
+                          }
+                        });
+                      }
+                    }}
+                    disabled={item.esgotado || (item.qty !== undefined && item.qty <= 0)}
+                    className={`flex items-center gap-1 rounded border px-2 py-0.5 text-[10px] font-bold transition active:scale-95 ${
+                      item.esgotado || (item.qty !== undefined && item.qty <= 0)
+                        ? "cursor-not-allowed border-white/10 bg-white/5 text-muted-foreground opacity-40"
+                        : "border-amber-500/40 bg-amber-500/10 text-amber-400 hover:bg-amber-500/25"
+                    }`}
+                    title={item.esgotado ? "Esgotado" : "Usar 1 unidade"}
+                  >
+                    {item.esgotado ? "Esgotado" : "Usar 1"}
                   </button>
                 )}
 

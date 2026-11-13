@@ -9,6 +9,7 @@ import { useAuth } from "../context/AuthContext";
 import { EditableText, HPBar } from "./ui";
 import SettingsModal from "./SettingsModal";
 import DanoCuraPainel from "./DanoCuraPainel";
+import XPBar from "./XPBar";
 
 export default function Cabecalho() {
   const pathname = usePathname();
@@ -119,6 +120,11 @@ export default function Cabecalho() {
                       <HeartPulse size={12} className="text-rose-400" />
                       <span className="hidden sm:inline font-cinzel font-bold">Dano/Cura</span>
                     </button>
+                  </div>
+
+                  {/* Barra de XP/Nível */}
+                  <div className="mt-2 w-full max-w-[13rem] sm:max-w-[16rem] sm:ml-auto">
+                    <XPBar />
                   </div>
                 </div>
               ) : (

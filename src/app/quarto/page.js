@@ -1,65 +1,65 @@
 "use client";
 
 import { useState } from "react";
-import { Home, Moon, Sun, Sparkles, Bed, Check } from "lucide-react";
+import { Home, Bed } from "lucide-react";
 import { useCharacter } from "../context/CharacterContext";
-import { useDice } from "../context/DiceContext";
 import { Card, EditableText, SectionHeader } from "../components/ui";
+import RestControls from "../components/RestControls";
+import { Check } from "lucide-react";
 
 export default function QuartoPage() {
   const { data, upd, updExtra, trainAbility } = useCharacter();
-  const { executeRoll } = useDice();
   const [restNotice, setRestNotice] = useState("");
 
-  const peMax = Number(data.dadosExtras?.peMax ?? 10);
-  const peCurrent = Number(data.dadosExtras?.peCurrent ?? 10);
   const activeTraining = data.abilities?.find((h) => h.isTraining);
 
-  const handleShortRest = () => {
-    // Rola 1d8 + mod CON de cura rápida
-    const con = data.CON ?? 10;
-    const conMod = Math.floor((con - 10) / 2);
-    const roll = executeRoll({
-      sides: 8,
-      mode: "normal",
-      modifier: Math.max(0, conMod),
-      label: "Descanso Curto (1d8 + CON)",
-    });
+  /**
+   * Callback recebido do RestControls após descanso aplicado pelo motor de regras.
+   * Persiste as mudanças no CharacterContext e exibe a notificação.
+   */
+  const handleUpdateCharacter = async ({ hp, peCurrent, insanityCurrent, description, type, result }) => {
+    // Persiste HP
+    if (typeof hp === "number") {
+      upd("hp", hp);
+    }
 
-    const newHp = Math.min(data.hpMax, data.hp + roll.total);
-    upd("hp", newHp);
+    // Persiste PE atual
+    if (typeof peCurrent === "number") {
+      updExtra("peCurrent", peCurrent);
+    }
 
-    // Recupera até 3 PE
-    const newPe = Math.min(peMax, peCurrent + 3);
-    updExtra("peCurrent", newPe);
+    // Persiste Insanidade atual (apenas no descanso longo)
+    if (typeof insanityCurrent === "number") {
+      updExtra("insanityCurrent", insanityCurrent);
+    }
 
-    // Avança 1 hora na habilidade em foco de treino
+    // Lógica de treino — mantida da implementação anterior
     let trainMsg = "";
-    if (activeTraining) {
-      trainAbility(activeTraining.id, 1);
-      trainMsg = ` e investiu +1h no treino de ${activeTraining.name}`;
+    if (activeTraining && trainAbility) {
+      const hours = type === "long" ? 4 : 1;
+      trainAbility(activeTraining.id, hours);
+      trainMsg =
+        type === "long"
+          ? ` e completou +4h de treino dedicado em ${activeTraining.name}`
+          : ` e investiu +1h no treino de ${activeTraining.name}`;
     }
 
-    setRestNotice(`Descanso Curto realizado! Você recuperou ${roll.total} PV, recuperou PE${trainMsg}.`);
-    setTimeout(() => setRestNotice(""), 4500);
-  };
-
-  const handleLongRest = () => {
-    upd("hp", data.hpMax);
-    if (data.mountHPMax) {
-      upd("mountHP", data.mountHPMax);
-    }
-    // Restaura 100% dos PE
-    updExtra("peCurrent", peMax);
-
-    // Avança 4 horas de treino intenso na habilidade em foco
-    let trainMsg = "";
-    if (activeTraining) {
-      trainAbility(activeTraining.id, 4);
-      trainMsg = ` e completou +4h de treino dedicado em ${activeTraining.name}`;
+    // Monta notificação
+    let notice = "";
+    if (type === "short") {
+      const r = result;
+      notice = `Descanso Curto realizado! +${r.hpHealed} PV, +${r.peRestored} PE recuperados${trainMsg}.`;
+    } else {
+      const r = result;
+      const insMsg = r.insanityReduced > 0 ? `, Insanidade −${r.insanityReduced}` : "";
+      // Montaria — mantida da implementação anterior
+      if (data.mountHPMax) {
+        upd("mountHP", data.mountHPMax);
+      }
+      notice = `Descanso Longo completo! PV e PE totalmente restaurados${insMsg}${trainMsg}.`;
     }
 
-    setRestNotice(`Descanso Longo completo! Todos os Pontos de Vida (seu e da montaria) e PE foram restaurados${trainMsg}.`);
+    setRestNotice(notice);
     setTimeout(() => setRestNotice(""), 4500);
   };
 
@@ -80,47 +80,10 @@ export default function QuartoPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {/* Descanso Curto */}
-          <div className="medallion-plate flex flex-col justify-between rounded-xl p-4 sm:p-5">
-            <div>
-              <div className="flex items-center gap-2 font-cinzel text-sm font-bold text-foreground">
-                <Sun size={17} className="text-amber-400" />
-                <span>Descanso Curto (1 hora)</span>
-              </div>
-              <p className="mt-2 font-journal text-xs sm:text-sm italic leading-relaxed text-muted-foreground">
-                Pausa breve para respirar e meditar. Recupera 1d8 + CON em vida, restaura até 3 PE e avança +1h no treino da habilidade em foco.
-              </p>
-            </div>
-            <button
-              onClick={handleShortRest}
-              className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-primary/50 bg-primary/20 py-2.5 font-cinzel text-xs font-bold uppercase tracking-wider text-primary transition hover:bg-primary/30 active:scale-95 shadow-md shadow-primary/15"
-            >
-              <Sparkles size={14} />
-              Realizar Descanso Curto
-            </button>
-          </div>
-
-          {/* Descanso Longo */}
-          <div className="medallion-plate flex flex-col justify-between rounded-xl p-4 sm:p-5">
-            <div>
-              <div className="flex items-center gap-2 font-cinzel text-sm font-bold text-foreground">
-                <Moon size={17} className="text-indigo-400" />
-                <span>Descanso Longo (8 horas)</span>
-              </div>
-              <p className="mt-2 font-journal text-xs sm:text-sm italic leading-relaxed text-muted-foreground">
-                Uma noite de sono profundo em segurança. Restaura 100% de PV e PE (seus e da montaria) e avança +4h no treino da habilidade em foco.
-              </p>
-            </div>
-            <button
-              onClick={handleLongRest}
-              className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-indigo-400/50 bg-indigo-500/20 py-2.5 font-cinzel text-xs font-bold uppercase tracking-wider text-indigo-300 transition hover:bg-indigo-500/30 active:scale-95 shadow-md shadow-indigo-500/20"
-            >
-              <Sparkles size={14} />
-              Realizar Descanso Longo
-            </button>
-          </div>
-        </div>
+        <RestControls
+          character={data}
+          updateCharacter={handleUpdateCharacter}
+        />
       </Card>
 
       {/* Anotações do Quarto */}

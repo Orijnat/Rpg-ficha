@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -12,6 +12,8 @@ import {
   Crown,
   FileText,
   Footprints,
+  Heart,
+  HeartPulse,
   Home,
   LayoutDashboard,
   Package,
@@ -22,11 +24,13 @@ import {
   Swords,
   User,
   Users,
+  X,
 } from "lucide-react";
 import { useAuth } from "../app/context/AuthContext";
 import Cabecalho from "../app/components/Cabecalho";
 import DiceModal from "../app/components/dice/DiceModal";
 import DiceFloatingTrigger from "../app/components/dice/DiceFloatingTrigger";
+import DanoCuraPainel from "../app/components/DanoCuraPainel";
 
 const PLAYER_TABS = [
   { id: "personagem", href: "/personagem", label: "Personagem", icon: <ScrollText size={16} /> },
@@ -56,6 +60,7 @@ const MASTER_NAV_ITEMS = [
 export default function AppShell({ children }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [vitalityOpen, setVitalityOpen] = React.useState(false);
   const {
     isMaster,
     isAuthenticated,
@@ -217,6 +222,27 @@ export default function AppShell({ children }) {
                       </Link>
                     );
                   })}
+
+                  {/* ── Botão de Vitalidade / DanoCuraPainel ── */}
+                  <button
+                    type="button"
+                    onClick={() => setVitalityOpen((v) => !v)}
+                    aria-expanded={vitalityOpen}
+                    aria-label="Abrir painel de vitalidade"
+                    className={`group flex min-h-11 w-full items-center gap-2.5 whitespace-nowrap rounded-xl px-3.5 py-2.5 text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 ${
+                      vitalityOpen
+                        ? "border border-rose-500/70 bg-gradient-to-r from-rose-600/30 via-rose-600/15 to-transparent text-rose-300 font-bold shadow-[0_0_20px_rgba(239,68,68,0.25)]"
+                        : "border border-transparent text-muted-foreground hover:bg-rose-500/10 hover:text-rose-300 hover:border-rose-500/25"
+                    }`}
+                  >
+                    <span className={`transition-transform duration-200 group-hover:scale-110 ${vitalityOpen ? "text-rose-400 drop-shadow-[0_0_8px_#f43f5e]" : "opacity-75"}`}>
+                      <HeartPulse size={16} />
+                    </span>
+                    <span className="font-cinzel tracking-wider">Vitalidade</span>
+                    {vitalityOpen && (
+                      <span className="ml-auto hidden h-2 w-2 rotate-45 bg-rose-500 shadow-[0_0_8px_#f43f5e] lg:block" />
+                    )}
+                  </button>
 
                   {/* Botão de volta ao painel quando mestre está inspecionando */}
                   {isMaster && isInspecting && (

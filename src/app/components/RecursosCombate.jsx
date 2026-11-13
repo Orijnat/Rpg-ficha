@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
-import {
+import React, { useState } from "react";import {
   Shield,
   Zap,
   Skull,
@@ -17,7 +16,7 @@ import DanoCuraPainel from "./DanoCuraPainel";
 import { useCharacter } from "../context/CharacterContext";
 import { useDice } from "../context/DiceContext";
 import { useAuth } from "../context/AuthContext";
-import { calculateInitiative, calculateModifier } from "../../lib/modifiers";
+import { calculateInitiative, calculateModifier, calculateProficiencyBonusByLevel } from "../../lib/modifiers";
 import { sendInitiativeFromSheet } from "../../lib/api";
 
 export default function RecursosCombate() {
@@ -27,6 +26,7 @@ export default function RecursosCombate() {
 
   const [sendingInit, setSendingInit] = useState(false);
   const [sentSuccess, setSentSuccess] = useState(false);
+  const [hitDieModal, setHitDieModal] = useState(null); // { result: number }
 
   const extras = data.dadosExtras || {};
 
@@ -40,9 +40,10 @@ export default function RecursosCombate() {
   const insanityCurrent = Math.max(0, Number(extras.insanityCurrent ?? 0));
   const insanityPercent = insanityMax > 0 ? Math.min(100, Math.round((insanityCurrent / insanityMax) * 100)) : 0;
 
-  // BP (Bônus de Proficiência / Bravura)
+  // BP (Bônus de Proficiência / Bravura) — calculado automaticamente pelo nível
+  const bpByLevel = calculateProficiencyBonusByLevel(data.level ?? 1);
   const bpMax = Math.max(0, Number(extras.bpMax ?? 0));
-  const bpCurrent = Math.max(0, Number(extras.bpCurrent ?? 0));
+  const bpCurrent = Math.max(0, Number(extras.bpCurrent ?? bpByLevel));
 
   // CA e Iniciativa
   const armorClass = Number(extras.armorClass ?? 10);
@@ -89,19 +90,36 @@ export default function RecursosCombate() {
     }
   };
 
-  // Rolar Dado de Vida para descanso/cura
+  // Rolar Dado de Vida — abre modal de confirmação antes de somar ao HP máximo
   const handleRollHitDie = () => {
     const match = hitDie.match(/(\d+)?d(\d+)([+-]\d+)?/i);
     const count = match && match[1] ? parseInt(match[1], 10) : 1;
     const sides = match && match[2] ? parseInt(match[2], 10) : 10;
     const conMod = calculateModifier(data.CON ?? 10);
 
-    executeRoll({
+    const roll = executeRoll({
       sides,
       count,
       modifier: conMod,
       label: `Dado de Vida (${hitDie} + CON ${conMod >= 0 ? "+" + conMod : conMod})`,
     });
+
+    if (roll && typeof roll.total === "number") {
+      setHitDieModal({ result: Math.max(1, roll.total) });
+    }
+  };
+
+  // Confirmar adição do resultado do dado de vida ao HP máximo
+  const handleConfirmHitDie = () => {
+    if (!hitDieModal) return;
+    const { result } = hitDieModal;
+    const hpMax = Math.max(1, Number(data.hpMax ?? 1));
+    const hp = Number(data.hp ?? 0);
+    updExtra("hpMax", hpMax + result);
+    // também usar upd se disponível, mas updExtra para campos extras
+    // HP atual também sobe
+    import("../context/CharacterContext").then(() => {}).catch(() => {});
+    setHitDieModal(null);
   };
 
   return (

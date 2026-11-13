@@ -95,6 +95,25 @@ export function ensureCanonicalSkills(skills = []) {
 }
 
 /**
+ * Calcula o Bônus de Proficiência (BP) com base no nível do personagem.
+ * - Nível 1-4:  +2
+ * - Nível 5-8:  +3
+ * - Nível 9-12: +4
+ * - Nível 13-16: +5
+ * - Nível 17-20: +6
+ * @param {number|string} level Nível do personagem (1-20)
+ * @returns {number} Bônus de Proficiência
+ */
+export function calculateProficiencyBonusByLevel(level) {
+  const lvl = Math.max(1, Math.min(20, Number(level) || 1));
+  if (lvl <= 4) return 2;
+  if (lvl <= 8) return 3;
+  if (lvl <= 12) return 4;
+  if (lvl <= 16) return 5;
+  return 6;
+}
+
+/**
  * Calcula o modificador de um valor de atributo d20: floor((valor - 10) / 2)
  * @param {number|string} attributeValue
  * @returns {number} Modificador inteiro
