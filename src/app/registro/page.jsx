@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
+import AuthScaffold from "../../components/auth/AuthScaffold";
 import { fetchInviteInfo } from "../../lib/api";
 import {
   Lock,
@@ -185,6 +186,7 @@ function RegisterForm() {
   };
 
   return (
+    <AuthScaffold>
     <div className="relative w-full max-w-2xl py-4">
       {/* Moldura de Runas — brilho pulsante ao redor */}
       <div
@@ -197,7 +199,7 @@ function RegisterForm() {
 
       {/* Card Principal — Pergaminho */}
       <div
-        className="relative overflow-hidden rounded-2xl border border-[#6b5a3e]/60 shadow-[0_0_60px_rgba(214,154,61,0.15),0_20px_60px_rgba(0,0,0,0.5)]"
+        className="auth-shell-card relative overflow-hidden rounded-2xl border border-[#6b5a3e]/60 shadow-[0_0_60px_rgba(214,154,61,0.15),0_20px_60px_rgba(0,0,0,0.5)]"
         style={{
           background:
             "linear-gradient(170deg, #1e1a14 0%, #16120d 30%, #1a1510 60%, #13100c 100%)",
@@ -237,7 +239,7 @@ function RegisterForm() {
 
         <div className="relative z-10 px-6 py-7 sm:px-10 sm:py-9">
           {/* Selo / Emblema animado */}
-          <div className="mx-auto mb-5 flex flex-col items-center">
+          <div className="auth-shell-emblem mx-auto mb-5 flex flex-col items-center">
             <div className="relative">
               <div className="absolute -inset-4 rounded-full bg-[#d69a3d]/10 blur-xl animate-pulse" />
               <div className="relative flex h-20 w-20 items-center justify-center">
@@ -602,6 +604,7 @@ function RegisterForm() {
         }
       `}</style>
     </div>
+    </AuthScaffold>
   );
 }
 

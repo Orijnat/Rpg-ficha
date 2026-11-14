@@ -175,3 +175,12 @@ UI/UX da Área do Jogador, componentes React 19, Tailwind CSS v4, responsividade
   * `ThemeContext.jsx` monitora `pathname` via `usePathname()` e força `data-theme="amber"` no `document.documentElement` ao acessar `/`, restaurando instantaneamente o tema preferido do jogador ao navegar para `/personagem`, `/admin`, etc.
   * `src/app/page.js` e `src/layouts/AppShell.jsx` foram encapsulados com atributo explícito `data-theme="amber"`, plano de fundo fixo `#090b0e` e auras místicas âmbar canônicas, prevenindo qualquer FOUC ou vazamento visual.
 - **Validação**: Testes unitários de temas 100% aprovados, ESLint 0 erros/0 warnings e build Next.js 16 em 2.4s.
+
+
+## 2026-11-14 — Remodelação visual (Landing + Auth + Lenis)
+
+- `src/components/SmoothScroll.jsx`: Lenis global; desativado com `prefers-reduced-motion`.
+- `src/components/auth/AuthScaffold.jsx`: backdrop compartilhado de login/registro (Aurora WebGL + anel de runas 120vmin girando + entrada GSAP emblema→card).
+- `src/components/react-bits/`: componentes vendored (Aurora, SplitText, ShinyText, SpotlightCard), isentos do ESLint; editar com cautela.
+- Landing `/`: hero SplitText rise por palavras (2 linhas, `role="heading" aria-level={1}`), CTAs com ShinyText, pilares em SpotlightCard, seções com ScrollTrigger `.section-reveal`.
+- Regra: vendored code permanece com o padrão original; não "limpar" para o lint do projeto.

@@ -1,9 +1,9 @@
 # Itens a fazer
 
 ## Bugs
-- [ ] Status não estão sendo salvos
-- [ ] Verificar a criação de mais de uma ficha por conta
-- [ ] Zerar os dados por usuário: hoje há vazamento (Mestre 1 vê dados do Mestre 2; inventário de um jogador aparece para outro)
+- [x] Status não estão sendo salvos
+- [x] Verificar a criação de mais de uma ficha por conta
+- [x] Zerar os dados por usuário: hoje há vazamento (Mestre 1 vê dados do Mestre 2; inventário de um jogador aparece para outro)
 
 ## Conta e segurança
 - [ ] Arrumar o banco: a senha da ficha deve ser a mesma do login do usuário, ou uma senha personalizada por ficha

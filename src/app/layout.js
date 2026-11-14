@@ -5,6 +5,7 @@ import { CharacterProvider } from "./context/CharacterContext";
 import { DiceProvider } from "./context/DiceContext";
 import { ThemeProvider } from "./context/ThemeContext";
 import AppShell from "../layouts/AppShell";
+import SmoothScroll from "../components/SmoothScroll";
 
 export default function RootLayout({ children }) {
   return (
@@ -14,7 +15,9 @@ export default function RootLayout({ children }) {
           <ThemeProvider>
             <CharacterProvider>
               <DiceProvider>
-                <AppShell>{children}</AppShell>
+                <SmoothScroll>
+                  <AppShell>{children}</AppShell>
+                </SmoothScroll>
               </DiceProvider>
             </CharacterProvider>
           </ThemeProvider>

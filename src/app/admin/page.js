@@ -39,7 +39,7 @@ import {
 import { CONDITIONS_LIST, applyHealthChange, advanceTurn } from "../../lib/modifiers";
 import { rollDice } from "../../lib/dice";
 
-const STORAGE_KEY = "rpg-gm-dashboard";
+const storageKeyFor = (userId) => `rpg-gm-dashboard:${userId || "anonymous"}`;
 
 const defaultTable = {
   sessionTitle: "Próxima sessão",
@@ -70,10 +70,10 @@ function normalizeTable(value) {
   };
 }
 
-function loadTable() {
+function loadTable(userId) {
   if (typeof window === "undefined") return defaultTable;
   try {
-    const saved = window.localStorage.getItem(STORAGE_KEY);
+    const saved = window.localStorage.getItem(storageKeyFor(userId));
     return saved ? normalizeTable(JSON.parse(saved)) : defaultTable;
   } catch {
     return defaultTable;
@@ -87,7 +87,7 @@ export default function AdminIndex() {
   const [characterError, setCharacterError] = useState("");
   const [campaignLoaded, setCampaignLoaded] = useState(false);
   const [campaignError, setCampaignError] = useState("");
-  const { isMaster, loading: authLoading, inspectCharacter } = useAuth();
+  const { isMaster, loading: authLoading, inspectCharacter, user } = useAuth();
   const [openConditionPickerId, setOpenConditionPickerId] = useState(null);
 
   // Múltiplas mesas / campanhas do mestre
@@ -99,7 +99,7 @@ export default function AdminIndex() {
     if (authLoading || !isMaster) return;
     fetchCampaignData(getStoredToken())
       .then((campaign) => setTable(normalizeTable(campaign)))
-      .catch(() => setTable(loadTable()))
+      .catch(() => setTable(loadTable(user?.id)))
       .finally(() => setCampaignLoaded(true));
 
     listCharacters(getStoredToken())
@@ -113,7 +113,8 @@ export default function AdminIndex() {
         setCampaigns(list);
       })
       .catch(() => {});
-  }, [authLoading, isMaster]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authLoading, isMaster, user?.id]);
 
   const activeCampaign = useMemo(() => {
     return campaigns.find((c) => c.id === selectedCampaignId) || null;
@@ -137,7 +138,7 @@ export default function AdminIndex() {
     const timer = setTimeout(() => {
       updateCampaignData(table, getStoredToken()).catch((error) => {
         setCampaignError(error.message);
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(table));
+        window.localStorage.setItem(storageKeyFor(user?.id), JSON.stringify(table));
       });
     }, 700);
     return () => clearTimeout(timer);

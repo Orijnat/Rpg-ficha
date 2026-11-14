@@ -4,6 +4,7 @@ import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
+import AuthScaffold from "../../components/auth/AuthScaffold";
 import { Lock, User, Eye, EyeOff, LogIn, Sparkles, AlertCircle, Link2 } from "lucide-react";
 
 function LoginForm() {
@@ -45,7 +46,8 @@ function LoginForm() {
   };
 
   return (
-    <div className="relative w-full max-w-md">
+    <AuthScaffold>
+    <div className="relative w-full max-w-md py-4">
       {/* Moldura de Runas — brilho pulsante ao redor do card */}
       <div className="absolute -inset-[2px] rounded-2xl opacity-70 blur-[1px] animate-[runeGlow_4s_ease-in-out_infinite]"
         style={{
@@ -54,7 +56,7 @@ function LoginForm() {
       />
 
       {/* Card Principal — Pergaminho */}
-      <div className="relative overflow-hidden rounded-2xl border border-[#6b5a3e]/60 shadow-[0_0_60px_rgba(214,154,61,0.15),0_20px_60px_rgba(0,0,0,0.5)]"
+      <div className="auth-shell-card relative overflow-hidden rounded-2xl border border-[#6b5a3e]/60 shadow-[0_0_60px_rgba(214,154,61,0.15),0_20px_60px_rgba(0,0,0,0.5)]"
         style={{
           background: "linear-gradient(170deg, #1e1a14 0%, #16120d 30%, #1a1510 60%, #13100c 100%)",
         }}
@@ -92,7 +94,7 @@ function LoginForm() {
 
         <div className="relative z-10 px-7 py-8 sm:px-10 sm:py-10">
           {/* Selo / Emblema animado */}
-          <div className="mx-auto mb-6 flex flex-col items-center">
+          <div className="auth-shell-emblem mx-auto mb-6 flex flex-col items-center">
             <div className="relative">
               {/* Halo brilhante */}
               <div className="absolute -inset-4 rounded-full bg-[#d69a3d]/10 blur-xl animate-pulse" />
@@ -286,6 +288,7 @@ function LoginForm() {
         }
       `}</style>
     </div>
+    </AuthScaffold>
   );
 }
 

@@ -102,3 +102,71 @@ export const defaultData = {
     levelAbilities: {},
   },
 };
+
+/**
+ * Ficha em branco para novas contas/fallbacks.
+ * Diferente de `defaultData` (demonstração "Geralt de Rívia"), não contém
+ * itens, ouro, anotações ou senha de cofre — evita vazamento de dados de
+ * demonstração para fichas reais de outros usuários.
+ */
+export function createBlankCharacterData() {
+  return {
+    name: "",
+    job: "",
+    level: 1,
+    xp: 0,
+    customClass: "",
+    hp: 10,
+    hpMax: 10,
+    age: "",
+    eyes: "",
+    height: "",
+    skin: "",
+    weight: "",
+    hair: "",
+    appearance: "",
+    FOR: 10,
+    DES: 10,
+    CON: 10,
+    SAB: 10,
+    ESP: 10,
+    CAR: 10,
+    INT: 10,
+    skills: defaultData.skills.map(({ name, attr }) => ({ name, attr, trained: false, bonus: null })),
+    latina: 0,
+    ouro: 0,
+    prata: 0,
+    cobre: 0,
+    inventory: [],
+    contracts: [],
+    players: [],
+    npcs: [],
+    bankSlots: Array.from({ length: 80 }, () => ({ item: "" })),
+    bankPassword: "",
+    notes: "",
+    notesImages: [],
+    roomNotes: "",
+    mountName: "",
+    mountHP: 0,
+    mountHPMax: 0,
+    mountNotes: "",
+    abilities: [],
+    levelAbilities: {},
+    dadosExtras: {
+      inventoryCapacity: 20,
+      insanityMax: 0,
+      insanityCurrent: 0,
+      bpMax: 0,
+      bpCurrent: 0,
+      peMax: 0,
+      peCurrent: 0,
+      hitDie: "1d8",
+      armorClass: 10,
+      initiative: 0,
+      customAbilities: [],
+      training: [],
+      abilities: [],
+      levelAbilities: {},
+    },
+  };
+}

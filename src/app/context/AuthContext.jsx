@@ -211,6 +211,19 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // Garante que uma ficha retornada pelo backend exista na lista local e fique ativa
+  const upsertCharacter = (character) => {
+    if (!character?.id) return;
+    setCharacters((prev) => {
+      const exists = prev.some((c) => c.id === character.id);
+      if (exists) {
+        return prev.map((c) => (c.id === character.id ? { ...c, ...character } : c));
+      }
+      return [character, ...prev];
+    });
+    selectCharacter(character.id);
+  };
+
   const inspectCharacter = async (characterId, redirectToSheet = true) => {
     try {
       let fullChar = await fetchCharacterFromBackend(characterId, token);
@@ -288,6 +301,7 @@ export function AuthProvider({ children }) {
     register,
     logout,
     selectCharacter,
+    upsertCharacter,
     inspectCharacter,
     stopInspecting,
     createCharacter,

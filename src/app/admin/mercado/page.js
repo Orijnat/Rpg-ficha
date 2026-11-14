@@ -50,11 +50,11 @@ import {
 } from "../../../lib/market";
 import { useAuth } from "../../context/AuthContext";
 
-const STORAGE_KEY_ITEMS = "rpg_world_market_data_v1";
-const STORAGE_KEY_VENDORS = "rpg_world_market_vendors_v1";
+const itemsKeyFor = (userId) => `rpg_world_market_data_v1:${userId || "anonymous"}`;
+const vendorsKeyFor = (userId) => `rpg_world_market_vendors_v1:${userId || "anonymous"}`;
 
 export default function AdminMercadoPage() {
-  const { isMaster } = useAuth();
+  const { isMaster, user, loading: authLoading } = useAuth();
 
   // Itens e Vendedores
   const [items, setItems] = useState([]);
@@ -89,10 +89,10 @@ export default function AdminMercadoPage() {
 
   // Carregar dados salvos no localStorage
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (authLoading || typeof window === "undefined") return;
     try {
-      const savedItems = window.localStorage.getItem(STORAGE_KEY_ITEMS);
-      const savedVendors = window.localStorage.getItem(STORAGE_KEY_VENDORS);
+      const savedItems = window.localStorage.getItem(itemsKeyFor(user?.id));
+      const savedVendors = window.localStorage.getItem(vendorsKeyFor(user?.id));
 
       if (savedItems) {
         const parsed = JSON.parse(savedItems);
@@ -113,26 +113,26 @@ export default function AdminMercadoPage() {
     } finally {
       setIsLoaded(true);
     }
-  }, []);
+  }, [authLoading, user?.id]);
 
   // Salvar alterações
   useEffect(() => {
     if (!isLoaded || typeof window === "undefined") return;
     try {
-      window.localStorage.setItem(STORAGE_KEY_ITEMS, JSON.stringify(items));
+      window.localStorage.setItem(itemsKeyFor(user?.id), JSON.stringify(items));
     } catch (e) {
       console.error("Erro ao salvar itens do mercado:", e);
     }
-  }, [items, isLoaded]);
+  }, [items, isLoaded, user?.id]);
 
   useEffect(() => {
     if (!isLoaded || typeof window === "undefined") return;
     try {
-      window.localStorage.setItem(STORAGE_KEY_VENDORS, JSON.stringify(vendors));
+      window.localStorage.setItem(vendorsKeyFor(user?.id), JSON.stringify(vendors));
     } catch (e) {
       console.error("Erro ao salvar vendedores do mercado:", e);
     }
-  }, [vendors, isLoaded]);
+  }, [vendors, isLoaded, user?.id]);
 
   // Regiões disponíveis (canônicas + customizadas encontradas nos itens e vendedores)
   const availableRegions = useMemo(() => {

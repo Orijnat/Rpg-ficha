@@ -438,3 +438,42 @@ Este arquivo é a fonte de memória persistente da liderança técnica do projet
   - Backup & Exportação JSON: Versionamento canônico de Schema v2 com metadados e validação estrita com saneamento automático via `validateCharacterSchema`.
   - Suíte de Testes: 59 testes automatizados de QA aprovados com 100% de sucesso em `backup.test.mjs` e `rules-and-dice.test.mjs`.
   - Build de Produção: 17 rotas estáticas e dinâmicas geradas com sucesso sem erros.
+
+## Entrega — 2026-11-14 (Mapeamento de ambiente e orquestrador OpenCode)
+
+- **Demanda do usuário**: acessar/mapeiar o projeto e gerar o orquestrador para OpenCode antes de iniciar o desenvolvimento.
+- **Ações realizadas**:
+  - Mapeado ambiente: stack (Next.js 16/React 19/Tailwind v4, Node deps), estrutura (`src/app`, `src/layouts`, `src/lib`, `docs`), integrações (`NEXT_PUBLIC_API_URL` para `Rpg-backend`), ecossistema de agentes/skills/memórias (`.agents/`, `.github/agents/`) e estado de sessão prévio.
+  - Criado `.opencode/agent/orquestrador.md` (agente `primary`) com protocolo obrigatório de leitura/atualização de memória, roteamento para especialistas/skills do Grimorium, guardrails de arquitetura/segurança e exigência de validação.
+  - Atualizados `.agents/memory/active_session.md` e `.agents/memory/last_prompt.json` com contexto, ações e próximo passo.
+- **Validações**: inspeção estrutural e conferência dos artefatos gerados; sem alterações de código de aplicação.
+- **Pendências/observações**: OpenCode requer reinício para carregar novos agentes/configs; worktree possui alterações pré-existentes de outras sessões (não tocadas).
+- **Próximo passo**: reiniciar OpenCode, selecionar/usar `orquestrador` e iniciar desenvolvimento conforme demanda, delegando aos especialistas adequados.
+
+
+## Entrega — 2026-11-14 (Bugs do itens-a-fazer: atributos, fichas duplicadas, vazamento)
+
+- **Demanda do usuário**: continuar o desenvolvimento a partir de `itens-a-fazer.md` (escopo: "Bugs").
+- **Causas-raiz encontradas**:
+  - `/auth/me`, `login` e `register` devolviam o personagem cru (sem atributos/aliases/flattening) → frontend gravava `undefined` → backend regravava 10 → "status não salvavam".
+  - `/characters/sync` sem `id` criava um personagem novo a cada chamada → fichas duplicadas; frontend nunca adotava o id criado.
+  - Dados demo "Geralt de Rívia" (`defaultData`) vazavam para fichas reais + chaves de cache globais (`bruxeiro-sheet:*`, `rpg-gm-dashboard`, mercado) compartilhadas entre usuários no mesmo navegador.
+- **Correções**:
+  - Backend: novo `services/characterPublic.js` (serialização canônica compartilhada); `authController` usa `publicCharacter` e cria `AtributosPersonagem` no register; `normalizeCharacterPayload` mapeia `xp`→`experiencia`; `fichaSchema` aceita `xp` + mirrors; sync idempotente (sem id reutiliza ficha mais recente do usuário; id inexistente → 404).
+  - Frontend: `createBlankCharacterData()` no lugar do demo; guard de sync sem id; adoção do id retornado (`AuthContext.upsertCharacter`); cache `bruxeiro-sheet:v2:` + purge das chaves v1; `clearAuth` zera caches por usuário; dashboard GM e mercado namespaceados por `userId`.
+- **Validações**: backend `npm test` 10/10; frontend build OK; `themes.test.mjs` falha pré-existente; smoke test E2E em Postgres local docker (registro → sync atributos/xp/inventário/moedas → `/auth/me` round-trip; sem duplicação; 404; bankPassword não vaza). Containers de teste removidos.
+- **Pendências**: dados demo já persistidos no Supabase exigem limpeza one-time (a definir com o usuário); lint XPBar pré-existente.
+- **Correção extra**: `normalizeCharacterPayload` zerava atributos ausentes para 10 em PATCHes parciais; agora `atributosPatchFromPayload` atualiza só os atributos enviados (verificado com PUT `{hp:55}` mantendo FOR/DES/xp).
+
+
+## Entrega — 2026-11-14 (Remodelação visual: React Bits + GSAP + Lenis)
+
+- **Demanda do usuário**: instalar React Bits, Lenis e GSAP e remodelar o design da aplicação, deixando-a mais temática (escopo escolhido: landing + login/registro + identidade global).
+- **Ações**:
+  - React Bits esclarecido: não é npm; JSONs de `reactbits.dev/r/*-JS-TW.json` vendored em `src/components/react-bits/` (Aurora, SplitText, ShinyText, SpotlightCard) + README de atribuição; pasta isenta do ESLint.
+  - `npm install lenis gsap @gsap/react`.
+  - Landing: fundo Aurora WebGL (âmbar/violeta) + vinheta; hero SplitText (rise por palavras); ShinyText nos CTAs; SpotlightCard nos pilares; reveal GSAP ScrollTrigger nas seções; copy e funcionalidade interativa preservadas.
+  - Login/Registro: `AuthScaffold` compartilhado (Aurora + anel de runas + entrada GSAP); `<SmoothScroll>` Lenis global em `layout.js` respeitando reduced-motion.
+  - **Incidente**: `src/` sumiu do worktree durante a sessão (deleção externa); restaurado de stash dangling `0c3d4ca` via `git checkout <sha> -- src/`; fixes de bugs preservados; nada commitado.
+- **Validações**: build OK; dev server 200 em `/`, `/login`, `/registro`, `/personagem`; lint sem erros novos; testes 134/135 (1 falha pré-existente).
+- **Pendências**: revisão visual em navegador; limpeza de dados demo no Supabase; `.opencode/` não rastreado.

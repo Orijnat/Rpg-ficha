@@ -1,7 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
+import { useGSAP } from "@gsap/react";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Aurora from "../components/react-bits/Aurora";
+import SplitText from "../components/react-bits/SplitText";
+import ShinyText from "../components/react-bits/ShinyText";
+import SpotlightCard from "../components/react-bits/SpotlightCard";
 import {
   ArrowRight,
   BookOpen,
@@ -25,9 +32,25 @@ import {
   Zap,
 } from "lucide-react";
 
+gsap.registerPlugin(useGSAP, ScrollTrigger);
+
 export default function Home() {
   const [activeTab, setActiveTab] = useState("player"); // "player" | "master"
   const [demoRoll, setDemoRoll] = useState(null);
+  const rootRef = useRef(null);
+
+  useGSAP(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    gsap.utils.toArray(".section-reveal").forEach((el) => {
+      gsap.from(el, {
+        y: 52,
+        opacity: 0,
+        duration: 0.85,
+        ease: "power3.out",
+        scrollTrigger: { trigger: el, start: "top 84%", once: true },
+      });
+    });
+  }, { scope: rootRef });
 
   const handleDemoRoll = () => {
     const d20 = Math.floor(Math.random() * 20) + 1;
@@ -37,6 +60,7 @@ export default function Home() {
 
   return (
     <div
+      ref={rootRef}
       data-theme="amber"
       className="relative isolate min-h-screen overflow-hidden text-[#ebd9be] bg-[#090b0e]"
       style={{
@@ -44,9 +68,31 @@ export default function Home() {
         color: "#ebd9be",
       }}
     >
-      {/* Luzes e Auras Místicas de Fundo Fixas Canônicas (Âmbar Vulcânico) */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(216,155,56,0.18),transparent_40%),radial-gradient(circle_at_80%_25%,rgba(142,90,247,0.10),transparent_35%)]" />
-      <div className="pointer-events-none absolute left-1/2 top-24 h-96 w-96 -translate-x-1/2 rounded-full bg-[rgba(216,155,56,0.35)] blur-3xl opacity-40" />
+      {/* Aurora Arcana — fundo vivo WebGL (âmbar vulcânico + violeta arcano) */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+        <Aurora
+          colorStops={["#d89b38", "#7a3a12", "#4a2a8a"]}
+          amplitude={1.15}
+          blend={0.62}
+          speed={0.5}
+          height={0.9}
+          scale={1.05}
+          glow={0.85}
+          brightness={1}
+          layers={2}
+          direction="top"
+          opacity={0.55}
+          mouseInteraction
+          intro
+        />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(ellipse 100% 90% at 50% 0%, transparent 18%, rgba(9,11,14,0.55) 58%, #090b0e 100%)",
+          }}
+        />
+      </div>
 
       {/* Topo / Header Público */}
       <header className="relative z-20 mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8 lg:px-12 border-b border-primary/20 backdrop-blur-md">
@@ -91,10 +137,32 @@ export default function Home() {
               <span>Plataforma Definitiva para Mesas de RPG d20</span>
             </div>
 
-            <h1 className="font-cinzel text-4xl font-black leading-tight tracking-tight text-foreground sm:text-6xl lg:text-7xl">
-              O Códice dos Heróis.{" "}
-              <span className="text-primary block mt-1">A Sala de Guerra do Mestre.</span>
-            </h1>
+            <div role="heading" aria-level={1} className="font-cinzel text-4xl font-black leading-tight tracking-tight sm:text-6xl lg:text-7xl">
+              <SplitText
+                text="O Códice dos Heróis."
+                tag="span"
+                className="block text-foreground"
+                textAlign="center"
+                splitType="words"
+                trigger="load"
+                effect="rise"
+                delay={60}
+                duration={0.9}
+                staggerFrom="start"
+              />
+              <SplitText
+                text="A Sala de Guerra do Mestre."
+                tag="span"
+                className="mt-1 block text-primary"
+                textAlign="center"
+                splitType="words"
+                trigger="load"
+                effect="rise"
+                delay={330}
+                duration={0.9}
+                staggerFrom="start"
+              />
+            </div>
 
             <p className="mt-6 font-journal text-lg sm:text-2xl leading-relaxed text-foreground/80 max-w-2xl mx-auto italic">
               Diga adeus às planilhas frias e anotações perdidas. Grimorium combina um
@@ -106,7 +174,9 @@ export default function Home() {
                 href="/registro"
                 className="interactive-lift flex min-h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-xl border border-primary bg-primary px-7 font-cinzel text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-xl shadow-primary/30 transition hover:brightness-110 active:scale-95"
               >
-                <span>Começar Minha Jornada</span>
+                <ShinyText trigger="hover" color="#f5e3b0" shineColor="#fffbe8" speed={2.1} shineWidth={34} glow={0.3}>
+                  Começar Minha Jornada
+                </ShinyText>
                 <ArrowRight size={16} />
               </Link>
               <Link
@@ -125,7 +195,7 @@ export default function Home() {
           {/* ========================================================================= */}
           {/* 2. SHOWCASE INTERATIVO (ALTERNÂNCIA: JOGADOR VS. MESTRE)                  */}
           {/* ========================================================================= */}
-          <div className="mt-14 max-w-5xl mx-auto">
+          <div className="section-reveal mt-14 max-w-5xl mx-auto">
             {/* Seletor de Modo na Vitrine */}
             <div className="flex items-center justify-center gap-2 mb-6">
               <button
@@ -376,7 +446,7 @@ export default function Home() {
         {/* ========================================================================= */}
         {/* 3. OS DOIS PILARES DA MESA: JOGADOR & MESTRE                              */}
         {/* ========================================================================= */}
-        <section className="border-t border-primary/20 bg-black/25 py-20 px-5 sm:px-8 lg:px-12">
+        <section className="section-reveal border-t border-primary/20 bg-black/25 py-20 px-5 sm:px-8 lg:px-12">
           <div className="mx-auto max-w-7xl">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <span className="font-cinzel text-xs font-bold uppercase tracking-[0.28em] text-primary">
@@ -393,7 +463,8 @@ export default function Home() {
             {/* Grid Dividido: Para o Jogador vs Para o Mestre */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Coluna 1: Jogadores */}
-              <div className="grimoire-card bracket-corners rounded-2xl p-6 sm:p-8 space-y-6">
+              <SpotlightCard spotlightColor="rgba(216,155,56,0.25)" className="bracket-corners">
+                <div className="space-y-6">
                 <div className="flex items-center gap-3 border-b border-primary/20 pb-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-primary/40 bg-primary/10 text-primary shadow-sm">
                     <ScrollText size={24} />
@@ -457,10 +528,12 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-              </div>
+                </div>
+              </SpotlightCard>
 
               {/* Coluna 2: Mestres */}
-              <div className="war-room-card bracket-corners rounded-2xl p-6 sm:p-8 space-y-6 border border-amber-400/30">
+              <SpotlightCard spotlightColor="rgba(245,158,11,0.3)" className="bracket-corners">
+                <div className="space-y-6">
                 <div className="flex items-center gap-3 border-b border-amber-400/20 pb-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-amber-400/50 bg-amber-500/10 text-amber-400 shadow-sm">
                     <Crown size={24} />
@@ -524,7 +597,8 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-              </div>
+                </div>
+              </SpotlightCard>
             </div>
           </div>
         </section>
@@ -532,7 +606,7 @@ export default function Home() {
         {/* ========================================================================= */}
         {/* 4. OS 5 TEMAS DARK FANTASY                                               */}
         {/* ========================================================================= */}
-        <section className="py-20 px-5 sm:px-8 lg:px-12 border-t border-primary/20">
+        <section className="section-reveal py-20 px-5 sm:px-8 lg:px-12 border-t border-primary/20">
           <div className="mx-auto max-w-5xl text-center">
             <span className="font-cinzel text-xs font-bold uppercase tracking-[0.28em] text-primary">
               Personalização Visual Profunda
@@ -575,13 +649,15 @@ export default function Home() {
         {/* ========================================================================= */}
         {/* 5. CHAMADA FINAL PARA A AÇÃO                                              */}
         {/* ========================================================================= */}
-        <section className="relative py-20 px-5 sm:px-8 border-t border-primary/20 bg-gradient-to-b from-transparent to-black/50 text-center">
+        <section className="section-reveal relative py-20 px-5 sm:px-8 border-t border-primary/20 bg-gradient-to-b from-transparent to-black/50 text-center">
           <div className="max-w-3xl mx-auto space-y-6">
             <span className="font-cinzel text-xs font-bold uppercase tracking-[0.3em] text-primary">
               Sua Próxima Crônica Começa Agora
             </span>
             <h2 className="font-cinzel text-3xl sm:text-5xl font-black text-foreground">
-              Reúna o grupo. Role a iniciativa.
+              <ShinyText trigger="view" color="#ebd9be" shineColor="#fff7dd" speed={3.2} shineWidth={26}>
+                Reúna o grupo. Role a iniciativa.
+              </ShinyText>
             </h2>
             <p className="font-journal text-lg sm:text-xl italic text-muted-foreground max-w-xl mx-auto">
               Crie seu primeiro personagem ou monte sua campanha em menos de dois minutos.

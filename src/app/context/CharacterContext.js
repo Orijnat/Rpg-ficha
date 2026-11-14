@@ -12,7 +12,7 @@ import {
 import { ensureCanonicalSkills } from "../../lib/modifiers";
 import { useAuth } from "./AuthContext";
 
-import { defaultData } from "../../lib/defaultCharacter";
+import { defaultData, createBlankCharacterData } from "../../lib/defaultCharacter";
 export { defaultData };
 
 const CharacterContext = createContext(null);
@@ -83,7 +83,7 @@ function normalizeCharacterForSync(charData, activeChar) {
 }
 
 export function CharacterProvider({ children }) {
-  const [data, setData] = useState(defaultData);
+  const [data, setData] = useState(() => createBlankCharacterData());
   const [hydrated, setHydrated] = useState(false);
   const [hydratedKey, setHydratedKey] = useState(null);
   const [bankUnlocked, setBankUnlocked] = useState(false);
@@ -94,18 +94,35 @@ export function CharacterProvider({ children }) {
   const latestData = useRef(data);
   const syncSequence = useRef(0);
 
-  const { activeCharacter, token, user, loading: authLoading, isMaster } = useAuth();
+  const { activeCharacter, token, user, loading: authLoading, isMaster, upsertCharacter } = useAuth();
 
-  const cacheKey = `bruxeiro-sheet:${user?.id || "anonymous"}:${activeCharacter?.id || "default"}`;
+  const cacheKey = `bruxeiro-sheet:v2:${user?.id || "anonymous"}:${activeCharacter?.id || "default"}`;
+
+  // Remove caches legados (v1) que podiam estar contaminados com dados de demonstração.
+  useEffect(() => {
+    try {
+      const stale = [];
+      for (let i = 0; i < window.localStorage.length; i += 1) {
+        const key = window.localStorage.key(i);
+        if (key && key.startsWith("bruxeiro-sheet:") && !key.startsWith("bruxeiro-sheet:v2:")) {
+          stale.push(key);
+        }
+      }
+      stale.forEach((key) => window.localStorage.removeItem(key));
+    } catch {
+      // Ignora indisponibilidade do storage.
+    }
+  }, []);
 
   // O cache só é usado como fallback quando não existe personagem vindo da API.
   useEffect(() => {
     if (authLoading || activeCharacter) return;
     try {
       const saved = window.localStorage.getItem(cacheKey);
-      if (saved) setData({ ...defaultData, ...JSON.parse(saved) });
+      if (saved) setData({ ...createBlankCharacterData(), ...JSON.parse(saved) });
+      else setData(createBlankCharacterData());
     } catch {
-      setData(defaultData);
+      setData(createBlankCharacterData());
     } finally {
       setHydrated(true);
       setHydratedKey(cacheKey);
@@ -117,6 +134,7 @@ export function CharacterProvider({ children }) {
     if (authLoading || !activeCharacter) return;
     setHydrated(false);
     setHydratedKey(null);
+    const blank = createBlankCharacterData();
     const atributos = {
       FOR: activeCharacter.forca ?? activeCharacter.FOR ?? activeCharacter.attributes?.FOR,
       DES: activeCharacter.destreza ?? activeCharacter.DES ?? activeCharacter.attributes?.DES,
@@ -132,48 +150,54 @@ export function CharacterProvider({ children }) {
       ? activeCharacter.moedas
       : (activeCharacter.currencies ?? {});
     setData((current) => ({
-      ...defaultData,
+      ...blank,
       ...activeCharacter,
       ...atributos,
-      skills: ensureCanonicalSkills(pickCollection(activeCharacter.pericias, activeCharacter.skills, defaultData.skills)),
-      inventory: pickCollection(activeCharacter.itensInventario, activeCharacter.inventory, defaultData.inventory),
-      contracts: pickCollection(activeCharacter.contratosDados, activeCharacter.contracts, defaultData.contracts),
-      players: activeCharacter.jogadores ?? activeCharacter.players ?? defaultData.players,
-      npcs: activeCharacter.npcs ?? defaultData.npcs,
-      notesImages: pickCollection(activeCharacter.imagensAnotacoes, activeCharacter.notesImages, defaultData.notesImages),
-      latina: activeCharacter.latina ?? moedas.latina ?? moedas.platina ?? defaultData.latina,
-      ouro: activeCharacter.ouro ?? moedas.ouro ?? defaultData.ouro,
-      prata: activeCharacter.prata ?? moedas.prata ?? defaultData.prata,
-      cobre: activeCharacter.cobre ?? moedas.cobre ?? defaultData.cobre,
+      xp: activeCharacter.xp ?? activeCharacter.experiencia ?? blank.xp,
+      skills: ensureCanonicalSkills(pickCollection(activeCharacter.pericias, activeCharacter.skills, blank.skills)),
+      inventory: pickCollection(activeCharacter.itensInventario, activeCharacter.inventory, blank.inventory),
+      contracts: pickCollection(activeCharacter.contratosDados, activeCharacter.contracts, blank.contracts),
+      players: activeCharacter.jogadores ?? activeCharacter.players ?? blank.players,
+      npcs: activeCharacter.npcs ?? blank.npcs,
+      notesImages: pickCollection(activeCharacter.imagensAnotacoes, activeCharacter.notesImages, blank.notesImages),
+      latina: activeCharacter.latina ?? moedas.latina ?? moedas.platina ?? blank.latina,
+      ouro: activeCharacter.ouro ?? moedas.ouro ?? blank.ouro,
+      prata: activeCharacter.prata ?? moedas.prata ?? blank.prata,
+      cobre: activeCharacter.cobre ?? moedas.cobre ?? blank.cobre,
       abilities: pickCollection(
         activeCharacter.dadosExtras?.abilities,
         activeCharacter.abilities,
-        current.abilities ?? defaultData.abilities ?? []
+        current.abilities ?? blank.abilities ?? []
       ),
       levelAbilities: pickCollection(
         activeCharacter.dadosExtras?.levelAbilities,
         activeCharacter.levelAbilities,
-        current.levelAbilities ?? defaultData.levelAbilities ?? {}
+        current.levelAbilities ?? blank.levelAbilities ?? {}
       ),
       dadosExtras: {
-        ...defaultData.dadosExtras,
+        ...blank.dadosExtras,
         ...(current.dadosExtras || {}),
         ...(activeCharacter.dadosExtras || {}),
         abilities: pickCollection(
           activeCharacter.dadosExtras?.abilities,
           activeCharacter.abilities,
-          current.abilities ?? defaultData.abilities ?? []
+          current.abilities ?? blank.abilities ?? []
         ),
         levelAbilities: pickCollection(
           activeCharacter.dadosExtras?.levelAbilities,
           activeCharacter.levelAbilities,
-          current.levelAbilities ?? defaultData.levelAbilities ?? {}
+          current.levelAbilities ?? blank.levelAbilities ?? {}
         ),
       },
     }));
     setHydrated(true);
     setHydratedKey(cacheKey);
   }, [activeCharacter, authLoading, cacheKey]);
+
+  const adoptRemoteCharacter = (remoteChar) => {
+    setData((current) => (current.id ? current : { ...current, id: remoteChar.id, userId: remoteChar.userId ?? current.userId }));
+    upsertCharacter?.(remoteChar);
+  };
 
   useEffect(() => {
     if (!hydrated || hydratedKey !== cacheKey) {
@@ -183,15 +207,27 @@ export function CharacterProvider({ children }) {
     latestData.current = data;
     window.localStorage.setItem(cacheKey, JSON.stringify(data));
 
+    const targetId = data?.id || activeCharacter?.id;
+    if (!targetId) {
+      // Não existe ficha vinculada: nunca cria silenciosamente uma nova a partir de dados locais.
+      setSyncStatus("idle");
+      return;
+    }
+
     // Sincronização em segundo plano com o backend (debounce de 800ms)
     const sequence = ++syncSequence.current;
     setSyncStatus("saving");
     setSyncError(null);
     const timer = setTimeout(() => {
-      const payload = normalizeCharacterForSync(data, activeCharacter);
+      const payload = normalizeCharacterForSync({ ...data, id: targetId }, activeCharacter);
       syncCharacterWithBackend(payload, token)
         .then((result) => {
-          if (sequence === syncSequence.current) setSyncStatus(result ? "saved" : "offline");
+          if (sequence !== syncSequence.current) return;
+          const remoteChar = result?.id ? result : result?.character ?? null;
+          if (remoteChar?.id && !latestData.current?.id) {
+            adoptRemoteCharacter(remoteChar);
+          }
+          setSyncStatus(result ? "saved" : "offline");
         })
         .catch((error) => {
           if (sequence !== syncSequence.current) return;
@@ -201,6 +237,7 @@ export function CharacterProvider({ children }) {
     }, 800);
 
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cacheKey, data, hydrated, hydratedKey, token, activeCharacter]);
 
   const retrySync = async () => {
@@ -208,9 +245,19 @@ export function CharacterProvider({ children }) {
     setSyncStatus("saving");
     setSyncError(null);
     try {
-      const payload = normalizeCharacterForSync(latestData.current, activeCharacter);
+      const targetId = latestData.current?.id || activeCharacter?.id;
+      if (!targetId) {
+        if (sequence === syncSequence.current) setSyncStatus("idle");
+        return;
+      }
+      const payload = normalizeCharacterForSync({ ...latestData.current, id: targetId }, activeCharacter);
       const result = await syncCharacterWithBackend(payload, token);
-      if (sequence === syncSequence.current) setSyncStatus(result ? "saved" : "offline");
+      if (sequence !== syncSequence.current) return;
+      const remoteChar = result?.id ? result : result?.character ?? null;
+      if (remoteChar?.id && !latestData.current?.id) {
+        adoptRemoteCharacter(remoteChar);
+      }
+      setSyncStatus(result ? "saved" : "offline");
     } catch (error) {
       if (sequence === syncSequence.current) {
         setSyncError(error);
@@ -566,12 +613,12 @@ export function CharacterProvider({ children }) {
 
   const loadCharacter = (importedData) => {
     if (importedData && typeof importedData === "object") {
-      setData({ ...defaultData, ...importedData });
+      setData({ ...createBlankCharacterData(), ...importedData });
     }
   };
 
   const resetCharacter = () => {
-    setData(defaultData);
+    setData(createBlankCharacterData());
     window.localStorage.removeItem(cacheKey);
   };
 

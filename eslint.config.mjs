@@ -15,6 +15,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Componentes de terceiros (React Bits) copiados para o projeto:
+    // mantêm o padrão original de refs em render; lint só do código próprio.
+    "src/components/react-bits/**",
   ]),
 ]);
 

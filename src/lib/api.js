@@ -42,9 +42,28 @@ export function storeAuth(token, user) {
   }
 }
 
+const PER_USER_STORAGE_PREFIXES = [
+  "bruxeiro-sheet:",
+  "rpg-gm-dashboard",
+  "rpg_world_market_data_v1",
+  "rpg_world_market_vendors_v1",
+];
+
 export function clearAuth() {
   if (typeof window === "undefined") return;
   for (const storage of [window.sessionStorage, window.localStorage]) {
+    try {
+      const keysToRemove = [];
+      for (let i = 0; i < storage.length; i += 1) {
+        const key = storage.key(i);
+        if (key && PER_USER_STORAGE_PREFIXES.some((prefix) => key.startsWith(prefix))) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach((key) => storage.removeItem(key));
+    } catch {
+      // Storage pode estar indisponível em modo privado/restrito.
+    }
     try {
       storage.removeItem("rpg_auth_token");
       storage.removeItem("rpg_auth_user");

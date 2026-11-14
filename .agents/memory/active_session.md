@@ -1,68 +1,42 @@
 # 🧠 Sessão Ativa — Grimorium RPG
 
-**Última Atualização**: 2026-11-10T19:30:00-03:00  
+**Última Atualização**: 2026-11-14T21:00:00-03:00  
 **Branch Atual**: `main`  
-**Status**: Concluída a expansão do motor de regras em `src/lib/modifiers.js` com 17 novas funções/constantes.
-**Última Atualização**: 2026-11-10T00:20:00-03:00
-**Objetivo Atual**: Blindagem de estilo permanente e canônico na tela inicial pública (`/`), garantindo que ela nunca sofra alteração de estilo ou vazamento de temas claros/alternativos quando o usuário estiver logado ou mudar de tema.
+**Status**: Remodelação visual (landing + login/registro + identidade global) implementada e validada. Build OK; rotas do dev server respondem 200.
 
 ---
 
-## ✅ Concluído Nesta Sessão
+## ✅ Concluído Nesta Sessão (Remodelação visual)
 
 | Item | Status |
 |---|---|
-| **calculateArmorClass** | CA = 10 + Mod(DES) + extra (dadosExtras.armorClass) |
-| **calculatePE** | PE Max = Nível + Mod(ESP), mínimo 0 |
-| **calculateBP** | BP Max = Nível + Mod(CAR), mínimo 0 |
-| **calculateInsanity** | Insanidade Max = 10 + Mod(SAB), mínimo 0 |
-| **calculateDerivedResources** | Agregador: HP, PE, BP, Insanidade, CA, Iniciativa, hitDie |
-| **XP_TABLE** | Tabela de XP acumulado (20 níveis) |
-| **calculateLevelFromXP** | Nível, XP atual, próximo nível, progresso % |
-| **calculateXPForLevel** | XP necessário para um dado nível |
-| **applyShortRest** | Rola dado de vida + Mod(CON) HP, restaura 25% PE |
-| **applyLongRest** | 100% HP, 100% PE, reduz insanidade em 1 |
-| **consumeAmmunition** | Consome qty do item, marca esgotado se 0 |
-| **CURRENCY_RATES** | Taxas: latina=1000, ouro=100, prata=10, cobre=1 |
-| **convertCurrency** | Converte entre moedas com fórmula |
-| **totalWealthInCopper** | Riqueza total em cobres |
-| **applyCondition** | Adiciona condição (sem duplicata) |
-| **removeCondition** | Remove condição da lista ativa |
-| **hasCondition** | Verifica se condição está ativa |
-| Diagnóstico e correção de `Crown is not defined` em `src/app/admin/layout.js` | ✅ |
-| Separação e orquestração de rotas na sidebar para mestres e jogadores | ✅ |
-| Barra de Pontos de Vida (PV) movida para o cabeçalho universal com controles rápidos | ✅ |
-| Reformulação de estilo Dark Fantasy "Grimório Vivo" em todo o design system | ✅ |
-| Inversão da ordem dos atributos (Valor em destaque principal + Bônus visível com gatilho de rolagem d20) | ✅ |
-| Garantia de persistência universal de atributos e colunas no PostgreSQL/Sequelize | ✅ |
-| Criação e Integração de Temas Claros de RPG (`parchment` e `sunlight`) | ✅ |
-| **Blindagem Canônica da Tela Inicial (`/`)**: | ✅ |
-| *`ThemeContext.jsx`*: Força reativamente `data-theme="amber"` no `document.documentElement` quando na rota `/`, restaurando instantaneamente o tema preferido do jogador ao navegar para a ficha ou painel | ✅ |
-| *`AppShell.jsx`*: Atributo `data-theme="amber"` e background `#090b0e` / auras canônicas fixas quando `isLandingPage === true` | ✅ |
-| *`src/app/page.js`*: Container raiz encapsulado com `data-theme="amber"`, paleta base `#090b0e` / `#ebd9be` e glows fixos de Âmbar Vulcânico | ✅ |
-| *Refatoração de ESLint*: Remoção de warnings de `setState` em efeitos no `ThemeContext.jsx` com inicialização limpa | ✅ |
-| ESLint: 0 erros, 0 avisos nos arquivos alterados | ✅ |
-| Testes Unitários de Temas: 100% aprovados (`node --test src/lib/__tests__/themes.test.mjs`) | ✅ |
-| Next.js 16 Production Build: 100% aprovado em 2.4s nas 28 rotas | ✅ |
-| Commit e push das implementações no repositório remoto (`ffd0162` -> `origin/main`) | ✅ |
+| Instalados `lenis` (scroll suave global), `gsap` e `@gsap/react` (SplitText livre desde GSAP 3.13) | ✅ |
+| React Bits NÃO é pacote npm: componentes JS+Tailwind vendored em `src/components/react-bits/` (`Aurora`, `SplitText`, `ShinyText`, `SpotlightCard`) + README com atribuição; pasta excluída do ESLint | ✅ |
+| Landing (`/`) remodelada: fundo vivo Aurora WebGL (âmbar/violeta), vinheta, headline SplitText com rise por palavras, CTA principal com ShinyText (hover), CTA final com ShinyText (view), seções com reveal GSAP ScrollTrigger, pilares Jogador/Mestre em SpotlightCard | ✅ |
+| Login e Registro: `src/components/auth/AuthScaffold.jsx` — fundo Aurora + anel de runas gigante girando + entrada GSAP (emblema/card), gsap respeitando reduced-motion | ✅ |
+| Lenis global via `src/components/SmoothScroll.jsx`, desativado em `prefers-reduced-motion` | ✅ |
+| Incidente resolvido: `src/` havia sumido do worktree (deleção externa, não deste trabalho); restaurado via `git checkout` de stash dangling `0c3d4ca` (04:54, pós-build) — todas as correções de bugs preservadas | ✅ |
 
 ---
 
-## 📋 Arquivos Alterados
-- `src/app/context/ThemeContext.jsx`
-- `src/layouts/AppShell.jsx`
-- `src/app/page.js`
-- `src/lib/themes.js`
-- `src/lib/__tests__/themes.test.mjs`
-- `src/app/globals.css`
-- `src/app/components/SettingsModal.jsx`
-- `src/app/components/ThemeSelector.jsx`
-- `.agents/memory/active_session.md`
-- `.agents/memory/last_prompt.json`
-- `.agents/memory/frontend-artisan.md`
-## 📋 Próximos Passos Recomendados
-1. Integrar `calculateDerivedResources` nos componentes da ficha de personagem.
-2. Criar UI de descanso curto/longo usando `applyShortRest` / `applyLongRest`.
-3. Integrar `consumeAmmunition` no painel de inventário.
-4. Adicionar conversor de moedas na UI de economia.
-5. Conectar `calculateLevelFromXP` à barra de progresso de XP.
+## 📌 Contexto
+- **Stack visual**: Next 16/App Router, Tailwind v4, Aurora WebGL2, GSAP/ScrollTrigger, Lenis (lenis/react), React Bits vendored (variantes JS-TW).
+- **Regras**: componentes React Bits mantêm código original e ficam FORA do lint; `prefers-reduced-motion` respeitado globalmente (Lenis, AuthScaffold, useGSAP de sections).
+- **Build**: `npm run build` OK; `npm run lint` 2 erros + 40 warnings (todos pré-existentes); testes libs 134/135 (única falha: `themes.test.mjs`, pré-existente no HEAD).
+
+## ⚠️ Pendências / Avisos
+- Visual ainda não verificado por screenshot (sem browser no ambiente); rotas responderam 200 no dev server; recomendável abrir no navegador.
+- TiltedCard foi descartado (não combina com conteúdo interativo do showcase); pode adicionar depois em superfícies estáticas.
+- Dados demo no Supabase ainda precisam de limpeza one-time (decisão pendente do usuário).
+- `.opencode/` não rastreado, não commitar sem revisão. Nada foi commitado nesta sessão.
+
+## 📋 Checklist de Continuidade
+- [x] Instalar dependências (lenis, gsap, @gsap/react)
+- [x] Remodelar landing e telas de auth
+- [x] Validar build/rotas/lint/testes
+- [x] Registrar prompt/ação em `last_prompt.json`
+- [ ] Revisar visual no navegador com o usuário
+- [ ] Decidir limpeza dos dados demo no Supabase
+
+## Próximo passo recomendado
+Abrir `/`, `/login` e `/registro` no navegador com o backend local, revisar o visual com o usuário e, se aprovado, considerar commitar em conjunto com os fixes de bugs do itens-a-fazer.
