@@ -2,6 +2,9 @@
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { rollDice } from "../../lib/dice";
+import { postRollToBackend } from "../../lib/api";
+import { useCharacter } from "./CharacterContext";
+import { useAuth } from "./AuthContext";
 
 const DiceContext = createContext(null);
 
@@ -12,10 +15,38 @@ export function DiceProvider({ children }) {
   const [isRolling, setIsRolling] = useState(false);
   const [pendingTarget, setPendingTarget] = useState(null); // { label, modifier }
   const rollingTimer = useRef(null);
+  const { data } = useCharacter();
+  const { token } = useAuth();
+
+  // Rolagens viram histórico persistente apenas quando a ficha está vinculada a uma mesa
+  // (autorização no servidor: dono/mestre; ninguém de fora lê as rolagens).
+  const persistRoll = (result) => {
+    try {
+      if (!token || !data?.id || !data?.campanhaId) return;
+      postRollToBackend({
+        formula: result.formula,
+        expressao: result.label,
+        resultados: result.rolls,
+        kept: result.kept,
+        modifier: result.modifier,
+        total: result.total,
+        modo: result.mode,
+        critico: Boolean(result.isCriticalSuccess),
+        falhaCritica: Boolean(result.isCriticalFailure),
+        contexto: "ficha",
+        personagemId: data.id,
+      }, token).catch((error) => {
+        console.warn("Rolagem não registrada no servidor:", error?.message || error);
+      });
+    } catch {
+      // silencioso: persistir histórico nunca pode quebrar a rolagem
+    }
+  };
 
   // Executa uma rolagem e registra no histórico
   const executeRoll = ({ sides = 20, count = 1, mode = "normal", modifier = 0, label = "Rolagem" }) => {
     const result = rollDice({ sides, count, mode, modifier, label });
+    persistRoll(result);
     setLastRoll(result);
     setHistory((prev) => [result, ...prev].slice(0, 30)); // Mantém últimas 30
     setPendingTarget(null);

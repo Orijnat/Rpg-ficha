@@ -69,25 +69,25 @@ function LoginForm() {
         />
 
         {/* Linhas decorativas — runas nos cantos */}
-        <div className="pointer-events-none absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#d69a3d]/50 to-transparent" />
-        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#d69a3d]/50 to-transparent" />
-        <div className="pointer-events-none absolute top-0 bottom-0 left-0 w-px bg-gradient-to-b from-transparent via-[#d69a3d]/30 to-transparent" />
-        <div className="pointer-events-none absolute top-0 bottom-0 right-0 w-px bg-gradient-to-b from-transparent via-[#d69a3d]/30 to-transparent" />
+        <div className="pointer-events-none absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--theme-accent)]/50 to-transparent" />
+        <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[var(--theme-accent)]/50 to-transparent" />
+        <div className="pointer-events-none absolute top-0 bottom-0 left-0 w-px bg-gradient-to-b from-transparent via-[var(--theme-accent)]/30 to-transparent" />
+        <div className="pointer-events-none absolute top-0 bottom-0 right-0 w-px bg-gradient-to-b from-transparent via-[var(--theme-accent)]/30 to-transparent" />
 
         {/* Runas decorativas nos cantos */}
-        <svg className="pointer-events-none absolute top-3 left-3 h-6 w-6 text-[#d69a3d]/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+        <svg className="pointer-events-none absolute top-3 left-3 h-6 w-6 text-[var(--theme-accent)]/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
           <path d="M2 2 L8 2 L8 8 M2 2 L2 8" />
           <circle cx="5" cy="5" r="1.5" fill="currentColor" opacity="0.5" />
         </svg>
-        <svg className="pointer-events-none absolute top-3 right-3 h-6 w-6 text-[#d69a3d]/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+        <svg className="pointer-events-none absolute top-3 right-3 h-6 w-6 text-[var(--theme-accent)]/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
           <path d="M22 2 L16 2 L16 8 M22 2 L22 8" />
           <circle cx="19" cy="5" r="1.5" fill="currentColor" opacity="0.5" />
         </svg>
-        <svg className="pointer-events-none absolute bottom-3 left-3 h-6 w-6 text-[#d69a3d]/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+        <svg className="pointer-events-none absolute bottom-3 left-3 h-6 w-6 text-[var(--theme-accent)]/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
           <path d="M2 22 L8 22 L8 16 M2 22 L2 16" />
           <circle cx="5" cy="19" r="1.5" fill="currentColor" opacity="0.5" />
         </svg>
-        <svg className="pointer-events-none absolute bottom-3 right-3 h-6 w-6 text-[#d69a3d]/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
+        <svg className="pointer-events-none absolute bottom-3 right-3 h-6 w-6 text-[var(--theme-accent)]/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1">
           <path d="M22 22 L16 22 L16 16 M22 22 L22 16" />
           <circle cx="19" cy="19" r="1.5" fill="currentColor" opacity="0.5" />
         </svg>
@@ -97,7 +97,7 @@ function LoginForm() {
           <div className="auth-shell-emblem mx-auto mb-6 flex flex-col items-center">
             <div className="relative">
               {/* Halo brilhante */}
-              <div className="absolute -inset-4 rounded-full bg-[#d69a3d]/10 blur-xl animate-pulse" />
+              <div className="absolute -inset-4 rounded-full bg-[var(--theme-accent)]/10 blur-xl animate-pulse" />
               {/* Selo hexagonal */}
               <div className="relative flex h-20 w-20 items-center justify-center">
                 <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full animate-[spin_30s_linear_infinite]">
@@ -110,7 +110,7 @@ function LoginForm() {
                   {/* Runas ao redor do selo */}
                   <text
                     textAnchor="middle"
-                    className="fill-[#d69a3d]/40"
+                    className="fill-[var(--theme-accent)]/40"
                     style={{ fontSize: "6px", fontFamily: "Cinzel Decorative" }}
                   >
                     <textPath href="#sealPath">
@@ -131,7 +131,7 @@ function LoginForm() {
                   </defs>
                 </svg>
                 {/* Ícone central */}
-                <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-xl border border-[#d69a3d]/40 bg-gradient-to-br from-[#2a2018] to-[#1a1510] shadow-[inset_0_1px_4px_rgba(214,154,61,0.15)]">
+                <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-xl border border-[var(--theme-accent)]/40 bg-gradient-to-br from-[#2a2018] to-[#1a1510] shadow-[inset_0_1px_4px_rgba(214,154,61,0.15)]">
                   <span className="text-2xl" style={{ fontFamily: "Cinzel Decorative" }}>⚔</span>
                 </div>
               </div>
@@ -145,17 +145,17 @@ function LoginForm() {
               Crônicas do Destino
             </p>
             <h2
-              className="mt-1.5 text-center text-2xl font-bold tracking-wide text-[#f5e9d7] sm:text-3xl"
+              className="mt-1.5 text-center text-2xl font-bold tracking-wide text-[var(--theme-title)] sm:text-3xl"
               style={{ fontFamily: "Cinzel, serif" }}
             >
               Acesso ao Reino
             </h2>
             <div className="mt-2 flex items-center gap-2">
-              <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#d69a3d]/40" />
-              <span className="text-[10px] text-[#8a7355]" style={{ fontFamily: "Crimson Text, serif" }}>
+              <div className="h-px w-12 bg-gradient-to-r from-transparent to-[var(--theme-accent)]/40" />
+              <span className="text-[10px] text-[var(--theme-subtitle)]" style={{ fontFamily: "Crimson Text, serif" }}>
                 Entre para continuar sua jornada
               </span>
-              <div className="h-px w-12 bg-gradient-to-l from-transparent to-[#d69a3d]/40" />
+              <div className="h-px w-12 bg-gradient-to-l from-transparent to-[var(--theme-accent)]/40" />
             </div>
           </div>
 
@@ -177,7 +177,7 @@ function LoginForm() {
                 Nome de Aventureiro
               </label>
               <div className="group relative">
-                <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#6b5a3e] transition group-focus-within:text-[#d69a3d]">
+                <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#6b5a3e] transition group-focus-within:text-[var(--theme-accent)]">
                   <User size={15} />
                 </span>
                 <input
@@ -186,7 +186,7 @@ function LoginForm() {
                   onChange={(e) => setIdentifier(e.target.value)}
                   placeholder="Usuário ou e-mail"
                   required
-                  className="w-full rounded-lg border border-[#4a3d2a]/60 bg-[#0f0d0a]/60 py-2.5 pl-10 pr-3.5 text-sm text-[#f1e7d2] placeholder-[#6b5a3e]/50 shadow-inner transition-all focus:border-[#d69a3d]/60 focus:bg-[#0f0d0a]/80 focus:outline-none focus:ring-1 focus:ring-[#d69a3d]/30 focus:shadow-[0_0_12px_rgba(214,154,61,0.08)]"
+                  className="w-full rounded-lg border border-[#4a3d2a]/60 bg-[#0f0d0a]/60 py-2.5 pl-10 pr-3.5 text-sm text-[#f1e7d2] placeholder-[#6b5a3e]/50 shadow-inner transition-all focus:border-[var(--theme-accent)]/60 focus:bg-[#0f0d0a]/80 focus:outline-none focus:ring-1 focus:ring-[var(--theme-accent)]/30 focus:shadow-[0_0_12px_rgba(214,154,61,0.08)]"
                   style={{ fontFamily: "Crimson Text, serif", fontSize: "15px" }}
                 />
               </div>
@@ -200,7 +200,7 @@ function LoginForm() {
                 Palavra-Passe
               </label>
               <div className="group relative">
-                <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#6b5a3e] transition group-focus-within:text-[#d69a3d]">
+                <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#6b5a3e] transition group-focus-within:text-[var(--theme-accent)]">
                   <Lock size={15} />
                 </span>
                 <input
@@ -209,13 +209,13 @@ function LoginForm() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  className="w-full rounded-lg border border-[#4a3d2a]/60 bg-[#0f0d0a]/60 py-2.5 pl-10 pr-10 text-sm text-[#f1e7d2] placeholder-[#6b5a3e]/50 shadow-inner transition-all focus:border-[#d69a3d]/60 focus:bg-[#0f0d0a]/80 focus:outline-none focus:ring-1 focus:ring-[#d69a3d]/30 focus:shadow-[0_0_12px_rgba(214,154,61,0.08)]"
+                  className="w-full rounded-lg border border-[#4a3d2a]/60 bg-[#0f0d0a]/60 py-2.5 pl-10 pr-10 text-sm text-[#f1e7d2] placeholder-[#6b5a3e]/50 shadow-inner transition-all focus:border-[var(--theme-accent)]/60 focus:bg-[#0f0d0a]/80 focus:outline-none focus:ring-1 focus:ring-[var(--theme-accent)]/30 focus:shadow-[0_0_12px_rgba(214,154,61,0.08)]"
                   style={{ fontFamily: "Crimson Text, serif", fontSize: "15px" }}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-[#6b5a3e] transition hover:text-[#d69a3d]"
+                  className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-[#6b5a3e] transition hover:text-[var(--theme-accent)]"
                 >
                   {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                 </button>
@@ -226,7 +226,7 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="group relative mt-7 flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-lg border border-[#d69a3d]/50 py-3 text-sm font-semibold tracking-wider transition-all hover:border-[#d69a3d] hover:shadow-[0_0_24px_rgba(214,154,61,0.2)] active:scale-[0.98] disabled:opacity-50"
+              className="group relative mt-7 flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-lg border border-[var(--theme-accent)]/50 py-3 text-sm font-semibold tracking-wider transition-all hover:border-[var(--theme-accent)] hover:shadow-[0_0_24px_rgba(214,154,61,0.2)] active:scale-[0.98] disabled:opacity-50"
               style={{
                 fontFamily: "Cinzel, serif",
                 background: "linear-gradient(135deg, #2a2018 0%, #3d2e1a 50%, #2a2018 100%)",
@@ -234,10 +234,10 @@ function LoginForm() {
               }}
             >
               {/* Brilho no hover */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#d69a3d]/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--theme-accent)]/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
               {loading ? (
                 <span className="relative flex items-center gap-2">
-                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#d69a3d] border-t-transparent" />
+                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-[var(--theme-accent)] border-t-transparent" />
                   Abrindo os Portões...
                 </span>
               ) : (
@@ -249,29 +249,38 @@ function LoginForm() {
             </button>
           </form>
 
-          {/* Link para Registro */}
+          {/* Link para Registro + Esqueci a senha */}
           <div className="text-center">
             <p
-              className="text-xs text-[#8a7355]"
+              className="text-xs text-[var(--theme-subtitle)]"
               style={{ fontFamily: "Crimson Text, serif" }}
             >
               É sua primeira vez nestas terras?
             </p>
             <Link
               href={`/registro${inviteCode ? `?invite=${encodeURIComponent(inviteCode)}` : ""}`}
-              className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-[#d69a3d] transition hover:text-[#f0d9a0] hover:drop-shadow-[0_0_6px_rgba(214,154,61,0.4)]"
+              className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--theme-accent)] transition hover:text-[#f0d9a0] hover:drop-shadow-[0_0_6px_rgba(214,154,61,0.4)]"
               style={{ fontFamily: "Cinzel, serif" }}
             >
               <Sparkles size={14} />
               Forjar Nova Conta
             </Link>
+            <div className="mt-2">
+              <Link
+                href="/esqueci-senha"
+                className="text-[11px] text-[var(--theme-subtitle)] transition hover:text-[var(--theme-accent)]"
+                style={{ fontFamily: "Crimson Text, serif" }}
+              >
+                Esqueceu a senha? Peça uma nova chave por e-mail →
+              </Link>
+            </div>
           </div>
 
           {/* Atalho convidado */}
           <div className="mt-6 border-t border-[#4a3d2a]/30 pt-4 text-center">
             <Link
               href="/personagem"
-              className="text-[11px] text-[#6b5a3e]/70 transition hover:text-[#8a7355]"
+              className="text-[11px] text-[#6b5a3e]/70 transition hover:text-[var(--theme-subtitle)]"
               style={{ fontFamily: "Crimson Text, serif" }}
             >
               Continuar sem login (modo convidado offline) →

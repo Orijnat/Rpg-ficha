@@ -42,11 +42,11 @@ export function storeAuth(token, user) {
   }
 }
 
+// O Mercado é por-usuário desde que as chaves foram namespaceadas (rpg_world_market_*:userId);
+// apagar no logout destruía o catálogo salvo — manter.
 const PER_USER_STORAGE_PREFIXES = [
   "bruxeiro-sheet:",
   "rpg-gm-dashboard",
-  "rpg_world_market_data_v1",
-  "rpg_world_market_vendors_v1",
 ];
 
 export function clearAuth() {
@@ -117,6 +117,8 @@ export async function safeFetchJson(url, options = {}, fallbackErrorMsg = "Erro 
     error.status = response.status;
     error.code = data?.code;
     error.details = data?.details || data?.errors;
+    error.conflict = Boolean(data?.conflict);
+    error.serverCharacter = data?.serverCharacter ?? null;
     throw error;
   }
 
@@ -156,6 +158,89 @@ export async function registerUser(payload) {
   }, "Erro ao realizar cadastro.");
   storeAuth(data.token, data.user);
   return data;
+}
+
+export async function verifyEmailOnBackend(token) {
+  return safeFetchJson(`${API_BASE_URL}/auth/verify-email`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token }),
+  }, "Não foi possível verificar o e-mail.");
+}
+
+export async function resendVerificationOnBackend(email) {
+  return safeFetchJson(`${API_BASE_URL}/auth/resend-verification`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  }, "Não foi possível reenviar o e-mail de verificação.");
+}
+
+export async function forgotPasswordOnBackend(email) {
+  return safeFetchJson(`${API_BASE_URL}/auth/forgot-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  }, "Não foi possível processar o pedido de redefinição.");
+}
+
+export async function resetPasswordOnBackend(token, password) {
+  return safeFetchJson(`${API_BASE_URL}/auth/reset-password`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token, password }),
+  }, "Não foi possível redefinir a senha.");
+}
+
+export async function postRollToBackend(roll, token = getStoredToken()) {
+  const data = await safeFetchJson(`${API_BASE_URL}/rolagens`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify(roll),
+  }, "Erro ao registrar a rolagem.");
+  return data?.rolagem || data;
+}
+
+export async function listMyRolls(params = {}, token = getStoredToken()) {
+  const query = new URLSearchParams(params).toString();
+  return safeFetchJson(`${API_BASE_URL}/rolagens${query ? `?${query}` : ""}`, {
+    headers: authHeaders(token),
+  }, "Erro ao carregar o histórico de rolagens.");
+}
+
+export async function uploadArquivo(file, { personagemId, campanhaId, contexto = "anotacao" } = {}, token = getStoredToken()) {
+  const form = new FormData();
+  form.append("arquivo", file, file.name);
+  if (personagemId) form.append("personagemId", personagemId);
+  if (campanhaId) form.append("campanhaId", campanhaId);
+  form.append("contexto", contexto);
+  const response = await fetch(`${API_BASE_URL}/arquivos`, {
+    method: "POST",
+    headers: authHeaders(token),
+    body: form,
+  });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const error = new Error(data?.error || "Falha no upload.");
+    error.status = response.status;
+    throw error;
+  }
+  return data;
+}
+
+export async function mintArquivoUrls(ids, token = getStoredToken()) {
+  return safeFetchJson(`${API_BASE_URL}/arquivos/urls`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify({ ids }),
+  }, "Erro ao emitir URLs de leitura dos arquivos.");
+}
+
+export async function deleteArquivo(arquivoId, token = getStoredToken()) {
+  return safeFetchJson(`${API_BASE_URL}/arquivos/${encodeURIComponent(arquivoId)}`, {
+    method: "DELETE",
+    headers: authHeaders(token),
+  }, "Erro ao excluir o arquivo.");
 }
 
 export async function fetchMe(token = getStoredToken()) {
@@ -236,6 +321,14 @@ export async function fetchCharacterFromBackend(characterId, token = getStoredTo
   }
 }
 
+export async function setBankPasswordOnBackend(characterId, password, token = getStoredToken()) {
+  return safeFetchJson(`${API_BASE_URL}/characters/${characterId}/bank/password`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify({ password }),
+  }, "Erro ao alterar a senha do cofre.");
+}
+
 export async function verifyBankPasswordOnBackend(characterId, password) {
   try {
     const data = await safeFetchJson(`${API_BASE_URL}/characters/${characterId}/bank/verify`, {
@@ -251,13 +344,13 @@ export async function verifyBankPasswordOnBackend(characterId, password) {
 }
 
 export async function fetchCampaignData(token = getStoredToken()) {
-  return safeFetchJson(`${API_BASE_URL}/campanha`, {
+  return safeFetchJson(`${API_BASE_URL}/campanhas/legado`, {
     headers: authHeaders(token),
   }, "Erro ao carregar os dados da campanha.");
 }
 
 export async function updateCampaignData(campaignData, token = getStoredToken()) {
-  return safeFetchJson(`${API_BASE_URL}/campanha`, {
+  return safeFetchJson(`${API_BASE_URL}/campanhas/legado`, {
     method: "PUT",
     headers: { "Content-Type": "application/json", ...authHeaders(token) },
     body: JSON.stringify(campaignData),
@@ -328,8 +421,7 @@ export async function updateGameSession(id, patch, token = getStoredToken()) {
 export async function deleteGameSession(id, token = getStoredToken()) {
   return safeFetchJson(`${API_BASE_URL}/campanhas/sessoes/${id}`, {
     method: "DELETE",
-    headers: { "Content-Type": "application/json", ...authHeaders(token) },
-    body: JSON.stringify({ confirmacao: true }),
+    headers: authHeaders(token),
   }, "Erro ao excluir sessão.");
 }
 
@@ -386,6 +478,12 @@ export async function fetchCampaignAudit(campanhaId, token = getStoredToken()) {
 // ==========================================
 // 👹 CATÁLOGO E GESTÃO DEDICADA DE NPCS
 // ==========================================
+
+export async function listCampaignNpcs(campanhaId, token = getStoredToken()) {
+  return safeFetchJson(`${API_BASE_URL}/campanhas/${encodeURIComponent(campanhaId)}/npcs`, {
+    headers: authHeaders(token),
+  }, "Erro ao carregar NPCs da campanha.");
+}
 
 export async function listNpcs(params = {}, token = getStoredToken()) {
   const query = new URLSearchParams(params).toString();

@@ -18,7 +18,6 @@ export default function BancoPage() {
     bankError,
     setBankInput,
     setBankUnlocked,
-    upd,
     updBank,
     tryUnlock,
   } = useCharacter();
@@ -36,12 +35,8 @@ export default function BancoPage() {
 
   return (
     <BankUnlockedView
-      bankPassword={data.bankPassword}
+      characterId={data.id}
       bankSlots={data.bankSlots}
-      onPasswordChange={(value) => {
-        upd("bankPassword", value);
-        setBankUnlocked(true);
-      }}
       onLogout={() => setBankUnlocked(false)}
       onSlotUpdate={updBank}
     />

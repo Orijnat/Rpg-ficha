@@ -31,7 +31,9 @@ export default function DanoCuraPainel({ compact = false, onClose = null }) {
   const [amount, setAmount] = useState("");
   const [lastAction, setLastAction] = useState(null);
   const [actionType, setActionType] = useState(null); // 'damage' | 'heal' | 'full'
+  const [absorbCA, setAbsorbCA] = useState(true);
 
+  const armorClass = Math.max(0, Number(data?.dadosExtras?.armorClass ?? 10) || 0);
   const currentHp = Number(data.hp ?? 0);
   const maxHp = Math.max(1, Number(data.hpMax ?? 1));
   const hpPct = Math.round((currentHp / maxHp) * 100);
@@ -44,17 +46,20 @@ export default function DanoCuraPainel({ compact = false, onClose = null }) {
       ? "text-amber-300"
       : "text-rose-400";
 
-  // Aplica dano automatizado
+  // Aplica dano automatizado (com absorção pela CA, quando ligada)
   const handleApplyDamage = () => {
-    const val = parseInt(amount, 10);
-    if (isNaN(val) || val <= 0) return;
+    const raw = parseInt(amount, 10);
+    if (isNaN(raw) || raw <= 0) return;
 
+    const val = absorbCA ? Math.max(1, raw - armorClass) : raw;
     const res = applyHealthChange(currentHp, maxHp, -val);
     upd("hp", res.currentHp);
 
     setActionType("damage");
     setLastAction({
-      text: `Sofreu ${val} de dano (${res.previousHp} ➔ ${res.currentHp} PV)`,
+      text: absorbCA && raw > val
+        ? `Sofreu ${raw} de dano, absorvido pela CA ${armorClass} → ${val} de dano (${res.previousHp} ➔ ${res.currentHp} PV)`
+        : `Sofreu ${val} de dano (${res.previousHp} ➔ ${res.currentHp} PV)`,
       isDead: res.isDead,
     });
     setAmount("");
@@ -229,6 +234,23 @@ export default function DanoCuraPainel({ compact = false, onClose = null }) {
           ))}
         </div>
       </div>
+
+      {/* Absorção pela Classe de Armadura */}
+      <label className="flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-sky-400/25 bg-sky-500/10 px-3 py-2 transition hover:border-sky-400/50">
+        <span className="flex items-center gap-2">
+          <ShieldAlert size={14} className="text-sky-300" />
+          <span className="text-[11px] font-bold uppercase tracking-wider text-sky-200">
+            Absorver dano pela CA (−{armorClass})
+          </span>
+        </span>
+        <input
+          type="checkbox"
+          checked={absorbCA}
+          onChange={(e) => setAbsorbCA(e.target.checked)}
+          className="h-4 w-4 accent-sky-400"
+          aria-label="Absorver dano automaticamente pela Classe de Armadura"
+        />
+      </label>
 
       {/* Botões Principais: TOMAR DANO e RECEBER CURA */}
       <div className="grid grid-cols-2 gap-2.5 pt-1">

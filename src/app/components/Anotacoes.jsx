@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   BookOpen,
   CalendarDays,
   ImagePlus,
+  Loader2,
   Plus,
   Save,
   Trash2,
@@ -16,6 +17,8 @@ import {
 } from "lucide-react";
 import { Card, SectionHeader } from "./ui";
 import { useCharacter } from "../context/CharacterContext";
+import { useAuth } from "../context/AuthContext";
+import { uploadArquivo, mintArquivoUrls, deleteArquivo } from "../../lib/api";
 
 const today = () => new Date().toISOString().slice(0, 10);
 const EMPTY_ENTRY = {
@@ -85,6 +88,7 @@ function getDiaryEntries(notes) {
 
 export default function Anotacoes() {
   const { data, upd } = useCharacter();
+  const { token } = useAuth();
   const entries = useMemo(() => getDiaryEntries(data.notes), [data.notes]);
   const [selectedId, setSelectedId] = useState(entries[0]?.id || null);
   const [draft, setDraft] = useState(null);
@@ -92,6 +96,31 @@ export default function Anotacoes() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortBy, setSortBy] = useState("recent"); // "recent" | "oldest" | "title"
+  const [signedUrls, setSignedUrls] = useState({}); // arquivoId → readUrl (expira em ~15min)
+  const [uploadsBusy, setUploadsBusy] = useState(false);
+
+  // Emite URLs de leitura assinadas para arquivos referenciados (o <img> não envia Authorization)
+  const draftImageIds = useMemo(
+    () => (draft?.images || []).map((image) => image?.id).filter(Boolean),
+    [draft?.images]
+  );
+  useEffect(() => {
+    const missing = draftImageIds.filter((id) => !signedUrls[id]);
+    if (missing.length === 0) return undefined;
+    let cancelled = false;
+    mintArquivoUrls(missing, token)
+      .then((urls) => {
+        if (cancelled) return;
+        setSignedUrls((prev) => ({ ...prev, ...Object.fromEntries(
+          Object.entries(urls || {}).map(([id, value]) => [id, value?.readUrl]).filter(([, url]) => url)
+        ) }));
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draftImageIds.join("|"), token]);
 
   const filteredAndSortedEntries = useMemo(() => {
     let list = [...entries];
@@ -158,30 +187,56 @@ export default function Anotacoes() {
     setDraft(null);
   };
 
-  const addImages = (event) => {
+  const addImages = async (event) => {
     const files = Array.from(event.target.files || []);
-    files.forEach((file) => {
-      if (!file.type.startsWith("image/") || file.size > 3 * 1024 * 1024) {
-        window.alert("Escolha uma imagem de até 3 MB.");
-        return;
+    const sheetId = data?.id;
+    const sheetCampanha = data?.campanhaId;
+    setUploadsBusy(true);
+
+    try {
+      for (const file of files) {
+      if (!file.type.startsWith("image/") || file.size > 5 * 1024 * 1024) {
+        window.alert("Escolha uma imagem de até 5 MB.");
+        continue;
       }
-      const reader = new FileReader();
-      reader.onload = () => {
+      try {
+        const uploaded = await uploadArquivo(file, {
+          personagemId: sheetId,
+          campanhaId: sheetCampanha || undefined,
+          contexto: "anotacao",
+        }, token);
+        const arquivoId = uploaded?.arquivo?.id;
         updateDraft({
           images: [
             ...(currentDraft.images || []),
-            { id: `${Date.now()}-${file.name}`, name: file.name, dataUrl: reader.result },
+            { id: arquivoId, name: uploaded?.arquivo?.nomeOriginal || file.name },
           ],
         });
-      };
-      reader.onerror = () => window.alert(`Não foi possível carregar ${file.name}.`);
-      reader.readAsDataURL(file);
-    });
+        if (arquivoId && uploaded?.readUrl) {
+          setSignedUrls((prev) => ({ ...prev, [arquivoId]: uploaded.readUrl }));
+        }
+      } catch (error) {
+        window.alert(`Não foi possível enviar ${file.name}: ${error?.message || "erro desconhecido"}`);
+      }
+    }
+    } finally {
+      setUploadsBusy(false);
+    }
     event.target.value = "";
   };
 
-  const removeImage = (imageId) => {
+  const removeImage = async (imageId) => {
+    try {
+      await deleteArquivo(imageId, token); // best-effort: arquivo privado vai junto
+    } catch (error) {
+      console.warn("Imagem não removida no servidor:", error?.message || error);
+    }
     updateDraft({ images: (currentDraft.images || []).filter((image) => image.id !== imageId) });
+    setSignedUrls((prev) => {
+      const next = { ...prev };
+      delete next[imageId];
+      return next;
+    });
   };
 
   return (
@@ -369,16 +424,22 @@ export default function Anotacoes() {
                 <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                   <span className="text-xs font-semibold text-muted-foreground">Memórias visuais</span>
                   <label className="flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-3 py-2 text-xs font-semibold text-primary transition hover:bg-primary/20 active:scale-95">
-                    <ImagePlus size={14} />
-                    Adicionar imagem
-                    <input type="file" accept="image/*" multiple className="sr-only" onChange={addImages} />
+                    {uploadsBusy ? <Loader2 size={14} className="animate-spin" /> : <ImagePlus size={14} />}
+                    {uploadsBusy ? "Enviando..." : "Adicionar imagem"}
+                    <input type="file" accept="image/png,image/jpeg,image/gif,image/webp" multiple className="sr-only" onChange={addImages} disabled={uploadsBusy} />
                   </label>
                 </div>
                 {(currentDraft.images || []).length > 0 && (
                   <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                     {currentDraft.images.map((image) => (
                       <figure key={image.id} className="group relative overflow-hidden rounded-xl border border-white/10">
-                        <img src={image.dataUrl} alt={image.name || "Imagem do diário"} className="aspect-video w-full object-cover" />
+                        {signedUrls[image.id] || image.dataUrl ? (
+                          <img src={signedUrls[image.id] || image.dataUrl} alt={image.name || "Imagem do diário"} className="aspect-video w-full object-cover" loading="lazy" />
+                        ) : (
+                          <div className="flex aspect-video w-full items-center justify-center bg-background/60 text-[10px] uppercase tracking-wider text-muted-foreground">
+                            <Loader2 size={14} className="animate-spin" aria-label="Carregando imagem" />
+                          </div>
+                        )}
                         <button
                           type="button"
                           onClick={() => removeImage(image.id)}

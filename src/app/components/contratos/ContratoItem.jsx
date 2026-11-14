@@ -77,7 +77,7 @@ function ContratoRewardField({ reward, onChange }) {
   return (
     <div className="flex items-center gap-2 text-xs">
       <span
-        className="text-[#8a7355]"
+        className="text-[var(--theme-subtitle)]"
         style={{ fontFamily: "'Cinzel', serif" }}
       >
         Recompensa:
@@ -85,7 +85,7 @@ function ContratoRewardField({ reward, onChange }) {
       <EditableText
         value={reward}
         onChange={onChange}
-        className="text-[#c9862a]"
+        className="text-[var(--theme-accent)]"
       />
     </div>
   );

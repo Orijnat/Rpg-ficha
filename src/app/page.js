@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Aurora from "../components/react-bits/Aurora";
 import SplitText from "../components/react-bits/SplitText";
 import ShinyText from "../components/react-bits/ShinyText";
 import SpotlightCard from "../components/react-bits/SpotlightCard";
@@ -68,28 +67,27 @@ export default function Home() {
         color: "#ebd9be",
       }}
     >
-      {/* Aurora Arcana — fundo vivo WebGL (âmbar vulcânico + violeta arcano) */}
+      {/* Fundo — carvão profundo com braseiro âmbar nas bordas (tema Âmbar Vulcânico) */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <Aurora
-          colorStops={["#d89b38", "#7a3a12", "#4a2a8a"]}
-          amplitude={1.15}
-          blend={0.62}
-          speed={0.5}
-          height={0.9}
-          scale={1.05}
-          glow={0.85}
-          brightness={1}
-          layers={2}
-          direction="top"
-          opacity={0.55}
-          mouseInteraction
-          intro
+        <div
+          className="absolute inset-0"
+          style={{
+            background: [
+              "radial-gradient(90% 70% at 18% -5%, rgba(216,155,56,0.16), transparent 55%)",
+              "radial-gradient(70% 60% at 85% 12%, rgba(216,155,56,0.08), transparent 45%)",
+              "radial-gradient(80% 70% at 50% 118%, rgba(216,155,56,0.12), transparent 55%)",
+            ].join(","),
+          }}
+        />
+        <div
+          className="torch-glow-ambient absolute left-1/2 top-[-180px] h-[480px] w-[720px] -translate-x-1/2 rounded-full"
+          style={{ background: "radial-gradient(ellipse, rgba(216,155,56,0.14), transparent 65%)" }}
         />
         <div
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse 100% 90% at 50% 0%, transparent 18%, rgba(9,11,14,0.55) 58%, #090b0e 100%)",
+              "radial-gradient(ellipse 105% 92% at 50% 0%, transparent 22%, rgba(9,11,14,0.55) 60%, #090b0e 100%)",
           }}
         />
       </div>

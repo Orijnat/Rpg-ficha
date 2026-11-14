@@ -211,7 +211,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // Garante que uma ficha retornada pelo backend exista na lista local e fique ativa
+  // Garante que uma ficha retornada pelo backend exista na lista local (sem trocar a seleção ativa)
   const upsertCharacter = (character) => {
     if (!character?.id) return;
     setCharacters((prev) => {
@@ -221,7 +221,6 @@ export function AuthProvider({ children }) {
       }
       return [character, ...prev];
     });
-    selectCharacter(character.id);
   };
 
   const inspectCharacter = async (characterId, redirectToSheet = true) => {

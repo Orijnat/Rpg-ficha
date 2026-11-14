@@ -75,7 +75,6 @@ export const defaultData = {
 
     index === 0 ? { item: "Relíquia Antiga de Prata" } : { item: "" }
   ),
-  bankPassword: "133313",
   notes: "Medalhão vibra na presença de monstros ou fontes de magia.",
   notesImages: [],
   roomNotes: "Aposentos na estalagem do centro da vila.",
@@ -142,7 +141,6 @@ export function createBlankCharacterData() {
     players: [],
     npcs: [],
     bankSlots: Array.from({ length: 80 }, () => ({ item: "" })),
-    bankPassword: "",
     notes: "",
     notesImages: [],
     roomNotes: "",

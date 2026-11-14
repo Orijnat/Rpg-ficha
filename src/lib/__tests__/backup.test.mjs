@@ -43,7 +43,7 @@ assert(typeof serialized === "string" && serialized.length > 500, "Dados seriali
 console.log("\n--- 4. Desserialização e Validação de Importação ---");
 const parsed = JSON.parse(serialized);
 assert(parsed.name === defaultData.name, "Nome preservado");
-assert(parsed.bankPassword === defaultData.bankPassword, "Senha do banco preservada");
+assert(!("bankPassword" in parsed), "Senha do cofre NÃO é exportada (validada apenas no servidor)");
 assert(parsed.inventory.length === defaultData.inventory.length, "Inventário preservado");
 assert(parsed.contracts.length === defaultData.contracts.length, "Contratos preservados");
 

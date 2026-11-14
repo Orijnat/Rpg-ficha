@@ -125,7 +125,7 @@ export default function InventarioPage() {
                     upd(key, value);
                     if (fallbackKey) upd(fallbackKey, value);
                   }}
-                  className="text-center font-mono text-xl font-bold text-[#f5e9d7]"
+                  className="text-center font-mono text-xl font-bold text-[var(--theme-title)]"
                   min={0}
                 />
               </div>
@@ -258,7 +258,7 @@ export default function InventarioPage() {
                   <EditableText
                     value={item.name}
                     onChange={(value) => updItem(item.id, { name: value })}
-                    className="text-xs font-medium text-[#e8d5b0] transition hover:text-[#f5e9d7]"
+                    className="text-xs font-medium text-[#e8d5b0] transition hover:text-[var(--theme-title)]"
                   />
                 </div>
 
@@ -336,7 +336,7 @@ export default function InventarioPage() {
                   <EditableNumber
                     value={item.qty}
                     onChange={(value) => updItem(item.id, { qty: value })}
-                    className="w-8 text-center font-mono text-xs font-bold text-[#d69a3d]"
+                    className="w-8 text-center font-mono text-xs font-bold text-[var(--theme-accent)]"
                     min={0}
                     label={`Quantidade de ${item.name || "item"}`}
                   />

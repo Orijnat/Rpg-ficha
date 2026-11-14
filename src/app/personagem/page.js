@@ -11,7 +11,7 @@ import { calculateCapacity } from "../../lib/modifiers";
 import { DEFAULT_ABILITIES, isHabilidadeDesbloqueada } from "../../lib/abilities";
 
 export default function Personagem() {
-  const { data, upd, syncStatus, syncError, retrySync } = useCharacter();
+  const { data, upd, syncStatus, syncError, retrySync, reloadFromCloud, overwriteCloud } = useCharacter();
   const capacity = calculateCapacity(data);
   const abilities = Array.isArray(data.abilities) ? data.abilities : [];
   const characterLevel = Math.max(1, Number(data.level) || 1);
@@ -54,9 +54,21 @@ export default function Personagem() {
                 <syncIndicator.Icon size={13} className={syncStatus === "saving" ? "animate-spin" : ""} />
                 {syncIndicator.label}
                 {(syncStatus === "error" || syncStatus === "conflict") && (
-                  <button type="button" onClick={retrySync} className="ml-1 inline-flex min-h-8 items-center gap-1 rounded px-2 text-[10px] underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label="Tentar sincronizar novamente">
-                    <RefreshCw size={11} aria-hidden="true" /> Tentar novamente
-                  </button>
+                  <>
+                    <button type="button" onClick={retrySync} className="ml-1 inline-flex min-h-8 items-center gap-1 rounded px-2 text-[10px] underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label="Tentar sincronizar novamente">
+                      <RefreshCw size={11} aria-hidden="true" /> Tentar novamente
+                    </button>
+                    {syncStatus === "conflict" && (
+                      <>
+                        <button type="button" onClick={reloadFromCloud} className="ml-1 inline-flex min-h-8 items-center gap-1 rounded px-2 text-[10px] underline underline-offset-2 text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label="Descartar o rascunho local e manter a versão do servidor">
+                          Manter da nuvem
+                        </button>
+                        <button type="button" onClick={overwriteCloud} className="ml-1 inline-flex min-h-8 items-center gap-1 rounded px-2 text-[10px] underline underline-offset-2 text-amber-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label="Sobrescrever a versão do servidor com o rascunho local">
+                          Manter meus dados
+                        </button>
+                      </>
+                    )}
+                  </>
                 )}
               </span>
             )}

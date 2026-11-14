@@ -6,7 +6,6 @@ Não são dependências npm; editar aqui não afeta outro projeto.
 
 Componentes vendored (variante JS + Tailwind):
 
-- `Aurora.jsx` — fundo Aurora WebGL2 (sem dependências)
 - `SplitText.jsx` — animação de texto com GSAP + `@gsap/react` (+ plugin SplitText, livre desde GSAP 3.13)
 - `ShinyText.jsx` — brilho varrendo o texto (sem dependências)
 - `SpotlightCard.jsx` — cartão com holofote que segue o cursor (sem dependências)

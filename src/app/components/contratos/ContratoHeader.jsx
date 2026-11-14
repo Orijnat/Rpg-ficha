@@ -17,7 +17,7 @@ export function ContratoHeader({ onAddContract }) {
 
       <button
         onClick={onAddContract}
-        className="flex items-center gap-1 text-xs text-[#c9862a] transition-colors hover:text-[#e8a030]"
+        className="flex items-center gap-1 text-xs text-[var(--theme-accent)] transition-colors hover:text-[#e8a030]"
         title="Criar novo contrato"
       >
         <Plus size={13} />

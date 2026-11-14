@@ -111,23 +111,23 @@ export default function ConvitePage({ params }) {
         <div className="relative z-10 p-6 sm:p-8">
           {/* Topo / Selo da Mesa */}
           <div className="mx-auto mb-6 flex flex-col items-center text-center">
-            <div className="relative mb-3 flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-[#d69a3d]/50 bg-[#d69a3d]/10 shadow-[0_0_24px_rgba(214,154,61,0.25)]">
-              <Crown size={32} className="text-[#d69a3d] animate-pulse" />
+            <div className="relative mb-3 flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-[var(--theme-accent)]/50 bg-[var(--theme-accent)]/10 shadow-[0_0_24px_rgba(214,154,61,0.25)]">
+              <Crown size={32} className="text-[var(--theme-accent)] animate-pulse" />
             </div>
             <span
-              className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#d69a3d]"
+              className="text-[10px] font-bold uppercase tracking-[0.3em] text-[var(--theme-accent)]"
               style={{ fontFamily: "Cinzel, serif" }}
             >
               Convocação Oficial de Mesa
             </span>
             <h1
-              className="mt-1 text-2xl font-black uppercase tracking-wider text-[#f5e9d7] sm:text-3xl"
+              className="mt-1 text-2xl font-black uppercase tracking-wider text-[var(--theme-title)] sm:text-3xl"
               style={{ fontFamily: "Cinzel, serif" }}
             >
               {loading ? "Decifrando Convite..." : campaign?.nome || "Mesa de RPG"}
             </h1>
             {code && (
-              <span className="mt-1 font-mono text-xs text-[#8a7355] border border-[#4a3d2a]/50 rounded px-2 py-0.5 bg-[#0f0d0a]/60">
+              <span className="mt-1 font-mono text-xs text-[var(--theme-subtitle)] border border-[#4a3d2a]/50 rounded px-2 py-0.5 bg-[#0f0d0a]/60">
                 Código: {code}
               </span>
             )}
@@ -135,8 +135,8 @@ export default function ConvitePage({ params }) {
 
           {/* Estado de Carregamento */}
           {loading && (
-            <div className="py-8 text-center text-xs text-[#8a7355] flex flex-col items-center gap-3">
-              <Loader2 size={24} className="animate-spin text-[#d69a3d]" />
+            <div className="py-8 text-center text-xs text-[var(--theme-subtitle)] flex flex-col items-center gap-3">
+              <Loader2 size={24} className="animate-spin text-[var(--theme-accent)]" />
               <span style={{ fontFamily: "Crimson Text, serif", fontSize: "16px" }}>
                 Consultando o Grimório do Reino...
               </span>
@@ -182,11 +182,11 @@ export default function ConvitePage({ params }) {
             <div className="space-y-5">
               <div className="rounded-xl border border-[#4a3d2a]/50 bg-[#0f0d0a]/40 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#4a3d2a]/30 pb-2.5">
-                  <span className="text-xs text-[#8a7355] flex items-center gap-1.5 font-medium">
-                    <Users size={14} className="text-[#d69a3d]" />
-                    Mestre da Mesa: <strong className="text-[#f5e9d7]">{campaign.mestre}</strong>
+                  <span className="text-xs text-[var(--theme-subtitle)] flex items-center gap-1.5 font-medium">
+                    <Users size={14} className="text-[var(--theme-accent)]" />
+                    Mestre da Mesa: <strong className="text-[var(--theme-title)]">{campaign.mestre}</strong>
                   </span>
-                  <span className="rounded bg-[#d69a3d]/20 px-2 py-0.5 text-[10px] font-bold uppercase text-[#f0d9a0] border border-[#d69a3d]/30">
+                  <span className="rounded bg-[var(--theme-accent)]/20 px-2 py-0.5 text-[10px] font-bold uppercase text-[#f0d9a0] border border-[var(--theme-accent)]/30">
                     {campaign.estado}
                   </span>
                 </div>
@@ -209,7 +209,7 @@ export default function ConvitePage({ params }) {
                 <div className="space-y-3 pt-2">
                   <Link
                     href={`/registro?invite=${encodeURIComponent(code)}`}
-                    className="group relative flex w-full items-center justify-center gap-2 rounded-xl border border-[#d69a3d] py-3.5 text-xs font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(214,154,61,0.25)] transition hover:brightness-110 active:scale-[0.98]"
+                    className="group relative flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--theme-accent)] py-3.5 text-xs font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(214,154,61,0.25)] transition hover:brightness-110 active:scale-[0.98]"
                     style={{
                       fontFamily: "Cinzel, serif",
                       background: "linear-gradient(135deg, #2a2018 0%, #3d2e1a 50%, #2a2018 100%)",
@@ -222,12 +222,12 @@ export default function ConvitePage({ params }) {
                   </Link>
 
                   <div className="text-center pt-2">
-                    <p className="text-xs text-[#8a7355]" style={{ fontFamily: "Crimson Text, serif" }}>
+                    <p className="text-xs text-[var(--theme-subtitle)]" style={{ fontFamily: "Crimson Text, serif" }}>
                       Já possui uma conta de herói cadastrada?
                     </p>
                     <Link
                       href={`/login?invite=${encodeURIComponent(code)}`}
-                      className="mt-1 inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-[#d69a3d] hover:text-[#f0d9a0] transition"
+                      className="mt-1 inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-[var(--theme-accent)] hover:text-[#f0d9a0] transition"
                       style={{ fontFamily: "Cinzel, serif" }}
                     >
                       <LogIn size={13} /> Fazer Login para Entrar

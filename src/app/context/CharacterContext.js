@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { syncCharacterWithBackend, verifyBankPasswordOnBackend } from "../../lib/api";
+import { syncCharacterWithBackend, verifyBankPasswordOnBackend, fetchCharacterFromBackend } from "../../lib/api";
 import {
   avancarTreinoHabilidade,
   criarSolicitacaoHabilidade,
@@ -93,6 +93,10 @@ export function CharacterProvider({ children }) {
   const [syncError, setSyncError] = useState(null);
   const latestData = useRef(data);
   const syncSequence = useRef(0);
+  const skipSyncRef = useRef(false);
+  // Versão remota conhecida (updatedAt do servidor). Usada para concorrência otimista;
+  // não vive no estado porque cada save do servidor a invalida e re-dispararia o efeito de sync.
+  const remoteVersionRef = useRef(null);
 
   const { activeCharacter, token, user, loading: authLoading, isMaster, upsertCharacter } = useAuth();
 
@@ -129,74 +133,107 @@ export function CharacterProvider({ children }) {
     }
   }, [activeCharacter, authLoading, cacheKey]);
 
-  // Atualiza ficha quando o personagem ativo da conta logada mudar
-  useEffect(() => {
-    if (authLoading || !activeCharacter) return;
-    setHydrated(false);
-    setHydratedKey(null);
+  // Monta a ficha local a partir do personagem retornado pelo backend
+  const buildSheetFromActive = (activeChar) => {
+    if (!activeChar) return null;
     const blank = createBlankCharacterData();
     const atributos = {
-      FOR: activeCharacter.forca ?? activeCharacter.FOR ?? activeCharacter.attributes?.FOR,
-      DES: activeCharacter.destreza ?? activeCharacter.DES ?? activeCharacter.attributes?.DES,
-      CON: activeCharacter.constituicao ?? activeCharacter.CON ?? activeCharacter.attributes?.CON,
-      SAB: activeCharacter.sabedoria ?? activeCharacter.SAB ?? activeCharacter.attributes?.SAB,
-      ESP: activeCharacter.espirito ?? activeCharacter.ESP ?? activeCharacter.attributes?.ESP,
-      CAR: activeCharacter.carisma ?? activeCharacter.CAR ?? activeCharacter.attributes?.CAR,
-      INT: activeCharacter.inteligencia ?? activeCharacter.INT ?? activeCharacter.attributes?.INT,
+      FOR: activeChar.forca ?? activeChar.FOR ?? activeChar.attributes?.FOR,
+      DES: activeChar.destreza ?? activeChar.DES ?? activeChar.attributes?.DES,
+      CON: activeChar.constituicao ?? activeChar.CON ?? activeChar.attributes?.CON,
+      SAB: activeChar.sabedoria ?? activeChar.SAB ?? activeChar.attributes?.SAB,
+      ESP: activeChar.espirito ?? activeChar.ESP ?? activeChar.attributes?.ESP,
+      CAR: activeChar.carisma ?? activeChar.CAR ?? activeChar.attributes?.CAR,
+      INT: activeChar.inteligencia ?? activeChar.INT ?? activeChar.attributes?.INT,
     };
     const pickCollection = (canonical, alias, fallback) =>
       canonical ?? alias ?? fallback;
-    const moedas = Object.keys(activeCharacter.moedas ?? {}).length
-      ? activeCharacter.moedas
-      : (activeCharacter.currencies ?? {});
-    setData((current) => ({
+    const moedas = Object.keys(activeChar.moedas ?? {}).length
+      ? activeChar.moedas
+      : (activeChar.currencies ?? {});
+    return (current) => ({
       ...blank,
-      ...activeCharacter,
+      ...activeChar,
       ...atributos,
-      xp: activeCharacter.xp ?? activeCharacter.experiencia ?? blank.xp,
-      skills: ensureCanonicalSkills(pickCollection(activeCharacter.pericias, activeCharacter.skills, blank.skills)),
-      inventory: pickCollection(activeCharacter.itensInventario, activeCharacter.inventory, blank.inventory),
-      contracts: pickCollection(activeCharacter.contratosDados, activeCharacter.contracts, blank.contracts),
-      players: activeCharacter.jogadores ?? activeCharacter.players ?? blank.players,
-      npcs: activeCharacter.npcs ?? blank.npcs,
-      notesImages: pickCollection(activeCharacter.imagensAnotacoes, activeCharacter.notesImages, blank.notesImages),
-      latina: activeCharacter.latina ?? moedas.latina ?? moedas.platina ?? blank.latina,
-      ouro: activeCharacter.ouro ?? moedas.ouro ?? blank.ouro,
-      prata: activeCharacter.prata ?? moedas.prata ?? blank.prata,
-      cobre: activeCharacter.cobre ?? moedas.cobre ?? blank.cobre,
+      xp: activeChar.xp ?? activeChar.experiencia ?? blank.xp,
+      skills: ensureCanonicalSkills(pickCollection(activeChar.pericias, activeChar.skills, blank.skills)),
+      inventory: pickCollection(activeChar.itensInventario, activeChar.inventory, blank.inventory),
+      contracts: pickCollection(activeChar.contratosDados, activeChar.contracts, blank.contracts),
+      players: activeChar.jogadores ?? activeChar.players ?? blank.players,
+      npcs: activeChar.npcs ?? blank.npcs,
+      notesImages: pickCollection(activeChar.imagensAnotacoes, activeChar.notesImages, blank.notesImages),
+      latina: activeChar.latina ?? moedas.latina ?? moedas.platina ?? blank.latina,
+      ouro: activeChar.ouro ?? moedas.ouro ?? blank.ouro,
+      prata: activeChar.prata ?? moedas.prata ?? blank.prata,
+      cobre: activeChar.cobre ?? moedas.cobre ?? blank.cobre,
       abilities: pickCollection(
-        activeCharacter.dadosExtras?.abilities,
-        activeCharacter.abilities,
+        activeChar.dadosExtras?.abilities,
+        activeChar.abilities,
         current.abilities ?? blank.abilities ?? []
       ),
       levelAbilities: pickCollection(
-        activeCharacter.dadosExtras?.levelAbilities,
-        activeCharacter.levelAbilities,
+        activeChar.dadosExtras?.levelAbilities,
+        activeChar.levelAbilities,
         current.levelAbilities ?? blank.levelAbilities ?? {}
       ),
       dadosExtras: {
         ...blank.dadosExtras,
         ...(current.dadosExtras || {}),
-        ...(activeCharacter.dadosExtras || {}),
+        ...(activeChar.dadosExtras || {}),
         abilities: pickCollection(
-          activeCharacter.dadosExtras?.abilities,
-          activeCharacter.abilities,
+          activeChar.dadosExtras?.abilities,
+          activeChar.abilities,
           current.abilities ?? blank.abilities ?? []
         ),
         levelAbilities: pickCollection(
-          activeCharacter.dadosExtras?.levelAbilities,
-          activeCharacter.levelAbilities,
+          activeChar.dadosExtras?.levelAbilities,
+          activeChar.levelAbilities,
           current.levelAbilities ?? blank.levelAbilities ?? {}
         ),
       },
-    }));
+    });
+  };
+
+  // Atualiza ficha quando o personagem ativo da conta logada mudar
+  useEffect(() => {
+    if (authLoading || !activeCharacter) return;
+    setHydrated(false);
+    setHydratedKey(null);
+    remoteVersionRef.current = activeCharacter?.updatedAt ?? null;
+    setData(buildSheetFromActive(activeCharacter));
     setHydrated(true);
     setHydratedKey(cacheKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeCharacter, authLoading, cacheKey]);
 
   const adoptRemoteCharacter = (remoteChar) => {
+    if (remoteChar?.updatedAt) remoteVersionRef.current = remoteChar.updatedAt;
     setData((current) => (current.id ? current : { ...current, id: remoteChar.id, userId: remoteChar.userId ?? current.userId }));
     upsertCharacter?.(remoteChar);
+  };
+
+  // Descarta a versão remota e sobrescreve a nuvem com o rascunho local (decisão do jogador)
+  const overwriteCloud = () => retrySync({ force: true });
+
+  // Descarta a versão local e repuxa a ficha do backend (resolve conflitos 409)
+  const reloadFromCloud = async () => {
+    if (!activeCharacter?.id) return false;
+    try {
+      const fresh = await fetchCharacterFromBackend(activeCharacter.id, token);
+      if (!fresh) return false;
+      const builder = buildSheetFromActive(fresh);
+      if (!builder) return false;
+      skipSyncRef.current = false; // repuxar da nuvem reidrata a ficha real e reativa o sync
+      remoteVersionRef.current = fresh.updatedAt ?? null;
+      setData(builder);
+      setSyncStatus("saved");
+      setSyncError(null);
+      return true;
+    } catch (error) {
+      setSyncError(error);
+      setSyncStatus("error");
+      return false;
+    }
   };
 
   useEffect(() => {
@@ -207,7 +244,14 @@ export function CharacterProvider({ children }) {
     latestData.current = data;
     window.localStorage.setItem(cacheKey, JSON.stringify(data));
 
-    const targetId = data?.id || activeCharacter?.id;
+    if (skipSyncRef.current) {
+      // Ficha foi "restaurada para os dados padrão" localmente: nunca sobrescrever a nuvem com isso.
+      setSyncStatus("offline");
+      return;
+    }
+    // Só sincroniza com uma ficha identificada. Nunca cai no fallback do personagem ativo:
+    // após "restaurar padrão" ou importar arquivo, a ficha local não tem id e nada é enviado.
+    const targetId = data?.id;
     if (!targetId) {
       // Não existe ficha vinculada: nunca cria silenciosamente uma nova a partir de dados locais.
       setSyncStatus("idle");
@@ -219,11 +263,12 @@ export function CharacterProvider({ children }) {
     setSyncStatus("saving");
     setSyncError(null);
     const timer = setTimeout(() => {
-      const payload = normalizeCharacterForSync({ ...data, id: targetId }, activeCharacter);
+      const payload = normalizeCharacterForSync({ ...data, id: targetId, updatedAt: remoteVersionRef.current ?? data?.updatedAt }, activeCharacter);
       syncCharacterWithBackend(payload, token)
         .then((result) => {
           if (sequence !== syncSequence.current) return;
           const remoteChar = result?.id ? result : result?.character ?? null;
+          if (remoteChar?.updatedAt) remoteVersionRef.current = remoteChar.updatedAt;
           if (remoteChar?.id && !latestData.current?.id) {
             adoptRemoteCharacter(remoteChar);
           }
@@ -240,20 +285,30 @@ export function CharacterProvider({ children }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cacheKey, data, hydrated, hydratedKey, token, activeCharacter]);
 
-  const retrySync = async () => {
+  const retrySync = async (options = {}) => {
     const sequence = ++syncSequence.current;
     setSyncStatus("saving");
     setSyncError(null);
     try {
-      const targetId = latestData.current?.id || activeCharacter?.id;
+      if (skipSyncRef.current) {
+        if (sequence === syncSequence.current) setSyncStatus("offline");
+        return;
+      }
+      const targetId = latestData.current?.id;
       if (!targetId) {
         if (sequence === syncSequence.current) setSyncStatus("idle");
         return;
       }
-      const payload = normalizeCharacterForSync({ ...latestData.current, id: targetId }, activeCharacter);
+      const force = options?.force === true;
+      const payload = normalizeCharacterForSync({
+        ...latestData.current,
+        id: targetId,
+        ...(force ? { force: true } : { updatedAt: remoteVersionRef.current ?? latestData.current?.updatedAt }),
+      }, activeCharacter);
       const result = await syncCharacterWithBackend(payload, token);
       if (sequence !== syncSequence.current) return;
       const remoteChar = result?.id ? result : result?.character ?? null;
+      if (remoteChar?.updatedAt) remoteVersionRef.current = remoteChar.updatedAt;
       if (remoteChar?.id && !latestData.current?.id) {
         adoptRemoteCharacter(remoteChar);
       }
@@ -268,7 +323,12 @@ export function CharacterProvider({ children }) {
 
   const upd = (key, value) => {
     setData((current) => {
-      const parsedVal = typeof value === "number" ? value : (Number(value) || value);
+      const parsedVal =
+        typeof value === "number"
+          ? value
+          : Number.isNaN(Number(value))
+            ? value
+            : Number(value);
       const next = { ...current, [key]: parsedVal };
       const alias = ATTRIBUTE_ALIASES[key];
       if (alias) {
@@ -500,7 +560,7 @@ export function CharacterProvider({ children }) {
     });
   };
 
-  const rejectAbility = (id, feedback = "Habilidade desbalanceada ou incompatível.") => {
+  const rejectAbility = (id, feedback = "Rejeitada pelo mestre.") => {
     setData((current) => {
       const list = current.abilities || [];
       const nextAbilities = list.map((hab) => (hab.id === id ? rejeitarHabilidade(hab, feedback) : hab));
@@ -597,27 +657,39 @@ export function CharacterProvider({ children }) {
   };
 
   const tryUnlock = async () => {
-    const remoteResult = activeCharacter?.id
-      ? await verifyBankPasswordOnBackend(activeCharacter.id, bankInput)
-      : null;
-    const valid = remoteResult === null ? bankInput === data.bankPassword : remoteResult;
-
-    if (valid) {
+    if (!activeCharacter?.id) {
+      setBankError(true);
+      return;
+    }
+    const remoteResult = await verifyBankPasswordOnBackend(activeCharacter.id, bankInput);
+    // Senha personalizada da ficha ou senha do login do dono — validadas pelo servidor.
+    // Offline: sem validação local (não há senha em texto puro no navegador).
+    if (remoteResult === true) {
       setBankUnlocked(true);
       setBankError(false);
       return;
     }
-
     setBankError(true);
   };
 
+  // Importa um backup JSON por cima da ficha ATIVA (a UI exige confirmação tipada).
+  // Identidade do arquivo é descartada: id/userId/campanhaId vêm da ficha ativa da sessão.
+  // Sem ficha ativa, o conteúdo fica só no navegador e nunca é sincronizado.
   const loadCharacter = (importedData) => {
     if (importedData && typeof importedData === "object") {
-      setData({ ...createBlankCharacterData(), ...importedData });
+      const { id: _id, userId: _userId, campanhaId: _campanhaId, ...imported } = importedData;
+      const currentId = activeCharacter?.id;
+      skipSyncRef.current = false; // restauração explícita reidrata a ficha e reativa o sync
+      setData({
+        ...createBlankCharacterData(),
+        ...imported,
+        ...(currentId ? { id: currentId, userId: activeCharacter?.userId } : {}),
+      });
     }
   };
 
   const resetCharacter = () => {
+    skipSyncRef.current = true; // nunca sincroniza a ficha em branco por cima da nuvem
     setData(createBlankCharacterData());
     window.localStorage.removeItem(cacheKey);
   };
@@ -636,6 +708,8 @@ export function CharacterProvider({ children }) {
     syncStatus,
     syncError,
     retrySync,
+    reloadFromCloud,
+    overwriteCloud,
     setBankError,
     upd,
     updExtra,
@@ -669,7 +743,13 @@ export function CharacterProvider({ children }) {
 }
 
 function uid() {
-  return Math.random().toString(36).slice(2);
+  const cryptoObj = typeof globalThis !== "undefined" ? globalThis.crypto : undefined;
+  if (cryptoObj?.getRandomValues) {
+    const bytes = new Uint8Array(8);
+    cryptoObj.getRandomValues(bytes);
+    return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+  }
+  return `${Date.now().toString(36)}${Math.random().toString(36).slice(2)}`;
 }
 
 export function useCharacter() {

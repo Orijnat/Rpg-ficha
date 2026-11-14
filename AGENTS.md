@@ -18,6 +18,7 @@ Ao processar qualquer prompt do usuário, o agente **SEMPRE DEVE** utilizar os a
 - **`dice-mechanic`** + skill `dice-roller`: Sistema de rolagem de dados virtuais d20, modais, bandejas e vantagens/desvantagens.
 - **`backend-database`** + skill `sequelize-model-generator`: Modelos Sequelize, migrações PostgreSQL e rotas de API Next.js (`src/app/api/...`).
 - **`qa-tester`**: Validações de integridade, testes de regressão e casos de borda.
+- **`qa-judge`**: Tribunal de qualidade — julga responsividade, beleza/coerência visual e falhas (build, lint, console, regressões, acessibilidade) com rubrica, evidências e veredicto. Não corrige; delega ao especialista adequado.
 
 ### Protocolo de Execução:
 1. **Consultar Memória Ativa**: Ler a memória do agente correspondente em `.agents/memory/` antes de iniciar a tarefa.

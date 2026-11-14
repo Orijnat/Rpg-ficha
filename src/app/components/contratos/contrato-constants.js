@@ -14,16 +14,16 @@ export const CONTRATO_STYLES = {
 
   // Estados do título
   titleActive: "text-[#e8d5b0]",
-  titleDone: "line-through text-[#8a7355]",
+  titleDone: "line-through text-[var(--theme-subtitle)]",
 
   // Estados do checkbox
   checkboxActive:
-    "border-[rgba(201,134,42,0.4)] hover:border-[#c9862a]",
+    "border-[rgba(201,134,42,0.4)] hover:border-[var(--theme-accent)]",
   checkboxDone:
     "border-[#4a7c59] bg-[#4a7c59] text-white",
 
   // Botões
-  addButtonText: "text-[#c9862a]",
+  addButtonText: "text-[var(--theme-accent)]",
   addButtonHover: "hover:text-[#e8a030]",
   deleteButtonText: "text-[#8b1a1a]",
   deleteButtonHover: "hover:text-[#c02020]",

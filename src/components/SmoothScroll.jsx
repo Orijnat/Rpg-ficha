@@ -5,10 +5,11 @@ import { ReactLenis } from "lenis/react";
 
 /**
  * Scroll suave global via Lenis.
- * Desativa automaticamente quando o usuário pede menos animação (prefers-reduced-motion).
+ * Desativa a suavização quando o usuário pede menos animação (prefers-reduced-motion),
+ * mantendo o componente sempre montado para não remontar a árvore.
  */
 export default function SmoothScroll({ children }) {
-  const [enabled, setEnabled] = useState(false);
+  const [enabled, setEnabled] = useState(true);
 
   useEffect(() => {
     const media = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -18,15 +19,13 @@ export default function SmoothScroll({ children }) {
     return () => media.removeEventListener("change", update);
   }, []);
 
-  if (!enabled) return <>{children}</>;
-
   return (
     <ReactLenis
       root
       options={{
-        lerp: 0.09,
-        smoothWheel: true,
-        anchors: true,
+        lerp: enabled ? 0.09 : 1,
+        smoothWheel: enabled,
+        anchors: enabled,
       }}
     >
       {children}

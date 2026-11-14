@@ -39,7 +39,7 @@ export function BankLockedView({
           />
 
           {bankError && (
-            <p className={BANK_STYLES.errorMessage}>Senha incorreta</p>
+            <p className={BANK_STYLES.errorMessage}>Senha incorreta ou sem conexão com o servidor.</p>
           )}
 
           <button

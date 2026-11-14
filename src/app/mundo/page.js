@@ -1,11 +1,46 @@
 "use client";
 
-import { Plus, Skull, Trash2, Users } from "lucide-react";
+import { useEffect, useState } from "react";
+import { BookOpenText, Plus, Shield, Skull, Trash2, Users } from "lucide-react";
 import { useCharacter } from "../context/CharacterContext";
-import { Card, EditableText, SectionHeader } from "../components/ui";
+import { useAuth } from "../context/AuthContext";
+import { Card, EditableText, HPBar, SectionHeader } from "../components/ui";
+import { listCampaigns, listCharacters, listCampaignNpcs } from "../../lib/api";
 
 export default function MundoPage() {
   const { data, addPerson, removePerson, updPerson } = useCharacter();
+  const { token, isMaster } = useAuth();
+  const [sharedNpcs, setSharedNpcs] = useState([]);
+  const [sharedHeroes, setSharedHeroes] = useState([]);
+
+  // Fichas compartilhadas pelo mestre com a mesa (somente leitura)
+  useEffect(() => {
+    if (!token) return;
+    let cancelled = false;
+    async function loadShared() {
+      try {
+        const campaigns = await listCampaigns(token);
+        const campIds = (Array.isArray(campaigns) ? campaigns : []).map((c) => c.id);
+        if (campIds.length === 0) {
+          if (!cancelled) { setSharedNpcs([]); setSharedHeroes([]); }
+          return;
+        }
+        const [npcLists, heroLists] = await Promise.all([
+          Promise.all(campIds.map((id) => listCampaignNpcs(id, token).catch(() => []))),
+          Promise.all(campIds.map((id) => listCharacters(token).catch(() => []))),
+        ]);
+        if (cancelled) return;
+        const npcs = npcLists.flat().filter((n) => n?.dadosExtras?.sharedWithPlayers === true);
+        const heroes = heroLists.flat().filter((c) => c?.dadosExtras?.sharedWithPlayers === true && c?.userId && c.readOnly !== false);
+        setSharedNpcs(npcs);
+        setSharedHeroes(heroes);
+      } catch {
+        if (!cancelled) { setSharedNpcs([]); setSharedHeroes([]); }
+      }
+    }
+    loadShared();
+    return () => { cancelled = true; };
+  }, [token]);
 
   return (
     <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
@@ -79,6 +114,56 @@ export default function MundoPage() {
           </Card>
         );
       })}
+
+      {(sharedNpcs.length > 0 || sharedHeroes.length > 0) && (
+        <Card className="sm:col-span-2">
+          <div className="mb-4 flex items-center justify-between">
+            <SectionHeader
+              title="Fichas Compartilhadas pelo Mestre"
+              subtitle="Conteúdo da mesa visível apenas nesta campanha (somente leitura)"
+              icon={<BookOpenText size={15} />}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {sharedHeroes.map((hero) => (
+              <div key={`hero-${hero.id}`} className="rounded-xl border border-amber-400/30 bg-amber-500/10 p-4">
+                <div className="flex items-center gap-2">
+                  <Shield size={16} className="text-amber-400" />
+                  <div>
+                    <strong className="font-cinzel text-sm text-foreground">{hero.name}</strong>
+                    <p className="font-journal text-xs italic text-muted-foreground">
+                      Herói · {hero.customClass || hero.job || "Aventureiro"} · Nível {hero.level || 1}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-2">
+                  <HPBar hp={hero.hp ?? 10} max={hero.hpMax ?? 10} />
+                  <p className="mt-1 text-right font-mono text-[10px] text-muted-foreground">{hero.hp ?? 10}/{hero.hpMax ?? 10} PV</p>
+                </div>
+              </div>
+            ))}
+
+            {sharedNpcs.map((npc) => (
+              <div key={`npc-${npc.id}`} className="rounded-xl border border-purple-400/30 bg-purple-500/10 p-4">
+                <div className="flex items-center gap-2">
+                  <Skull size={16} className="text-purple-300" />
+                  <div>
+                    <strong className="font-cinzel text-sm text-foreground">{npc.nome}</strong>
+                    <p className="font-journal text-xs italic text-muted-foreground">
+                      {npc.papel || "NPC"} · {npc.dadosExtras?.status || "Ativo"}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-2">
+                  <HPBar hp={npc.hp ?? npc.hpMax ?? 10} max={npc.hpMax ?? npc.hp ?? 10} />
+                  <p className="mt-1 text-right font-mono text-[10px] text-muted-foreground">{npc.hp ?? 10}/{npc.hpMax ?? 10} PV</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
     </div>
   );
 }

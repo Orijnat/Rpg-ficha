@@ -131,6 +131,7 @@ export default function EditNpcPage() {
         tags: npc.dadosExtras?.tags || [],
         status: npc.dadosExtras?.status || "Ativo",
         attitude: npc.dadosExtras?.attitude || "Hostil",
+        sharedWithPlayers: Boolean(npc.dadosExtras?.sharedWithPlayers),
         acoes: npc.dadosExtras?.acoes || [],
         notasMestre: npc.dadosExtras?.notasMestre || "",
       };
@@ -296,6 +297,25 @@ export default function EditNpcPage() {
                 <option value="Fugiu">Fugiu</option>
                 <option value="Capturado">Capturado</option>
               </select>
+            </div>
+
+            {/* Compartilhar ficha com a mesa */}
+            <div className="mt-4">
+              <label className="flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-primary/25 bg-primary/10 px-4 py-3 transition hover:border-primary/50">
+                <span className="flex flex-col">
+                  <span className="text-xs font-bold uppercase tracking-wider text-primary">Compartilhar com a mesa</span>
+                  <span className="mt-0.5 text-[10px] text-muted-foreground">
+                    Jogadores da sua campanha veem esta ficha (somente leitura) em Mundo &gt; Fichas Compartilhadas.
+                  </span>
+                </span>
+                <input
+                  type="checkbox"
+                  checked={Boolean(npc.dadosExtras?.sharedWithPlayers)}
+                  onChange={(e) => updateExtras({ sharedWithPlayers: e.target.checked })}
+                  className="h-5 w-5 accent-primary"
+                  aria-label="Compartilhar esta ficha com os jogadores da campanha"
+                />
+              </label>
             </div>
           </div>
 

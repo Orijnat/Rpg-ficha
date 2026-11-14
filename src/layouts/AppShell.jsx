@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import {
   ArrowRight,
   BookOpen,
@@ -13,7 +14,6 @@ import {
   FileText,
   Footprints,
   Heart,
-  HeartPulse,
   Home,
   LayoutDashboard,
   Package,
@@ -28,9 +28,10 @@ import {
 } from "lucide-react";
 import { useAuth } from "../app/context/AuthContext";
 import Cabecalho from "../app/components/Cabecalho";
-import DiceModal from "../app/components/dice/DiceModal";
-import DiceFloatingTrigger from "../app/components/dice/DiceFloatingTrigger";
-import DanoCuraPainel from "../app/components/DanoCuraPainel";
+import { resendVerificationOnBackend } from "../lib/api";
+// Modais de dados carregados sob demanda (não pesam na primeira pintura)
+const DiceModal = dynamic(() => import("../app/components/dice/DiceModal"), { ssr: false });
+const DiceFloatingTrigger = dynamic(() => import("../app/components/dice/DiceFloatingTrigger"), { ssr: false });
 
 const PLAYER_TABS = [
   { id: "personagem", href: "/personagem", label: "Personagem", icon: <ScrollText size={16} /> },
@@ -47,6 +48,7 @@ const PLAYER_TABS = [
 
 const MASTER_NAV_ITEMS = [
   { id: "painel", href: "/admin", label: "Painel", icon: <LayoutDashboard size={16} /> },
+  { id: "perfil", href: "/perfil", label: "Perfil", icon: <User size={16} /> },
   { id: "campanhas", href: "/admin/campanhas", label: "Campanhas", icon: <Users size={16} /> },
   { id: "mercado", href: "/admin/mercado", label: "Mercado", icon: <Store size={16} /> },
   { id: "npcs", href: "/admin/npcs", label: "Bestiário (NPCs)", icon: <Skull size={16} /> },
@@ -60,7 +62,6 @@ const MASTER_NAV_ITEMS = [
 export default function AppShell({ children }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [vitalityOpen, setVitalityOpen] = React.useState(false);
   const {
     isMaster,
     isAuthenticated,
@@ -71,12 +72,38 @@ export default function AppShell({ children }) {
     playerCharacters,
     inspectCharacter,
     stopInspecting,
+    user,
   } = useAuth();
 
+  const [resendBusy, setResendBusy] = useState(false);
+  const [resendNote, setResendNote] = useState(null); // string | null
+
+  // Conta autenticada com e-mail ainda não verificado → aviso discreto e reenviável
+  const showVerifyBanner = Boolean(user && user.emailVerified === false);
+  const handleResendVerification = async () => {
+    if (!user?.email) return;
+    setResendBusy(true);
+    setResendNote(null);
+    try {
+      const result = await resendVerificationOnBackend(user.email);
+      if (result?.devPreviewUrl) {
+        setResendNote(`[dev] Link: ${result.devPreviewUrl}`);
+      } else {
+        setResendNote(result?.message || "E-mail de verificação enviado!");
+      }
+    } catch (error) {
+      setResendNote(error?.message || "Não foi possível reenviar.");
+    } finally {
+      setResendBusy(false);
+    }
+  };
+
   const isAuthRoute = pathname === "/login" || pathname === "/registro";
+  const isEmailFlowRoute =
+    pathname === "/verificar-email" || pathname === "/esqueci-senha" || pathname === "/redefinir-senha";
   const isLandingPage = pathname === "/";
   const isStandaloneSheet = Boolean(pathname?.includes("/admin/personagens/") && pathname?.endsWith("/ficha"));
-  const hideNavigation = isAuthRoute || isLandingPage || isStandaloneSheet;
+  const hideNavigation = isAuthRoute || isEmailFlowRoute || isLandingPage || isStandaloneSheet;
 
   useEffect(() => {
     document.title = "Grimorium";
@@ -85,12 +112,12 @@ export default function AppShell({ children }) {
   useEffect(() => {
     if (loading) return;
 
-    if (!isAuthenticated && !isAuthRoute && pathname !== "/") {
+    if (!isAuthenticated && !isAuthRoute && !isEmailFlowRoute && pathname !== "/") {
       router.replace("/login");
     } else if (isAuthenticated && isAuthRoute) {
       router.replace(isMaster ? "/admin" : "/personagem");
     }
-  }, [loading, isAuthenticated, isAuthRoute, isMaster, pathname, router]);
+  }, [loading, isAuthenticated, isAuthRoute, isEmailFlowRoute, isMaster, pathname, router]);
 
   return (
     <div
@@ -118,6 +145,26 @@ export default function AppShell({ children }) {
         className="pointer-events-none absolute right-0 top-80 h-96 w-96 rounded-full blur-3xl transition-colors duration-500"
         style={{ backgroundColor: isLandingPage ? "rgba(79,143,107,0.1)" : "var(--theme-glow-3, rgba(79,143,107,0.1))" }}
       />
+
+      {showVerifyBanner && (
+        <div
+          role="status"
+          className="relative z-20 flex flex-col gap-1 border-b border-amber-500/30 bg-amber-950/40 px-4 py-1.5 text-center text-[11px] font-semibold text-amber-200 backdrop-blur-sm sm:flex-row sm:items-center sm:justify-center sm:gap-3"
+        >
+          <span>
+            Seu e-mail ainda não foi verificado. Confira a caixa de entrada para selar a conta.
+          </span>
+          <button
+            type="button"
+            onClick={handleResendVerification}
+            disabled={resendBusy}
+            className="inline-flex min-h-8 items-center justify-center rounded border border-amber-400/40 bg-amber-500/10 px-2 text-[10px] font-bold uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/20 disabled:opacity-50"
+          >
+            {resendBusy ? "Enviando..." : "Reenviar e-mail"}
+          </button>
+          {resendNote && <span className="break-all text-[10px] text-amber-300/80">{resendNote}</span>}
+        </div>
+      )}
 
       {!hideNavigation && <Cabecalho />}
 
@@ -222,27 +269,6 @@ export default function AppShell({ children }) {
                       </Link>
                     );
                   })}
-
-                  {/* ── Botão de Vitalidade / DanoCuraPainel ── */}
-                  <button
-                    type="button"
-                    onClick={() => setVitalityOpen((v) => !v)}
-                    aria-expanded={vitalityOpen}
-                    aria-label="Abrir painel de vitalidade"
-                    className={`group flex min-h-11 w-full items-center gap-2.5 whitespace-nowrap rounded-xl px-3.5 py-2.5 text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 ${
-                      vitalityOpen
-                        ? "border border-rose-500/70 bg-gradient-to-r from-rose-600/30 via-rose-600/15 to-transparent text-rose-300 font-bold shadow-[0_0_20px_rgba(239,68,68,0.25)]"
-                        : "border border-transparent text-muted-foreground hover:bg-rose-500/10 hover:text-rose-300 hover:border-rose-500/25"
-                    }`}
-                  >
-                    <span className={`transition-transform duration-200 group-hover:scale-110 ${vitalityOpen ? "text-rose-400 drop-shadow-[0_0_8px_#f43f5e]" : "opacity-75"}`}>
-                      <HeartPulse size={16} />
-                    </span>
-                    <span className="font-cinzel tracking-wider">Vitalidade</span>
-                    {vitalityOpen && (
-                      <span className="ml-auto hidden h-2 w-2 rotate-45 bg-rose-500 shadow-[0_0_8px_#f43f5e] lg:block" />
-                    )}
-                  </button>
 
                   {/* Botão de volta ao painel quando mestre está inspecionando */}
                   {isMaster && isInspecting && (

@@ -68,7 +68,11 @@ export default function MasterCharacterSheet() {
     try {
       const payload = {
         ...character,
-        dadosExtras: { ...(character.dadosExtras || {}), inventoryCapacity: Number(character.inventoryCapacity) },
+        dadosExtras: {
+          ...(character.dadosExtras || {}),
+          inventoryCapacity: Number(character.inventoryCapacity),
+          sharedWithPlayers: Boolean(character.dadosExtras?.sharedWithPlayers),
+        },
         itensInventario: character.inventory,
         pericias: character.skills,
       };
@@ -107,6 +111,21 @@ export default function MasterCharacterSheet() {
 
         {message && <p className="flex items-center gap-2 border border-emerald-400/30 bg-emerald-950/30 p-3 text-sm text-emerald-200"><Check size={16} /> {message}</p>}
         {error && <p className="border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive-foreground">{error}</p>}
+
+        {/* Compartilhar este herói com a mesa */}
+        <label className="flex cursor-pointer items-center justify-between gap-3 border-2 border-primary/25 bg-primary/5 p-4 transition hover:border-primary/50">
+          <span className="flex flex-col">
+            <span className="text-xs font-bold uppercase tracking-wider text-primary">Compartilhar com a mesa</span>
+            <span className="mt-0.5 text-[10px] text-muted-foreground">Jogadores da campanha veem esta ficha (somente leitura) em Mundo &gt; Fichas Compartilhadas.</span>
+          </span>
+          <input
+            type="checkbox"
+            checked={Boolean(character.dadosExtras?.sharedWithPlayers)}
+            onChange={(e) => updateRules({ sharedWithPlayers: e.target.checked })}
+            className="h-5 w-5 accent-primary"
+            aria-label="Compartilhar este herói com os jogadores da campanha"
+          />
+        </label>
 
         <section className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
           <div className="border-2 border-primary/25 bg-card p-5">

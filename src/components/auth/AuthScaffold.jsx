@@ -3,14 +3,14 @@
 import { useRef } from "react";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
-import Aurora from "../react-bits/Aurora";
 
 const NOISE_TEXTURE = `url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`;
 
 /**
  * Cenário compartilhado das telas de autenticação:
- * Aurora arcana viva (WebGL) + vinheta cinematográfica + anel de runas gigante
- * girando atrás do cartão. Animação de entrada com GSAP (respeita reduced-motion).
+ * Fundo carvão com braseiro âmbar (consistente com o tema Âmbar Vulcânico) +
+ * vinheta cinematográfica + anel de runas gigante girando atrás do cartão.
+ * Animação de entrada com GSAP (respeita reduced-motion).
  */
 export default function AuthScaffold({ children }) {
   const rootRef = useRef(null);
@@ -29,20 +29,19 @@ export default function AuthScaffold({ children }) {
     <div ref={rootRef} className="relative w-full">
       {/* Camada de fundo viva */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
-        <Aurora
-          colorStops={["#d89b38", "#7a3a12", "#4a2a8a"]}
-          amplitude={1.1}
-          blend={0.6}
-          speed={0.45}
-          height={0.95}
-          scale={1.08}
-          glow={0.8}
-          brightness={0.95}
-          layers={2}
-          direction="top"
-          opacity={0.65}
-          mouseInteraction
-          intro
+        <div
+          className="absolute inset-0"
+          style={{
+            background: [
+              "radial-gradient(70% 55% at 50% 0%, rgba(216,155,56,0.14), transparent 60%)",
+              "radial-gradient(55% 50% at 8% 90%, rgba(216,155,56,0.09), transparent 55%)",
+              "radial-gradient(55% 50% at 92% 85%, rgba(216,155,56,0.08), transparent 55%)",
+            ].join(","),
+          }}
+        />
+        <div
+          className="torch-glow-ambient absolute left-1/2 top-1/2 h-[640px] w-[640px] -translate-x-1/2 -translate-y-1/2 rounded-full"
+          style={{ background: "radial-gradient(circle, rgba(216,155,56,0.10), transparent 60%)" }}
         />
         {/* Vinheta para manter a leitura do cartão */}
         <div
@@ -55,7 +54,7 @@ export default function AuthScaffold({ children }) {
         {/* Anel de runas colossal girando atrás do cartão */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           <svg
-            className="h-[125vmin] w-[125vmin] animate-[spin_90s_linear_infinite] text-[#d69a3d]"
+            className="h-[125vmin] w-[125vmin] animate-[spin_90s_linear_infinite] text-[var(--theme-accent)]"
             viewBox="0 0 400 400"
             fill="none"
           >
@@ -65,7 +64,7 @@ export default function AuthScaffold({ children }) {
             <text
               fontSize="14"
               letterSpacing="12"
-              className="fill-[#d69a3d]/15"
+              className="fill-[var(--theme-accent)]/15"
               style={{ fontFamily: "'Cinzel Decorative', serif" }}
             >
               <textPath href="#authRuneRing">

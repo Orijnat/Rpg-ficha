@@ -80,6 +80,43 @@ function loadTable(userId) {
   }
 }
 
+// Mescla a iniciativa vinda do servidor (atualizada quando jogadores rolam na ficha)
+// com a cópia local: atualiza valores de iniciativa/nome/tipo, preserva HP, PV máx.,
+// condições e a ordem estável, e nunca descarta combatentes criados localmente.
+function mergeInitiativeFromServer(localList, serverList) {
+  if (!Array.isArray(serverList)) return localList;
+  const local = Array.isArray(localList) ? localList : [];
+  const serverById = new Map(serverList.filter((item) => item?.id).map((item) => [item.id, item]));
+  let changed = false;
+
+  const merged = local.map((entry) => {
+    const remote = serverById.get(entry?.id);
+    if (!remote) return entry;
+    const nextInitiative = remote.initiative !== undefined ? Number(remote.initiative) : Number(entry.initiative);
+    const mergedEntry = {
+      ...entry,
+      name: remote.name ?? entry.name,
+      type: remote.type ?? entry.type,
+      initiative: Number.isFinite(nextInitiative) ? nextInitiative : entry.initiative,
+    };
+    if (mergedEntry.name !== entry.name || mergedEntry.type !== entry.type || Number(mergedEntry.initiative) !== Number(entry.initiative)) {
+      changed = true;
+    }
+    return mergedEntry;
+  });
+
+  for (const remote of serverList) {
+    if (remote?.id && !local.some((item) => item?.id === remote.id)) {
+      merged.push({ ...remote });
+      changed = true;
+    }
+  }
+
+  if (!changed) return localList;
+  merged.sort((a, b) => Number(b.initiative || 0) - Number(a.initiative || 0));
+  return merged;
+}
+
 export default function AdminIndex() {
   const [table, setTable] = useState(defaultTable);
   const [characters, setCharacters] = useState([]);
@@ -113,7 +150,6 @@ export default function AdminIndex() {
         setCampaigns(list);
       })
       .catch(() => {});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authLoading, isMaster, user?.id]);
 
   const activeCampaign = useMemo(() => {
@@ -133,6 +169,36 @@ export default function AdminIndex() {
     setTimeout(() => setCopiedInvite(false), 2500);
   };
 
+  // Acompanha a iniciativa rolada pelos jogadores (a ficha envia ao backend, que
+  // espelha na Sala de Guerra): repuxa a mesa a cada 20s e ao focar a aba,
+  // mesclando apenas a lista de iniciativa — o resto do rascunho local é preservado.
+  useEffect(() => {
+    if (!campaignLoaded || !isMaster) return undefined;
+    let cancelled = false;
+    const pull = () => {
+      fetchCampaignData(getStoredToken())
+        .then((campaign) => {
+          if (cancelled) return;
+          const serverTable = normalizeTable(campaign);
+          setTable((current) => {
+            const merged = mergeInitiativeFromServer(current.initiative, serverTable.initiative);
+            return merged === current.initiative ? current : { ...current, initiative: merged };
+          });
+        })
+        .catch(() => {});
+    };
+    const interval = setInterval(pull, 20000);
+    const onFocus = () => pull();
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onFocus);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onFocus);
+    };
+  }, [campaignLoaded, isMaster]);
+
   useEffect(() => {
     if (!campaignLoaded || !isMaster) return;
     const timer = setTimeout(() => {
@@ -142,7 +208,7 @@ export default function AdminIndex() {
       });
     }, 700);
     return () => clearTimeout(timer);
-  }, [table, campaignLoaded, isMaster]);
+  }, [table, campaignLoaded, isMaster, user?.id]);
 
   const updateTable = (patch) => setTable((current) => ({ ...current, ...patch }));
   const activeCharacters = useMemo(

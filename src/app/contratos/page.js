@@ -135,17 +135,17 @@ export default function Contratos() {
                     value={contract.title}
                     onChange={(value) => updContract(contract.id, { title: value })}
                     className={`text-sm font-semibold transition ${
-                      contract.done ? "line-through text-[#8a7355]" : "text-[#f5e9d7]"
+                      contract.done ? "line-through text-[var(--theme-subtitle)]" : "text-[var(--theme-title)]"
                     }`}
                   />
                   <div className="flex items-center gap-2 text-xs">
-                    <span className="font-serif uppercase tracking-wider text-[#8a7355]">
+                    <span className="font-serif uppercase tracking-wider text-[var(--theme-subtitle)]">
                       Recompensa:
                     </span>
                     <EditableText
                       value={contract.reward}
                       onChange={(value) => updContract(contract.id, { reward: value })}
-                      className="font-mono font-medium text-[#d69a3d]"
+                      className="font-mono font-medium text-[var(--theme-accent)]"
                     />
                   </div>
                 </div>

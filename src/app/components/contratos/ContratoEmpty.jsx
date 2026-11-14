@@ -4,7 +4,7 @@
  */
 export function ContratoEmpty() {
   return (
-    <p className="py-6 text-center text-sm italic text-[#8a7355]">
+    <p className="py-6 text-center text-sm italic text-[var(--theme-subtitle)]">
       Nenhum contrato ativo
     </p>
   );

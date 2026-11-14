@@ -25,6 +25,7 @@ import { useCharacter } from "../context/CharacterContext";
 import { useTheme } from "../context/ThemeContext";
 import { syncCharacterWithBackend } from "../../lib/api";
 import { validateCharacterSchema } from "../../lib/modifiers";
+import ConfirmDialog from "./admin/ConfirmDialog";
 
 const THEME_ICONS = {
   amber: Flame,
@@ -43,6 +44,8 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
   const [activeTab, setActiveTab] = useState(initialTab);
   const [syncStatus, setSyncStatus] = useState(null); // null | "syncing" | "success" | "error"
   const [syncMessage, setSyncMessage] = useState("");
+  const [pendingImport, setPendingImport] = useState(null); // backup validado aguardando confirmação tipada
+  const [pendingReset, setPendingReset] = useState(false); // restauração de ficha aguardando confirmação tipada
   const fileInputRef = useRef(null);
 
   const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
@@ -121,10 +124,9 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
           throw new Error(`Dados corrompidos ou incompatíveis: ${validation.errors.join("; ")}`);
         }
 
-        loadCharacter(validation.sanitized || rawChar);
-        setSyncStatus("success");
-        setSyncMessage(`Ficha de "${rawChar.name || "Herói"}" validada e importada com sucesso (Schema v2)!`);
-        setTimeout(() => setSyncStatus(null), 4000);
+        // Não aplica direto: sobrescreve a ficha atual, então exige confirmação tipada
+        setPendingImport({ sanitized: validation.sanitized || rawChar, name: rawChar.name || "Herói" });
+        setSyncStatus(null);
       } catch (err) {
         setSyncStatus("error");
         setSyncMessage("Falha ao importar ficha: " + err.message);
@@ -136,6 +138,12 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
 
   // Sincronizar com o backend manualmente
   const handleManualSync = async () => {
+    if (!data?.id) {
+      setSyncStatus("error");
+      setSyncMessage("Ficha sem vínculo com o servidor (restaurada localmente). Importe um backup ou recarregue a ficha da nuvem antes de sincronizar.");
+      setTimeout(() => setSyncStatus(null), 4500);
+      return;
+    }
     setSyncStatus("syncing");
     setSyncMessage("Conectando ao backend e salvando no PostgreSQL...");
 
@@ -158,18 +166,26 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
     setTimeout(() => setSyncStatus(null), 4500);
   };
 
-  // Restaurar dados padrão da ficha
+  // Restaurar dados padrão da ficha (confirmação tipada no ConfirmDialog)
   const handleReset = () => {
-    if (
-      window.confirm(
-        "Atenção: Deseja realmente restaurar os dados padrão da ficha? Todos os dados atuais não salvos serão redefinidos."
-      )
-    ) {
-      resetCharacter();
-      setSyncStatus("success");
-      setSyncMessage("Ficha restaurada para as configurações iniciais.");
-      setTimeout(() => setSyncStatus(null), 3000);
-    }
+    setPendingReset(true);
+  };
+
+  const confirmImport = () => {
+    if (!pendingImport) return;
+    loadCharacter(pendingImport.sanitized);
+    setSyncStatus("success");
+    setSyncMessage(`Ficha de "${pendingImport.name}" validada e importada com sucesso (Schema v2)!`);
+    setPendingImport(null);
+    setTimeout(() => setSyncStatus(null), 4000);
+  };
+
+  const confirmReset = () => {
+    resetCharacter();
+    setPendingReset(false);
+    setSyncStatus("success");
+    setSyncMessage("Ficha restaurada para as configurações iniciais (apenas neste navegador; a nuvem não foi alterada).");
+    setTimeout(() => setSyncStatus(null), 4000);
   };
 
   return (
@@ -183,21 +199,21 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
         {/* Cabeçalho do Modal */}
         <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.02] px-6 py-4">
           <div className="flex items-center gap-2.5">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-[#d69a3d]">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-[var(--theme-accent)]">
               <Settings2 size={18} />
             </span>
             <div>
-              <h3 id="settings-title" className="text-base font-semibold tracking-wide text-[#f5e9d7]">
+              <h3 id="settings-title" className="text-base font-semibold tracking-wide text-[var(--theme-title)]">
                 Configurações do Sistema
               </h3>
-              <p className="text-xs text-[#8a7355]">Personalize temas, gerencie backups e dados da ficha</p>
+              <p className="text-xs text-[var(--theme-subtitle)]">Personalize temas, gerencie backups e dados da ficha</p>
             </div>
           </div>
 
           <button
             type="button"
             onClick={onClose}
-            className="min-h-11 min-w-11 rounded-lg p-1.5 text-[#8a7355] transition hover:bg-white/10 hover:text-[#f5e9d7] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            className="min-h-11 min-w-11 rounded-lg p-1.5 text-[var(--theme-subtitle)] transition hover:bg-white/10 hover:text-[var(--theme-title)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             title="Fechar"
             aria-label="Fechar configurações"
           >
@@ -212,13 +228,13 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
             onClick={() => setActiveTab("themes")}
             className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-xs font-semibold transition-all ${
               activeTab === "themes"
-                ? "border-[#d69a3d] text-[#f5e9d7]"
-                : "border-transparent text-[#8a7355] hover:text-[#e8d5b0]"
+                ? "border-[var(--theme-accent)] text-[var(--theme-title)]"
+                : "border-transparent text-[var(--theme-subtitle)] hover:text-[#e8d5b0]"
             }`}
           >
             <Palette size={15} />
             <span>Temas Visuais</span>
-            <span className="rounded-full bg-white/10 px-1.5 py-0.2 font-mono text-[10px] text-[#d69a3d]">
+            <span className="rounded-full bg-white/10 px-1.5 py-0.2 font-mono text-[10px] text-[var(--theme-accent)]">
               {themes.length}
             </span>
           </button>
@@ -228,8 +244,8 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
             onClick={() => setActiveTab("backup")}
             className={`flex items-center gap-2 border-b-2 px-4 py-2.5 text-xs font-semibold transition-all ${
               activeTab === "backup"
-                ? "border-[#d69a3d] text-[#f5e9d7]"
-                : "border-transparent text-[#8a7355] hover:text-[#e8d5b0]"
+                ? "border-[var(--theme-accent)] text-[var(--theme-title)]"
+                : "border-transparent text-[var(--theme-subtitle)] hover:text-[#e8d5b0]"
             }`}
           >
             <Database size={15} />
@@ -261,15 +277,15 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-[#d69a3d]">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--theme-accent)]">
                     Escolha a Atmosfera
                   </h4>
-                  <p className="mt-0.5 text-xs text-[#8a7355]">
+                  <p className="mt-0.5 text-xs text-[var(--theme-subtitle)]">
                     Alterne o esquema de cores e a identidade da ficha em tempo real (Escuros & Claros).
                   </p>
                 </div>
-                <div className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[11px] font-medium text-[#f5e9d7]">
-                  <Sparkles size={12} className="text-[#d69a3d]" />
+                <div className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1 text-[11px] font-medium text-[var(--theme-title)]">
+                  <Sparkles size={12} className="text-[var(--theme-accent)]" />
                   <span>{themes.length} Temas RPG</span>
                 </div>
               </div>
@@ -286,7 +302,7 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
                       onClick={() => setTheme(t.id)}
                       className={`group relative flex flex-col justify-between rounded-xl border p-4 text-left transition-all duration-200 active:scale-[0.98] ${
                         isSelected
-                          ? "border-[#d69a3d] bg-white/[0.06] shadow-lg shadow-black/40 ring-1 ring-[#d69a3d]/50"
+                          ? "border-[var(--theme-accent)] bg-white/[0.06] shadow-lg shadow-black/40 ring-1 ring-[var(--theme-accent)]/50"
                           : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
                       }`}
                     >
@@ -305,35 +321,35 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
                               <Icon size={14} />
                             </span>
                             <div>
-                              <span className="block text-xs font-bold text-[#f5e9d7]">
+                              <span className="block text-xs font-bold text-[var(--theme-title)]">
                                 {t.name}
                               </span>
-                              <span className="block text-[10px] text-[#8a7355]">
+                              <span className="block text-[10px] text-[var(--theme-subtitle)]">
                                 {t.subtitle}
                               </span>
                             </div>
                           </div>
 
                           {isSelected ? (
-                            <span className="flex items-center gap-1 rounded-full bg-[#d69a3d]/20 px-2 py-0.5 text-[10px] font-bold text-[#d69a3d]">
+                            <span className="flex items-center gap-1 rounded-full bg-[var(--theme-accent)]/20 px-2 py-0.5 text-[10px] font-bold text-[var(--theme-accent)]">
                               <Check size={11} strokeWidth={3} />
                               Ativo
                             </span>
                           ) : (
-                            <span className="rounded bg-white/5 px-1.5 py-0.5 text-[9px] uppercase tracking-wider text-[#8a7355]">
+                            <span className="rounded bg-white/5 px-1.5 py-0.5 text-[9px] uppercase tracking-wider text-[var(--theme-subtitle)]">
                               {t.tag}
                             </span>
                           )}
                         </div>
 
-                        <p className="mt-2.5 text-[11px] leading-relaxed text-[#8a7355]">
+                        <p className="mt-2.5 text-[11px] leading-relaxed text-[var(--theme-subtitle)]">
                           {t.description}
                         </p>
                       </div>
 
                       {/* Amostras da Paleta */}
                       <div className="mt-4 flex items-center justify-between border-t border-white/5 pt-2.5">
-                        <span className="text-[10px] font-mono text-[#8a7355]/70">Paleta</span>
+                        <span className="text-[10px] font-mono text-[var(--theme-subtitle)]/70">Paleta</span>
                         <div className="flex items-center gap-1.5">
                           {t.previewColors.map((color, idx) => (
                             <span
@@ -358,15 +374,15 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
               <button
                 type="button"
                 onClick={handleExportJSON}
-                className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] p-3.5 transition-all hover:border-[#d69a3d]/40 hover:bg-[#d69a3d]/10 active:scale-[0.99]"
+                className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] p-3.5 transition-all hover:border-[var(--theme-accent)]/40 hover:bg-[var(--theme-accent)]/10 active:scale-[0.99]"
               >
                 <div className="flex items-center gap-3">
-                  <Download size={18} className="text-[#d69a3d]" />
+                  <Download size={18} className="text-[var(--theme-accent)]" />
                   <div className="text-left">
-                    <span className="block text-xs font-semibold text-[#f5e9d7]">
+                    <span className="block text-xs font-semibold text-[var(--theme-title)]">
                       Exportar Backup (JSON)
                     </span>
-                    <span className="block text-[11px] text-[#8a7355]">
+                    <span className="block text-[11px] text-[var(--theme-subtitle)]">
                       Baixar arquivo com todos os dados da ficha
                     </span>
                   </div>
@@ -382,10 +398,10 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
                 <div className="flex items-center gap-3">
                   <Upload size={18} className="text-emerald-400" />
                   <div className="text-left">
-                    <span className="block text-xs font-semibold text-[#f5e9d7]">
+                    <span className="block text-xs font-semibold text-[var(--theme-title)]">
                       Importar Backup (JSON)
                     </span>
-                    <span className="block text-[11px] text-[#8a7355]">
+                    <span className="block text-[11px] text-[var(--theme-subtitle)]">
                       Carregar ficha salva anteriormente
                     </span>
                   </div>
@@ -413,10 +429,10 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
                     className={`text-indigo-400 ${syncStatus === "syncing" ? "animate-spin" : ""}`}
                   />
                   <div className="text-left">
-                    <span className="block text-xs font-semibold text-[#f5e9d7]">
+                    <span className="block text-xs font-semibold text-[var(--theme-title)]">
                       Sincronizar com Banco PostgreSQL
                     </span>
-                    <span className="block text-[11px] text-[#8a7355]">
+                    <span className="block text-[11px] text-[var(--theme-subtitle)]">
                       Forçar envio manual para a API do Rpg-backend
                     </span>
                   </div>
@@ -446,17 +462,38 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
         </div>
 
         {/* Rodapé informativo */}
-        <div className="flex items-center justify-between border-t border-white/10 bg-black/30 px-6 py-3 text-[11px] text-[#8a7355]">
-          <span>Tema atual: <strong className="text-[#f5e9d7]">{themes.find((t) => t.id === theme)?.name}</strong></span>
+        <div className="flex items-center justify-between border-t border-white/10 bg-black/30 px-6 py-3 text-[11px] text-[var(--theme-subtitle)]">
+          <span>Tema atual: <strong className="text-[var(--theme-title)]">{themes.find((t) => t.id === theme)?.name}</strong></span>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg border border-white/10 bg-white/5 px-3 py-1 font-semibold text-[#f5e9d7] transition hover:bg-white/10"
+            className="rounded-lg border border-white/10 bg-white/5 px-3 py-1 font-semibold text-[var(--theme-title)] transition hover:bg-white/10"
           >
             Concluído
           </button>
         </div>
       </div>
+
+      <ConfirmDialog
+        isOpen={Boolean(pendingImport)}
+        title="Importar backup por cima da ficha?"
+        message={`A ficha atual será substituída pelos dados de "${pendingImport?.name}". Alterações locais não sincronizadas serão perdidas e o conteúdo importado passará a sincronizar com a nuvem para a ficha ativa.`}
+        confirmText="Importar mesmo assim"
+        dangerLevel="danger"
+        requireTypedText="IMPORTAR"
+        onConfirm={confirmImport}
+        onCancel={() => setPendingImport(null)}
+      />
+      <ConfirmDialog
+        isOpen={pendingReset}
+        title="Restaurar ficha padrão?"
+        message="A ficha deste navegador será redefinida para o formulário em branco. A cópia no servidor NÃO será alterada — apenas as alterações locais não salvas serão perdidas. Para recuperar a ficha da nuvem, recarregue a página."
+        confirmText="Restaurar mesmo assim"
+        dangerLevel="danger"
+        requireTypedText="RESTAURAR"
+        onConfirm={confirmReset}
+        onCancel={() => setPendingReset(false)}
+      />
     </div>
   );
 }

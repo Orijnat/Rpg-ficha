@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Coins, X, ArrowRightLeft } from "lucide-react";
-import { Card, EditableText, SectionHeader } from "../ui";
+import { Card, SectionHeader } from "../ui";
+import { setBankPasswordOnBackend } from "../../../lib/api";
 import { BankSlotGrid } from "./BankSlotGrid";
 import { convertCurrency, CURRENCY_RATES } from "../../../lib/modifiers";
 
@@ -20,9 +21,8 @@ const CURRENCY_KEYS = Object.keys(CURRENCY_RATES);
  * Mostra header com controles, grid de slots e conversor de moedas
  */
 export function BankUnlockedView({
-  bankPassword,
+  characterId,
   bankSlots,
-  onPasswordChange,
   onLogout,
   onSlotUpdate,
 }) {
@@ -34,8 +34,7 @@ export function BankUnlockedView({
           <SectionHeader title="Banco de Glenor" icon={<Coins size={14} />} />
 
           <BankHeaderControls
-            password={bankPassword}
-            onPasswordChange={onPasswordChange}
+            characterId={characterId}
             onLogout={onLogout}
           />
         </div>
@@ -52,22 +51,63 @@ export function BankUnlockedView({
 
 /**
  * Controles do header do banco (senha e logout)
+ * Não exibe a senha atual (ela é um hash no servidor); apenas define/remove uma personalizada.
  */
-function BankHeaderControls({ password, onPasswordChange, onLogout }) {
+function BankHeaderControls({ characterId, onLogout }) {
+  const [newPassword, setNewPassword] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [feedback, setFeedback] = useState(null); // { text, ok }
+
+  const handleSetPassword = async (password) => {
+    setSaving(true);
+    setFeedback(null);
+    try {
+      const result = await setBankPasswordOnBackend(characterId, password);
+      setFeedback({ text: result?.message || (password ? "Senha personalizada definida." : "Senha personalizada removida."), ok: true });
+      setNewPassword("");
+    } catch (error) {
+      setFeedback({ text: error.message || "Erro ao alterar a senha.", ok: false });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
-    <div className="flex items-center gap-2 text-xs text-[#8a7355]">
-      <span>Senha:</span>
-
-      <EditableText
-        value={password}
-        onChange={onPasswordChange}
-        className="font-mono text-[#c9862a]"
-      />
-
+    <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--theme-subtitle)]">
+      <span className="hidden sm:inline">Senha personalizada:</span>
+      <form
+        className="flex items-center gap-1.5"
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleSetPassword(newPassword);
+        }}
+      >
+        <input
+          type="password"
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          placeholder="Nova senha (vazio = remover)"
+          aria-label="Definir senha personalizada do cofre"
+          className="w-44 rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 text-[var(--theme-accent)] outline-none placeholder:text-[#6b5a3e]/60 focus:border-primary/60"
+        />
+        <button
+          type="submit"
+          disabled={saving}
+          className="rounded-lg border border-primary/40 bg-primary/15 px-2.5 py-1.5 font-cinzel text-[10px] font-bold uppercase tracking-wider text-primary transition hover:bg-primary/25 disabled:opacity-50"
+        >
+          {saving ? "..." : newPassword ? "Salvar" : "Remover"}
+        </button>
+      </form>
+      {feedback && (
+        <span className={feedback.ok ? "text-emerald-400" : "text-rose-400"} role="status">
+          {feedback.text}
+        </span>
+      )}
       <button
         onClick={onLogout}
-        className="text-[#8a7355] transition-colors hover:text-[#c9862a]"
-        title="Logout"
+        className="text-[var(--theme-subtitle)] transition-colors hover:text-[var(--theme-accent)]"
+        title="Fechar o cofre"
+        aria-label="Fechar o cofre"
       >
         <X size={13} />
       </button>
@@ -121,7 +161,7 @@ function CurrencyConverter() {
               setAmount(e.target.value);
               setResult(null);
             }}
-            className="w-24 rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 text-center font-mono text-xs text-[#f5e9d7] outline-none focus:border-primary"
+            className="w-24 rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 text-center font-mono text-xs text-[var(--theme-title)] outline-none focus:border-primary"
             placeholder="Qtd"
             aria-label="Quantidade a converter"
           />

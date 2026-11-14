@@ -172,7 +172,7 @@ export default function Pericia() {
       />
       <div className="custom-scroll max-h-84 space-y-1.5 overflow-y-auto pr-1">
         {data.skills.map((skill, index) => {
-          const skillInfo = calculateSkillBonus(skill, data);
+          const skillInfo = calculateSkillBonus(skill, data, proficiencyBonus);
 
           return (
             <div
@@ -189,8 +189,8 @@ export default function Pericia() {
                   onClick={() => updSkill(index, { trained: !skill.trained })}
                   className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border transition-colors ${
                     skill.trained
-                      ? "border-[#d69a3d] bg-[#d69a3d] text-[#0f0d0a]"
-                      : "border-white/20 hover:border-[#d69a3d]"
+                      ? "border-[var(--theme-accent)] bg-[var(--theme-accent)] text-[#0f0d0a]"
+                      : "border-white/20 hover:border-[var(--theme-accent)]"
                   }`}
                   title={skill.trained ? "Perícia Treinada" : "Marcar como Treinada"}
                 >
@@ -199,7 +199,7 @@ export default function Pericia() {
 
                 <span
                   className={`text-xs font-medium transition-colors ${
-                    skill.trained ? "text-[#f5e9d7]" : "text-[#a98b68]"
+                    skill.trained ? "text-[var(--theme-title)]" : "text-[var(--theme-subtitle)]"
                   }`}
                 >
                   {skill.name}
@@ -214,7 +214,7 @@ export default function Pericia() {
               <button
                 type="button"
                 onClick={() => promptRoll(skill.name, skillInfo.total)}
-                className="flex items-center gap-1.5 rounded-md border border-white/5 bg-white/[0.02] px-2 py-0.5 font-mono text-xs font-bold text-[#d69a3d] transition-all hover:border-[#d69a3d]/50 hover:bg-[#d69a3d]/15 hover:text-[#fdf6e7] active:scale-95"
+                className="flex items-center gap-1.5 rounded-md border border-white/5 bg-white/[0.02] px-2 py-0.5 font-mono text-xs font-bold text-[var(--theme-accent)] transition-all hover:border-[var(--theme-accent)]/50 hover:bg-[var(--theme-accent)]/15 hover:text-[var(--theme-title)] active:scale-95"
                 title={`Rolar teste de ${skill.name} (${skillInfo.formatted})`}
               >
                 <Dices size={12} className="opacity-60 transition-transform group-hover:rotate-12 group-hover:opacity-100" />

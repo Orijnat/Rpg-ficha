@@ -8,7 +8,8 @@ import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
 import { EditableText, HPBar } from "./ui";
 import SettingsModal from "./SettingsModal";
-import DanoCuraPainel from "./DanoCuraPainel";
+import dynamic from "next/dynamic";
+const DanoCuraPainel = dynamic(() => import("./DanoCuraPainel"), { ssr: false });
 import XPBar from "./XPBar";
 
 export default function Cabecalho() {
@@ -87,8 +88,8 @@ export default function Cabecalho() {
                       type="button"
                       onClick={() => setIsHpModalOpen(true)}
                       className="group flex items-center gap-2 hover:opacity-95 transition"
-                      title="Clique para painel de Dano & Cura"
-                      aria-label="Painel de dano e cura rápida"
+                      title="Clique para a gestão de Vitalidade"
+                      aria-label="Gestão de Vitalidade (dano & cura)"
                     >
                       <div className="w-24 sm:w-32 transition-transform group-hover:scale-[1.03]">
                         <HPBar hp={data.hp} max={data.hpMax} />
@@ -115,7 +116,7 @@ export default function Cabecalho() {
                       onClick={() => setIsHpModalOpen(true)}
                       className="btn-rpg !px-2.5 !py-1 !text-[10px] !normal-case"
                       title="Abrir painel rápido de Dano & Cura"
-                      aria-label="Abrir painel rápido de Dano e Cura"
+                      aria-label="Abrir gestão de Vitalidade"
                     >
                       <HeartPulse size={12} className="text-rose-400" />
                       <span className="hidden sm:inline font-cinzel font-bold">Dano/Cura</span>

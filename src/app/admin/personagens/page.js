@@ -9,6 +9,7 @@ import {
   Filter,
   HeartPulse,
   Plus,
+  ChevronsUp,
   ScrollText,
   Search,
   Shield,
@@ -26,6 +27,7 @@ import {
   duplicateNpc,
   listCharacters,
   listNpcs,
+  updateCharacterOnBackend,
 } from "../../../lib/api";
 import { useAuth } from "../../context/AuthContext";
 
@@ -46,6 +48,9 @@ export default function PersonagensAdmin() {
 
   // Confirmações
   const [itemToDelete, setItemToDelete] = useState(null); // { type: 'hero'|'npc', id, name }
+  const [levelUpTarget, setLevelUpTarget] = useState(null); // { type: 'single', id, name } | { type: 'all' }
+  const [levelUpBusy, setLevelUpBusy] = useState(false);
+  const [levelUpMsg, setLevelUpMsg] = useState("");
   const [duplicateTarget, setDuplicateTarget] = useState(null); // npc to duplicate
   const [variantSuffix, setVariantSuffix] = useState(" (Elite)");
   const [variantHpMultiplier, setVariantHpMultiplier] = useState(1.5);
@@ -167,6 +172,38 @@ export default function PersonagensAdmin() {
     return combined;
   }, [heroes, npcs, activeTab, searchTerm, selectedTag, statusFilter, sortBy]);
 
+  const runLevelUp = async () => {
+    if (!levelUpTarget || levelUpBusy) return;
+    setLevelUpBusy(true);
+    setLevelUpMsg("");
+    const targets = levelUpTarget.type === "single"
+      ? heroes.filter((h) => h.id === levelUpTarget.id)
+      : heroes;
+    let ok = 0;
+    let fail = 0;
+    for (const hero of targets) {
+      const level = Math.max(1, Math.min(20, Number(hero.level) || 1));
+      if (level >= 20) {
+        fail += 1;
+        continue;
+      }
+      try {
+        await updateCharacterOnBackend(hero.id, { level: level + 1 }, token);
+        ok += 1;
+      } catch {
+        fail += 1;
+      }
+    }
+    setLevelUpBusy(false);
+    setLevelUpTarget(null);
+    setLevelUpMsg(
+      fail === 0
+        ? `${ok} ficha(s) promovida(s) com sucesso (níveis até 20).`
+        : `${ok} promovida(s); ${fail} falhou(aram) ou já estão no nível máximo.`
+    );
+    loadData();
+  };
+
   const confirmDelete = async () => {
     if (!itemToDelete) return;
     try {
@@ -228,6 +265,15 @@ export default function PersonagensAdmin() {
           >
             <Plus size={15} /> Novo Herói
           </Link>
+          <button
+            type="button"
+            onClick={() => setLevelUpTarget({ type: "all" })}
+            disabled={heroes.length === 0}
+            className="flex min-h-11 items-center gap-1.5 rounded-lg border border-amber-400/50 bg-amber-500/15 px-3.5 text-xs font-bold uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/25 disabled:cursor-not-allowed disabled:opacity-40"
+            title="Sobe o nível de todas as fichas de heróis exibidas"
+          >
+            <ChevronsUp size={15} /> Nível da Mesa
+          </button>
           <Link
             href="/admin/npcs/new"
             className="flex min-h-11 items-center gap-1.5 rounded-lg bg-primary px-4 text-xs font-serif font-bold uppercase tracking-wider text-primary-foreground shadow-lg shadow-primary/20 hover:brightness-110 active:scale-95"
@@ -240,6 +286,11 @@ export default function PersonagensAdmin() {
       {error && (
         <div className="border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive-foreground">
           {error}
+        </div>
+      )}
+      {levelUpMsg && (
+        <div className="border border-amber-400/30 bg-amber-500/10 p-3 text-xs text-amber-200" role="status">
+          {levelUpMsg}
         </div>
       )}
 
@@ -500,6 +551,14 @@ export default function PersonagensAdmin() {
                               <span>Visão Rápida</span>
                               <ExternalLink size={10} />
                             </Link>
+                            <button
+                              type="button"
+                              onClick={() => setLevelUpTarget({ type: "single", id: item.id, name: item.displayName })}
+                              className="rounded-lg border border-amber-400/40 bg-amber-500/10 px-2 py-1 text-xs font-bold text-amber-300 transition hover:bg-amber-500/20"
+                              title={`Subir nível de ${item.displayName}`}
+                            >
+                              +1 Nv.
+                            </button>
                             <Link
                               href={`/admin/personagens/${item.id}`}
                               className="rounded-lg border border-border bg-secondary px-2.5 py-1 text-xs text-muted-foreground hover:border-primary hover:text-foreground"
@@ -595,6 +654,22 @@ export default function PersonagensAdmin() {
           </div>
         </div>
       )}
+
+      {/* Confirmação de promoção de nível (individual ou em massa) */}
+      <ConfirmDialog
+        isOpen={Boolean(levelUpTarget)}
+        title={levelUpTarget?.type === "single" ? `Subir o nível de "${levelUpTarget?.name}"?` : `Subir o nível de todos os heróis?`}
+        message={
+          levelUpTarget?.type === "single"
+            ? "O nível desta ficha será aumentado em 1 (máx. 20). Atributos, perícias e BP passarão a refletir o novo nível."
+            : `O nível de TODAS as fichas de heróis exibidas será aumentado em 1 (máx. 20). Confirmar a promoção em massa?`
+        }
+        confirmText={levelUpBusy ? "Promovendo..." : "Promover"}
+        cancelText="Cancelar"
+        dangerLevel="warning"
+        onConfirm={runLevelUp}
+        onCancel={() => setLevelUpTarget(null)}
+      />
 
       {/* Confirmação Solene de Exclusão com Auditoria */}
       <ConfirmDialog

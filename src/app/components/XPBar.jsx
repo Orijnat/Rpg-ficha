@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Star } from "lucide-react";
 import { useCharacter } from "../context/CharacterContext";
 import { calculateLevelFromXP } from "../../lib/modifiers";
@@ -30,24 +30,21 @@ export default function XPBar() {
     }
   }, [editing]);
 
-  const startEdit = useCallback(() => {
+  const startEdit = () => {
     setInputVal(String(currentXP));
     setEditing(true);
-  }, [currentXP]);
+  };
 
-  const commitEdit = useCallback(() => {
+  const commitEdit = () => {
     const parsed = Math.max(0, Number(inputVal) || 0);
     upd("xp", parsed);
     setEditing(false);
-  }, [inputVal, upd]);
+  };
 
-  const handleKey = useCallback(
-    (e) => {
-      if (e.key === "Enter") commitEdit();
-      if (e.key === "Escape") setEditing(false);
-    },
-    [commitEdit]
-  );
+  const handleKey = (e) => {
+    if (e.key === "Enter") commitEdit();
+    if (e.key === "Escape") setEditing(false);
+  };
 
   const isMaxLevel = nextLevelXP === null;
   const barWidth = `${progress}%`;

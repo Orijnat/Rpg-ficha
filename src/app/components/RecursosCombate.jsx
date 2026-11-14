@@ -20,12 +20,13 @@ import { calculateInitiative, calculateModifier, calculateProficiencyBonusByLeve
 import { sendInitiativeFromSheet } from "../../lib/api";
 
 export default function RecursosCombate() {
-  const { data, updExtra } = useCharacter();
+  const { data, upd, updExtra } = useCharacter();
   const { executeRoll, promptRoll } = useDice();
   const { token, isMaster } = useAuth();
 
   const [sendingInit, setSendingInit] = useState(false);
   const [sentSuccess, setSentSuccess] = useState(false);
+  const [initError, setInitError] = useState(null); // string | null
   const [hitDieModal, setHitDieModal] = useState(null); // { result: number }
 
   const extras = data.dadosExtras || {};
@@ -63,6 +64,7 @@ export default function RecursosCombate() {
   const handleSendInitiativeToMaster = async () => {
     setSendingInit(true);
     setSentSuccess(false);
+    setInitError(null);
     try {
       const roll = executeRoll({
         sides: 20,
@@ -85,6 +87,8 @@ export default function RecursosCombate() {
       setTimeout(() => setSentSuccess(false), 3000);
     } catch (err) {
       console.warn("Não foi possível enviar iniciativa à mesa:", err.message);
+      setInitError(err?.message || "A mesa ainda não iniciou o combate.");
+      setTimeout(() => setInitError(null), 4000);
     } finally {
       setSendingInit(false);
     }
@@ -115,10 +119,9 @@ export default function RecursosCombate() {
     const { result } = hitDieModal;
     const hpMax = Math.max(1, Number(data.hpMax ?? 1));
     const hp = Number(data.hp ?? 0);
-    updExtra("hpMax", hpMax + result);
-    // também usar upd se disponível, mas updExtra para campos extras
-    // HP atual também sobe
-    import("../context/CharacterContext").then(() => {}).catch(() => {});
+    // HP máximo é coluna real (hpMax); HP atual acompanha o ganho
+    upd("hpMax", hpMax + result);
+    upd("hp", hp + result);
     setHitDieModal(null);
   };
 
@@ -138,7 +141,6 @@ export default function RecursosCombate() {
             className="mt-1 font-cinzel text-2xl font-black text-foreground font-tabular"
             min={0}
             max={99}
-            disabled={!isMaster}
             label="Classe de Armadura"
           />
           <span className="font-cinzel text-[9px] text-muted-foreground uppercase tracking-wider">Armadura</span>
@@ -181,6 +183,11 @@ export default function RecursosCombate() {
           <span className="font-cinzel text-[9px] text-muted-foreground uppercase tracking-wider">
             {sentSuccess ? "Enviado à mesa!" : "DES + Bônus"}
           </span>
+          {initError && (
+            <span role="alert" className="mt-1 block font-journal text-[9px] italic text-rose-300">
+              {initError}
+            </span>
+          )}
         </div>
 
         {/* Dado de Vida com Rolagem de Cura */}
@@ -238,7 +245,6 @@ export default function RecursosCombate() {
                 onChange={(val) => updExtra("peMax", val)}
                 className="text-muted-foreground"
                 min={0}
-                disabled={!isMaster}
                 label="PE Máximo"
               />
             </div>

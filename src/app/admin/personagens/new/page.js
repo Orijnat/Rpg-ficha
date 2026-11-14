@@ -37,23 +37,23 @@ export default function NewPersonagem() {
       )}
 
       <div>
-        <label className="block text-sm text-[#a98b68]">Nome do Personagem</label>
+        <label className="block text-sm text-[var(--theme-subtitle)]">Nome do Personagem</label>
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Ex: Sir Percival"
           required
-          className="mt-1 w-full rounded-md bg-[#0b0d12] border border-white/10 px-3 py-2 text-[#f5e9d7] outline-none focus:border-primary"
+          className="mt-1 w-full rounded-md bg-[#0b0d12] border border-white/10 px-3 py-2 text-[var(--theme-title)] outline-none focus:border-primary"
         />
       </div>
 
       <div>
-        <label className="block text-sm text-[#a98b68]">Classe / Papel</label>
+        <label className="block text-sm text-[var(--theme-subtitle)]">Classe / Papel</label>
         <input
           value={job}
           onChange={(e) => setJob(e.target.value)}
           placeholder="Ex: Paladino, Mercenário"
-          className="mt-1 w-full rounded-md bg-[#0b0d12] border border-white/10 px-3 py-2 text-[#f5e9d7] outline-none focus:border-primary"
+          className="mt-1 w-full rounded-md bg-[#0b0d12] border border-white/10 px-3 py-2 text-[var(--theme-title)] outline-none focus:border-primary"
         />
       </div>
 

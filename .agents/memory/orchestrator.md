@@ -477,3 +477,47 @@ Este arquivo é a fonte de memória persistente da liderança técnica do projet
   - **Incidente**: `src/` sumiu do worktree durante a sessão (deleção externa); restaurado de stash dangling `0c3d4ca` via `git checkout <sha> -- src/`; fixes de bugs preservados; nada commitado.
 - **Validações**: build OK; dev server 200 em `/`, `/login`, `/registro`, `/personagem`; lint sem erros novos; testes 134/135 (1 falha pré-existente).
 - **Pendências**: revisão visual em navegador; limpeza de dados demo no Supabase; `.opencode/` não rastreado.
+
+
+## Entrega — 2026-11-14 (Agente QA Judge)
+
+- **Demanda**: criar agente especialista em QA para julgar qualidade, responsividade, beleza e falhas das aplicações.
+- **Artefatos**: `.github/agents/qa-judge.agent.md`, `.opencode/agent/qa-judge.md`, `.agents/memory/qa-judge.md`, referência em `AGENTS.md`.
+- **Rubrica**: Responsividade 25% · Beleza/coerência 25% · Falhas/robustez 40% · Acessibilidade 10%; veredicto com severidade S1–S4 e evidências literais (build, lint, testes, curl, grep de anti-padrões); modo somente julgamento (`edit: deny`), correções delegadas.
+- **Validação**: artefatos criados e integrados ao ecossistema de agentes; sem execução de julgamento real ainda (pendente: usar em uma tela de referência e calibrar a rubrica).
+
+
+## Entrega — 2026-11-14 (Auditoria banco+back+front)
+
+- **Demanda**: mapear o sistema completo (banco, backend, frontend) e achar falhas e detalhes a ajustar.
+- **Artefato**: `docs/AUDITORIA-SISTEMA-2026-11-14.md` (relatório completo S1–S4, top-10, plano em 4 fases).
+- **Verificado empíricamente** (Postgres local docker, descartado ao final): bankPassword em claro vaza em /auth/me etc.; `/api/npcs?q=` perde escopo de posse e vaza NPCs+notasMestre entre mestres; PUT /encontros/:id sempre 422; criação de sessão sempre 422; sync sem id sobrescreve ficha errada.
+- **Sem alteração de código** (escopo de mapeamento). Próximo passo recomendado: sessão de hardening S1 (F-01, A-01, F-02, F-03) com validação empírica.
+
+## Entrega — 2026-11-14 (Hardening S1 da auditoria)
+
+- **Demanda**: "implemente as alteracoes presentes no coisas a fazer" — escopo confirmado com o usuário: somente os itens S1 (críticos).
+- **Ações** (working tree, nada commitado):
+  - F-01/A-02: `publicCharacter` nunca retorna `bankPassword`/`bankPasswordHash`; `data.user` vira subset; `includeUser` sem `password`; `PUT /characters/:id/bank/password` (bcrypt) define/remove senha personalizada por ficha; `verificarBankPassword` usa hash personalizado ou a senha do login do dono.
+  - A-01: `skipSyncRef` no `CharacterContext` bloqueia sync após "Restaurar padrão"; `targetId` sem fallback do personagem ativo; confirmação tipada; `reloadFromCloud` reidona e reativa sync.
+  - A-01/A-02: importação de JSON com confirmação tipada; identidade do arquivo descartada; restaura na ficha ativa; `defaultData` sem `"133313"`; `backup.test.mjs` atualizado.
+  - F-02/F-03: verificados empiricamente (já corrigidos no working tree anterior: Op.and; encontroSchema completo).
+- **Validações**: front 135/135, back 17/17, build OK, eslint 0 erros; Postgres 16 descartável via docker para testes ao vivo (removido ao final).
+- **Pendências**: itens S2+ da auditoria (F-04…F-10, A-03, A-05…A-07, etc.); migration `20261114130000-npc-campanha-nullable.js` ainda não aplicada; conferência visual no navegador.
+
+## Entrega — 2026-11-14 (Restantes do itens-a-fazer — escopo total, sem consulta)
+
+- **Demanda**: "continue com o resto das alteracoes pendentes ... pode executar sem me consultar".
+- **Banco/Backend**: `database/migrate.js` (ESM, idempotente, sem sequelize-cli; baseline+v2+incrementais); baseline protegida (só sem `usuarios`); migration `20261114140000-auth-tokens-email.js` (email_verified/token hashes/password_changed_at; contas legadas grandfathered); `mailer.js` (nodemailer, SMTP_*, devPreviewUrl fora de produção); `/auth/verify-email|resend-verification|forgot-password|reset-password`; authMiddleware revoga JWT por `password_changed_at` (iat <= floor(...) → 401); logout revoga; sync com concorrência otimista (`updatedAt`, 409 + serverCharacter, `force:true`); publicCharacter emite alias `updatedAt`; sessões com retry de numeração; `requireMaster` nas rotas mestre; legado com allowlist; auditoria com log estruturado. 22 testes (novo `sync_conflict.test.js`).
+- **Frontend**: conflict UI (Manter da nuvem / Manter meus dados); `Critério de payload`: remoteVersionRef; páginas `/verificar-email`, `/esqueci-senha`, `/redefinir-senha`; banner reenviável no AppShell; telas de auth com link "Esqueci a senha"; BP/nível já funcionava (2/3/4/5/6 confirmado); Montarias + PE máx + dado de vida (já na árvore) confirmados; iniciativa mescla na Sala de Guerra (20s/foco, aditivo, HP/condições locais preservados); vitalidade na navbar; temas: `[data-theme="mist"]` criado + acentos claros AA/AAA; 270 hex→tokens; DiceModal/DanoCuraPainel via next/dynamic. Build 30/30, testes 135/135.
+- **Verificação empírica** (Postgres 16 descartável, removido): registro/verify/reset completos, revogação JWT 401, rate limiter (AUTH_RATE_LIMIT configurável), F-04…F-10, A-03, A-07 (409 real).
+- **Pendências**: A-12/A-13 parciais (páginas gigantes, sweep img/text-[9px] — pedem browser); SMTP real e deploy são do operador; nada commitado.
+
+## Entrega — 2026-11-14 (COISAS-A-FAZER — fase 1)
+
+- **Demanda**: "comece a imoplementar o coisas a fazer".
+- **Docs criadas**: INSTALACAO, BACKUP-RESTORE (round-trip testado), TROUBLESHOOTING, CHANGELOG (semver), RUNBOOK-PRODUCAO, SEGURANCA (LGPD + incidente), MIGRACAO-LEGADA, REGRAS-DECISIOES (13 vereditos + calculado×editável + limites + campanha + visibilidade), GOOGLE-INTEGRATION, IMPORTACAO-PLANILHA.
+- **Backend**: rolagens persistidas (`POST/GET /api/rolagens`, ACL mesa/ficha); uploads seguros (`/api/arquivos`, magic bytes, no public dir, URLs assinadas HMAC 15min, cleanup de órfãos); `SessaoAutenticacao` real (revogação no logout/reset); migrações novas (rolagens, arquivos, índices reforço, cenario em campanhas); `backup.js` (pg_dump round-trip); exports CSV ficha/bestiário/campanha (testado live); CI com Postgres 16 (migrações + 28 testes).
+- **Frontend**: galeria do Diário via upload real; `classes.js` + datalist no cadastro; 0 lint errors (XPBar→React Compiler); 140/140 testes; build OK.
+- **Verificado ao vivo** (Postgres descartável, removido ao final): rolagens ACL, uploads (magic bytes/extension/assinatura/ACL), sessões (logout→401, reset→todas revogadas), exports CSV, S2 completa, e-mail, restauração de backup.
+- **Pendente (operador)**: credenciais Google/SMTP/deploy; E2E/a11y/mobile sem browser; cookies HTTP-only; A-12/A-13 parciais. Nada commitado; `backups/`, `private_uploads/` removidos/gitignored; body-parser atualizado (high→0; 8 moderate dev-deps aceitas).

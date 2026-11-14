@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AlertTriangle, ShieldAlert, X } from "lucide-react";
 
 export default function ConfirmDialog({
@@ -15,6 +15,41 @@ export default function ConfirmDialog({
   onCancel,
 }) {
   const [typedValue, setTypedValue] = useState("");
+  const dialogRef = useRef(null);
+
+  // Foco inicial + Escape + focus trap simples
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const dialog = dialogRef.current;
+    const focusable = dialog?.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusable?.[0];
+    first?.focus();
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        event.stopPropagation();
+        onCancel();
+        return;
+      }
+      if (event.key === "Tab" && focusable && focusable.length > 0) {
+        const list = Array.from(focusable);
+        const firstEl = list[0];
+        const lastEl = list[list.length - 1];
+        const active = document.activeElement;
+        if (event.shiftKey && active === firstEl) {
+          event.preventDefault();
+          lastEl.focus();
+        } else if (!event.shiftKey && active === lastEl) {
+          event.preventDefault();
+          firstEl.focus();
+        }
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown, true);
+    return () => document.removeEventListener("keydown", handleKeyDown, true);
+  }, [isOpen, onCancel]);
 
   if (!isOpen) return null;
 
@@ -34,11 +69,17 @@ export default function ConfirmDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
-      <div className="relative w-full max-w-md rounded-2xl border-2 border-primary/50 bg-[#0f1118] p-6 shadow-2xl shadow-black/80">
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="confirm-dialog-title"
+        className="relative w-full max-w-md rounded-2xl border-2 border-primary/50 bg-[#0f1118] p-6 shadow-2xl shadow-black/80"
+      >
         <button
           type="button"
           onClick={handleCancel}
-          className="absolute right-4 top-4 rounded-lg p-1.5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
+          className="absolute right-4 top-4 flex min-h-11 min-w-11 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-white/10 hover:text-foreground"
         >
           <X size={18} />
         </button>
@@ -54,7 +95,7 @@ export default function ConfirmDialog({
             {isDanger ? <ShieldAlert size={22} /> : <AlertTriangle size={22} />}
           </div>
           <div>
-            <h3 className="font-serif text-lg font-black uppercase tracking-wider text-foreground">
+            <h3 id="confirm-dialog-title" className="font-serif text-lg font-black uppercase tracking-wider text-foreground">
               {title}
             </h3>
             <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">

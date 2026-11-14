@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDice } from "../../context/DiceContext";
 import {
   Dices,
@@ -68,6 +68,22 @@ export default function DiceModal() {
   const [customSides, setCustomSides] = useState(20);
   const [customCount, setCustomCount] = useState(1);
   const [customModifier, setCustomModifier] = useState(0);
+  const dialogRef = useRef(null);
+
+  // Escape fecha o modal e foca o botão de fechar na abertura
+  useEffect(() => {
+    if (!isModalOpen) return undefined;
+    const closeButton = dialogRef.current?.querySelector("button");
+    closeButton?.focus();
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        event.stopPropagation();
+        closeModal();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown, true);
+    return () => document.removeEventListener("keydown", handleKeyDown, true);
+  }, [isModalOpen, closeModal]);
 
   if (!isModalOpen) return null;
 
@@ -78,22 +94,23 @@ export default function DiceModal() {
         role="dialog"
         aria-modal="true"
         aria-labelledby="dice-modal-title"
+        ref={dialogRef}
       >
         {/* Glow de fundo */}
-        <div className="pointer-events-none absolute -right-20 -top-20 h-48 w-48 rounded-full bg-[#d69a3d]/15 blur-3xl" />
+        <div className="pointer-events-none absolute -right-20 -top-20 h-48 w-48 rounded-full bg-[var(--theme-accent)]/15 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-20 -left-20 h-48 w-48 rounded-full bg-[#7861ff]/10 blur-3xl" />
 
         {/* Cabeçalho */}
         <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.02] px-5 py-4">
           <div className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#d69a3d]/30 bg-[#d69a3d]/10 text-[#d69a3d]">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-[var(--theme-accent)]/30 bg-[var(--theme-accent)]/10 text-[var(--theme-accent)]">
               <Dices size={18} />
             </span>
             <div>
-              <h3 id="dice-modal-title" className="text-sm font-semibold tracking-wide text-[#f5e9d7]">
+              <h3 id="dice-modal-title" className="text-sm font-semibold tracking-wide text-[var(--theme-title)]">
                 Rolador de Dados Virtual
               </h3>
-              <p className="text-[11px] text-[#8a7355]">
+              <p className="text-[11px] text-[var(--theme-subtitle)]">
                 {pendingTarget
                   ? `Teste: ${pendingTarget.label} (${formatModifier(pendingTarget.modifier)})`
                   : lastRoll
@@ -106,7 +123,7 @@ export default function DiceModal() {
           <button
             onClick={closeModal}
             aria-label="Fechar rolador de dados"
-            className="rounded-lg p-1.5 text-[#8a7355] transition-colors hover:bg-white/10 hover:text-[#f5e9d7]"
+            className="rounded-lg p-1.5 text-[var(--theme-subtitle)] transition-colors hover:bg-white/10 hover:text-[var(--theme-title)]"
           >
             <X size={18} />
           </button>
@@ -119,8 +136,8 @@ export default function DiceModal() {
               onClick={() => setActiveTab("result")}
               className={`flex-1 py-2.5 font-medium transition-colors ${
                 activeTab === "result"
-                  ? "border-b-2 border-[#d69a3d] text-[#f5e9d7]"
-                  : "text-[#8a7355] hover:text-[#e8d5b0]"
+                  ? "border-b-2 border-[var(--theme-accent)] text-[var(--theme-title)]"
+                  : "text-[var(--theme-subtitle)] hover:text-[#e8d5b0]"
               }`}
             >
               Resultado
@@ -129,8 +146,8 @@ export default function DiceModal() {
               onClick={() => setActiveTab("tray")}
               className={`flex items-center justify-center gap-1.5 flex-1 py-2.5 font-medium transition-colors ${
                 activeTab === "tray"
-                  ? "border-b-2 border-[#d69a3d] text-[#f5e9d7]"
-                  : "text-[#8a7355] hover:text-[#e8d5b0]"
+                  ? "border-b-2 border-[var(--theme-accent)] text-[var(--theme-title)]"
+                  : "text-[var(--theme-subtitle)] hover:text-[#e8d5b0]"
               }`}
             >
               <SlidersHorizontal size={13} />
@@ -140,8 +157,8 @@ export default function DiceModal() {
               onClick={() => setActiveTab("history")}
               className={`flex items-center justify-center gap-1.5 flex-1 py-2.5 font-medium transition-colors ${
                 activeTab === "history"
-                  ? "border-b-2 border-[#d69a3d] text-[#f5e9d7]"
-                  : "text-[#8a7355] hover:text-[#e8d5b0]"
+                  ? "border-b-2 border-[var(--theme-accent)] text-[var(--theme-title)]"
+                  : "text-[var(--theme-subtitle)] hover:text-[#e8d5b0]"
               }`}
             >
               <History size={13} />
@@ -156,13 +173,13 @@ export default function DiceModal() {
           {pendingTarget ? (
             <div className="space-y-4 text-center">
               <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
-                <span className="text-xs uppercase tracking-widest text-[#a98b68]">
+                <span className="text-xs uppercase tracking-widest text-[var(--theme-subtitle)]">
                   Escolha o Modo de Rolagem
                 </span>
-                <h2 className="mt-1 text-2xl font-bold text-[#f5e9d7]">
+                <h2 className="mt-1 text-2xl font-bold text-[var(--theme-title)]">
                   {pendingTarget.label}
                 </h2>
-                <span className="font-mono text-sm font-semibold text-[#d69a3d]">
+                <span className="font-mono text-sm font-semibold text-[var(--theme-accent)]">
                   Modificador: {formatModifier(pendingTarget.modifier)}
                 </span>
               </div>
@@ -177,13 +194,13 @@ export default function DiceModal() {
                       label: pendingTarget.label,
                     })
                   }
-                  className="flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-all hover:border-[#d69a3d] hover:bg-[#d69a3d]/10 active:scale-95"
+                  className="flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-all hover:border-[var(--theme-accent)] hover:bg-[var(--theme-accent)]/10 active:scale-95"
                 >
-                  <Dices className="text-[#d69a3d]" size={24} />
+                  <Dices className="text-[var(--theme-accent)]" size={24} />
                   <span className="text-xs font-semibold uppercase tracking-wider">
                     Normal
                   </span>
-                  <span className="font-mono text-[11px] text-[#8a7355]">
+                  <span className="font-mono text-[11px] text-[var(--theme-subtitle)]">
                     1d20 {formatModifier(pendingTarget.modifier)}
                   </span>
                 </button>
@@ -203,7 +220,7 @@ export default function DiceModal() {
                   <span className="text-xs font-semibold uppercase tracking-wider text-emerald-400">
                     Vantagem
                   </span>
-                  <span className="font-mono text-[11px] text-[#8a7355]">
+                  <span className="font-mono text-[11px] text-[var(--theme-subtitle)]">
                     2d20kh1 {formatModifier(pendingTarget.modifier)}
                   </span>
                 </button>
@@ -223,7 +240,7 @@ export default function DiceModal() {
                   <span className="text-xs font-semibold uppercase tracking-wider text-rose-400">
                     Desvantagem
                   </span>
-                  <span className="font-mono text-[11px] text-[#8a7355]">
+                  <span className="font-mono text-[11px] text-[var(--theme-subtitle)]">
                     2d20kl1 {formatModifier(pendingTarget.modifier)}
                   </span>
                 </button>
@@ -232,7 +249,7 @@ export default function DiceModal() {
           ) : (activeTab === "result" || isRolling) && lastRoll ? (
             <div className="space-y-5 text-center">
               {isRolling && (
-                <div className="text-xs font-semibold uppercase tracking-[0.24em] text-[#d69a3d]" role="status" aria-live="polite">
+                <div className="text-xs font-semibold uppercase tracking-[0.24em] text-[var(--theme-accent)]" role="status" aria-live="polite">
                   Rolando os dados...
                 </div>
               )}
@@ -250,30 +267,30 @@ export default function DiceModal() {
 
               {/* Número Gigante do Total */}
               <DiceRollAnimation roll={lastRoll} />
-              <div className="relative mx-auto flex h-32 w-32 items-center justify-center rounded-3xl border-2 border-[#d69a3d]/50 bg-gradient-to-b from-[#241c13] to-[#120e09] shadow-[0_0_35px_rgba(214,154,61,0.25)]">
-                <span className="font-mono text-5xl font-black text-[#fdf6e7]">
+              <div className="relative mx-auto flex h-32 w-32 items-center justify-center rounded-3xl border-2 border-[var(--theme-accent)]/50 bg-gradient-to-b from-[#241c13] to-[#120e09] shadow-[0_0_35px_rgba(214,154,61,0.25)]">
+                <span className="font-mono text-5xl font-black text-[var(--theme-title)]">
                   {lastRoll.total}
                 </span>
-                <span className="absolute bottom-2 font-mono text-[10px] text-[#d69a3d]/80 uppercase tracking-widest">
+                <span className="absolute bottom-2 font-mono text-[10px] text-[var(--theme-accent)]/80 uppercase tracking-widest">
                   Total
                 </span>
               </div>
 
               {/* Detalhes do Cálculo */}
               <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3 text-xs">
-                <div className="flex items-center justify-between border-b border-white/5 pb-2 text-[#8a7355]">
+                <div className="flex items-center justify-between border-b border-white/5 pb-2 text-[var(--theme-subtitle)]">
                   <span>Fórmula:</span>
                   <span className="font-mono font-medium text-[#e8d5b0]">
                     {lastRoll.formula}
                   </span>
                 </div>
 
-                <div className="mt-2 flex items-center justify-between text-[#8a7355]">
+                <div className="mt-2 flex items-center justify-between text-[var(--theme-subtitle)]">
                   <span>Dados Rolados:</span>
                   <div className="flex items-center gap-2">
                     {lastRoll.mode === "advantage" || lastRoll.mode === "disadvantage" ? (
                       <>
-                        <span className="rounded bg-[#d69a3d]/20 px-2 py-0.5 font-mono font-bold text-[#d69a3d]">
+                        <span className="rounded bg-[var(--theme-accent)]/20 px-2 py-0.5 font-mono font-bold text-[var(--theme-accent)]">
                           {lastRoll.kept} (Mantido)
                         </span>
                         <span className="rounded bg-white/5 px-2 py-0.5 font-mono line-through opacity-50">
@@ -289,9 +306,9 @@ export default function DiceModal() {
                 </div>
 
                 {lastRoll.modifier !== 0 && (
-                  <div className="mt-2 flex items-center justify-between text-[#8a7355]">
+                  <div className="mt-2 flex items-center justify-between text-[var(--theme-subtitle)]">
                     <span>Modificador:</span>
-                    <span className="font-mono text-[#d69a3d]">
+                    <span className="font-mono text-[var(--theme-accent)]">
                       {formatModifier(lastRoll.modifier)}
                     </span>
                   </div>
@@ -351,7 +368,7 @@ export default function DiceModal() {
             /* Seletor Customizado de Dados Avulsos */
             <div className="space-y-4">
               <div>
-                <span className="text-xs uppercase tracking-wider text-[#8a7355]">
+                <span className="text-xs uppercase tracking-wider text-[var(--theme-subtitle)]">
                   Escolha o Tipo de Dado
                 </span>
                 <div className="mt-2 grid grid-cols-4 gap-2 sm:grid-cols-7">
@@ -361,7 +378,7 @@ export default function DiceModal() {
                       onClick={() => setCustomSides(sides)}
                       className={`flex flex-col items-center justify-center rounded-xl border py-2.5 transition-all ${
                         customSides === sides
-                          ? "border-[#d69a3d] bg-[#d69a3d] font-bold text-[#17140f] shadow-md shadow-[#d69a3d]/20"
+                          ? "border-[var(--theme-accent)] bg-[var(--theme-accent)] font-bold text-[#17140f] shadow-md shadow-[var(--theme-accent)]/20"
                           : "border-white/10 bg-white/[0.02] text-[#e8d5b0] hover:bg-white/5"
                       }`}
                     >
@@ -373,23 +390,23 @@ export default function DiceModal() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs text-[#8a7355]">Quantidade</label>
+                  <label className="text-xs text-[var(--theme-subtitle)]">Quantidade</label>
                   <input
                     type="number"
                     min={1}
                     max={20}
                     value={customCount}
                     onChange={(e) => setCustomCount(Math.max(1, parseInt(e.target.value) || 1))}
-                    className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-center font-mono text-[#f5e9d7] outline-none focus:border-[#d69a3d]"
+                    className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-center font-mono text-[var(--theme-title)] outline-none focus:border-[var(--theme-accent)]"
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-[#8a7355]">Modificador (+/-)</label>
+                  <label className="text-xs text-[var(--theme-subtitle)]">Modificador (+/-)</label>
                   <input
                     type="number"
                     value={customModifier}
                     onChange={(e) => setCustomModifier(parseInt(e.target.value) || 0)}
-                    className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-center font-mono text-[#f5e9d7] outline-none focus:border-[#d69a3d]"
+                    className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-center font-mono text-[var(--theme-title)] outline-none focus:border-[var(--theme-accent)]"
                   />
                 </div>
               </div>
@@ -405,7 +422,7 @@ export default function DiceModal() {
                   });
                   setActiveTab("result");
                 }}
-                className="w-full rounded-xl border border-[#d69a3d] bg-gradient-to-r from-[#d69a3d] to-[#c9862a] py-3 text-xs font-bold uppercase tracking-widest text-[#17140f] shadow-lg shadow-[#d69a3d]/20 transition active:scale-95"
+                className="w-full rounded-xl border border-[var(--theme-accent)] bg-gradient-to-r from-[var(--theme-accent)] to-[var(--theme-accent)] py-3 text-xs font-bold uppercase tracking-widest text-[#17140f] shadow-lg shadow-[var(--theme-accent)]/20 transition active:scale-95"
               >
                 Rolar {customCount}d{customSides} {formatModifier(customModifier)}
               </button>
@@ -413,7 +430,7 @@ export default function DiceModal() {
           ) : (
             /* Histórico da Sessão */
             <div className="space-y-3">
-              <div className="flex items-center justify-between text-xs text-[#8a7355]">
+              <div className="flex items-center justify-between text-xs text-[var(--theme-subtitle)]">
                 <span>Últimas rolagens desta sessão</span>
                 {history.length > 0 && (
                   <button
@@ -427,7 +444,7 @@ export default function DiceModal() {
 
               <div className="custom-scroll max-h-60 space-y-2 overflow-y-auto pr-1">
                 {history.length === 0 ? (
-                  <p className="py-8 text-center text-xs italic text-[#8a7355]">
+                  <p className="py-8 text-center text-xs italic text-[var(--theme-subtitle)]">
                     Nenhuma rolagem realizada ainda.
                   </p>
                 ) : (
@@ -437,15 +454,15 @@ export default function DiceModal() {
                       className="flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.02] p-2.5 text-xs"
                     >
                       <div>
-                        <span className="font-semibold text-[#f5e9d7]">
+                        <span className="font-semibold text-[var(--theme-title)]">
                           {h.label || "Rolagem"}
                         </span>
-                        <div className="font-mono text-[11px] text-[#8a7355]">
+                        <div className="font-mono text-[11px] text-[var(--theme-subtitle)]">
                           {h.formula}
                         </div>
                       </div>
                       <div className="text-right">
-                        <span className="font-mono text-base font-bold text-[#d69a3d]">
+                        <span className="font-mono text-base font-bold text-[var(--theme-accent)]">
                           {h.total}
                         </span>
                         {h.isCriticalSuccess && (
