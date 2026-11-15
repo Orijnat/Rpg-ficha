@@ -347,7 +347,7 @@ export default function AdminCampanhasPage() {
                             {camp.nome}
                           </h3>
                           <span
-                            className={`rounded px-2 py-0.2 text-[9px] font-bold uppercase tracking-wider ${
+                            className={`rounded px-2 py-0.2 text-[10px] font-bold uppercase tracking-wider ${
                               camp.estado === "ativa"
                                 ? "border border-emerald-500/40 bg-emerald-950/40 text-emerald-300"
                                 : camp.estado === "pausada"
@@ -365,7 +365,7 @@ export default function AdminCampanhasPage() {
 
                       {/* Código de convite com botão copiar */}
                       <div className="rounded-xl border border-primary/40 bg-primary/10 p-2 text-right">
-                        <span className="block text-[9px] font-bold uppercase tracking-widest text-primary">
+                        <span className="block text-[10px] font-bold uppercase tracking-widest text-primary">
                           Código de Convite
                         </span>
                         <div className="mt-1 flex items-center gap-1.5 font-mono text-sm font-black text-foreground">
@@ -546,12 +546,12 @@ export default function AdminCampanhasPage() {
                               {m.usuario?.username || "Jogador"}
                             </strong>
                             {isCampOwner && (
-                              <span className="rounded bg-primary/25 px-1.5 py-0.2 text-[9px] font-bold uppercase text-primary border border-primary">
+                              <span className="rounded bg-primary/25 px-1.5 py-0.2 text-[10px] font-bold uppercase text-primary border border-primary">
                                 Proprietário
                               </span>
                             )}
                             {m.bloqueado && (
-                              <span className="rounded bg-rose-500/25 px-1.5 py-0.2 text-[9px] font-bold uppercase text-rose-400 border border-rose-500/40">
+                              <span className="rounded bg-rose-500/25 px-1.5 py-0.2 text-[10px] font-bold uppercase text-rose-400 border border-rose-500/40">
                                 Bloqueado
                               </span>
                             )}

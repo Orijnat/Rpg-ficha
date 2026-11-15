@@ -513,14 +513,14 @@ export default function AdminEncontrosPage() {
                                   {c.name}
                                 </strong>
                                 <span
-                                  className={`rounded px-1.5 py-0.2 text-[9px] font-bold uppercase ${
+                                  className={`rounded px-1.5 py-0.2 text-[10px] font-bold uppercase ${
                                     isNpc ? "bg-accent/20 text-accent" : "bg-primary/20 text-primary"
                                   }`}
                                 >
                                   {c.type}
                                 </span>
                                 {isActive && (
-                                  <span className="rounded bg-primary/20 px-1.5 py-0.2 text-[9px] font-bold text-primary">
+                                  <span className="rounded bg-primary/20 px-1.5 py-0.2 text-[10px] font-bold text-primary">
                                     Turno Ativo
                                   </span>
                                 )}
@@ -532,7 +532,7 @@ export default function AdminEncontrosPage() {
                                     key={condId}
                                     type="button"
                                     onClick={() => handleToggleCondition(c.id, condId)}
-                                    className="rounded bg-rose-950/40 px-1.5 py-0.2 text-[9px] font-semibold text-rose-300 border border-rose-500/30 hover:bg-rose-900/60"
+                                    className="rounded bg-rose-950/40 px-1.5 py-0.2 text-[10px] font-semibold text-rose-300 border border-rose-500/30 hover:bg-rose-900/60"
                                   >
                                     {condId} ×
                                   </button>
@@ -542,7 +542,7 @@ export default function AdminEncontrosPage() {
                                   onClick={() =>
                                     setOpenConditionPickerId(isPickerOpen ? null : c.id)
                                   }
-                                  className="rounded border border-border px-1.5 py-0.2 text-[9px] text-muted-foreground hover:border-primary"
+                                  className="rounded border border-border px-1.5 py-0.2 text-[10px] text-muted-foreground hover:border-primary"
                                 >
                                   + Condição
                                 </button>
@@ -602,7 +602,7 @@ export default function AdminEncontrosPage() {
                                   key={cond.id}
                                   type="button"
                                   onClick={() => handleToggleCondition(c.id, cond.id)}
-                                  className={`rounded px-1.5 py-0.5 text-[9px] transition ${
+                                  className={`rounded px-1.5 py-0.5 text-[10px] transition ${
                                     active
                                       ? "bg-rose-600 text-white font-bold"
                                       : "border border-border bg-secondary text-muted-foreground hover:border-primary"

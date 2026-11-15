@@ -199,7 +199,7 @@ export default function AppShell({ children }) {
                 <div className="hidden lg:block mb-3 px-3">
                   <div className="flex items-center gap-2">
                     <span className="h-1.5 w-1.5 rotate-45 bg-amber-400 shadow-[0_0_6px_#f59e0b]" />
-                    <span className="font-cinzel text-[9px] font-bold uppercase tracking-[0.25em] text-amber-300/90 flex items-center gap-1.5">
+                    <span className="font-cinzel text-[10px] font-bold uppercase tracking-[0.25em] text-amber-300/90 flex items-center gap-1.5">
                       <Crown size={11} className="text-amber-400" /> Câmara do Mestre
                     </span>
                   </div>
@@ -241,7 +241,7 @@ export default function AppShell({ children }) {
                 <div className="hidden lg:block mb-3 px-3">
                   <div className="flex items-center gap-2">
                     <span className="h-1.5 w-1.5 rotate-45 bg-primary shadow-[0_0_6px_var(--primary)]" />
-                    <span className="font-cinzel text-[9px] font-bold uppercase tracking-[0.25em] text-primary/90">
+                    <span className="font-cinzel text-[10px] font-bold uppercase tracking-[0.25em] text-primary/90">
                       {isMaster ? "Ficha do Jogador" : "Folio do Jogador"}
                     </span>
                   </div>
@@ -277,7 +277,7 @@ export default function AppShell({ children }) {
                   {isMaster && isInspecting && (
                     <>
                       <div className="my-2.5 hidden border-t border-amber-400/25 pt-3 px-3 lg:block">
-                        <span className="font-cinzel text-[9px] font-bold uppercase tracking-[0.25em] text-amber-400/90 flex items-center gap-1.5">
+                        <span className="font-cinzel text-[10px] font-bold uppercase tracking-[0.25em] text-amber-400/90 flex items-center gap-1.5">
                           <Crown size={10} /> Mestre
                         </span>
                       </div>
@@ -321,7 +321,7 @@ export default function AppShell({ children }) {
                   <span className="font-serif text-xs font-bold uppercase tracking-wider text-primary">
                     Modo Mestre · Inspecionando Ficha do Jogador
                   </span>
-                  <span className="rounded-full bg-primary/20 border border-primary/40 px-2 py-0.2 text-[9px] font-bold text-primary animate-pulse">
+                  <span className="rounded-full bg-primary/20 border border-primary/40 px-2 py-0.2 text-[10px] font-bold text-primary animate-pulse">
                     Ao Vivo
                   </span>
                 </div>

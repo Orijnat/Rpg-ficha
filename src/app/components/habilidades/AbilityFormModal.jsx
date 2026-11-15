@@ -101,7 +101,7 @@ export function AbilityFormModal({
               <h2 className="font-serif text-lg font-bold text-zinc-100 flex items-center gap-2">
                 <span>{ability ? "Editar Habilidade" : "Nova Proposta de Habilidade"}</span>
                 {isMaster && (
-                  <span className="rounded-full bg-primary/20 border border-primary/40 px-2 py-0.2 text-[9px] font-bold text-primary flex items-center gap-1">
+                  <span className="rounded-full bg-primary/20 border border-primary/40 px-2 py-0.2 text-[10px] font-bold text-primary flex items-center gap-1">
                     <Crown size={10} /> Mestre
                   </span>
                 )}

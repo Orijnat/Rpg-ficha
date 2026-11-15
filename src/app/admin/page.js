@@ -611,7 +611,7 @@ export default function AdminIndex() {
                             {item.name}
                           </strong>
                           <span
-                            className={`rounded-md px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
+                            className={`rounded-md px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
                               isNpc
                                 ? "bg-rose-950/40 text-rose-300 border border-rose-500/30"
                                 : "bg-primary/20 text-primary border border-primary/40"
@@ -620,12 +620,12 @@ export default function AdminIndex() {
                             {item.type}
                           </span>
                           {isActiveTurn && (
-                            <span className="animate-pulse rounded-md bg-amber-400/25 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-widest text-amber-300 border border-amber-400/60 shadow-sm">
+                            <span className="animate-pulse rounded-md bg-amber-400/25 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-widest text-amber-300 border border-amber-400/60 shadow-sm">
                               Turno Ativo
                             </span>
                           )}
                           {isDead && (
-                            <span className="rounded-md bg-rose-500/25 px-1.5 py-0.5 text-[9px] font-bold uppercase text-rose-300 border border-rose-500/40">
+                            <span className="rounded-md bg-rose-500/25 px-1.5 py-0.5 text-[10px] font-bold uppercase text-rose-300 border border-rose-500/40">
                               0 PV
                             </span>
                           )}
@@ -655,7 +655,7 @@ export default function AdminIndex() {
                             onClick={() =>
                               setOpenConditionPickerId(isConditionPickerOpen ? null : item.id)
                             }
-                            className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[9px] font-semibold text-primary/90 hover:bg-primary/20 hover:text-foreground transition"
+                            className="inline-flex items-center gap-1 rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary/90 hover:bg-primary/20 hover:text-foreground transition"
                           >
                             <Plus size={9} /> Condição
                           </button>

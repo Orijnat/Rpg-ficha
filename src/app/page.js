@@ -381,7 +381,7 @@ export default function Home() {
                         <div className="flex items-center gap-2">
                           <strong className="font-cinzel text-sm font-bold text-foreground">Sir Galahad (Herói)</strong>
                           <span className="wax-seal bg-primary/20 text-primary border border-primary/40">Herói</span>
-                          <span className="animate-pulse rounded bg-amber-400/30 px-1.5 py-0.2 text-[9px] font-bold text-amber-300 border border-amber-400">Turno Ativo</span>
+                          <span className="animate-pulse rounded bg-amber-400/30 px-1.5 py-0.2 text-[10px] font-bold text-amber-300 border border-amber-400">Turno Ativo</span>
                         </div>
                         <span className="font-journal text-xs italic text-muted-foreground">Iniciativa 19 · CA 18</span>
                       </div>

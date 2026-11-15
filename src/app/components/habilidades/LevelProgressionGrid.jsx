@@ -170,7 +170,7 @@ export function LevelProgressionGrid({
           {/* Badges de Métricas */}
           <div className="flex flex-wrap items-center gap-2">
             <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 px-3 py-1.5 text-center">
-              <span className="block text-[9px] uppercase tracking-wider text-zinc-400">
+              <span className="block text-[10px] uppercase tracking-wider text-zinc-400">
                 Slots Preenchidos
               </span>
               <span className="font-mono text-sm font-bold text-amber-300">
@@ -179,7 +179,7 @@ export function LevelProgressionGrid({
             </div>
 
             <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 px-3 py-1.5 text-center">
-              <span className="block text-[9px] uppercase tracking-wider text-zinc-400">
+              <span className="block text-[10px] uppercase tracking-wider text-zinc-400">
                 Despertadas Ativas
               </span>
               <span className="font-mono text-sm font-bold text-emerald-300">
@@ -650,22 +650,22 @@ export function LevelProgressionGrid({
                           <span className="font-serif text-sm font-bold text-zinc-100">
                             {hab.name}
                           </span>
-                          <span className="rounded bg-zinc-800 px-1.5 py-0.5 text-[9px] font-bold text-zinc-300">
+                          <span className="rounded bg-zinc-800 px-1.5 py-0.5 text-[10px] font-bold text-zinc-300">
                             {hab.type}
                           </span>
 
                           {isPending && (
-                            <span className="rounded border border-amber-500/40 bg-amber-950/40 px-1.5 py-0.5 text-[9px] font-bold text-amber-300">
+                            <span className="rounded border border-amber-500/40 bg-amber-950/40 px-1.5 py-0.5 text-[10px] font-bold text-amber-300">
                               Pendente
                             </span>
                           )}
                           {isApproved && (
-                            <span className="rounded border border-emerald-500/40 bg-emerald-950/40 px-1.5 py-0.5 text-[9px] font-bold text-emerald-300">
+                            <span className="rounded border border-emerald-500/40 bg-emerald-950/40 px-1.5 py-0.5 text-[10px] font-bold text-emerald-300">
                               Aprovada
                             </span>
                           )}
                           {isRejected && (
-                            <span className="rounded border border-rose-500/40 bg-rose-950/40 px-1.5 py-0.5 text-[9px] font-bold text-rose-300">
+                            <span className="rounded border border-rose-500/40 bg-rose-950/40 px-1.5 py-0.5 text-[10px] font-bold text-rose-300">
                               Rejeitada
                             </span>
                           )}

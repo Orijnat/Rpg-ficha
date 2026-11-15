@@ -24,7 +24,7 @@ export function BankSlot({ index, item, onUpdate }) {
   return (
     <div
       title={item || "vazio"}
-      className={`flex aspect-square cursor-pointer items-center justify-center rounded border p-0.5 text-center text-[9px] leading-tight transition-colors ${
+      className={`flex aspect-square cursor-pointer items-center justify-center rounded border p-0.5 text-center text-[10px] leading-tight transition-colors ${
         hasItem ? BANK_STYLES.slotFilled : BANK_STYLES.slotEmpty
       }`}
       onClick={handleClick}

@@ -466,12 +466,12 @@ export default function DiceModal() {
                           {h.total}
                         </span>
                         {h.isCriticalSuccess && (
-                          <span className="block text-[9px] font-bold text-emerald-400">
+                          <span className="block text-[10px] font-bold text-emerald-400">
                             CRÍTICO!
                           </span>
                         )}
                         {h.isCriticalFailure && (
-                          <span className="block text-[9px] font-bold text-rose-400">
+                          <span className="block text-[10px] font-bold text-rose-400">
                             FALHA!
                           </span>
                         )}

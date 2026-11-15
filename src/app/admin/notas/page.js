@@ -310,7 +310,7 @@ export default function AdminNotasPage() {
                           {note.titulo || "Sem título"}
                         </strong>
                         <span
-                          className={`rounded px-1.5 py-0.2 text-[9px] font-bold uppercase tracking-wider ${
+                          className={`rounded px-1.5 py-0.2 text-[10px] font-bold uppercase tracking-wider ${
                             note.privada
                               ? "border border-rose-500/40 bg-rose-950/40 text-rose-300"
                               : "border border-emerald-500/40 bg-emerald-950/40 text-emerald-300"
@@ -318,7 +318,7 @@ export default function AdminNotasPage() {
                         >
                           {note.privada ? "Privada" : "Pública"}
                         </span>
-                        <span className="rounded border border-border bg-black/40 px-1.5 py-0.2 text-[9px] uppercase text-muted-foreground">
+                        <span className="rounded border border-border bg-black/40 px-1.5 py-0.2 text-[10px] uppercase text-muted-foreground">
                           {note.tipo}
                         </span>
                       </div>

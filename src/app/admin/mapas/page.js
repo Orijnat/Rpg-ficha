@@ -467,7 +467,7 @@ export default function AdminMapasPage() {
                   <MapPin size={16} className="text-primary" />
                   <strong className="font-serif text-foreground">{selectedMarker.title}</strong>
                   <span
-                    className={`rounded px-1.5 py-0.2 text-[9px] font-bold uppercase ${
+                    className={`rounded px-1.5 py-0.2 text-[10px] font-bold uppercase ${
                       selectedMarker.hidden
                         ? "bg-rose-950/40 text-rose-300 border border-rose-500/40"
                         : "bg-emerald-950/40 text-emerald-300 border border-emerald-500/40"

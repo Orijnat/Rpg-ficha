@@ -443,7 +443,7 @@ export default function PersonagensAdmin() {
                               {item.displayName}
                             </h3>
                             <span
-                              className={`rounded px-1.5 py-0.2 text-[9px] font-bold uppercase tracking-wider ${
+                              className={`rounded px-1.5 py-0.2 text-[10px] font-bold uppercase tracking-wider ${
                                 isNpc
                                   ? "border border-accent/40 bg-accent/20 text-accent"
                                   : "border border-primary/40 bg-primary/20 text-primary"
@@ -452,7 +452,7 @@ export default function PersonagensAdmin() {
                               {isNpc ? "NPC" : "Herói"}
                             </span>
                             {isDead && (
-                              <span className="rounded border border-rose-500/40 bg-rose-950/40 px-1.5 py-0.2 text-[9px] font-bold uppercase text-rose-400">
+                              <span className="rounded border border-rose-500/40 bg-rose-950/40 px-1.5 py-0.2 text-[10px] font-bold uppercase text-rose-400">
                                 0 PV
                               </span>
                             )}
@@ -488,7 +488,7 @@ export default function PersonagensAdmin() {
                         {item.tags.map((t) => (
                           <span
                             key={t}
-                            className="rounded-full border border-border bg-secondary/80 px-2 py-0.2 text-[9px] font-medium text-muted-foreground"
+                            className="rounded-full border border-border bg-secondary/80 px-2 py-0.2 text-[10px] font-medium text-muted-foreground"
                           >
                             {t}
                           </span>

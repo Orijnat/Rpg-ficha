@@ -307,7 +307,7 @@ export default function PerfilPage() {
                             {char.name}
                           </strong>
                           {isActive && (
-                            <span className="rounded bg-primary/20 px-1.5 py-0.2 text-[9px] font-bold uppercase text-primary border border-primary/40">
+                            <span className="rounded bg-primary/20 px-1.5 py-0.2 text-[10px] font-bold uppercase text-primary border border-primary/40">
                               Ativo
                             </span>
                           )}
@@ -420,7 +420,7 @@ export default function PerfilPage() {
                             </span>
                           </div>
                           <span
-                            className={`rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
+                            className={`rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
                               camp.estado === "ativa"
                                 ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
                                 : "bg-amber-500/20 text-amber-300 border border-amber-500/30"
@@ -530,7 +530,7 @@ export default function PerfilPage() {
                           {theme.name}
                         </strong>
                         {active && (
-                          <span className="rounded bg-primary/20 px-1.5 py-0.2 text-[9px] font-bold text-primary border border-primary/40">
+                          <span className="rounded bg-primary/20 px-1.5 py-0.2 text-[10px] font-bold text-primary border border-primary/40">
                             Selecionado
                           </span>
                         )}

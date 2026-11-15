@@ -336,7 +336,7 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
                               Ativo
                             </span>
                           ) : (
-                            <span className="rounded bg-white/5 px-1.5 py-0.5 text-[9px] uppercase tracking-wider text-[var(--theme-subtitle)]">
+                            <span className="rounded bg-white/5 px-1.5 py-0.5 text-[10px] uppercase tracking-wider text-[var(--theme-subtitle)]">
                               {t.tag}
                             </span>
                           )}

@@ -53,7 +53,7 @@ export default function XPBar() {
     <div className="w-full" aria-label={`XP: Nível ${level}`}>
       {/* Rótulo */}
       <div className="flex items-center justify-between mb-0.5">
-        <span className="flex items-center gap-1 font-cinzel text-[9px] font-bold uppercase tracking-[0.22em] text-amber-400/80">
+        <span className="flex items-center gap-1 font-cinzel text-[10px] font-bold uppercase tracking-[0.22em] text-amber-400/80">
           <Star size={9} className="text-amber-400 drop-shadow-[0_0_4px_#f59e0b]" />
           Nível {level}
           {isMaxLevel && (
@@ -78,7 +78,7 @@ export default function XPBar() {
             <button
               type="button"
               onClick={commitEdit}
-              className="rounded border border-amber-500/40 bg-amber-900/40 px-1.5 py-0.5 font-cinzel text-[9px] font-bold text-amber-300 hover:bg-amber-800/60 active:scale-95 transition"
+              className="rounded border border-amber-500/40 bg-amber-900/40 px-1.5 py-0.5 font-cinzel text-[10px] font-bold text-amber-300 hover:bg-amber-800/60 active:scale-95 transition"
             >
               OK
             </button>
@@ -88,7 +88,7 @@ export default function XPBar() {
             type="button"
             onClick={startEdit}
             title="Clique para editar XP"
-            className="group font-mono text-[9px] text-amber-300/70 hover:text-amber-200 transition-colors cursor-pointer"
+            className="group font-mono text-[10px] text-amber-300/70 hover:text-amber-200 transition-colors cursor-pointer"
             aria-label="Editar XP atual"
           >
             <span className="text-amber-400 font-bold group-hover:text-amber-300">

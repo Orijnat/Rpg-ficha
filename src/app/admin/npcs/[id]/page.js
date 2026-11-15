@@ -473,7 +473,7 @@ export default function EditNpcPage() {
                 />
               </div>
               <div>
-                <label className="text-[9px] uppercase font-bold text-muted-foreground">Bônus</label>
+                <label className="text-[10px] uppercase font-bold text-muted-foreground">Bônus</label>
                 <input
                   type="text"
                   value={acao.bonus}
@@ -483,7 +483,7 @@ export default function EditNpcPage() {
                 />
               </div>
               <div>
-                <label className="text-[9px] uppercase font-bold text-muted-foreground">Dano</label>
+                <label className="text-[10px] uppercase font-bold text-muted-foreground">Dano</label>
                 <input
                   type="text"
                   value={acao.dano}

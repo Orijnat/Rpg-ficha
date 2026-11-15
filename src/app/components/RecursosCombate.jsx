@@ -143,7 +143,7 @@ export default function RecursosCombate() {
             max={99}
             label="Classe de Armadura"
           />
-          <span className="font-cinzel text-[9px] text-muted-foreground uppercase tracking-wider">Armadura</span>
+          <span className="font-cinzel text-[10px] text-muted-foreground uppercase tracking-wider">Armadura</span>
         </div>
 
         {/* Iniciativa com Rolagem Rápida e Envio à Mesa */}
@@ -180,11 +180,11 @@ export default function RecursosCombate() {
               {sentSuccess ? <Check size={14} /> : <Send size={14} />}
             </button>
           </div>
-          <span className="font-cinzel text-[9px] text-muted-foreground uppercase tracking-wider">
+          <span className="font-cinzel text-[10px] text-muted-foreground uppercase tracking-wider">
             {sentSuccess ? "Enviado à mesa!" : "DES + Bônus"}
           </span>
           {initError && (
-            <span role="alert" className="mt-1 block font-journal text-[9px] italic text-rose-300">
+            <span role="alert" className="mt-1 block font-journal text-[10px] italic text-rose-300">
               {initError}
             </span>
           )}
@@ -210,7 +210,7 @@ export default function RecursosCombate() {
               <Dices size={14} />
             </button>
           </div>
-          <span className="font-cinzel text-[9px] text-muted-foreground uppercase tracking-wider">Descanso</span>
+          <span className="font-cinzel text-[10px] text-muted-foreground uppercase tracking-wider">Descanso</span>
         </div>
       </div>
 

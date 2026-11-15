@@ -385,7 +385,7 @@ export default function HabilidadesPage() {
                 Tipo 2 • Grimório Autoral
               </span>
               {stats.pending > 0 && (
-                <span className="rounded-full bg-amber-500/30 px-1.5 py-0.2 text-[9px] font-bold text-amber-300 animate-pulse">
+                <span className="rounded-full bg-amber-500/30 px-1.5 py-0.2 text-[10px] font-bold text-amber-300 animate-pulse">
                   {stats.pending} pendente{stats.pending > 1 ? "s" : ""}
                 </span>
               )}
@@ -478,7 +478,7 @@ export default function HabilidadesPage() {
                       <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">
                         🎯 Habilidade em Foco de Treinamento
                       </span>
-                      <span className="rounded bg-amber-500/20 px-1.5 py-0.5 text-[9px] font-bold text-amber-300">
+                      <span className="rounded bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-bold text-amber-300">
                         {activeTrainingAbility.type}
                       </span>
                     </div>

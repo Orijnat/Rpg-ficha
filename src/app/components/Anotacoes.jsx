@@ -355,7 +355,7 @@ export default function Anotacoes() {
                       <span className="block truncate font-serif text-xs font-bold text-foreground">
                         {entry.title || "Registro sem título"}
                       </span>
-                      <span className={`shrink-0 rounded px-1.5 py-0.2 text-[9px] font-semibold border ${catInfo.color}`}>
+                      <span className={`shrink-0 rounded px-1.5 py-0.2 text-[10px] font-semibold border ${catInfo.color}`}>
                         {catInfo.label}
                       </span>
                     </div>
