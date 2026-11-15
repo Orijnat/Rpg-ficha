@@ -59,7 +59,6 @@ import {
   listCharacters,
   listCampaignNpcs,
   updateTaticoMap,
-  uploadArquivo,
   getApiBaseUrl,
 } from "../../lib/api";
 
@@ -148,7 +147,9 @@ export default function MapaTaticoPage() {
   const [snap, setSnap] = useState(false);
   const [selectedToken, setSelectedToken] = useState(null);
   const [dragInfo, setDragInfo] = useState(null); // { id, startX, startY, baseX, baseY }
-  const [uploadingBg, setUploadingBg] = useState(false);
+  const [sessionBg, setSessionBg] = useState(null);
+  const [urlEditOpen, setUrlEditOpen] = useState(false);
+  const [urlInput, setUrlInput] = useState("");
   const saveTimer = useRef(null);
   const fieldRef = useRef(null);
   const { windows, openWindow, closeWindow, toggleMinimize, focusWindow, moveWindow, resizeWindow } = useWindowManager();
@@ -319,29 +320,47 @@ export default function MapaTaticoPage() {
   };
   const toggleGrid = () => { if (map) persist({ gradeVisivel: !map.gradeVisivel }); };
 
-  const uploadBackground = async (event) => {
+  const sessionBgRef = useRef(null);
+  const setSessionBackground = (url) => {
+    if (sessionBgRef.current) URL.revokeObjectURL(sessionBgRef.current);
+    sessionBgRef.current = url;
+    setSessionBg(url);
+  };
+
+  // Fundo por sessão: o arquivo fica só neste navegador (object URL), nada é gravado no servidor
+  const pickSessionBackground = (event) => {
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
-    setUploadingBg(true);
-    try {
-      const uploaded = await uploadArquivo(file, { campanhaId: selectedCampaignId, contexto: "mapa" }, token);
-      const arquivoId = uploaded?.arquivo?.id;
-      if (arquivoId) persist({ arquivoFundoId: arquivoId });
-    } catch (error) {
-      window.alert(`Não foi possível enviar o fundo: ${error?.message || "erro"}`);
-    } finally {
-      setUploadingBg(false);
+    if (!/^image\/(png|jpeg|webp|gif)$/.test(file.type)) {
+      window.alert("Escolha uma imagem PNG, JPEG, WebP ou GIF.");
+      return;
     }
+    setSessionBackground(URL.createObjectURL(file));
   };
-  const clearBackground = () => persist({ arquivoFundoId: null, urlFundo: null });
+  const saveUrlBackground = () => {
+    const value = urlInput.trim();
+    if (!value) return;
+    persist({ urlFundo: value, arquivoFundoId: null });
+    setSessionBackground(null);
+    setUrlInput("");
+    setUrlEditOpen(false);
+  };
+  const clearBackground = () => {
+    persist({ arquivoFundoId: null, urlFundo: null });
+    setSessionBackground(null);
+  };
+  useEffect(() => () => {
+    if (sessionBgRef.current) URL.revokeObjectURL(sessionBgRef.current);
+  }, []);
 
-  // URL do fundo a renderizar
+  // URL do fundo a renderizar (sessão local tem precedência sobre o fundo salvo da mesa)
   const backgroundUrl = useMemo(() => {
+    if (sessionBg) return sessionBg;
     if (map?.urlFundoAssinada) return `${getApiBaseUrl().replace(/\/api$/, "")}${map.urlFundoAssinada}`;
     if (map?.urlFundo) return map.urlFundo;
     return null;
-  }, [map?.urlFundo, map?.urlFundoAssinada]);
+  }, [sessionBg, map?.urlFundo, map?.urlFundoAssinada]);
 
   const tokens = map?.tokens || [];
   const selected = tokens.find((t) => t.id === selectedToken) || null;
@@ -401,10 +420,13 @@ export default function MapaTaticoPage() {
           </button>
           {canManage && (
             <>
-              <label className="flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/15 px-2.5 py-1.5 font-cinzel text-[10px] font-bold uppercase tracking-wider text-primary transition hover:bg-primary/25" title="Enviar imagem para substituir o fundo do mapa">
-                {uploadingBg ? <span className="animate-pulse">Subindo…</span> : <><Upload size={12} /> Mapa</>}
-                <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="sr-only" onChange={uploadBackground} disabled={uploadingBg} />
+              <label className="flex min-h-9 cursor-pointer items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/15 px-2.5 py-1.5 font-cinzel text-[10px] font-bold uppercase tracking-wider text-primary transition hover:bg-primary/25" title="Imagem local para ESTA sessão do navegador (não sincroniza com a mesa, nada é enviado ao servidor)">
+                <Upload size={12} /> Mapa
+                <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="sr-only" onChange={pickSessionBackground} />
               </label>
+              <button type="button" onClick={() => setUrlEditOpen((v) => !v)} aria-expanded={urlEditOpen} className="min-h-9 rounded-lg border border-white/10 bg-background/70 px-2 py-1.5 font-mono text-[10px] uppercase tracking-wider text-muted-foreground transition hover:text-primary" title="Fundo por URL externa — compartilhado com toda a mesa">
+                URL
+              </button>
               {backgroundUrl && (
                 <button type="button" onClick={clearBackground} className="min-h-9 rounded-lg border border-white/10 bg-background/70 p-2 text-muted-foreground transition hover:text-rose-300" title="Restaurar fundo padrão (cinzas arcanos)" aria-label="Restaurar fundo padrão">
                   <Trash2 size={14} />
@@ -414,6 +436,22 @@ export default function MapaTaticoPage() {
           )}
         </div>
       </div>
+      {canManage && urlEditOpen && (
+        <form onSubmit={(e) => { e.preventDefault(); saveUrlBackground(); }} className="flex items-center gap-2 rounded-2xl border border-primary/25 bg-card/80 p-2 backdrop-blur-sm">
+          <input
+            type="url"
+            required
+            autoFocus
+            value={urlInput}
+            onChange={(e) => setUrlInput(e.target.value)}
+            placeholder="https://…/imagem.png (visível para toda a mesa)"
+            aria-label="URL do fundo do mapa"
+            className="min-h-9 flex-1 rounded-lg border border-white/10 bg-background/70 px-3 font-mono text-xs text-foreground outline-none focus:border-primary"
+          />
+          <button type="submit" className="min-h-9 rounded-lg border border-primary/40 bg-primary/15 px-3 font-cinzel text-[10px] font-bold uppercase tracking-wider text-primary">Aplicar</button>
+          <button type="button" onClick={() => { setUrlEditOpen(false); setUrlInput(""); }} className="min-h-9 rounded-lg border border-white/10 px-3 font-cinzel text-[10px] uppercase tracking-wider text-muted-foreground hover:text-foreground">Cancelar</button>
+        </form>
+      )}
 
       {/* Área do mapa + paleta lateral */}
       <div className="relative flex min-h-0 flex-1 gap-3">

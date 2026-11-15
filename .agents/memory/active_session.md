@@ -1,8 +1,8 @@
 # 🧠 Sessão Ativa — Grimorium RPG
 
-**Última Atualização**: 2026-11-15T14:05:00-03:00  
+**Última Atualização**: 2026-11-15T14:40:00-03:00  
 **Branch Atual**: `main`  
-**Status**: Login em produção corrigido (trust proxy + migrações aplicadas no Supabase prod). Mapa tático: bug da miniatura sumindo corrigido (backend membro cria/move; frontend paleta NPC para todos) — verificado em Postgres descartável. Ícones de miniatura personalizáveis (enum de 24 ícones, seletor no painel do alvo, build OK). Pendente commit/push + redeploy.
+**Status**: Login em produção corrigido (trust proxy commit 04a2a5c + migrações aplicadas no Supabase prod). Mapa tático: bug da miniatura sumindo corrigido + ícones personalizáveis (commits e4b7eb9 back / 76243c7 front). Imagens do mapa não carregavam: fix CORP helmet (commit 77cc96a). Decisão do operador: fundo do mapa **por sessão** (object URL local) + opção URL externa (`urlFundo`) — Supabase Storage descartado. Fundo por sessão implementado, build OK, NÃO commitado ainda.
 
 ---
 

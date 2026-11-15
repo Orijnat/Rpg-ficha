@@ -536,3 +536,10 @@ Este arquivo é a fonte de memória persistente da liderança técnica do projet
 - Frontend: `TOKEN_ICONS` + grade de 24 ícones Lucide no painel "Alvo selecionado"; `addToken` define `icone` padrão (shield=personagem, sword=monstro); tokens legados sem `icone` renderizam o padrão.
 - Verificado em Postgres descartável: criar com icone, trocar icone (membro), icone inválido → 422, mestre cria com crown. `next build` OK, eslint só o warning pré-existente.
 - Pendente: commit/push (front e back) + redeploy no Render.
+
+## Entrega — 2026-11-15 (Mapa tático: fundo por sessão + URL; decisão anti-Storage do operador)
+
+- Incidente: imagens do mapa não carregavam na Vercel — causa raiz: helmet default `Cross-Origin-Resource-Policy: same-origin` bloqueava o `/api/arquivos/:id` cross-origin. Fix commit `77cc96a` (helmet CORP cross-origin), verificado com curl (200 + header `cross-origin`, 403 sem `rt`).
+- Solução anterior (Supabase Storage) descartada pelo operador ("vai lotar o banco"); segundo fator é Render disco efêmero (arquivos somem a cada deploy).
+- Decisão do operador: armazenamento **por sessão**. Frontend: botão "Mapa" virou object URL local (não envia nada ao servidor, só nesta aba; revoga ao limpar/trocar/desmontar); novo botão "URL" persiste `urlFundo` (imagem externa pública, salva só como texto — visível a toda a mesa); lixeira limpa ambos. sessionBg tem precedência sobre o fundo salvo; fundo existente por arquivo (`arquivoFundoId`) continua suportado por compatibilidade (pode 410 no Render).
+- `next build` OK; eslint só o warning pré-existente. NÃO commitado ainda.
