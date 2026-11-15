@@ -16,6 +16,7 @@ import {
   Heart,
   Home,
   LayoutDashboard,
+  Map,
   Package,
   ScrollText,
   Skull,
@@ -40,6 +41,7 @@ const PLAYER_TABS = [
   { id: "contratos", href: "/contratos", label: "Contratos", icon: <FileText size={16} /> },
   { id: "anotacoes", href: "/anotacoes", label: "Diário", icon: <BookOpen size={16} /> },
   { id: "mundo", href: "/mundo", label: "Mundo", icon: <Compass size={16} /> },
+  { id: "mapa-tatico", href: "/mapa-tatico", label: "Mapa Tático", icon: <Map size={16} /> },
   { id: "banco", href: "/banco", label: "Banco", icon: <Coins size={16} /> },
   { id: "quarto", href: "/quarto", label: "Quarto", icon: <Home size={16} /> },
   { id: "montaria", href: "/montaria", label: "Montaria", icon: <Footprints size={16} /> },
@@ -48,6 +50,7 @@ const PLAYER_TABS = [
 
 const MASTER_NAV_ITEMS = [
   { id: "painel", href: "/admin", label: "Painel", icon: <LayoutDashboard size={16} /> },
+  { id: "mapa-tatico", href: "/mapa-tatico", label: "Mapa Tático", icon: <Map size={16} /> },
   { id: "perfil", href: "/perfil", label: "Perfil", icon: <User size={16} /> },
   { id: "campanhas", href: "/admin/campanhas", label: "Campanhas", icon: <Users size={16} /> },
   { id: "mercado", href: "/admin/mercado", label: "Mercado", icon: <Store size={16} /> },

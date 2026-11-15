@@ -2,7 +2,7 @@
 
 **Última Atualização**: 2026-11-14T22:30:00-03:00  
 **Branch Atual**: `main`  
-**Status**: COISAS-A-FAZER.md em execução — docs completas, rolagens/uploads/sessões server-side/CI/testes de integração prontos (backend 28/28, frontend 140/140); faltam itens bloqueados pelo operador (Google API, deploy, SMTP real) e E2E/a11y (sem browser). Nada commitado.
+**Status**: Checkpoint `checkpoint-pre-tatico-map-2026-11-14` salvo; mapa tático + janelas flutuantes implementados (falta verificação visual no navegador). COISAS-A-FAZER.md em execução — docs completas, rolagens/uploads/sessões server-side/CI/testes de integração prontos (backend 28/28, frontend 140/140); faltam itens bloqueados pelo operador (Google API, deploy, SMTP real) e E2E/a11y (sem browser). Nada commitado.
 
 ---
 

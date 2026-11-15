@@ -208,6 +208,20 @@ export async function listMyRolls(params = {}, token = getStoredToken()) {
   }, "Erro ao carregar o histórico de rolagens.");
 }
 
+export async function getTaticoMap(campanhaId, token = getStoredToken()) {
+  return safeFetchJson(`${API_BASE_URL}/mapa-tatico/${encodeURIComponent(campanhaId)}`, {
+    headers: authHeaders(token),
+  }, "Erro ao carregar o mapa tático.");
+}
+
+export async function updateTaticoMap(campanhaId, patch, token = getStoredToken()) {
+  return safeFetchJson(`${API_BASE_URL}/mapa-tatico/${encodeURIComponent(campanhaId)}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify(patch),
+  }, "Erro ao salvar o mapa tático.");
+}
+
 export async function uploadArquivo(file, { personagemId, campanhaId, contexto = "anotacao" } = {}, token = getStoredToken()) {
   const form = new FormData();
   form.append("arquivo", file, file.name);

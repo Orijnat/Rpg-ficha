@@ -149,8 +149,6 @@ produto completo e pronto para uso. Ele descreve o estado real conhecido em
 - [ ] Mostrar conflitos, falhas e reautorização para o mestre.
 - [ ] Exportar diário e anotações para Google Docs.
 - [ ] Criar cópia visual da ficha no Google Docs.
-- [ ] Tratar revogação, expiração e renovação de token.
-- [ ] Testar permissões mínimas e remoção da conexão.
 
 ## 7. Uploads e arquivos
 
