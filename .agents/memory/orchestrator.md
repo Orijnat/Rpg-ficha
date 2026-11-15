@@ -543,3 +543,46 @@ Este arquivo é a fonte de memória persistente da liderança técnica do projet
 - Solução anterior (Supabase Storage) descartada pelo operador ("vai lotar o banco"); segundo fator é Render disco efêmero (arquivos somem a cada deploy).
 - Decisão do operador: armazenamento **por sessão**. Frontend: botão "Mapa" virou object URL local (não envia nada ao servidor, só nesta aba; revoga ao limpar/trocar/desmontar); novo botão "URL" persiste `urlFundo` (imagem externa pública, salva só como texto — visível a toda a mesa); lixeira limpa ambos. sessionBg tem precedência sobre o fundo salvo; fundo existente por arquivo (`arquivoFundoId`) continua suportado por compatibilidade (pode 410 no Render).
 - `next build` OK; eslint só o warning pré-existente. NÃO commitado ainda.
+
+## Entrega — 2026-11-15 (Mandato autônomo do operador: desenvolver até as 17h; lote 1)
+
+- Backend: suíte offline nova `test/mapa_tatico.test.js` (ACL: membro cria forçando oculto:false, move x/y/tamanho/hp/icone, mantém ausentes, não renomeia/hpMax/título 403; mestre substitui total; ocultos filtrados no GET; mestre intruso 403; schema zod aceita/rejeita ícones) — 54/54 PASS. `test/security_auth.test.js` (login anti-enumeração, JWT expirado/secret errada/usuário removido/passwordChangedAt/sessão revogada → 401; válido → next()) — junto no total 54/54.
+- Frontend: refatorado ícones do mapa para `src/lib/mapaTatico.js` (TOKEN_ICONS/ICON_OPTIONS/ICONES_BACKEND_KEYS/defaultTokenIcon/resolveTokenIcon) + suíte `mapa-tatico.test.mjs` (paridade das 24 chaves com o enum do backend) — 145/145 PASS; build e lint OK.
+- Docs: TROUBLESHOOTING (ERR_ERL_*, email_verified 42703, imagens CORP/efêmeras), RUNBOOK-PRODUCAO (trust proxy, CORP, disco efêmero), CHANGELOG (não lançado 2026-11-15), itens/COISAS-A-FAZER-BACKEND atualizados.
+- Skills novas (espelhadas `.agents/skills` ↔ `.github/skills`): `mapa-tatico` (ACL, contrato, fundo por sessão/URL, armadilhas) e `render-supabase-producao` (sintoma→causa→correção do stack Vercel/Render/Supabase).
+- npm audit: uuid <11.1.1 transitivo de sequelize (moderado; `--force` trocaria para sequelize@3 — NÃO fazer).
+- Tudo NÃO commitado (mandato sem pedidos de commit); working tree: back (testes + .env.example), front (mapaTatico.js, page.js, docs, skills).
+
+## Entrega — 2026-11-15 (Lote 2 — verificação empírica do fix do proxy)
+
+- `trust proxy` verificado: servidor local atrás de header `X-Forwarded-For: 203.0.113.7` — `GET /api/health` 200, `POST /api/auth/login` chega ao controller (401 credenciais), ZERO ocorrências de `ERR_ERL_UNEXPECTED_X_FORWARDED_FOR` no log. Container descartável removido.
+- Cleanup de código morto no `/mapa-tatico` (`activeTool`/`focusMapField` não usados); build 31/31, lint só o warning pré-existente, 145/145 testes front.
+
+## Entrega — 2026-11-15 (Lote 3 — A11y de tipografia)
+
+- 54× `text-[9px]` → `text-[10px]` em 21 arquivos (piso de legibilidade); build 31/31 OK, eslint 0 erros (42 warnings, todos pré-existentes), 145/145 testes.
+
+## Entrega — 2026-11-15 (Lote 4 — higiene)
+
+- `npm audit fix` seguro no frontend: typescript-eslint 8.59.4 → 8.72.2 (devDeps, resolve 5/7 moderadas restantes ficaram por exigir major do eslint-config — não forçar).
+- Validation docs atualizados em COISAS-A-FAZER (npm test front 145 / back 54; audit remanescente documentado).
+- Changelog 2026-11-15 atualizado (a11y text-[10px], refactor mapaTatico.js, audit fix).
+- EmberCanvas confirmado acessível (prefers-reduced-motion + aria-hidden).
+- Texto menor: `text-[9px]` → `text-[10px]` (54 ocorrências, 21 arquivos).
+
+## Entrega — 2026-11-15 (Lote 5 — hardening do JWT legado do frontend)
+
+- `src/lib/jwt.js`: HMAC comparado com `crypto.timingSafeEqual` (+ checagem de tamanho) em vez de `===`; `signJwt` não emite mais token `unsigned` quando o módulo criptográfico falha (falha fechado). `server-auth.js` permanece só para testes (API routes legadas removidas; JWT real é validado no backend).
+- Testes `server-auth.test.mjs` ampliados (adulteração → throw, expirado → throw, round-trip ok): **148/148 PASS**. Build OK.
+- Nota: frontend usa `jwt.js` client-side apenas para UX (decodificação não-verificada documentada no código); a segurança real está no backend.
+
+## Entrega — 2026-11-15 (Lote 6 — sessão client-side confia só no servidor)
+
+- AuthContext: removido o "upgrade" client-side de perfil via `sessionStorage` (mestre falsável no próprio navegador); perfil/role vêm de `/auth/me` (fonte única, servidor).
+- `storeAuth` não persiste mais `rpg_auth_user` (cópia de PII em repouso); limpeza legada mantida. 148/148 testes, build OK, lint limpo.
+
+## Entrega — 2026-11-15 (Skills globais instaladas via `npx skills -g`)
+
+- Instaladas em ~/.agents/skills (OpenCode e agentes que leem esse diretório): vercel-react-best-practices, web-design-guidelines, vercel-composition-patterns (vercel-labs/agent-skills), frontend-design, skill-creator (anthropics/skills), supabase-postgres-best-practices (supabase/agent-skills), grill-me, improve-codebase-architecture, code-review (mattpocock/skills), systematic-debugging (obra/superpowers), agent-browser (vercel-labs/agent-browser). find-skills já existia.
+- Descartadas por fora do stack do projeto: séries de vídeo/imagem (heygen, remotion, superpowers-ai), Azure, Lark/Feishu, Prisma (sequelize no projeto). `skills-lock.json` (projeto) não foi tocado; instalações foram globais e privadas do usuário (~/.agents).
+- Nota: `npx skills add` falhou com target automático ("PromptScript does not support global"); corrigido com `-a opencode -g -y`.

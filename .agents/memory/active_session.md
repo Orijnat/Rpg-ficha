@@ -1,8 +1,8 @@
 # 🧠 Sessão Ativa — Grimorium RPG
 
-**Última Atualização**: 2026-11-15T14:40:00-03:00  
+**Última Atualização**: 2026-11-15T15:50:00-03:00  
 **Branch Atual**: `main`  
-**Status**: Login em produção corrigido (trust proxy commit 04a2a5c + migrações aplicadas no Supabase prod). Mapa tático: bug da miniatura sumindo corrigido + ícones personalizáveis (commits e4b7eb9 back / 76243c7 front). Imagens do mapa não carregavam: fix CORP helmet (commit 77cc96a). Decisão do operador: fundo do mapa **por sessão** (object URL local) + opção URL externa (`urlFundo`) — Supabase Storage descartado. Fundo por sessão implementado, build OK, NÃO commitado ainda.
+**Status**: Login em produção corrigido (trust proxy 04a2a5c + migrações prod). Mapa tático: bug da miniatura sumindo corrigido + ícones personalizáveis (e4b7eb9 back / 76243c7 front). Imagens do mapa: fix CORP (77cc96a). Fundo do mapa por sessão + URL externa commitado (c1c1365). Mandato autônomo "desenvolver até 17h": backend +26 testes (54/54: mapa_tatico ACL + security_auth), frontend +5 (145/145), refactor TOKEN_ICONS→lib/mapaTatico.js, skills `mapa-tatico` e `render-supabase-producao` (espelhadas), docs atualizados. Lote autônomo completo: 54/54 back, 145/145 front, build 31/31, lint 0 erros (42 warnings pré-existentes). text-[9px]→[10px] (54×); audit fix typescript-eslint; docs/COISAS/TROUBLESHOOTING/RUNBOOK atualizados; skills novas espelhadas. jwt.js hardening (timingSafeEqual, sem unsigned), sessão restaurada confia só em /auth/me, rpg_auth_user não persiste mais → 148/148. Tudo NÃO commitado (aguardar pedido de commit).
 
 ---
 

@@ -11,6 +11,24 @@ Token válido por 7 dias **e** sessão server-side obrigatória. Logout, redefin
 e (opcionalmente) troca de dados da conta revogam a sessão. Solução: autenticar de novo.
 Se persistir logo após o login, o relógio do servidor está errado — verifique NTP.
 
+## Erro `ERR_ERL_UNEXPECTED_X_FORWARDED_FOR` / login nunca funciona em produção
+O Render (e qualquer proxy) injeta `X-Forwarded-For`; o `express-rate-limit` exige
+`app.set("trust proxy", 1)` no `server.js` (commit `04a2a5c`). Sem isso o limiter
+recusa toda a requisição e o login retorna 500.
+
+## `SequelizeDatabaseError: column "email_verified" does not exist` (ou 42703 em geral)
+O código novo subiu, mas o banco de produção ficou para trás nas migrations. Rode
+`node database/migrate.js` com o `DATABASE_URL` do Supabase (idempotente). Confira
+também se o `.env` usado no comando é o de produção.
+
+## Imagens quebram no mapa/anotações (só em produção)
+`helmet()` define por padrão `Cross-Origin-Resource-Policy: same-origin`, que bloqueia
+`/api/arquivos/:id` embutido de outro domínio (Vercel→Render). O backend usa
+`helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } })` (commit `77cc96a`).
+Verifique também: disco do Render é efêmero — arquivos enviados somem a cada
+deploy/restart (`GET /api/arquivos/:id?rt=…` responde 410); para o fundo do mapa
+use o modo sessão local ou URL externa.
+
 ## 429 "Limite de tentativas de autenticação"
 5 tentativas/min por IP em `/auth/*` (configurável por `AUTH_RATE_LIMIT`). Aguarde 1 min;
 IPs atrás de proxy compartilhado podem tomar limite coletivo — suba o valor com critério.

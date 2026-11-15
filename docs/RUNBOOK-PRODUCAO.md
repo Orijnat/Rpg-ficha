@@ -5,6 +5,8 @@
 1. **Banco**: `npm run db:migrate` (idempotente) — rodar ANTES de subir a nova API.
 2. **API** (`Rpg-backend`): `npm ci && npm start` atrás de proxy com **HTTPS**
    (TLS terminado no proxy; app plain HTTP interno). Health: `GET /api/health`.
+   O app exige `app.set("trust proxy", 1)` no `server.js` (commit `04a2a5c`) para
+   o rate limiter identificar IP — não remova sem reavaliar.
 3. **Frontend** (`Rpg-ficha`): `npm ci && npm run build`, servir com `npm start`
    ou publicar na Vercel; `NEXT_PUBLIC_API_URL` no build.
 4. **Segredos**: `JWT_SECRET` (≥32 chars, `openssl rand -hex 32`), `DATABASE_URL`
@@ -46,6 +48,12 @@
 npm run db:backup            # cria backups/backup-*.sql.gz
 npm run db:prune             # aplica retenção (30 dias)
 # Uploads
+- O disco do Render é **efêmero** (`private_uploads/` some a cada deploy/restart);
+  para o mapa use fundo por sessão/URL externa. Imagens privadas devem usar
+  storage persistente (object storage) antes de depender delas em produção
+  (ver TROUBLESHOOTING.md). O backend serve `/api/arquivos/:id` com
+  `Cross-Origin-Resource-Policy: cross-origin` (commit `77cc96a`) — necessário
+  para `<img>` cross-origin da Vercel.
 npm run uploads:clean -- --dry-run   # lista órfãos sem apagar
 npm run uploads:clean                # remove órfãos (disco sem metadado / vice-versa)
 # Banco

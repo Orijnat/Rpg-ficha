@@ -250,7 +250,9 @@ Frontend:
 
 ```bash
 cd Rpg-ficha
+npm test          # 145/145
 npm run build
+npm run lint      # 0 erros (warnings pré-existentes catalogados)
 git diff --check
 ```
 
@@ -259,7 +261,8 @@ Backend:
 ```bash
 cd Rpg-backend
 node --check src/server.js
-npm audit
+npm test          # 54/54
+npm audit         # restante: uuid<11.1.1 transitivo de sequelize (moderado; --force troca para sequelize@3 — não fazer)
 ```
 
 > Este checklist é deliberadamente mais amplo que uma lista de tarefas

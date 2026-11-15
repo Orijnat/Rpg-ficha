@@ -262,7 +262,7 @@ Este mapeamento conecta diretamente cada tela da interface com as necessidades d
 ---
 
 ### 🧪 Fase 6: Testes Automatizados & Qualidade de Backend
-- [ ] Testes de integração de autenticação (registro com sucesso, senha fraca, login inválido, JWT expirado).
+- [x] Testes de integração de autenticação (registro com sucesso, senha fraca, login inválido, JWT expirado). (`test/security_auth.test.js`: login anti-enumeração 401, hash nunca vaza, JWT expirado/secret errada/usuário removido/passwordChangedAt/sessão revogada → 401, token válido → next(); 54/54 PASS 2026-11-15)
 - [ ] Testes de integridade de ficha (sync com atributos calculados, recusa de atributos negativos ou corrompidos).
 - [x] Testes de barreira multi-tenant nos guards offline.
 - [x] Testes de filtragem de notas privadas nos guards offline.

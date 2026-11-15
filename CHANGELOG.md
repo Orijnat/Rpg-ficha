@@ -2,6 +2,31 @@
 
 Formato: [Keep a Changelog](https://keepachangelog.com/pt-BR/) · SemVer em `package.json` e tags git.
 
+## [Não lançado] — 2026-11-15
+
+### Segurança
+- `lib/jwt.js`: verificação de assinatura com comparação em tempo constante (`TimingSafeEqual`) e fim do fallback silencioso de emissão `unsigned` (agora falha fechado); testes de round-trip/adulteração/expiração.
+- Front: sessão restaurada usa exclusivamente o payload de `/auth/me` (o `sessionStorage` não promove mais `perfil` para mestre); `rpg_auth_user` não é mais persistido (menos PII em repouso).
+- Backend com `trust proxy` (Render/proxies) — rate limiter funciona atrás do proxy (commit `04a2a5c`).
+- `helmet` com `Cross-Origin-Resource-Policy: cross-origin` — imagens da API carregam na Vercel/front cross-origin (commit `77cc96a`).
+- Mapa tático: ACL do `PATCH /api/mapa-tatico` — membro cria miniatura (oculto forçado `false`), move/tamanho/`hp`/`icone` de existentes; tokens ausentes nunca são apagados por membro; `hpMax`/renomear/ocultar/config de mesa ficam com o mestre (commit `e4b7eb9`).
+
+### Adicionado
+- Ícones de miniatura personalizáveis (24 chaves Lucide; enum compartilhado com o backend; seletor no painel do alvo).
+- Fundo do mapa **por sessão** (object URL local) e por **URL externa** (`urlFundo` compartilhado com a mesa; commit `c1c1365`) — sem object storage.
+- Suíte offline de ACL do mapa tático (`test/mapa_tatico.test.js`, 14 casos) e paridade de ícones no frontend (`mapa-tatico.test.mjs`).
+- Skills do projeto: `mapa-tatico` e `render-supabase-producao` (`.agents/skills` + `.github/skills`).
+- Troubleshooting: erros de produção (ERR_ERL_*, `email_verified` 42703, imagens CORP/efêmeras); runbook com notas de proxy/CORP/disco efêmero.
+
+### Corrigido
+- Bug "miniatura some ao adicionar": merge restrito do membro + paleta NPC visível a jogadores (commits `e4b7eb9`/`76243c7`).
+- Login quebrando em produção (X-Forwarded-For + migrations ausentes no Supabase).
+- 54× `text-[9px]` → `text-[10px]` (piso de legibilidade, A11y).
+
+### Alterado
+- Ícones do mapa extraídos para `src/lib/mapaTatico.js` com suíte de paridade (`mapa-tatico.test.mjs`); dead code removido da página.
+- `npm audit fix` seguro aplicado (typescript-eslint 8.59.4 → 8.72.2, devDeps).
+
 ## [Não lançado] — 2026-11-14
 
 ### Segurança

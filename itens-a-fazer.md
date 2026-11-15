@@ -59,10 +59,10 @@
 - [x] [A-10] `SmoothScroll` sempre renderiza `<ReactLenis>` com flag interna de reduced-motion (sem remount da árvore)
 - [x] [A-11] Código órfão removido (`/anotacao`, `AnotacoesImproved`, `ThemeSelector`, `BarrraHp`, `Aurora`); `defaultData` demo fica só para testes
 - [~] [A-12] Páginas gigantes (admin/mercado 1156 l.), GSAP eager, zero `next/dynamic`, fontes render-blocking — progresso: fontes já via `next/font`; `DiceModal`/`DiceFloatingTrigger`/`DanoCuraPainel` agora carregam via `next/dynamic`; quebra das páginas gigantes pendente
-- [~] [A-13] A11y — progresso: `ConfirmDialog` com role/aria-modal/Escape/focus-trap/foco inicial; `<img>` sem `next/image` e textos `text-[9px]` pendentes
+- [~] [A-13] A11y — progresso: `ConfirmDialog` com role/aria-modal/Escape/focus-trap/foco inicial; `<img>` sem `next/image` e textos `text-[9px]` → `text-[10px]` (54 ocorrências resolvidas 2026-11-15)
 - [x] [A-14] Cores hex hardcoded dos tokens canônicos substituídas por `var(--theme-accent|title|subtitle)` em posição de classe (270 substituições/21 arquivos); hexes restantes em estilos inline/SVG e no tema interno do auth permanecem — tokens novos exigiriam varredura visual
 - [x] [A-16] Frontend usa `/campanhas/legado` (não mais o alias cru); `deleteGameSession` sem body
-- [x] [A-17] `npm test` (135/135 front, 22/22 back); `themes.test.mjs` corrigido; contrato do sync coberto por `test/sync_conflict.test.js`; backup/export test atualizado (senha nunca vaza)
+- [x] [A-17] `npm test` (145/145 front, 54/54 back — 42 anteriores + mapa_tatico 14, segurança auth 12; 2026-11-15); `themes.test.mjs` corrigido; contrato do sync coberto por `test/sync_conflict.test.js`; backup/export test atualizado (senha nunca vaza)
 
 ### Cosmético/menor (S4)
 - [x] [F-15] Higiene: `getJwtSecret` unificado; falha de `registrarAuditoria` vira log estruturado com contexto; `canManageCharacter` sem roundtrip extra; `googleapis` ausente do projeto; `.strict()` intencional onde importa (register/login/resets) — schemas de ficha são não-estritos de propósito (aliases do cliente)
