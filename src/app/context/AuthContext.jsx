@@ -41,18 +41,8 @@ export function AuthProvider({ children }) {
       try {
         const data = await fetchMe(storedToken);
         if (data && data.user) {
-          let restoredUser = data.user;
-          try {
-            const rawStoredUser = window.sessionStorage.getItem("rpg_auth_user");
-            if (rawStoredUser) {
-              const parsed = JSON.parse(rawStoredUser);
-              if (parsed?.perfil === "mestre" || parsed?.role === "master") {
-                restoredUser = { ...restoredUser, perfil: "mestre", role: "master" };
-              }
-            }
-          } catch {
-            // Ignora erro de storage
-          }
+          // Perfil/role vêm exclusivamente do servidor — nunca de storage do navegador
+          const restoredUser = data.user;
 
           setUser(restoredUser);
           let allChars = data.characters || [];

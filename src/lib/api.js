@@ -32,11 +32,11 @@ export function getStoredToken() {
 export function storeAuth(token, user) {
   if (typeof window === "undefined") return;
   try {
+    // Não persistir cópia do usuário — /auth/me é a fonte da verdade
     if (token) {
       window.sessionStorage.setItem("rpg_auth_token", token);
       window.localStorage.removeItem("rpg_auth_token");
     }
-    if (user) window.sessionStorage.setItem("rpg_auth_user", JSON.stringify(user));
   } catch {
     // A sessão em memória continua válida mesmo se o navegador bloquear storage.
   }

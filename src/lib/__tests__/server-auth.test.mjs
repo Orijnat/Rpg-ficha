@@ -30,3 +30,28 @@ test("bloqueia jogador em operação restrita ao mestre", () => {
   const token = signJwt({ id: "player-1", perfil: "jogador" }, process.env.JWT_SECRET);
   assert.throws(() => requireMaster(requestWithToken(token)), /Acesso restrito ao mestre/);
 });
+
+test("JWT adulterado é rejeitado", async () => {
+  const { signJwt, verifyJwt } = await import("../jwt.js");
+  const secret = process.env.JWT_SECRET;
+  const token = signJwt({ id: "master-2", perfil: "mestre" }, secret);
+  const [h, p, s] = token.split(".");
+  const forged = `${h}.${p}.${"a".repeat(s.length)}`;
+  assert.throws(() => verifyJwt(forged, secret), /Assinatura do token inválida/);
+});
+
+test("JWT expirado é rejeitado", async () => {
+  const { signJwt, verifyJwt } = await import("../jwt.js");
+  const secret = process.env.JWT_SECRET;
+  const token = signJwt({ id: "master-3", perfil: "mestre" }, secret, { expiresIn: -10 });
+  assert.throws(() => verifyJwt(token, secret), /Sessão expirada/);
+});
+
+test("assinatura válida verifica com sucesso (round-trip)", async () => {
+  const { signJwt, verifyJwt } = await import("../jwt.js");
+  const secret = process.env.JWT_SECRET;
+  const token = signJwt({ id: "player-9", perfil: "jogador" }, secret);
+  const payload = verifyJwt(token, secret);
+  assert.equal(payload.id, "player-9");
+  assert.equal(payload.perfil, "jogador");
+});

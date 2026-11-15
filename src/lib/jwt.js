@@ -196,18 +196,14 @@ export function signJwt(payload, secret, options = {}) {
   const payloadB64 = base64UrlEncode(JSON.stringify(fullPayload));
   const signatureInput = `${headerB64}.${payloadB64}`;
 
-  const crypto = cryptoModule || globalThis.crypto;
-  let signatureB64 = "";
-
-  if (cryptoModule && cryptoModule.createHmac) {
-    signatureB64 = cryptoModule
-      .createHmac("sha256", secretKey)
-      .update(signatureInput)
-      .digest("base64url");
-  } else {
-    // Fallback básico para ambiente sem cryptoModule
-    signatureB64 = base64UrlEncode("unsigned");
+  if (!cryptoModule || !cryptoModule.createHmac) {
+    // Nunca emitir token "unsigned" — sem módulo criptográfico, falhar.
+    throw new Error("Módulo criptográfico indisponível para assinar o token.");
   }
+  const signatureB64 = cryptoModule
+    .createHmac("sha256", secretKey)
+    .update(signatureInput)
+    .digest("base64url");
 
   return `${headerB64}.${payloadB64}.${signatureB64}`;
 }
@@ -236,7 +232,6 @@ export function verifyJwt(token, secret) {
     throw new Error("JWT_SECRET ausente ou fraco.");
   }
 
-  const crypto = cryptoModule || globalThis.crypto;
   if (!cryptoModule || !cryptoModule.createHmac) {
     throw new Error("Módulo criptográfico indisponível.");
   }
@@ -246,7 +241,9 @@ export function verifyJwt(token, secret) {
     .update(`${headerB64}.${payloadB64}`)
     .digest("base64url");
 
-  if (expectedSignature !== signatureB64) {
+  const a = Buffer.from(expectedSignature, "utf8");
+  const b = Buffer.from(signatureB64, "utf8");
+  if (a.length !== b.length || !cryptoModule.timingSafeEqual(a, b)) {
     throw new Error("Assinatura do token inválida ou adulterada.");
   }
 
