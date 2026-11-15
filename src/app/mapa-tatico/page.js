@@ -34,6 +34,20 @@ import {
   Coins,
   Cat,
   Flame,
+  ShieldCheck,
+  Axe,
+  Wand,
+  Skull,
+  Ghost,
+  Star,
+  Gem,
+  Bug,
+  Bird,
+  PawPrint,
+  FlaskConical,
+  Moon,
+  Anchor,
+  Hammer,
 } from "lucide-react";
 import EmberCanvas from "../components/mapa/EmberCanvas";
 import FloatingWindow from "../components/mapa/FloatingWindow";
@@ -90,6 +104,33 @@ const MASTER_WIDGETS = [
 ];
 
 const TOKEN_SIZES = { P: 44, M: 58, G: 74, E: 92 };
+const TOKEN_ICONS = {
+  shield: Shield,
+  shieldCheck: ShieldCheck,
+  sword: Sword,
+  swords: Swords,
+  axe: Axe,
+  wand: Wand,
+  crown: Crown,
+  skull: Skull,
+  ghost: Ghost,
+  flame: Flame,
+  zap: Zap,
+  heart: Heart,
+  star: Star,
+  eye: Eye,
+  cat: Cat,
+  sparkles: Sparkles,
+  gem: Gem,
+  bug: Bug,
+  bird: Bird,
+  paw: PawPrint,
+  flask: FlaskConical,
+  moon: Moon,
+  anchor: Anchor,
+  hammer: Hammer,
+};
+const ICON_OPTIONS = Object.keys(TOKEN_ICONS);
 const uid = () => (crypto?.randomUUID ? crypto.randomUUID() : `tok-${Date.now()}-${Math.random().toString(16).slice(2)}`);
 
 export default function MapaTaticoPage() {
@@ -192,6 +233,7 @@ export default function MapaTaticoPage() {
         tamanho: "M",
         hp: source.hp ?? null,
         hpMax: source.hpMax ?? null,
+        icone: kind === "sheet" ? "shield" : "sword",
       };
       return [...tokens, next];
     });
@@ -200,6 +242,10 @@ export default function MapaTaticoPage() {
   const removeToken = (tokenId) => {
     updateTokens((tokens) => tokens.filter((t) => t.id !== tokenId));
     setSelectedToken(null);
+  };
+
+  const setTokenIcon = (tokenId, icone) => {
+    updateTokens((tokens) => tokens.map((t) => (t.id === tokenId ? { ...t, icone } : t)));
   };
 
   const cycleTokenSize = (tokenId) => {
@@ -393,20 +439,18 @@ export default function MapaTaticoPage() {
                   ))}
                 </div>
               </div>
-              {canManage && (
-                <div>
-                  <span className="mb-1 block font-cinzel text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Monstros & NPCs</span>
-                  <div className="space-y-1">
-                    {npcs.length === 0 && <p className="px-1 text-[10px] italic text-muted-foreground">Bestiário vazio.</p>}
-                    {npcs.map((npc) => (
-                      <button key={npc.id} type="button" onClick={() => addToken("npc", npc)} className="flex w-full items-center gap-1.5 rounded-lg border border-rose-500/10 bg-rose-950/10 px-2 py-1.5 text-left transition hover:border-rose-500/40 hover:bg-rose-950/30">
-                        <Plus size={11} className="shrink-0 text-rose-300" />
-                        <span className="truncate">{npc.nome}</span>
-                      </button>
-                    ))}
-                  </div>
+              <div>
+                <span className="mb-1 block font-cinzel text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Monstros & NPCs</span>
+                <div className="space-y-1">
+                  {npcs.length === 0 && <p className="px-1 text-[10px] italic text-muted-foreground">Bestiário vazio.</p>}
+                  {npcs.map((npc) => (
+                    <button key={npc.id} type="button" onClick={() => addToken("npc", npc)} className="flex w-full items-center gap-1.5 rounded-lg border border-rose-500/10 bg-rose-950/10 px-2 py-1.5 text-left transition hover:border-rose-500/40 hover:bg-rose-950/30">
+                      <Plus size={11} className="shrink-0 text-rose-300" />
+                      <span className="truncate">{npc.nome}</span>
+                    </button>
+                  ))}
                 </div>
-              )}
+              </div>
               {/* Alvo selecionado */}
               {selected && (
                 <div className="rounded-xl border border-primary/30 bg-primary/5 p-2 text-[10px]">
@@ -431,6 +475,27 @@ export default function MapaTaticoPage() {
                       </div>
                     </div>
                   )}
+                  <span className="mt-1.5 block font-cinzel text-[8px] font-bold uppercase tracking-widest text-muted-foreground">Ícone</span>
+                  <div className="mt-1 grid grid-cols-12 gap-1">
+                    {ICON_OPTIONS.map((key) => {
+                      const Ico = TOKEN_ICONS[key];
+                      const activeIcone = selected.icone || (selected.tipo === "personagem" ? "shield" : "sword");
+                      const isActive = activeIcone === key;
+                      return (
+                        <button
+                          key={key}
+                          type="button"
+                          onClick={() => setTokenIcon(selected.id, key)}
+                          title={key}
+                          aria-label={`Ícone ${key}`}
+                          aria-pressed={isActive}
+                          className={`flex h-6 w-6 items-center justify-center rounded border transition ${isActive ? "border-primary bg-primary/25 text-primary" : "border-white/10 text-muted-foreground hover:border-primary/40 hover:text-primary"}`}
+                        >
+                          <Ico size={12} />
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
             </div>
@@ -474,6 +539,7 @@ export default function MapaTaticoPage() {
             const size = TOKEN_SIZES[tokenItem.tamanho || "M"] || TOKEN_SIZES.M;
             const isSelected = selectedToken === tokenItem.id;
             const isHidden = Boolean(tokenItem.oculto) && isMaster;
+            const TokenIcon = TOKEN_ICONS[tokenItem.icone] || (tokenItem.tipo === "personagem" ? Shield : Sword);
             const hpPct = tokenItem.hpMax ? Math.max(0, Math.round((100 * Number(tokenItem.hp ?? tokenItem.hpMax)) / Number(tokenItem.hpMax))) : null;
             return (
               <button
@@ -495,7 +561,7 @@ export default function MapaTaticoPage() {
                 title={`${tokenItem.name}${isHidden ? " (oculto da mesa)" : ""}`}
                 aria-label={`Miniatura de ${tokenItem.name}`}
               >
-                {tokenItem.tipo === "personagem" ? <Shield size={size * 0.4} className="text-black/60" /> : <Sword size={size * 0.4} className="text-black/60" />}
+                <TokenIcon size={size * 0.4} className="text-black/60" />
                 {hpPct !== null && (
                   <span className="absolute -bottom-1.5 left-1 right-1 h-1.5 overflow-hidden rounded-full border border-black/60 bg-black/70">
                     <span className={`block h-full ${hpPct > 50 ? "bg-emerald-500" : hpPct > 25 ? "bg-amber-400" : "bg-rose-500"}`} style={{ width: `${hpPct}%` }} />

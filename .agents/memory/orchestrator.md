@@ -521,3 +521,18 @@ Este arquivo é a fonte de memória persistente da liderança técnica do projet
 - **Frontend**: galeria do Diário via upload real; `classes.js` + datalist no cadastro; 0 lint errors (XPBar→React Compiler); 140/140 testes; build OK.
 - **Verificado ao vivo** (Postgres descartável, removido ao final): rolagens ACL, uploads (magic bytes/extension/assinatura/ACL), sessões (logout→401, reset→todas revogadas), exports CSV, S2 completa, e-mail, restauração de backup.
 - **Pendente (operador)**: credenciais Google/SMTP/deploy; E2E/a11y/mobile sem browser; cookies HTTP-only; A-12/A-13 parciais. Nada commitado; `backups/`, `private_uploads/` removidos/gitignored; body-parser atualizado (high→0; 8 moderate dev-deps aceitas).
+
+## Entrega — 2026-11-15 (Mapa tático: membros podem criar/mover miniaturas; fix trust proxy + migrações em produção)
+
+- Render/Supabase: login 502 corrigido — `app.set("trust proxy", 1)` (commit `04a2a5c`) + migrações aplicadas no Supabase de produção (`email_verified` etc. existiam localmente mas não na prod).
+- Bug "miniatura some ao adicionar" (mapa-tatico): causa raiz = backend descartava PATCH de membro sem `id` existente (merge só movia) e a UI fazia merge `{...current, ...updated}` substituindo pela lista sem a nova miniatura.
+- Correção (trabalhando): `mapaTaticoController.atualizar` — membro cria miniatura nova (forçando `oculto:false`), move/ajusta `x,y,tamanho,hp` de existentes; não apaga (tokens ausentes são mantidos), não oculta/renomeia/hpMax. Mestre inalterado (substituição total). Verificado ao vivo em Postgres descartável: criar/mover/ocultar bloqueado/hpMax bloqueado/titulo 403/mestre vê tudo. Frontend: paleta "Monstruos & NPCs" visível para jogadores.
+- Regra de ACL do mapa: jogador+mestre adicionam e movem; só mestre altera o mapa (fundo/grade/título/ocultar/remover).
+- Pendente: commit/push + redeploy no Render; commit do frontend (mapa-tatico/page.js).
+
+## Entrega — 2026-11-15 (Mapa tático: ícones de miniatura personalizáveis)
+
+- Backend: `tokenMapaSchema` aceita `icone` (enum de 24 chaves: shield, shieldCheck, sword, swords, axe, wand, crown, skull, ghost, flame, zap, heart, star, eye, cat, sparkles, gem, bug, bird, paw, flask, moon, anchor, hammer); membro pode alterar `icone` de token existente (junto a x/y/tamanho/hp); mestre via substituição total. Sem migration (tokens JSONB).
+- Frontend: `TOKEN_ICONS` + grade de 24 ícones Lucide no painel "Alvo selecionado"; `addToken` define `icone` padrão (shield=personagem, sword=monstro); tokens legados sem `icone` renderizam o padrão.
+- Verificado em Postgres descartável: criar com icone, trocar icone (membro), icone inválido → 422, mestre cria com crown. `next build` OK, eslint só o warning pré-existente.
+- Pendente: commit/push (front e back) + redeploy no Render.
