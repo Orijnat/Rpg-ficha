@@ -34,21 +34,8 @@ import {
   Coins,
   Cat,
   Flame,
-  ShieldCheck,
-  Axe,
-  Wand,
-  Skull,
-  Ghost,
-  Star,
-  Gem,
-  Bug,
-  Bird,
-  PawPrint,
-  FlaskConical,
-  Moon,
-  Anchor,
-  Hammer,
 } from "lucide-react";
+import { TOKEN_ICONS, ICON_OPTIONS, defaultTokenIcon, resolveTokenIcon } from "../../lib/mapaTatico";
 import EmberCanvas from "../components/mapa/EmberCanvas";
 import FloatingWindow from "../components/mapa/FloatingWindow";
 import { useWindowManager } from "../../hooks/useWindowManager";
@@ -103,33 +90,6 @@ const MASTER_WIDGETS = [
 ];
 
 const TOKEN_SIZES = { P: 44, M: 58, G: 74, E: 92 };
-const TOKEN_ICONS = {
-  shield: Shield,
-  shieldCheck: ShieldCheck,
-  sword: Sword,
-  swords: Swords,
-  axe: Axe,
-  wand: Wand,
-  crown: Crown,
-  skull: Skull,
-  ghost: Ghost,
-  flame: Flame,
-  zap: Zap,
-  heart: Heart,
-  star: Star,
-  eye: Eye,
-  cat: Cat,
-  sparkles: Sparkles,
-  gem: Gem,
-  bug: Bug,
-  bird: Bird,
-  paw: PawPrint,
-  flask: FlaskConical,
-  moon: Moon,
-  anchor: Anchor,
-  hammer: Hammer,
-};
-const ICON_OPTIONS = Object.keys(TOKEN_ICONS);
 const uid = () => (crypto?.randomUUID ? crypto.randomUUID() : `tok-${Date.now()}-${Math.random().toString(16).slice(2)}`);
 
 export default function MapaTaticoPage() {
@@ -143,7 +103,6 @@ export default function MapaTaticoPage() {
   const [mapError, setMapError] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(true);
-  const [activeTool, setActiveTool] = useState("move"); // move | place
   const [snap, setSnap] = useState(false);
   const [selectedToken, setSelectedToken] = useState(null);
   const [dragInfo, setDragInfo] = useState(null); // { id, startX, startY, baseX, baseY }
@@ -234,7 +193,7 @@ export default function MapaTaticoPage() {
         tamanho: "M",
         hp: source.hp ?? null,
         hpMax: source.hpMax ?? null,
-        icone: kind === "sheet" ? "shield" : "sword",
+        icone: defaultTokenIcon(kind === "sheet" ? "personagem" : "monstro"),
       };
       return [...tokens, next];
     });
@@ -271,12 +230,8 @@ export default function MapaTaticoPage() {
   const onTokenPointerDown = (event, tokenItem) => {
     event.stopPropagation();
     event.preventDefault();
-    focusMapField();
     setSelectedToken(tokenItem.id);
     setDragInfo({ id: tokenItem.id, startX: event.clientX, startY: event.clientY, baseX: tokenItem.x, baseY: tokenItem.y, field: fieldRef.current?.getBoundingClientRect() });
-  };
-  const focusMapField = () => {
-    // interrompe drag de janelas para este fluxo
   };
   useEffect(() => {
     if (!dragInfo) return undefined;
@@ -466,7 +421,7 @@ export default function MapaTaticoPage() {
             </div>
             <div className="custom-scroll min-h-0 flex-1 space-y-3 overflow-y-auto p-3 text-xs">
               <div>
-                <span className="mb-1 block font-cinzel text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Heróis</span>
+                <span className="mb-1 block font-cinzel text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Heróis</span>
                 <div className="space-y-1">
                   {heroes.length === 0 && <p className="px-1 text-[10px] italic text-muted-foreground">Nenhuma ficha nesta mesa.</p>}
                   {heroes.map((hero) => (
@@ -478,7 +433,7 @@ export default function MapaTaticoPage() {
                 </div>
               </div>
               <div>
-                <span className="mb-1 block font-cinzel text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Monstros & NPCs</span>
+                <span className="mb-1 block font-cinzel text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Monstros & NPCs</span>
                 <div className="space-y-1">
                   {npcs.length === 0 && <p className="px-1 text-[10px] italic text-muted-foreground">Bestiário vazio.</p>}
                   {npcs.map((npc) => (
@@ -517,7 +472,7 @@ export default function MapaTaticoPage() {
                   <div className="mt-1 grid grid-cols-12 gap-1">
                     {ICON_OPTIONS.map((key) => {
                       const Ico = TOKEN_ICONS[key];
-                      const activeIcone = selected.icone || (selected.tipo === "personagem" ? "shield" : "sword");
+                      const activeIcone = selected.icone || defaultTokenIcon(selected.tipo);
                       const isActive = activeIcone === key;
                       return (
                         <button
@@ -577,7 +532,7 @@ export default function MapaTaticoPage() {
             const size = TOKEN_SIZES[tokenItem.tamanho || "M"] || TOKEN_SIZES.M;
             const isSelected = selectedToken === tokenItem.id;
             const isHidden = Boolean(tokenItem.oculto) && isMaster;
-            const TokenIcon = TOKEN_ICONS[tokenItem.icone] || (tokenItem.tipo === "personagem" ? Shield : Sword);
+            const TokenIcon = resolveTokenIcon(tokenItem.icone, tokenItem.tipo);
             const hpPct = tokenItem.hpMax ? Math.max(0, Math.round((100 * Number(tokenItem.hp ?? tokenItem.hpMax)) / Number(tokenItem.hpMax))) : null;
             return (
               <button
