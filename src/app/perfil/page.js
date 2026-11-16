@@ -400,7 +400,7 @@ export default function PerfilPage() {
                 <option value="">Escolha a raça…</option>
                 {DEFAULT_RACES.map((race) => (
                   <option key={race.id} value={race.id}>
-                    {race.name} — {race.trait}
+                    {race.name}
                   </option>
                 ))}
               </select>

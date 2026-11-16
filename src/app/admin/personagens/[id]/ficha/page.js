@@ -62,6 +62,11 @@ export default function MasterCharacterSheet() {
 
   async function save(event) {
     event.preventDefault();
+    const hitDieValue = (character?.dadosExtras?.hitDie || "").trim();
+    if (hitDieValue && !/^(?:[1-9]\d{0,1})?d(?:4|6|8|10|12|20)$/i.test(hitDieValue)) {
+      setError("Dado de vida inválido. Use o formato ex.: 1d10 (d4, d6, d8, d10, d12 ou d20).");
+      return;
+    }
     setSaving(true);
     setMessage("");
     setError("");
@@ -165,7 +170,12 @@ export default function MasterCharacterSheet() {
               </label>
             ))}
             <label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Dado de vida
-              <input value={character.dadosExtras?.hitDie || ""} onChange={(event) => updateRules({ hitDie: event.target.value })} placeholder="Ex.: 1d10" className="mt-1 min-h-11 w-full border border-border bg-input-background px-3 text-sm text-foreground outline-none focus:border-primary" />
+              <input value={character.dadosExtras?.hitDie || ""} onChange={(event) => updateRules({ hitDie: event.target.value })} placeholder="Ex.: 1d10" list="hit-die-options" className="mt-1 min-h-11 w-full border border-border bg-input-background px-3 text-sm text-foreground outline-none focus:border-primary" />
+              <datalist id="hit-die-options">
+                {["1d4", "1d6", "1d8", "1d10", "1d12", "1d20"].map((die) => (
+                  <option key={die} value={die} />
+                ))}
+              </datalist>
             </label>
           </div>
         </section>
