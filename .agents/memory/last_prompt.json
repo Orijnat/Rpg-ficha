@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-11-15T15:25:00-03:00",
+  "timestamp": "2026-11-16T09:52:00-03:00",
   "agent": "opencode",
-  "skill": "orchestrator (autónomo até 17h)",
-  "prompt": "va estudando o sistema e desenvolvendo skills, e melhorando o sistema, nao vou estar podendo responder o seus chamados, mas continue desenvolvendo ate as 5 horas da tarde ou ate eu cancelar o terminal",
-  "action": "Lotes 1-4 concluídos. Backend: test/mapa_tatico.test.js (14) + test/security_auth.test.js (12) → 54/54; .env.example documentado; fix verificado empiricamente com X-Forwarded-For (0 ocorrências de ERR_ERL_UNEXPECTED_X_FORWARDED_FOR). Frontend: refactor TOKEN_ICONS→src/lib/mapaTatico.js; +mapa-tatico.test.mjs (145/145); 54× text-[9px]→text-[10px]; audit fix typescript-eslint; dead code removido; build/lint OK. Skills novas: mapa-tatico + render-supabase-producao (.agents/skills espelhado em .github/skills). Docs: TROUBLESHOOTING (3 incidentes reais de produção), RUNBOOK (trust proxy/CORP/disco efêmero), CHANGELOG, validações em COISAS-A-FAZER. SEM commits do lote (operador pedirá). Bloqueios: Google API (credenciais), E2E/a11y suite (sem browser), ci.yml sem escopo token."
+  "skill": "frontend-artisan (AuthScaffold)",
+  "prompt": "a pagina de login voce poderia fazer com que o fundo fique igual a tela de cadastro, pois existem barras pretas na tela de login que na de cadastro nao existem",
+  "action": "Causa-raiz encontrada: login e registro usam o mesmo AuthScaffold, mas a camada de fundo era `absolute inset-0` (cobria só a altura do cartão). A ficha do registro é alta e cobre a viewport; a do login é curta e sobrava fundo preto do body. Fix: `fixed inset-0` em src/components/auth/AuthScaffold.jsx (camada de fundo). eslint limpo no arquivo. Não commitado."
 }

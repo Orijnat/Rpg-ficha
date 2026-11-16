@@ -1,8 +1,9 @@
 # 🧠 Sessão Ativa — Grimorium RPG
 
-**Última Atualização**: 2026-11-15T15:50:00-03:00  
+**Última Atualização**: 2026-11-16T09:52:00-03:00  
 **Branch Atual**: `main`  
-**Status**: Login em produção corrigido (trust proxy 04a2a5c + migrações prod). Mapa tático: bug da miniatura sumindo corrigido + ícones personalizáveis (e4b7eb9 back / 76243c7 front). Imagens do mapa: fix CORP (77cc96a). Fundo do mapa por sessão + URL externa commitado (c1c1365). Mandato autônomo "desenvolver até 17h": backend +26 testes (54/54: mapa_tatico ACL + security_auth), frontend +5 (145/145), refactor TOKEN_ICONS→lib/mapaTatico.js, skills `mapa-tatico` e `render-supabase-producao` (espelhadas), docs atualizados. Lote autônomo completo: 54/54 back, 145/145 front, build 31/31, lint 0 erros (42 warnings pré-existentes). text-[9px]→[10px] (54×); audit fix typescript-eslint; docs/COISAS/TROUBLESHOOTING/RUNBOOK atualizados; skills novas espelhadas. jwt.js hardening (timingSafeEqual, sem unsigned), sessão restaurada confia só em /auth/me, rpg_auth_user não persiste mais → 148/148. Tudo NÃO commitado (aguardar pedido de commit).
+**Status**: Fix de fundo do login aplicado (AuthScaffold: camada de fundo `absolute inset-0` → `fixed inset-0`) para igualar ao cadastro (barras pretas vinham da altura curta do cartão de login + fundo `absolute`). eslint limpo no arquivo. Nada commitado.
+**Anterior**: Login em produção corrigido (trust proxy 04a2a5c + migrações prod). Mapa tático: bug da miniatura sumindo corrigido + ícones personalizáveis (e4b7eb9 back / 76243c7 front). Imagens do mapa: fix CORP (77cc96a). Fundo do mapa por sessão + URL externa commitado (c1c1365). Mandato autônomo "desenvolver até 17h": backend +26 testes (54/54: mapa_tatico ACL + security_auth), frontend +5 (145/145), refactor TOKEN_ICONS→lib/mapaTatico.js, skills `mapa-tatico` e `render-supabase-producao` (espelhadas), docs atualizados. Lote autônomo completo: 54/54 back, 145/145 front, build 31/31, lint 0 erros (42 warnings pré-existentes). text-[9px]→[10px] (54×); audit fix typescript-eslint; docs/COISAS/TROUBLESHOOTING/RUNBOOK atualizados; skills novas espelhadas. jwt.js hardening (timingSafeEqual, sem unsigned), sessão restaurada confia só em /auth/me, rpg_auth_user não persiste mais → 148/148. Tudo NÃO commitado (aguardar pedido de commit).
 
 ---
 
@@ -78,3 +79,8 @@ Abrir `/`, `/login` e `/registro` no navegador com o backend local, revisar o vi
 
 ## ✅ Atualização (itens-a-fazer)
 - Achados da auditoria incorporados a `itens-a-fazer.md` na seção "Auditoria do sistema (2026-11-14)": 6 itens S1, 12 S2, 13 S3, 2 S4 — cada um referenciando o ID do achado (F-xx/A-xx) e o doc `docs/AUDITORIA-SISTEMA-2026-11-14.md`.
+
+## ✅ Atualização 2026-11-16 (Fix fundo do login)
+- Causa-raiz das "barras pretas" no /login (inexistentes no /registro): as duas telas usam `AuthScaffold`, mas a camada de fundo era `absolute inset-0` — cobria apenas a altura do cartão. O cartão do registro é alto e preenche a viewport; o do login é curto, sobrava o fundo quase preto do body acima/abaixo.
+- Fix: `src/components/auth/AuthScaffold.jsx` — camada de fundo ("Camada de fundo viva") de `absolute inset-0` para `fixed inset-0` (ancora na viewport, como `background-attachment: fixed` do body). Beneficia também `/esqueci-senha`, `/redefinir-senha` e `/verificar-email`.
+- eslint limpo no arquivo. NÃO commitado. Recomendação: conferir /login no navegador.
