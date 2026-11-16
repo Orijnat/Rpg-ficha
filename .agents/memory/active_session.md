@@ -134,3 +134,11 @@ Pedido do usuário: log de batalha que persiste TODAS as ações de jogadores e 
 - Fix definitivo: revertido `allowNestedScroll` em `SmoothScroll.jsx` (site volta ao comportamento anterior — página volta a rolar) + `data-lenis-prevent` (atributo oficial do Lenis) injetado nos 15 containers internos `overflow-y-auto`/`overflow-auto` (mapa tático, FloatingWindow, modais, log de batalha, encontros).
 - Comportamento: sobre containers marcados, Lenis ignora o wheel → scroll nativo funciona dentro; fora deles, a página rola como antes.
 - Build OK 31/31, lint 0 erros. Commitado como 923f890 e pushed.
+
+## ✅ Atualização 2026-11-16 (Consumo automático de itens)
+- Pedido: cálculo automático de consumo — atacar com arma/arco, cargas, durabilidade, duração de poções.
+- Decisões: mecânicas = 4 (munição automática, cargas/usos, durabilidade, duração de poções); config = painel dedicado "Usar & Consumir" na ficha (/inventario); efeitos de poção = lista "Efeitos Ativos" na ficha; gatilho = botão de dados do item + botão Atacar/Usar no painel.
+- `src/lib/items.js` (novo): `applyItemUse` puro (consome munição detectada/vinculada, cargas, durabilidade com quebra em 0, cria activeEffect com duração) + `tickActiveEffects`. Testes: 10 novos (items.test.mjs) → 158/158.
+- `CharacterContext`: `configureItemUse`, `consumeItem`, `tickActiveEffect`, `advanceRoundEffects` (Rodada +1 em todos de rodadas, expira e loga), `removeActiveEffect`. Efeitos ativos em `data.dadosExtras.activeEffects` (round-trip pela sync existente, sem migration). Postam battle log tipo `recursos` ("Usou X", "Flecha consumida (11 rest.)", "Efeito Y expirou").
+- `/inventario`: 2 cards novos — "Efeitos Ativos" (lista com −1, Rodada +1, remover) e "Usar & Consumir" (configurar perfil por item: tipo arma/à distância/consumível/mágico; munição vinculada; cargas; durabilidade; efeito+duração; botão Atacar/Usar; gatilho no dado do item também consome). Containers com data-lenis-prevent.
+- Build OK 31/31, lint 0 erros. NÃO commitado.
