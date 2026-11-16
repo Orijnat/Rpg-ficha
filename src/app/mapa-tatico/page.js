@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 import { TOKEN_ICONS, ICON_OPTIONS, defaultTokenIcon, resolveTokenIcon } from "../../lib/mapaTatico";
 import EmberCanvas from "../components/mapa/EmberCanvas";
+import BattleLogPanel from "../components/batalha/BattleLogPanel";
 import FloatingWindow from "../components/mapa/FloatingWindow";
 import { useWindowManager } from "../../hooks/useWindowManager";
 import { useAuth } from "../context/AuthContext";
@@ -79,6 +80,7 @@ const PLAYER_WIDGETS = [
   { id: "banco", label: "Banco", icon: <Coins size={14} />, content: <BancoPage /> },
   { id: "quarto", label: "Quarto", icon: <Home size={14} />, content: <QuartoPage /> },
   { id: "montaria", label: "Montaria", icon: <Footprints size={14} />, content: <MontariaPage /> },
+  { id: "batalha", label: "Log da Batalha", icon: <Swords size={14} />, content: <BattleLogPanel /> },
 ];
 const MASTER_WIDGETS = [
   ...PLAYER_WIDGETS,
@@ -113,7 +115,14 @@ export default function MapaTaticoPage() {
   const fieldRef = useRef(null);
   const { windows, openWindow, closeWindow, toggleMinimize, focusWindow, moveWindow, resizeWindow } = useWindowManager();
 
-  const widgets = isMaster ? MASTER_WIDGETS : PLAYER_WIDGETS;
+  const widgets = useMemo(() => {
+    const base = isMaster ? MASTER_WIDGETS : PLAYER_WIDGETS;
+    return base.map((widget) =>
+      widget.id === "batalha"
+        ? { ...widget, content: <BattleLogPanel campanhaId={selectedCampaignId || null} /> }
+        : widget
+    );
+  }, [isMaster, selectedCampaignId]);
   const activeCampaign = useMemo(() => campaigns.find((c) => c.id === selectedCampaignId) || null, [campaigns, selectedCampaignId]);
 
   // Carrega campanhas e escolhe a primeira

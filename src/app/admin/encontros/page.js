@@ -20,15 +20,18 @@ import {
 } from "lucide-react";
 import { Card, SectionHeader } from "../../components/ui";
 import ConfirmDialog from "../../components/admin/ConfirmDialog";
+import { BattleLogEntryRow } from "../../components/batalha/BattleLogPanel";
 import {
   createEncounter,
   deleteEncounter,
+  listBattleLog,
   listCampaigns,
   listCharacters,
   listEncounters,
   listNpcs,
   updateEncounter,
 } from "../../../lib/api";
+import { normalizeLegacyBattleLogEntry } from "../../../lib/battleLog";
 import { CONDITIONS_LIST, advanceTurn, applyHealthChange } from "../../../lib/modifiers";
 import { rollDice } from "../../../lib/dice";
 import { useAuth } from "../../context/AuthContext";
@@ -59,6 +62,23 @@ export default function AdminEncontrosPage() {
   const [encounterToDelete, setEncounterToDelete] = useState(null);
 
   const [openConditionPickerId, setOpenConditionPickerId] = useState(null);
+
+  // Log persistente da batalha: entradas marcadas pelo encontro a que pertencem,
+  // para nunca renderizar eventos do encontro anterior enquanto a carga está em curso
+  const [battleLogState, setBattleLogState] = useState({ encounterId: null, entradas: null });
+
+  const fetchBattleLog = async (campId, encounterId, { silent = false } = {}) => {
+    if (!campId || !encounterId) return;
+    try {
+      const data = await listBattleLog(campId, { encontroId: encounterId, limit: 200 }, token);
+      setBattleLogState({ encounterId, entradas: Array.isArray(data?.entradas) ? data.entradas : [] });
+    } catch (err) {
+      if (!silent) {
+        console.warn("Log de batalha indisponível, usando histórico legado:", err?.message || err);
+        setBattleLogState({ encounterId, entradas: null }); // null = servidor indisponível → fallback legado
+      }
+    }
+  };
 
   useEffect(() => {
     if (!isMaster) return;
@@ -95,6 +115,18 @@ export default function AdminEncontrosPage() {
     }
   }, [selectedCampaignId]);
 
+  // Polling leve do log da batalha enquanto o encontro está aberto
+  useEffect(() => {
+    if (!selectedCampaignId || !activeEncounter?.id) return undefined;
+    fetchBattleLog(selectedCampaignId, activeEncounter.id);
+    const id = window.setInterval(
+      () => fetchBattleLog(selectedCampaignId, activeEncounter.id, { silent: true }),
+      5000
+    );
+    return () => window.clearInterval(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCampaignId, activeEncounter?.id]);
+
   const handleCreateEncounter = async (e) => {
     e.preventDefault();
     if (!novoNome.trim()) return;
@@ -119,7 +151,7 @@ export default function AdminEncontrosPage() {
     }
   };
 
-  const syncEncounterUpdate = async (patch, logMsg = null) => {
+  const syncEncounterUpdate = async (patch, logMsg = null, logTipo = "sistema") => {
     if (!activeEncounter) return;
     try {
       const updated = await updateEncounter(
@@ -127,11 +159,13 @@ export default function AdminEncontrosPage() {
         {
           ...patch,
           novoEventoLog: logMsg,
+          tipoEventoLog: logTipo,
         },
         token
       );
       setActiveEncounter(updated);
       setEncounters((prev) => prev.map((e) => (e.id === updated.id ? updated : e)));
+      fetchBattleLog(selectedCampaignId, updated.id, { silent: true });
     } catch (err) {
       setError(err.message);
     }
@@ -157,7 +191,8 @@ export default function AdminEncontrosPage() {
 
     syncEncounterUpdate(
       { dadosExtras: { ...(activeEncounter.dadosExtras || {}), iniciativa: newList } },
-      `Herói ${char.name} entrou no combate.`
+      `Herói ${char.name} entrou no combate.`,
+      "entrada"
     );
   };
 
@@ -180,7 +215,8 @@ export default function AdminEncontrosPage() {
 
     syncEncounterUpdate(
       { dadosExtras: { ...(activeEncounter.dadosExtras || {}), iniciativa: newList } },
-      `Ameaça ${npc.nome} posicionada no campo de batalha.`
+      `Ameaça ${npc.nome} posicionada no campo de batalha.`,
+      "entrada"
     );
   };
 
@@ -194,7 +230,8 @@ export default function AdminEncontrosPage() {
 
     syncEncounterUpdate(
       { dadosExtras: { ...(activeEncounter.dadosExtras || {}), iniciativa: updatedList } },
-      `${item.name} sofreu ${delta < 0 ? `${Math.abs(delta)} de dano` : `${delta} de cura`} (PV: ${res.currentHp}/${item.hpMax}).`
+      `${item.name} sofreu ${delta < 0 ? `${Math.abs(delta)} de dano` : `${delta} de cura`} (PV: ${res.currentHp}/${item.hpMax}).`,
+      delta < 0 ? "dano" : "cura"
     );
   };
 
@@ -210,7 +247,8 @@ export default function AdminEncontrosPage() {
 
     syncEncounterUpdate(
       { dadosExtras: { ...(activeEncounter.dadosExtras || {}), iniciativa: updatedList } },
-      `${has ? "Removida condição" : "Aplicada condição"} ${condId} em ${item.name}.`
+      `${has ? "Removida condição" : "Aplicada condição"} ${condId} em ${item.name}.`,
+      "condicao"
     );
   };
 
@@ -231,7 +269,8 @@ export default function AdminEncontrosPage() {
           activeTurnIndex: 0,
         },
       },
-      "Iniciativa rolada para todos os combatentes e reordenada."
+      "Iniciativa rolada para todos os combatentes e reordenada.",
+      "iniciativa"
     );
   };
 
@@ -251,7 +290,8 @@ export default function AdminEncontrosPage() {
           combatRound: next.round,
         },
       },
-      `Avançado para o turno de ${list[next.turnIndex]?.name} (Rodada ${next.round}).`
+      `Avançado para o turno de ${list[next.turnIndex]?.name} (Rodada ${next.round}).`,
+      "turno"
     );
   };
 
@@ -273,7 +313,15 @@ export default function AdminEncontrosPage() {
   const currentInitiative = activeEncounter?.dadosExtras?.iniciativa || [];
   const currentRound = activeEncounter?.dadosExtras?.combatRound || 1;
   const currentTurnIndex = activeEncounter?.dadosExtras?.activeTurnIndex || 0;
-  const combatLog = activeEncounter?.dadosExtras?.logHistorico || [];
+  const legacyCombatLog = (activeEncounter?.dadosExtras?.logHistorico || []).map(
+    normalizeLegacyBattleLogEntry
+  );
+  // Prefere o log persistido no servidor; cai no legado (JSONB) enquanto ele não responde
+  const battleLog =
+    activeEncounter?.id && battleLogState.encounterId === activeEncounter.id
+      ? battleLogState.entradas
+      : null;
+  const combatLog = battleLog?.length ? battleLog : legacyCombatLog;
 
   return (
     <div className="space-y-6">
@@ -637,19 +685,8 @@ export default function AdminEncontrosPage() {
                       Nenhum evento registrado ainda.
                     </p>
                   ) : (
-                    combatLog.slice().reverse().map((entry, idx) => (
-                      <div
-                        key={idx}
-                        className="rounded-lg border border-border/80 bg-secondary/40 p-2 text-xs"
-                      >
-                        <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-                          <span className="font-semibold text-primary">{entry.autor || "Sistema"}</span>
-                          <span>{new Date(entry.timestamp).toLocaleTimeString("pt-BR")}</span>
-                        </div>
-                        <p className="mt-1 text-foreground font-serif leading-relaxed">
-                          {entry.evento}
-                        </p>
-                      </div>
+                    combatLog.slice().reverse().map((entry) => (
+                      <BattleLogEntryRow key={entry.id} entry={entry} dense />
                     ))
                   )}
                 </div>

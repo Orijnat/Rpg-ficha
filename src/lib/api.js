@@ -617,6 +617,30 @@ export async function sendInitiativeFromSheet(campanhaId, initiativeData, token 
 }
 
 // ==========================================
+// 📜 LOG DE BATALHA (AÇÕES DE JOGADORES E MESTRE)
+// ==========================================
+
+export async function listBattleLog(campanhaId, { encontroId, limit } = {}, token = getStoredToken()) {
+  const params = new URLSearchParams();
+  if (encontroId) params.set("encontroId", encontroId);
+  if (limit) params.set("limit", String(limit));
+  const query = params.toString();
+  return safeFetchJson(
+    `${API_BASE_URL}/campanhas/${campanhaId}/batalha/log${query ? `?${query}` : ""}`,
+    { headers: authHeaders(token) },
+    "Erro ao carregar o log de batalha."
+  );
+}
+
+export async function postBattleLogEvent(campanhaId, event, token = getStoredToken()) {
+  return safeFetchJson(`${API_BASE_URL}/campanhas/${campanhaId}/batalha/log`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify(event),
+  }, "Erro ao registrar evento no log de batalha.");
+}
+
+// ==========================================
 // 🗺️ MAPAS TÁTICOS, MARCADORES E REVELAÇÃO
 // ==========================================
 

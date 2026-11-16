@@ -14,7 +14,9 @@ import {
 } from "lucide-react";
 import { useCharacter } from "../context/CharacterContext";
 import { useDice } from "../context/DiceContext";
+import { useAuth } from "../context/AuthContext";
 import { applyHealthChange, calculateModifier } from "../../lib/modifiers";
+import { postBattleLogEvent } from "../../lib/api";
 import { HPBar } from "./ui";
 
 /**
@@ -27,6 +29,15 @@ import { HPBar } from "./ui";
 export default function DanoCuraPainel({ compact = false, onClose = null }) {
   const { data, upd, updExtra } = useCharacter();
   const { executeRoll } = useDice();
+  const { token } = useAuth();
+
+  // Espelha dano/cura no log da batalha ativa (silencioso fora de combate)
+  const logBattle = (tipo, mensagem, dados = {}) => {
+    const campanhaId = data?.campanhaId;
+    if (!token || !campanhaId) return;
+    postBattleLogEvent(campanhaId, { tipo, mensagem, dados: { personagemId: data?.id || null, ...dados } }, token)
+      .catch(() => {});
+  };
 
   const [amount, setAmount] = useState("");
   const [lastAction, setLastAction] = useState(null);
@@ -55,6 +66,14 @@ export default function DanoCuraPainel({ compact = false, onClose = null }) {
     const res = applyHealthChange(currentHp, maxHp, -val);
     upd("hp", res.currentHp);
 
+    logBattle(
+      "dano",
+      `${data?.name || "O herói"} sofreu ${val} de dano${
+        absorbCA && raw > val ? ` (CA ${armorClass} absorveu ${raw - val})` : ""
+      } (${res.previousHp} → ${res.currentHp}/${maxHp} PV)`,
+      { bruto: raw, absorvido: absorbCA ? raw - val : 0, quantidade: val, hpAntes: res.previousHp, hpDepois: res.currentHp, hpMax: maxHp, armorClass }
+    );
+
     setActionType("damage");
     setLastAction({
       text: absorbCA && raw > val
@@ -73,6 +92,12 @@ export default function DanoCuraPainel({ compact = false, onClose = null }) {
     const res = applyHealthChange(currentHp, maxHp, val);
     upd("hp", res.currentHp);
 
+    logBattle(
+      "cura",
+      `${data?.name || "O herói"} curou ${val} PV (${res.previousHp} → ${res.currentHp}/${maxHp} PV)`,
+      { quantidade: val, hpAntes: res.previousHp, hpDepois: res.currentHp, hpMax: maxHp }
+    );
+
     setActionType("heal");
     setLastAction({
       text: `Curou ${val} PV (${res.previousHp} ➔ ${res.currentHp} PV)`,
@@ -86,6 +111,13 @@ export default function DanoCuraPainel({ compact = false, onClose = null }) {
     if (currentHp >= maxHp) return;
     const diff = maxHp - currentHp;
     upd("hp", maxHp);
+
+    logBattle(
+      "cura",
+      `${data?.name || "O herói"} restaurou toda a vida (+${diff} PV → ${maxHp}/${maxHp})`,
+      { quantidade: diff, hpAntes: currentHp, hpDepois: maxHp, hpMax: maxHp, curaTotal: true }
+    );
+
     setActionType("full");
     setLastAction({
       text: `Vida totalmente restaurada (+${diff} PV ➔ ${maxHp}/${maxHp})`,
@@ -113,6 +145,11 @@ export default function DanoCuraPainel({ compact = false, onClose = null }) {
       const healAmount = Math.max(1, roll.total);
       const res = applyHealthChange(currentHp, maxHp, healAmount);
       upd("hp", res.currentHp);
+      logBattle(
+        "cura",
+        `${data?.name || "O herói"} recuperou ${healAmount} PV com Dado de Vida (${res.previousHp} → ${res.currentHp}/${maxHp} PV)`,
+        { quantidade: healAmount, hpAntes: res.previousHp, hpDepois: res.currentHp, hpMax: maxHp, dadoDeVida: true }
+      );
       setActionType("heal");
       setLastAction({
         text: `Dado de Vida (${hitDie}) curou +${healAmount} PV (${res.previousHp} ➔ ${res.currentHp}/${maxHp})`,

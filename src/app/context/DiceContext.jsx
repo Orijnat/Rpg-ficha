@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { rollDice } from "../../lib/dice";
-import { postRollToBackend } from "../../lib/api";
+import { postRollToBackend, postBattleLogEvent } from "../../lib/api";
 import { useCharacter } from "./CharacterContext";
 import { useAuth } from "./AuthContext";
 
@@ -37,6 +37,29 @@ export function DiceProvider({ children }) {
         personagemId: data.id,
       }, token).catch((error) => {
         console.warn("Rolagem não registrada no servidor:", error?.message || error);
+      });
+      // Espelha a rolagem no log da batalha ativa (o servidor ignora se não houver encontro ativo)
+      const critSuffix = result.isCriticalSuccess
+        ? " — Crítico!"
+        : result.isCriticalFailure
+        ? " — Falha crítica"
+        : "";
+      postBattleLogEvent(data.campanhaId, {
+        tipo: "rolagem",
+        mensagem: `${result.label}: ${result.total}${critSuffix}`,
+        dados: {
+          formula: result.formula,
+          resultados: result.rolls,
+          kept: result.kept,
+          modifier: result.modifier,
+          total: result.total,
+          modo: result.mode,
+          critico: Boolean(result.isCriticalSuccess),
+          falhaCritica: Boolean(result.isCriticalFailure),
+          personagemId: data.id,
+        },
+      }, token).catch(() => {
+        // Sem encontro ativo (ou mesa indisponível): a rolagem nunca pode falhar por causa disso
       });
     } catch {
       // silencioso: persistir histórico nunca pode quebrar a rolagem
