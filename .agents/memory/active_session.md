@@ -26,6 +26,9 @@
 - `UnitPicker.jsx` e a pasta `components/ui/` removidos (sem uso).
 - Build OK, testes 158/158, eslint limpo. NÃO commitado.
 
+## ✅ Push 2026-11-16 (2)
+- Commits `b08ece0` (feat campo simples) e `b6e74ea` (docs memory) enviados ao origin/main.
+
 ## ✅ Push 2026-11-16
 - Commits `4b5ab5d` (feat inventario/banco) e `cb68efc` (docs memory) enviados ao origin/main. `.github/workflows/ci.yml` segue untracked local (PAT sem scope workflow).
 
