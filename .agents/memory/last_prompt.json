@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-11-16T09:52:00-03:00",
+  "timestamp": "2026-11-16T15:05:00-03:00",
   "agent": "opencode",
-  "skill": "frontend-artisan (AuthScaffold)",
-  "prompt": "a pagina de login voce poderia fazer com que o fundo fique igual a tela de cadastro, pois existem barras pretas na tela de login que na de cadastro nao existem",
-  "action": "Causa-raiz encontrada: login e registro usam o mesmo AuthScaffold, mas a camada de fundo era `absolute inset-0` (cobria só a altura do cartão). A ficha do registro é alta e cobre a viewport; a do login é curta e sobrava fundo preto do body. Fix: `fixed inset-0` em src/components/auth/AuthScaffold.jsx (camada de fundo). eslint limpo no arquivo. Não commitado."
+  "skill": "frontend-artisan",
+  "prompt": "poderia corriir o scroll, pois em aluns momento so scroll nao esta funcionando",
+  "action": "Causa-raiz: Lenis root (smoothWheel) hijackava TODOS os wheel events e chamava preventDefault, matando o scroll nativo dos containers internos (floating windows do mapa tatico, modais, listas overflow-y-auto — 15+ ocorrencias). Fix: allowNestedScroll: true nas options do ReactLenis (src/components/SmoothScroll.jsx) — Lenis agora detecta scrollable descendants sob o cursor e cede o scroll nativo; na borda do container, o scroll encadeia para a pagina. Build OK 31/31, lint 0 erros."
 }

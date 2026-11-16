@@ -1,8 +1,8 @@
 # 🧠 Sessão Ativa — Grimorium RPG
 
-**Última Atualização**: 2026-11-16T09:52:00-03:00  
+**Última Atualização**: 2026-11-16T14:20:00-03:00  
 **Branch Atual**: `main`  
-**Status**: Fix de fundo do login aplicado (AuthScaffold: camada de fundo `absolute inset-0` → `fixed inset-0`) para igualar ao cadastro (barras pretas vinham da altura curta do cartão de login + fundo `absolute`). eslint limpo no arquivo. Nada commitado.
+**Status**: Fix de scroll aplicado — Lenis `allowNestedScroll: true` (SmoothScroll.jsx) restaura scroll nativo dos containers internos (mapa tatico, modais, listas). Anterior: Log de Batalha implementado de ponta a ponta (2 repos) — tabela log_batalha, ACL por campanha, visão do jogador no mapa tático + visão do mestre na Sala de Guerra. Build OK, front 148/148, back 63/63. Nada commitado. Pendência: aplicar migration 20261116000000-log-batalha.js no Supabase (produção) — NÃO aplicada.
 **Anterior**: Login em produção corrigido (trust proxy 04a2a5c + migrações prod). Mapa tático: bug da miniatura sumindo corrigido + ícones personalizáveis (e4b7eb9 back / 76243c7 front). Imagens do mapa: fix CORP (77cc96a). Fundo do mapa por sessão + URL externa commitado (c1c1365). Mandato autônomo "desenvolver até 17h": backend +26 testes (54/54: mapa_tatico ACL + security_auth), frontend +5 (145/145), refactor TOKEN_ICONS→lib/mapaTatico.js, skills `mapa-tatico` e `render-supabase-producao` (espelhadas), docs atualizados. Lote autônomo completo: 54/54 back, 145/145 front, build 31/31, lint 0 erros (42 warnings pré-existentes). text-[9px]→[10px] (54×); audit fix typescript-eslint; docs/COISAS/TROUBLESHOOTING/RUNBOOK atualizados; skills novas espelhadas. jwt.js hardening (timingSafeEqual, sem unsigned), sessão restaurada confia só em /auth/me, rpg_auth_user não persiste mais → 148/148. Tudo NÃO commitado (aguardar pedido de commit).
 
 ---
@@ -84,3 +84,47 @@ Abrir `/`, `/login` e `/registro` no navegador com o backend local, revisar o vi
 - Causa-raiz das "barras pretas" no /login (inexistentes no /registro): as duas telas usam `AuthScaffold`, mas a camada de fundo era `absolute inset-0` — cobria apenas a altura do cartão. O cartão do registro é alto e preenche a viewport; o do login é curto, sobrava o fundo quase preto do body acima/abaixo.
 - Fix: `src/components/auth/AuthScaffold.jsx` — camada de fundo ("Camada de fundo viva") de `absolute inset-0` para `fixed inset-0` (ancora na viewport, como `background-attachment: fixed` do body). Beneficia também `/esqueci-senha`, `/redefinir-senha` e `/verificar-email`.
 - eslint limpo no arquivo. NÃO commitado. Recomendação: conferir /login no navegador.
+
+## ✅ Atualização 2026-11-16 (Banco — botão Sair)
+- Pedido do usuário: no Banco de Glenor, substituir o bloco "Senha personalizada" por apenas um botão de sair.
+- `src/app/components/banco/BankUnlockedView.jsx`: header agora só tem `SectionHeader` + botão "Sair" (`LogOut`, `onLogout` = fechar cofre). Removidos form/feedback de senha e prop `characterId` (também no pai `src/app/banco/page.jsx`).
+- `setBankPasswordOnBackend` (lib/api.js) e o endpoint backend `PUT /api/characters/:id/bank/password` permanecem intactos (capability preservada no servidor; só a UI foi removida).
+- eslint limpo. NÃO commitado.
+
+## ✅ Atualização 2026-11-16 (Banco — modal depositar/retirar)
+- Pedido: clicar num espaço do banco abre modal listando o inventário e move o item para o cofre.
+- `CharacterContext.js`: novos métodos `depositToBank(slotIndex, inventoryItemId)` e `withdrawFromBank(slotIndex)` — atômicos em um único `setData`; slot passa a guardar `{ item, qty, weight }` (retrocompatível: slots antigos só têm `item`).
+- Novo `src/app/components/banco/BankChestModal.jsx`: slot vazio → busca + lista do inventário ("Guardar" move o item, removendo-o do inventário); slot ocupado → mostra item e "Devolver ao Inventário".
+- `BankSlot.jsx`: window.prompt removido; exibe `nome ×qty`; clique abre o modal. `BankSlotGrid.jsx`: prop `onSlotClick`. `BankUnlockedView.jsx`: gerencia `activeSlot` e renderiza o modal. `banco/page.jsx`: conecta `data.inventory` + callbacks.
+- Build OK, testes 148/148, eslint limpo. NÃO commitado.
+
+## ✅ Atualização 2026-11-16 (Log de Batalha)
+
+Pedido do usuário: log de batalha que persiste TODAS as ações de jogadores e do mestre durante a batalha. Escolhas validadas: rolagens+dano/cura+iniciativa+ações do mestre; jogador também vê o log; nova tabela `log_batalha` (não JSONB).
+
+**Backend `../Rpg-backend`**:
+- `models/LogBatalha.js` + migration `database/migrations/20261116000000-log-batalha.js` (PK uuid, FKs encontro/campanha ON DELETE CASCADE, usuario SET NULL, FK papel CHECK, índice (encontro_id, created_at ASC)). Aplicada e verificada em Postgres 16 descartável (Docker) — **produção (Supabase) NÃO migrada** (decisão de deploy).
+- `services/batalhaLog.js`: `registrarEventoBatalha` (nunca derruba a requisição; rodada = combatRound do encontro), `resolverEncontroParaLog` (encontroId explícito → ativo mais recente → mais recente), `resolverCampanhasPermitidas` (suporta `campanhaId="ativa"` como o fluxo de iniciativa), `serializeBatalhaLogEntry`.
+- `controllers/batalhaLogController.js`: GET `/campanhas/:id/batalha/log?encontroId=&limit=` (membro ativo lê; 403 fora da mesa; DESC→reverso ASC) e POST idem (membro registra; tipos reservados `turno`/`encontro`/`recursos` exigem posse da mesa → 403 para jogadores).
+- `encontroController`: criar→ evento `encontro`; `atualizar` espelha `novoEventoLog` no log com `tipoEventoLog` (schema aceita o enum); `receberIniciativaFicha` grava evento `iniciativa` (papel mestre se dono da mesa).
+- Rotas em `campanhaRoutes.js` (montadas em `/api/campanhas` e `/api/campanha`).
+- Backwards-compat total: zod não-strict descarta tipoEventoLog em backends antigos; logHistorico mantido.
+- Testes: 9 novos (`test/log_batalha.test.js`) → 63/63 verdes.
+
+**Front `Rpg-ficha`**:
+- `lib/api.js`: `listBattleLog(campId, { encontroId, limit })`, `postBattleLogEvent`.
+- `lib/battleLog.js`: metas (tipos/papéis, cores) + `normalizeLegacyBattleLogEntry` (fallback logHistorico).
+- `components/batalha/BattleLogPanel.jsx`: visão de log compartilhada (jogadores e mestre) — polling 5s, auto-scroll, rodada/hora/autor/papel/tipo; `BattleLogEntryRow` exportado p/ Sala de Guerra. Auto-detecta campanha se prop ausente.
+- `DiceContext`: toda rolagem com ficha vinculada à mesa posta evento `rolagem` (silêncio fora de combate).
+- `DanoCuraPainel`: dano (com absorção CA), cura, cura total e Dado de Vida postam eventos `dano`/`cura` com PV antes/depois.
+- `admin/encontros/page.js`: painel "Histórico de Alterações" lê o log do servidor (fallback legado), badges de papel/tipo, polling 5s, `tipoEventoLog` por ação (entrada/dano/cura/condicao/iniciativa/turno).
+- `mapa-tatico/page.js`: widget **Log da Batalha** (todos os papéis) injetando `selectedCampaignId`.
+- Build 31/31, testes 148/148, lint 0 erros (warnings restantes são da classe pré-existente de fetch-em-effect).
+
+**Verificar no navegador**: abrir `/mapa-tatico` como jogador e mestre, rolar dados, tomar dano, avançar turno — eventos devem aparecer em ~5s nos dois painéis.
+
+## ✅ Atualização 2026-11-16 (Fix scroll)
+- Sintoma: em alguns pontos o scroll não funcionava (painéis do mapa tático, modais, listas internas).
+- Causa: Lenis root com `smoothWheel` interceptava todos os wheel events e dava preventDefault — containers `overflow-y-auto` internos ficavam sem scroll nativo.
+- Fix: `allowNestedScroll: true` em `src/components/SmoothScroll.jsx` — Lenis cede o scroll aos descendants scrolláveis sob o cursor e reassume na borda (scroll chaining para a página).
+- Build OK (31/31), lint 0 erros. NÃO commitado. Verificar no navegador: rolar listas do mapa-tatico e modais com o wheel.
