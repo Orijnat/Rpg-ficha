@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Archive, X } from "lucide-react";
-import { UnitPicker } from "../ui/UnitPicker";
 
 /**
  * Modal "Guardar no Banco" a partir do inventário.
@@ -15,14 +14,15 @@ export function DepositToBankModal({ item, freeSlots, onClose, onConfirm }) {
 
 function DepositDialog({ item, freeSlots, onClose, onConfirm }) {
   const maxQty = Math.max(1, Number(item.qty ?? item.quantidade) || 1);
-  const [qty, setQty] = useState(maxQty);
+  const [qtyInput, setQtyInput] = useState(String(maxQty));
   const dialogRef = useRef(null);
+  const qtyRef = useRef(null);
   const hasSpace = freeSlots > 0;
-  const amount = Math.min(Math.max(1, Math.floor(Number(qty) || 1)), maxQty);
+  const amount = Math.min(Math.max(1, Math.floor(Number(qtyInput) || 1)), maxQty);
 
   useEffect(() => {
-    const closeButton = dialogRef.current?.querySelector("button");
-    closeButton?.focus();
+    qtyRef.current?.focus();
+    qtyRef.current?.select();
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
         event.stopPropagation();
@@ -73,12 +73,23 @@ function DepositDialog({ item, freeSlots, onClose, onConfirm }) {
             {maxQty}× na mochila{Number(item.weight) > 0 ? ` · ${Number(item.weight)} kg cada` : ""}
           </p>
 
-          <div className="mt-4">
-            <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-[var(--theme-subtitle)]">
-              Unidades a guardar (clique uma a uma)
+          <label className="mt-4 flex flex-col gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--theme-subtitle)]">
+            Quantidade que deseja deixar no banco
+            <input
+              type="number"
+              min={1}
+              max={maxQty}
+              ref={qtyRef}
+              value={qtyInput}
+              onChange={(e) => setQtyInput(e.target.value)}
+              onFocus={(e) => e.target.select()}
+              aria-label="Quantidade que deseja deixar no banco"
+              className="h-11 w-full rounded-lg border border-[#4a3d2a]/60 bg-[#0f0d0a]/60 px-3 text-center font-mono text-sm text-[#f1e7d2] outline-none focus:border-[var(--theme-accent)]/60"
+            />
+            <span className="text-[9px] font-normal normal-case text-[var(--theme-subtitle)]">
+              Máximo: {maxQty} {maxQty === 1 ? "unidade" : "unidades"}
             </span>
-            <UnitPicker value={amount} max={maxQty} onChange={setQty} label="Quantidade a guardar no banco" />
-          </div>
+          </label>
 
           <button
             type="button"

@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Package, Search, X, Archive, Undo2, Check } from "lucide-react";
-import { UnitPicker } from "../ui/UnitPicker";
 
 /**
  * Modal de cofre do Banco de Azedarack.
@@ -28,8 +27,8 @@ export function BankChestModal({ slotIndex, slot, inventory, onClose, onDeposit,
 function ChestDialog({ slotIndex, slot, inventory, onClose, onDeposit, onWithdraw }) {
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState(null);
-  const [depositQty, setDepositQty] = useState(1);
-  const [withdrawQty, setWithdrawQty] = useState(() => Math.max(1, Number(slot?.qty) || 1));
+  const [depositQtyInput, setDepositQtyInput] = useState("1");
+  const [withdrawQtyInput, setWithdrawQtyInput] = useState(() => String(Math.max(1, Number(slot?.qty) || 1)));
   const dialogRef = useRef(null);
   const occupied = Boolean(slot?.item);
 
@@ -52,14 +51,14 @@ function ChestDialog({ slotIndex, slot, inventory, onClose, onDeposit, onWithdra
   );
   const selectedItem = selectedId ? (inventory || []).find((item) => item.id === selectedId) || null : null;
   const selectedMax = selectedItem ? Math.max(1, Number(selectedItem.qty ?? selectedItem.quantidade) || 1) : 1;
-  const depositAmount = Math.min(Math.max(1, Math.floor(Number(depositQty) || 1)), selectedMax);
+  const depositAmount = Math.min(Math.max(1, Math.floor(Number(depositQtyInput) || 1)), selectedMax);
 
   const slotQty = Math.max(1, Number(slot?.qty) || 1);
-  const withdrawAmount = Math.min(Math.max(1, Math.floor(Number(withdrawQty) || 1)), slotQty);
+  const withdrawAmount = Math.min(Math.max(1, Math.floor(Number(withdrawQtyInput) || 1)), slotQty);
 
   const handleSelect = (item) => {
     setSelectedId(item.id);
-    setDepositQty(Math.max(1, Number(item.qty ?? item.quantidade) || 1));
+    setDepositQtyInput(String(Math.max(1, Number(item.qty ?? item.quantidade) || 1)));
   };
 
   return (
@@ -112,12 +111,22 @@ function ChestDialog({ slotIndex, slot, inventory, onClose, onDeposit, onWithdra
               </div>
             </div>
             {slotQty > 1 && (
-              <div className="mt-4">
-                <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-[var(--theme-subtitle)]">
-                  Unidades a devolver (clique uma a uma)
+              <label className="mt-4 flex flex-col gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--theme-subtitle)]">
+                Quantidade que deseja retirar
+                <input
+                  type="number"
+                  min={1}
+                  max={slotQty}
+                  value={withdrawQtyInput}
+                  onChange={(e) => setWithdrawQtyInput(e.target.value)}
+                  onFocus={(e) => e.target.select()}
+                  aria-label="Quantidade que deseja retirar"
+                  className="h-11 w-full rounded-lg border border-[#4a3d2a]/60 bg-[#0f0d0a]/60 px-3 text-center font-mono text-sm text-[#f1e7d2] outline-none focus:border-[var(--theme-accent)]/60"
+                />
+                <span className="text-[9px] font-normal normal-case text-[var(--theme-subtitle)]">
+                  Máximo: {slotQty} {slotQty === 1 ? "unidade" : "unidades"}
                 </span>
-                <UnitPicker value={withdrawAmount} max={slotQty} onChange={setWithdrawQty} label="Quantidade a devolver" />
-              </div>
+              </label>
             )}
             <button
               type="button"
@@ -196,7 +205,22 @@ function ChestDialog({ slotIndex, slot, inventory, onClose, onDeposit, onWithdra
             <div className="border-t border-white/10 bg-white/[0.02] px-5 py-3">
               {selectedItem ? (
                 <div className="flex flex-col gap-2.5">
-                  <UnitPicker value={depositAmount} max={selectedMax} onChange={setDepositQty} label="Quantidade a guardar" />
+                  <label className="flex flex-col gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--theme-subtitle)]">
+                    Quantidade que deseja deixar no banco
+                    <input
+                      type="number"
+                      min={1}
+                      max={selectedMax}
+                      value={depositQtyInput}
+                      onChange={(e) => setDepositQtyInput(e.target.value)}
+                      onFocus={(e) => e.target.select()}
+                      aria-label="Quantidade que deseja deixar no banco"
+                      className="h-11 w-full rounded-lg border border-[#4a3d2a]/60 bg-[#0f0d0a]/60 px-3 text-center font-mono text-sm text-[#f1e7d2] outline-none focus:border-[var(--theme-accent)]/60"
+                    />
+                    <span className="text-[9px] font-normal normal-case text-[var(--theme-subtitle)]">
+                      Máximo: {selectedMax} {selectedMax === 1 ? "unidade" : "unidades"}
+                    </span>
+                  </label>
                   <button
                     type="button"
                     onClick={() => {
