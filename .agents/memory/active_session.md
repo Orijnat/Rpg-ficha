@@ -49,6 +49,9 @@
 - Classe não define mais dado de vida na criação (hitDie de classe permanece em lib/classes.js, apenas como referência legada).
 - Testes atualizados (159/159), build OK, eslint 0 erros. NÃO commitado.
 
+## ✅ Push 2026-11-17 (2)
+- `06e285e` (raça define status base + dado de vida) + `1cf9f23` (docs memory) enviados.
+
 ## ✅ Push 2026-11-17
 - `daa9eec` (seletor de raça sem traço + dado de vida validado) enviado ao origin/main.
 
