@@ -21,6 +21,9 @@
 - Atalho no Inventário: ícone de arquivo em cada linha abre `DepositToBankModal` (quantidade unidade a unidade + nº de espaços livres; deposita no 1º espaço vazio; avisa se cofre cheio). Banner de feedback na Mochila.
 - Build OK, testes 158/158, eslint 0 erros. NÃO commitado.
 
+## ✅ Push 2026-11-16
+- Commits `4b5ab5d` (feat inventario/banco) e `cb68efc` (docs memory) enviados ao origin/main. `.github/workflows/ci.yml` segue untracked local (PAT sem scope workflow).
+
 ## ✅ Atualização 2026-11-16 (Inventário — modal de cadastro COMPLETO do item)
 - `AddItemModal.jsx` reescrito como cadastro completo: nome*, descrição (textarea), categoria (CATEGORIAS_ITEM), raridade (RARIDADES, com badge colorido ao vivo), quantidade, peso, preço + moeda (MOEDAS), perfil de uso (durabilidade/cargas/efeito/duração).
 - `CharacterContext.addItem` persiste `descricao`, `categoria`, `raridade`, `preco`, `moeda` (campos aditivos, retrocompatíveis). Perfil de uso e `storedItem` do banco preservam tudo.
