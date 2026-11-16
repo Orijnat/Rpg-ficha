@@ -96,7 +96,7 @@ export default function FloatingWindow({ title, icon, win, onClose, onFocus, onM
           </button>
         </div>
       </div>
-      <div className="custom-scroll min-h-0 flex-1 overflow-auto p-2">{children}</div>
+      <div data-lenis-prevent className="custom-scroll min-h-0 flex-1 overflow-auto p-2">{children}</div>
       {/* Alça de redimensionar (canto inferior direito) */}
       <button
         type="button"

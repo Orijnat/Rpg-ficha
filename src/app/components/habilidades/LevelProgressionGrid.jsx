@@ -625,7 +625,7 @@ export function LevelProgressionGrid({
             </div>
 
             {/* Lista de Habilidades */}
-            <div className="flex-1 overflow-y-auto custom-scroll space-y-2 pr-1 min-h-48 max-h-96">
+            <div data-lenis-prevent className="flex-1 overflow-y-auto custom-scroll space-y-2 pr-1 min-h-48 max-h-96">
               {selectorAvailableAbilities.length > 0 ? (
                 selectorAvailableAbilities.map((hab) => {
                   const isCurrent = levelAbilities?.[selectorLevel] === hab.id;

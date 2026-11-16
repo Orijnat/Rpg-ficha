@@ -185,7 +185,7 @@ export default function BattleLogPanel({
         </div>
       )}
 
-      <div ref={scrollRef} className="min-h-0 flex-1 space-y-1.5 overflow-y-auto pr-0.5">
+      <div ref={scrollRef} data-lenis-prevent className="min-h-0 flex-1 space-y-1.5 overflow-y-auto pr-0.5">
         {isBusy ? (
           <p className="py-6 text-center text-[10px] text-muted-foreground">Abrindo os anais da batalha…</p>
         ) : entradas.length === 0 ? (

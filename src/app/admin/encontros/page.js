@@ -679,7 +679,7 @@ export default function AdminEncontrosPage() {
                   Eventos, dano, condições e iniciativas registradas no combate.
                 </p>
 
-                <div className="mt-4 space-y-2 max-h-[420px] overflow-y-auto pr-1">
+                <div data-lenis-prevent className="mt-4 space-y-2 max-h-[420px] overflow-y-auto pr-1">
                   {combatLog.length === 0 ? (
                     <p className="py-8 text-center text-xs text-muted-foreground">
                       Nenhum evento registrado ainda.

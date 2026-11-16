@@ -323,7 +323,7 @@ export default function Anotacoes() {
             Registros Filtrados · {filteredAndSortedEntries.length}
           </p>
 
-          <div className="max-h-[50vh] space-y-1.5 overflow-y-auto pr-1 custom-scroll">
+          <div data-lenis-prevent className="max-h-[50vh] space-y-1.5 overflow-y-auto pr-1 custom-scroll">
             {filteredAndSortedEntries.length === 0 ? (
               <p className="px-2 py-5 text-xs italic text-muted-foreground">
                 {searchTerm || selectedCategory !== "all"

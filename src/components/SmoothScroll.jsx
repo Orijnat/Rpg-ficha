@@ -26,9 +26,6 @@ export default function SmoothScroll({ children }) {
         lerp: enabled ? 0.09 : 1,
         smoothWheel: enabled,
         anchors: enabled,
-        // painéis e modais internos (overflow-y-auto) rolam nativamente;
-        // o Lenis só assume a página quando o container interno chegou ao limite
-        allowNestedScroll: true,
       }}
     >
       {children}

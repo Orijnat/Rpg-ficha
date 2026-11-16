@@ -442,7 +442,7 @@ export default function DiceModal() {
                 )}
               </div>
 
-              <div className="custom-scroll max-h-60 space-y-2 overflow-y-auto pr-1">
+              <div data-lenis-prevent className="custom-scroll max-h-60 space-y-2 overflow-y-auto pr-1">
                 {history.length === 0 ? (
                   <p className="py-8 text-center text-xs italic text-[var(--theme-subtitle)]">
                     Nenhuma rolagem realizada ainda.

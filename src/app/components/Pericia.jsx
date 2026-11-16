@@ -170,7 +170,7 @@ export default function Pericia() {
         subtitle="19 perícias canônicas do sistema d20"
         icon={<Dices size={14} />}
       />
-      <div className="custom-scroll max-h-84 space-y-1.5 overflow-y-auto pr-1">
+      <div data-lenis-prevent className="custom-scroll max-h-84 space-y-1.5 overflow-y-auto pr-1">
         {data.skills.map((skill, index) => {
           const skillInfo = calculateSkillBonus(skill, data, proficiencyBonus);
 

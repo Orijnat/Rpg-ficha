@@ -88,7 +88,7 @@ export function AbilityFormModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
       <div
-        className="w-full max-w-lg max-h-[90vh] overflow-y-auto custom-scroll rounded-2xl border border-primary/40 bg-zinc-950 p-6 shadow-2xl space-y-4"
+        data-lenis-prevent className="w-full max-w-lg max-h-[90vh] overflow-y-auto custom-scroll rounded-2xl border border-primary/40 bg-zinc-950 p-6 shadow-2xl space-y-4"
         style={{ fontFamily: "inherit" }}
       >
         {/* Cabeçalho do Modal */}

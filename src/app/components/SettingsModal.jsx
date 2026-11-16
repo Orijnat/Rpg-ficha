@@ -272,7 +272,7 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
         )}
 
         {/* Conteúdo rolável */}
-        <div className="custom-scroll overflow-y-auto p-6">
+        <div data-lenis-prevent className="custom-scroll overflow-y-auto p-6">
           {activeTab === "themes" && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
