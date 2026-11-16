@@ -43,6 +43,9 @@
 - Jogador rola 1× por nível: botão "Subir de Nível" na ficha (card Raça & Ascensão) — exige XP suficiente (gate por calculateLevelFromXP), rola dado de vida + Mod(CON) uma vez por nível e soma ao HP máximo/atual. Promoção em lote do admin também rola uma vez por nível por herói (sem clique extra). Fluxo único por nível garantido nas duas vias.
 - Build OK, front 159/159, eslint 0 erros. NÃO commitado.
 
+## ✅ Push 2026-11-17
+- `daa9eec` (seletor de raça sem traço + dado de vida validado) enviado ao origin/main.
+
 ## ✅ Push 2026-11-16 (3)
 - Front `22e6d5f` (feat raças/nível) + `63fc6a5` (docs memory); back `506c9cd` (feat auth race/atributos) enviados.
 
