@@ -130,26 +130,7 @@ produto completo e pronto para uso. Ele descreve o estado real conhecido em
 
 ## 6. Google Drive, Sheets e Docs
 
-- [~] OAuth do mestre implementado.
-- [~] Tokens OAuth criptografados com AES-256-GCM.
-- [~] Status e desconexão da conta Google.
-- [ ] Configurar e testar Google Cloud Console.
-- [ ] Cadastrar `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`,
-  `GOOGLE_REDIRECT_URI` e `GOOGLE_TOKEN_ENCRYPTION_KEY`.
-- [ ] Listar arquivos permitidos do Drive.
-- [ ] Criar seletor de pasta, planilha e documento.
-- [ ] Importar a planilha técnica enviada.
-- [ ] Mapear células, abas e fórmulas para o modelo da aplicação.
-- [ ] Criar um template oficial de planilha.
-- [ ] Exportar jogador, NPC e campanha para Google Sheets.
-- [ ] Importar alterações de Sheets para a aplicação.
-- [ ] Implementar sincronização bidirecional real.
-- [ ] Aplicar “última alteração vence” por campo, não apenas por documento.
-- [ ] Registrar data, origem e resultado de cada sincronização.
-- [ ] Mostrar conflitos, falhas e reautorização para o mestre.
-- [ ] Exportar diário e anotações para Google Docs.
-- [ ] Criar cópia visual da ficha no Google Docs.
-
+- [ ] permitir criar conta de maneira dinamica com  um email
 ## 7. Uploads e arquivos
 
 - [x] Validar MIME real, extensão, tamanho e quantidade. (magic bytes: PNG/JPEG/GIF/WebP/PDF; ≤ `UPLOAD_MAX_BYTES` (5 MB); 1 arquivo/req.)

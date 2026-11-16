@@ -34,7 +34,7 @@ export function BankUnlockedView({
       <Card>
         {/* Header com título e controles */}
         <div className="mb-3 flex items-center justify-between">
-          <SectionHeader title="Banco de Glenor" icon={<Coins size={14} />} />
+          <SectionHeader title="Banco de Azedarack" icon={<Coins size={14} />} />
 
           <BankHeaderControls onLogout={onLogout} />
         </div>

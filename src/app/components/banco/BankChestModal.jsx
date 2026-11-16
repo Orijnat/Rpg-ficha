@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Package, Search, X, Archive, Undo2 } from "lucide-react";
 
 /**
- * Modal de cofre do Banco de Glenor.
+ * Modal de cofre do Banco de Azedarack.
  * - Espaço vazio: lista os itens do inventário para guardá-los no slot.
  * - Espaço ocupado: mostra o item guardado e permite devolvê-lo ao inventário.
  */
@@ -68,7 +68,7 @@ function ChestDialog({ slotIndex, slot, inventory, onClose, onDeposit, onWithdra
                 {occupied ? "Espaço Ocupado" : "Guardar no Banco"}
               </h3>
               <p className="text-[11px] text-[var(--theme-subtitle)]">
-                Cofre de Glenor · Espaço {slotIndex + 1}
+                Cofre de Azedarack · Espaço {slotIndex + 1}
               </p>
             </div>
           </div>

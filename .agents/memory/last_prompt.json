@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-11-16T15:05:00-03:00",
+  "timestamp": "2026-11-16T15:30:00-03:00",
   "agent": "opencode",
   "skill": "frontend-artisan",
-  "prompt": "poderia corriir o scroll, pois em aluns momento so scroll nao esta funcionando",
-  "action": "Causa-raiz: Lenis root (smoothWheel) hijackava TODOS os wheel events e chamava preventDefault, matando o scroll nativo dos containers internos (floating windows do mapa tatico, modais, listas overflow-y-auto — 15+ ocorrencias). Fix: allowNestedScroll: true nas options do ReactLenis (src/components/SmoothScroll.jsx) — Lenis agora detecta scrollable descendants sob o cursor e cede o scroll nativo; na borda do container, o scroll encadeia para a pagina. Build OK 31/31, lint 0 erros."
+  "prompt": "poderia alterar o noem do banco de lenor para Azedarack",
+  "action": "Renomeado \"Banco de Glenor\" para \"Banco de Azedarack\" em todos os pontos do frontend (landing page.js, /banco, BankLockedView, BankUnlockedView, BankChestModal, constants.js bankTitle) e o placeholder de campanha no admin (Crônicas de Azedarack). Backend sem ocorrências. eslint limpo. Commitado e pushed com COISAS-A-FAZER.md (seção 6). .github/workflows/ excluída (PAT sem scope workflow)."
 }

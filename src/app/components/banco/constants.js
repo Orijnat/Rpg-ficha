@@ -44,7 +44,7 @@ export const SLOT_CONFIG = {
 export const BANK_MESSAGES = {
   loginPrompt: "Digite a senha para acessar",
   wrongPassword: "Senha incorreta",
-  bankTitle: "Banco de Glenor",
+  bankTitle: "Banco de Azedarack",
   bankIcon: "🏦",
   passwordLabel: "Senha:",
   emptySlotLabel: "vazio",

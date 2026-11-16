@@ -506,7 +506,7 @@ export default function Home() {
                     <CheckCircle2 size={18} className="text-primary shrink-0 mt-1" />
                     <div>
                       <strong className="font-cinzel text-sm text-foreground block">
-                        Mochila Inteligente & Banco de Glenor
+                        Mochila Inteligente & Banco de Azedarack
                       </strong>
                       <p className="font-journal text-sm leading-relaxed text-muted-foreground mt-0.5">
                         Capacidade de carga ponderada com alerta de sobrecarga, controle de moedas e cofre bancário protegido por senha.

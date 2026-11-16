@@ -5,7 +5,7 @@ import { BankUnlockedView } from "../components/banco/BankUnlockedView";
 import { BankLockedView } from "../components/banco/BankLockedView";
 
 /**
- * Página principal do Banco de Glenor
+ * Página principal do Banco de Azedarack
  * Gerencia acesso protegido por senha e exibição do inventário do banco
  */
 export default function BancoPage() {

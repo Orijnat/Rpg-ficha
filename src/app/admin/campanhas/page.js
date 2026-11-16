@@ -264,7 +264,7 @@ export default function AdminCampanhasPage() {
                   required
                   value={novoNome}
                   onChange={(e) => setNovoNome(e.target.value)}
-                  placeholder="Ex.: Crônicas de Glenor: O Eclipse de Sangue"
+                  placeholder="Ex.: Crônicas de Azedarack: O Eclipse de Sangue"
                   className="mt-1 min-h-11 w-full rounded-lg border border-border bg-input-background px-3 text-sm text-foreground outline-none focus:border-primary"
                 />
               </div>

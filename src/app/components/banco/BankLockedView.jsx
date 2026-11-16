@@ -24,7 +24,7 @@ export function BankLockedView({
         <div className={BANK_STYLES.icon}>🏦</div>
 
         {/* Título */}
-        <h2 className={BANK_STYLES.title}>Banco de Glenor</h2>
+        <h2 className={BANK_STYLES.title}>Banco de Azedarack</h2>
 
         {/* Descrição */}
         <p className={BANK_STYLES.subtitle}>Digite a senha para acessar</p>
