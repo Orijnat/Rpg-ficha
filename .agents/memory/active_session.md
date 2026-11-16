@@ -38,6 +38,9 @@
 - **Backend**: register aceita atributos finais (clamp 1–30), `race` obrigatória para jogador, `hitDie` validado (`1d8` fallback); grava em `AtributosPersonagem` + `dadosExtras.race/hitDie`. Testes atualizados (70/70).
 - Novos libs `races.js`/`leveling.js` + `races-leveling.test.mjs` (159/159 front). Build OK. NÃO commitado.
 
+## ✅ Push 2026-11-16 (3)
+- Front `22e6d5f` (feat raças/nível) + `63fc6a5` (docs memory); back `506c9cd` (feat auth race/atributos) enviados.
+
 ## ✅ Push 2026-11-16 (2)
 - Commits `b08ece0` (feat campo simples) e `b6e74ea` (docs memory) enviados ao origin/main.
 

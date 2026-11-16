@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-16T23:20:00-03:00",
+  "timestamp": "2026-11-16T23:35:00-03:00",
   "agent": "opencode",
-  "prompt": "commite e de pus da salteracoes (raças, point buy, subir de nível)",
-  "action": "Commit das raças/subida de nível no front e do register no back; push em ambos."
+  "prompt": "commite e de pus",
+  "action": "Front 22e6d5f + 63fc6a5 e back 506c9cd pushed em main."
 }
