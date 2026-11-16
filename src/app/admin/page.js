@@ -47,9 +47,7 @@ const defaultTable = {
   combatRound: 1,
   activeTurnIndex: 0,
   initiative: [],
-  npcs: [
-    { id: "npc-1", name: "Novo NPC", role: "A definir", hp: 10, hpMax: 10 },
-  ],
+  npcs: [],
 };
 
 function normalizeTable(value) {
