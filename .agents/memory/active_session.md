@@ -172,3 +172,8 @@ Pedido do usuário: log de batalha que persiste TODAS as ações de jogadores e 
 - Verificado end-to-end em Postgres 16 descartável (Docker, container removido ao final): migrations do zero OK; registro jogador cria ficha; registro MESTRE NÃO cria ficha (characters undefined); CRUD mercado OK; outro mestre → 404 em item/vendedor alheio; DECIMAL volta como string→convertido para number no serializer.
 - ATENÇÃO: nada commitado. Backend precisa ser DEPLOYADO (Render) para /api/mercado e o fix de registro de mestre valerem em produção; frontend na Vercel na sequência. `.github/workflows/` permanece local (PAT sem scope).
 - Detalhe: resposta de register de MESTRE agora omite `character` e retorna `characters: []`; frontend AuthContext já tolerava (chars=[]).
+
+## ✅ Atualização 2026-11-16 (Commits e push do mercado)
+- Commitado e pushed nos 2 repos (nada pendente de código): back `0d8da1b` fix(auth) registro de mestre sem ficha + `ce94916` feat(mercado) (tabelas/CRUD/RLS; Supabase já migrado); front `3dd84f6` feat(mercado) página conectada ao banco, `085ab95` chore(admin) placeholder removido, `cc3a4be` docs(memory).
+- .github/ e .github/workflows/ permanecem não rastreados nos 2 repos (PAT sem scope workflow — push falharia).
+- PRODUÇÃO ainda precisa de deploy do backend (Render) e frontend (Vercel) para /api/mercado e o fix de registro de mestre valerem ao vivo.
