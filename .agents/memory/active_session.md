@@ -54,6 +54,9 @@
 - `CharacterContext.levelUp` virou `applyLevelUp(gain, details)` — aplica o ganho pré-rolado pela UI (gate por XP continua, 1 rolagem/nível); rolagem vai para o log como tipo `rolagem` (via DiceContext) e a ascensão como `recursos`.
 - `leveling.js` ganhou `levelUpGate(level, xp)` (compartilhado UI/contexto) — testes de gate cobertos (159/159). Build OK. NÃO commitado.
 
+## ✅ Push 2026-11-17 (3)
+- `142ed96` (subir de nível via rolador de dados animado) enviado ao origin/main.
+
 ## ✅ Push 2026-11-17 (2)
 - `06e285e` (raça define status base + dado de vida) + `1cf9f23` (docs memory) enviados.
 
