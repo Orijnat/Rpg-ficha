@@ -16,8 +16,6 @@ import {
   MapPin,
   Package,
   Plus,
-  RefreshCw,
-  RotateCcw,
   Search,
   Shield,
   Sparkles,
@@ -33,13 +31,10 @@ import MarketItemModal from "../../components/admin/MarketItemModal";
 import VendorModal from "../../components/admin/VendorModal";
 import {
   CATEGORIAS_ITEM,
-  DEFAULT_MARKET_ITEMS,
   MOEDAS,
   RARIDADES,
   REGIOES_CANONICAS,
-  VENDEDORES_PADRAO,
   calculateMarketStats,
-  createMarketItem,
   filterMarketItems,
   formatItemClipboard,
   formatItemPrice,
@@ -48,18 +43,27 @@ import {
   groupItemsByType,
   groupItemsByVendor,
 } from "../../../lib/market";
+import {
+  listMarketItems,
+  listMarketVendors,
+  createMarketItemOnBackend,
+  updateMarketItemOnBackend,
+  deleteMarketItemOnBackend,
+  createMarketVendor,
+  updateMarketVendor,
+  deleteMarketVendor,
+} from "../../../lib/api";
 import { useAuth } from "../../context/AuthContext";
 
-const itemsKeyFor = (userId) => `rpg_world_market_data_v1:${userId || "anonymous"}`;
-const vendorsKeyFor = (userId) => `rpg_world_market_vendors_v1:${userId || "anonymous"}`;
 
 export default function AdminMercadoPage() {
-  const { isMaster, user, loading: authLoading } = useAuth();
+  const { loading: authLoading } = useAuth();
 
   // Itens e Vendedores
   const [items, setItems] = useState([]);
   const [vendors, setVendors] = useState([]);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [error, setError] = useState("");
+  const [isLoadingData, setIsLoadingData] = useState(true);
 
   // Modo de exibição: "catalogo" | "regioes" | "vendedores" | "tipos"
   const [activeTab, setActiveTab] = useState("catalogo");
@@ -82,57 +86,34 @@ export default function AdminMercadoPage() {
   // Confirmações
   const [itemToDelete, setItemToDelete] = useState(null);
   const [vendorToDelete, setVendorToDelete] = useState(null);
-  const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
 
   // Feedback de cópia
   const [copiedItemId, setCopiedItemId] = useState(null);
 
-  // Carregar dados salvos no localStorage
+  // Carrega itens e vendedores do banco
   useEffect(() => {
-    if (authLoading || typeof window === "undefined") return;
-    try {
-      const savedItems = window.localStorage.getItem(itemsKeyFor(user?.id));
-      const savedVendors = window.localStorage.getItem(vendorsKeyFor(user?.id));
-
-      if (savedItems) {
-        const parsed = JSON.parse(savedItems);
-        setItems(Array.isArray(parsed) && parsed.length > 0 ? parsed : DEFAULT_MARKET_ITEMS);
-      } else {
-        setItems(DEFAULT_MARKET_ITEMS);
-      }
-
-      if (savedVendors) {
-        const parsedV = JSON.parse(savedVendors);
-        setVendors(Array.isArray(parsedV) && parsedV.length > 0 ? parsedV : VENDEDORES_PADRAO);
-      } else {
-        setVendors(VENDEDORES_PADRAO);
-      }
-    } catch {
-      setItems(DEFAULT_MARKET_ITEMS);
-      setVendors(VENDEDORES_PADRAO);
-    } finally {
-      setIsLoaded(true);
-    }
-  }, [authLoading, user?.id]);
-
-  // Salvar alterações
-  useEffect(() => {
-    if (!isLoaded || typeof window === "undefined") return;
-    try {
-      window.localStorage.setItem(itemsKeyFor(user?.id), JSON.stringify(items));
-    } catch (e) {
-      console.error("Erro ao salvar itens do mercado:", e);
-    }
-  }, [items, isLoaded, user?.id]);
-
-  useEffect(() => {
-    if (!isLoaded || typeof window === "undefined") return;
-    try {
-      window.localStorage.setItem(vendorsKeyFor(user?.id), JSON.stringify(vendors));
-    } catch (e) {
-      console.error("Erro ao salvar vendedores do mercado:", e);
-    }
-  }, [vendors, isLoaded, user?.id]);
+    if (authLoading) return undefined;
+    let cancelled = false;
+    Promise.all([listMarketItems(), listMarketVendors()])
+      .then(([itemsFromDb, vendorsFromDb]) => {
+        if (cancelled) return;
+        setItems(Array.isArray(itemsFromDb) ? itemsFromDb : []);
+        setVendors(Array.isArray(vendorsFromDb) ? vendorsFromDb : []);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error("Erro ao carregar o mercado:", err);
+        setError(err?.message || "Não foi possível carregar o mercado do servidor.");
+        setItems([]);
+        setVendors([]);
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoadingData(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [authLoading]);
 
   // Regiões disponíveis (canônicas + customizadas encontradas nos itens e vendedores)
   const availableRegions = useMemo(() => {
@@ -167,44 +148,60 @@ export default function AdminMercadoPage() {
   const itemsByVendor = useMemo(() => groupItemsByVendor(items), [items]);
   const itemsByType = useMemo(() => groupItemsByType(items), [items]);
 
-  // Ações de Itens
-  const handleSaveItem = (itemData) => {
-    if (editingItem) {
-      setItems((prev) =>
-        prev.map((item) => (item.id === editingItem.id ? { ...item, ...itemData } : item))
-      );
-    } else {
-      const newItem = createMarketItem(itemData);
-      setItems((prev) => [newItem, ...prev]);
+  // Ações de Itens (persistência no banco)
+  const handleSaveItem = async (itemData) => {
+    try {
+      if (editingItem) {
+        const updated = await updateMarketItemOnBackend(editingItem.id, itemData);
+        setItems((prev) => prev.map((item) => (item.id === editingItem.id ? updated : item)));
+      } else {
+        const created = await createMarketItemOnBackend(itemData);
+        setItems((prev) => [created, ...prev]);
+      }
+      setIsItemModalOpen(false);
+      setEditingItem(null);
+      setError("");
+    } catch (err) {
+      console.error("Erro ao salvar item do mercado:", err);
+      setError(err?.message || "Erro ao salvar o item. Tente novamente.");
     }
-    setIsItemModalOpen(false);
-    setEditingItem(null);
   };
 
-  const handleDeleteItem = (id) => {
-    setItems((prev) => prev.filter((item) => item.id !== id));
-    setItemToDelete(null);
+  const handleDeleteItem = async (id) => {
+    try {
+      await deleteMarketItemOnBackend(id);
+      setItems((prev) => prev.filter((item) => item.id !== id));
+      setItemToDelete(null);
+      setError("");
+    } catch (err) {
+      console.error("Erro ao excluir item do mercado:", err);
+      setError(err?.message || "Erro ao excluir o item. Tente novamente.");
+    }
+  };
+
+  // Atualização otimista de estoque, com reconciliação em caso de erro
+  const patchItemQuantity = (id, computeQty) => {
+    const current = items.find((item) => item.id === id);
+    if (!current) return;
+    const newQty = computeQty(Number(current.quantidade) || 0);
+    setItems((prev) => prev.map((item) => (item.id === id ? { ...item, quantidade: newQty } : item)));
+    updateMarketItemOnBackend(id, { ...current, quantidade: newQty })
+      .then((updated) => {
+        if (updated) setItems((prev) => prev.map((item) => (item.id === id ? updated : item)));
+      })
+      .catch((err) => {
+        console.error("Erro ao atualizar estoque do item:", err);
+        setError(err?.message || "Erro ao atualizar o estoque. Recarregue a página.");
+        listMarketItems().then(setItems).catch(() => {});
+      });
   };
 
   const handleAdjustStock = (id, delta) => {
-    setItems((prev) =>
-      prev.map((item) => {
-        if (item.id !== id) return item;
-        const currentQty = Number(item.quantidade) || 0;
-        const newQty = Math.max(0, currentQty + delta);
-        return { ...item, quantidade: newQty };
-      })
-    );
+    patchItemQuantity(id, (qty) => Math.max(0, qty + delta));
   };
 
   const handleToggleStockDepleted = (id) => {
-    setItems((prev) =>
-      prev.map((item) => {
-        if (item.id !== id) return item;
-        const currentQty = Number(item.quantidade) || 0;
-        return { ...item, quantidade: currentQty > 0 ? 0 : 5 };
-      })
-    );
+    patchItemQuantity(id, (qty) => (qty > 0 ? 0 : 5));
   };
 
   const handleCopyItem = (item) => {
@@ -214,29 +211,35 @@ export default function AdminMercadoPage() {
     setTimeout(() => setCopiedItemId(null), 2500);
   };
 
-  // Ações de Vendedores
-  const handleSaveVendor = (vendorData) => {
-    if (editingVendor) {
-      setVendors((prev) =>
-        prev.map((vend) => (vend.id === editingVendor.id ? { ...vend, ...vendorData } : vend))
-      );
-    } else {
-      setVendors((prev) => [vendorData, ...prev]);
+  // Ações de Vendedores (persistência no banco)
+  const handleSaveVendor = async (vendorData) => {
+    try {
+      if (editingVendor) {
+        const updated = await updateMarketVendor(editingVendor.id, vendorData);
+        setVendors((prev) => prev.map((vend) => (vend.id === editingVendor.id ? updated : vend)));
+      } else {
+        const created = await createMarketVendor(vendorData);
+        setVendors((prev) => [created, ...prev]);
+      }
+      setIsVendorModalOpen(false);
+      setEditingVendor(null);
+      setError("");
+    } catch (err) {
+      console.error("Erro ao salvar vendedor do mercado:", err);
+      setError(err?.message || "Erro ao salvar o vendedor. Tente novamente.");
     }
-    setIsVendorModalOpen(false);
-    setEditingVendor(null);
   };
 
-  const handleDeleteVendor = (id) => {
-    setVendors((prev) => prev.filter((vend) => vend.id !== id));
-    setVendorToDelete(null);
-  };
-
-  // Restaurar dados de fábrica
-  const handleResetToDefault = () => {
-    setItems(DEFAULT_MARKET_ITEMS);
-    setVendors(VENDEDORES_PADRAO);
-    setIsResetConfirmOpen(false);
+  const handleDeleteVendor = async (id) => {
+    try {
+      await deleteMarketVendor(id);
+      setVendors((prev) => prev.filter((vend) => vend.id !== id));
+      setVendorToDelete(null);
+      setError("");
+    } catch (err) {
+      console.error("Erro ao excluir vendedor do mercado:", err);
+      setError(err?.message || "Erro ao excluir o vendedor. Tente novamente.");
+    }
   };
 
   const getRarityBadge = (raridade) => {
@@ -265,6 +268,24 @@ export default function AdminMercadoPage() {
 
   return (
     <div className="space-y-6">
+      {error && (
+        <div className="flex items-start justify-between gap-3 rounded-lg border border-red-800/40 bg-red-950/30 px-4 py-3 text-xs text-red-300/90">
+          <span>{error}</span>
+          <button
+            type="button"
+            onClick={() => setError("")}
+            className="shrink-0 text-red-400/80 transition hover:text-red-200"
+            aria-label="Fechar aviso"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+      {isLoadingData && (
+        <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-2 text-center text-xs text-muted-foreground">
+          Carregando mercado do servidor...
+        </div>
+      )}
       {/* Placa de Destaque / Painel Principal do Mercado */}
       <div className="guild-plaque ornate-frame border-2 border-primary/45 bg-card/95 p-5 shadow-[0_18px_50px_rgba(0,0,0,0.4)] sm:p-7">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -385,15 +406,6 @@ export default function AdminMercadoPage() {
           })}
         </div>
 
-        <button
-          type="button"
-          onClick={() => setIsResetConfirmOpen(true)}
-          className="flex items-center gap-1.5 rounded-lg border border-border bg-secondary/60 px-3 py-1.5 text-xs text-muted-foreground hover:border-primary/40 hover:text-foreground transition active:scale-95"
-          title="Restaura a lista canônica original de itens e mercadores"
-        >
-          <RotateCcw size={13} />
-          <span>Restaurar Catálogo Padrão</span>
-        </button>
       </div>
 
       {/* ABA 1: CATÁLOGO GERAL COM FILTROS AVANÇADOS */}
@@ -1139,18 +1151,6 @@ export default function AdminMercadoPage() {
         onCancel={() => setVendorToDelete(null)}
       />
 
-      {/* CONFIRMAÇÃO DE RESTAURAÇÃO DE PADRÕES */}
-      <ConfirmDialog
-        isOpen={isResetConfirmOpen}
-        title="Restaurar Catálogo Padrão do Mundo"
-        message="Esta ação substituirá todos os itens e mercadores atuais pelo catálogo canônico de fábrica. Alterações não salvas externamente serão perdidas."
-        confirmText="Restaurar Padrões"
-        cancelText="Voltar"
-        dangerLevel="warning"
-        requireTypedText="RESTAURAR"
-        onConfirm={handleResetToDefault}
-        onCancel={() => setIsResetConfirmOpen(false)}
-      />
     </div>
   );
 }

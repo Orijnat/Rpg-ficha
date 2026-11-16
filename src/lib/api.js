@@ -42,8 +42,9 @@ export function storeAuth(token, user) {
   }
 }
 
-// O Mercado é por-usuário desde que as chaves foram namespaceadas (rpg_world_market_*:userId);
-// apagar no logout destruía o catálogo salvo — manter.
+// Estado por usuário guardado em localStorage (cache local de ficha e painel do mestre).
+// O Mercado do Mundo persiste no banco (/api/mercado), não mais em localStorage — por isso
+// as antigas chaves rpg_world_market_* não são mais removidas aqui (não existem mais).
 const PER_USER_STORAGE_PREFIXES = [
   "bruxeiro-sheet:",
   "rpg-gm-dashboard",
@@ -671,4 +672,76 @@ export async function deleteMap(id, token = getStoredToken()) {
     method: "DELETE",
     headers: authHeaders(token),
   }, "Erro ao remover mapa.");
+}
+
+// ==========================================
+// Mercado do Mundo (mestre) — CRUD no banco
+// ==========================================
+
+export async function listMarketVendors(token = getStoredToken()) {
+  const data = await safeFetchJson(`${API_BASE_URL}/mercado/vendedores`, {
+    headers: authHeaders(token),
+  }, "Erro ao carregar vendedores do mercado.");
+  return Array.isArray(data?.vendors) ? data.vendors : [];
+}
+
+export async function createMarketVendor(vendorData, token = getStoredToken()) {
+  const { id, ...payload } = vendorData || {};
+  const data = await safeFetchJson(`${API_BASE_URL}/mercado/vendedores`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify(payload),
+  }, "Erro ao cadastrar vendedor.");
+  return data?.vendor;
+}
+
+export async function updateMarketVendor(id, vendorData, token = getStoredToken()) {
+  const { id: _ignored, ...payload } = vendorData || {};
+  const data = await safeFetchJson(`${API_BASE_URL}/mercado/vendedores/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify(payload),
+  }, "Erro ao atualizar vendedor.");
+  return data?.vendor;
+}
+
+export async function deleteMarketVendor(id, token = getStoredToken()) {
+  return safeFetchJson(`${API_BASE_URL}/mercado/vendedores/${id}`, {
+    method: "DELETE",
+    headers: authHeaders(token),
+  }, "Erro ao remover vendedor.");
+}
+
+export async function listMarketItems(token = getStoredToken()) {
+  const data = await safeFetchJson(`${API_BASE_URL}/mercado/itens`, {
+    headers: authHeaders(token),
+  }, "Erro ao carregar itens do mercado.");
+  return Array.isArray(data?.items) ? data.items : [];
+}
+
+export async function createMarketItemOnBackend(itemData, token = getStoredToken()) {
+  const { id, ...payload } = itemData || {};
+  const data = await safeFetchJson(`${API_BASE_URL}/mercado/itens`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify(payload),
+  }, "Erro ao cadastrar item do mercado.");
+  return data?.item;
+}
+
+export async function updateMarketItemOnBackend(id, itemData, token = getStoredToken()) {
+  const { id: _ignored, ...payload } = itemData || {};
+  const data = await safeFetchJson(`${API_BASE_URL}/mercado/itens/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify(payload),
+  }, "Erro ao atualizar item do mercado.");
+  return data?.item;
+}
+
+export async function deleteMarketItemOnBackend(id, token = getStoredToken()) {
+  return safeFetchJson(`${API_BASE_URL}/mercado/itens/${id}`, {
+    method: "DELETE",
+    headers: authHeaders(token),
+  }, "Erro ao remover item do mercado.");
 }

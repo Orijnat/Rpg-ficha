@@ -2,11 +2,9 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   REGIOES_CANONICAS,
-  VENDEDORES_PADRAO,
   CATEGORIAS_ITEM,
   RARIDADES,
   MOEDAS,
-  DEFAULT_MARKET_ITEMS,
   validateMarketItem,
   createMarketItem,
   filterMarketItems,
@@ -19,11 +17,11 @@ import {
   formatItemClipboard,
 } from "../market.js";
 
-test("Motor do Mercado — Constantes e Catálogo Inicial", () => {
+test("Motor do Mercado — Constantes canônicas (sem catálogo mockado)", () => {
   assert.ok(REGIOES_CANONICAS.length >= 5, "Deve conter pelo menos 5 regiões canônicas");
-  assert.ok(VENDEDORES_PADRAO.length >= 5, "Deve conter pelo menos 5 vendedores padrão");
   assert.ok(CATEGORIAS_ITEM.length >= 6, "Deve conter categorias de armas, armaduras, etc.");
-  assert.ok(DEFAULT_MARKET_ITEMS.length >= 15, "Catálogo padrão deve ser rico com itens variados");
+  assert.ok(RARIDADES.length >= 5, "Deve conter pelo menos 5 raridades");
+  assert.ok(MOEDAS.length >= 4, "Deve conter pelo menos 4 moedas");
 });
 
 test("Motor do Mercado — Validação de Item (validateMarketItem)", () => {
