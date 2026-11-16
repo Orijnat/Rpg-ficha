@@ -30,6 +30,9 @@ import {
   updateCharacterOnBackend,
 } from "../../../lib/api";
 import { useAuth } from "../../context/AuthContext";
+import { rollDice } from "../../../lib/dice";
+import { parseHitDie, hpGainFromRoll } from "../../../lib/leveling";
+import { calculateModifier } from "../../../lib/modifiers";
 
 export default function PersonagensAdmin() {
   const { token, isMaster, inspectCharacter } = useAuth();
@@ -188,7 +191,17 @@ export default function PersonagensAdmin() {
         continue;
       }
       try {
-        await updateCharacterOnBackend(hero.id, { level: level + 1 }, token);
+        const hitDie = typeof hero.hitDie === "string" && /^(?:[1-9]\d{0,1})?d(?:4|6|8|10|12|20)$/i.test(hero.hitDie.trim())
+          ? hero.hitDie.trim()
+          : "1d8";
+        const { count, sides, modifier } = parseHitDie(hitDie, { count: 1, sides: 8, modifier: 0 });
+        const roll = rollDice({ sides, count, modifier });
+        const gain = hpGainFromRoll(roll.total, calculateModifier(hero.CON));
+        await updateCharacterOnBackend(hero.id, {
+          level: level + 1,
+          hpMax: (Number(hero.hpMax) || 1) + gain,
+          hp: (Number(hero.hp) || 0) + gain,
+        }, token);
         ok += 1;
       } catch {
         fail += 1;
@@ -661,8 +674,8 @@ export default function PersonagensAdmin() {
         title={levelUpTarget?.type === "single" ? `Subir o nível de "${levelUpTarget?.name}"?` : `Subir o nível de todos os heróis?`}
         message={
           levelUpTarget?.type === "single"
-            ? "O nível desta ficha será aumentado em 1 (máx. 20). Atributos, perícias e BP passarão a refletir o novo nível."
-            : `O nível de TODAS as fichas de heróis exibidas será aumentado em 1 (máx. 20). Confirmar a promoção em massa?`
+            ? "O nível será aumentado em 1 (máx. 20). O Dado de Vida da classe será rolado (+ Mod(CON)) e o HP máximo aumentará automaticamente."
+            : `O nível de TODAS as fichas de heróis exibidas será aumentado em 1 (máx. 20). O Dado de Vida será rolado individualmente para cada herói. Confirmar a promoção em massa?`
         }
         confirmText={levelUpBusy ? "Promovendo..." : "Promover"}
         cancelText="Cancelar"

@@ -9,7 +9,9 @@ import {
   rejeitarHabilidade,
   podeTreinarHabilidade,
 } from "../../lib/abilities";
-import { ensureCanonicalSkills } from "../../lib/modifiers";
+import { ensureCanonicalSkills, calculateLevelFromXP, calculateModifier } from "../../lib/modifiers";
+import { rollDice } from "../../lib/dice";
+import { parseHitDie, hpGainFromRoll } from "../../lib/leveling";
 import { applyItemUse, tickActiveEffects } from "../../lib/items";
 import { useAuth } from "./AuthContext";
 
@@ -439,6 +441,48 @@ export function CharacterProvider({ children }) {
     const campanhaId = latestData.current?.campanhaId;
     if (!token || !campanhaId) return;
     postBattleLogEvent(campanhaId, { tipo: "recursos", mensagem, dados }, token).catch(() => {});
+  };
+
+  const updateDadosExtras = (patch) => {
+    setData((current) => ({
+      ...current,
+      dadosExtras: { ...(current.dadosExtras || {}), ...patch },
+    }));
+  };
+
+  // Subida de nível estilo D&D: exige XP suficiente, rola o Dado de Vida da
+  // classe + Mod(CON) e aumenta o HP máximo (mínimo de 1 HP).
+  const levelUp = () => {
+    const current = latestData.current;
+    const level = Math.max(1, Math.min(20, Number(current.level) || 1));
+    if (level >= 20) {
+      return { ok: false, message: "Nível máximo (20) alcançado." };
+    }
+    const xpInfo = calculateLevelFromXP(current.xp ?? current.dadosExtras?.xp ?? 0);
+    if (level >= xpInfo.level) {
+      const missing = (xpInfo.nextLevelXP ?? 0) - (Number(current.xp) || 0);
+      return {
+        ok: false,
+        message: `XP insuficiente para o nível ${level + 1}. Faltam ${Math.max(0, missing).toLocaleString("pt-BR")} XP.`,
+      };
+    }
+    const hitDie = typeof current.dadosExtras?.hitDie === "string" ? current.dadosExtras.hitDie : "1d8";
+    const { count, sides, modifier } = parseHitDie(hitDie, { count: 1, sides: 8, modifier: 0 });
+    const roll = rollDice({ sides, count, modifier, label: `Dado de Vida: nível ${level + 1}` });
+    const conMod = calculateModifier(current.CON);
+    const gain = hpGainFromRoll(roll.total, conMod);
+    commitSheet({
+      ...current,
+      level: level + 1,
+      hpMax: (Number(current.hpMax) || 1) + gain,
+      hp: (Number(current.hp) || 0) + gain,
+    });
+    postItemLog(`Subiu para o nível ${level + 1} (+${gain} HP máx. — ${hitDie} rolou ${roll.total} + Mod(CON) ${conMod >= 0 ? "+" : ""}${conMod}).`, {
+      level: level + 1,
+      hpMaxGain: gain,
+      hitDie,
+    });
+    return { ok: true, level: level + 1, gain, roll: roll.total, conMod, hitDie };
   };
 
   const consumeItem = (id) => {
@@ -880,6 +924,8 @@ export function CharacterProvider({ children }) {
     tickActiveEffect,
     advanceRoundEffects,
     removeActiveEffect,
+    updateDadosExtras,
+    levelUp,
     addContract,
     removeContract,
     updContract,

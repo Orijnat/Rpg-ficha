@@ -1,20 +1,44 @@
 "use client";
 
-import { Check, CloudOff, Crown, LoaderCircle, RefreshCw, Sparkles, Sword, TriangleAlert, Package } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Check, CloudOff, Crown, LoaderCircle, RefreshCw, Sparkles, Sword, TriangleAlert, Package, ChevronsUp, Dna } from "lucide-react";
 import Link from "next/link";
 import { useCharacter } from "../context/CharacterContext";
 import { Card, EditableText, SectionHeader, StatBox } from "../components/ui";
 import Aparencia from "../components/Aparencia";
 import Pericia from "../components/Pericia";
 import RecursosCombate from "../components/RecursosCombate";
-import { calculateCapacity } from "../../lib/modifiers";
+import { calculateCapacity, calculateLevelFromXP, calculateModifier } from "../../lib/modifiers";
+import { DEFAULT_RACES, getRaceById } from "../../lib/races";
 import { DEFAULT_ABILITIES, isHabilidadeDesbloqueada } from "../../lib/abilities";
 
 export default function Personagem() {
-  const { data, upd, syncStatus, syncError, retrySync, reloadFromCloud, overwriteCloud } = useCharacter();
+  const { data, upd, syncStatus, syncError, retrySync, reloadFromCloud, overwriteCloud, updateDadosExtras, levelUp } = useCharacter();
+  const [levelFeedback, setLevelFeedback] = useState(null);
+  const feedbackTimer = useRef(null);
   const capacity = calculateCapacity(data);
   const abilities = Array.isArray(data.abilities) ? data.abilities : [];
   const characterLevel = Math.max(1, Number(data.level) || 1);
+  const xpInfo = calculateLevelFromXP(data.xp ?? data.dadosExtras?.xp ?? 0);
+  const conMod = calculateModifier(data.CON);
+  const hitDie = typeof data.dadosExtras?.hitDie === "string" && data.dadosExtras.hitDie ? data.dadosExtras.hitDie : "1d8";
+  const race = getRaceById(data.dadosExtras?.race);
+  const canLevelUp = characterLevel < xpInfo.level && characterLevel < 20;
+  const xpMissing = Math.max(0, (xpInfo.nextLevelXP ?? 0) - Number(data.xp || 0));
+
+  useEffect(() => () => window.clearTimeout(feedbackTimer.current), []);
+
+  const handleLevelUp = () => {
+    const result = levelUp();
+    if (!result) return;
+    setLevelFeedback(
+      result.ok
+        ? { ok: true, message: `Você ascendeu ao nível ${result.level}! Dado de Vida (${hitDie}) rolou ${result.roll} + Mod(CON) ${result.conMod >= 0 ? "+" : ""}${result.conMod} = +${result.gain} HP máximo.` }
+        : { ok: false, message: result.message }
+    );
+    window.clearTimeout(feedbackTimer.current);
+    feedbackTimer.current = window.setTimeout(() => setLevelFeedback(null), 7000);
+  };
   const activeTraining = abilities.find((h) => h.isTraining && (h.approvalStatus || "aprovada") === "aprovada");
   const unlockedCount = abilities.filter((h) => isHabilidadeDesbloqueada(h, characterLevel) && (h.approvalStatus || "aprovada") === "aprovada").length;
 
@@ -141,6 +165,80 @@ export default function Personagem() {
             Ver Grimório Completo →
           </Link>
         </div>
+      </Card>
+
+      {/* Raça & Ascensão */}
+      <Card>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <SectionHeader
+              title="Raça & Ascensão"
+              subtitle="A raça molda seus atributos; subir de nível rola o Dado de Vida da classe"
+              icon={<Dna size={15} />}
+            />
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <select
+                value={race?.id || ""}
+                onChange={(e) => updateDadosExtras({ race: e.target.value || null })}
+                className="h-9 rounded-lg border border-border bg-input-background px-2.5 text-xs text-foreground outline-none focus:border-primary"
+                aria-label="Raça do herói"
+              >
+                <option value="">Raça não definida</option>
+                {DEFAULT_RACES.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.name}
+                  </option>
+                ))}
+              </select>
+              <span className="text-[10px] text-muted-foreground">
+                {race ? race.trait : "Escolha a raça para registrar sua linhagem."}
+              </span>
+            </div>
+            <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+              Dado de Vida (classe): <span className="text-primary">{hitDie}</span> · Mod(CON){" "}
+              <span className={conMod >= 0 ? "text-emerald-400" : "text-rose-400"}>
+                {conMod >= 0 ? "+" : ""}{conMod}
+              </span>
+            </p>
+          </div>
+          <div className="flex shrink-0 flex-col items-stretch gap-1.5 sm:items-end">
+            <button
+              type="button"
+              onClick={handleLevelUp}
+              disabled={!canLevelUp}
+              title={
+                characterLevel >= 20
+                  ? "Nível máximo alcançado"
+                  : canLevelUp
+                    ? `Rolar ${hitDie} + Mod(CON) e subir para o nível ${characterLevel + 1}`
+                    : `Faltam ${xpMissing.toLocaleString("pt-BR")} XP para o nível ${characterLevel + 1}`
+              }
+              className="flex min-h-11 items-center justify-center gap-2 rounded-lg border border-amber-500/50 bg-amber-500/15 px-4 text-xs font-bold uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/25 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <ChevronsUp size={15} />
+              Subir de Nível
+            </button>
+            <span className="text-center font-mono text-[10px] text-muted-foreground sm:text-right">
+              {characterLevel >= 20
+                ? "Nível máximo (20)"
+                : canLevelUp
+                  ? `XP suficiente — ascensão disponível!`
+                  : `Faltam ${xpMissing.toLocaleString("pt-BR")} XP para o nível ${characterLevel + 1}`}
+            </span>
+          </div>
+        </div>
+        {levelFeedback && (
+          <div
+            role="status"
+            className={`mt-3 rounded-lg border px-3 py-2 text-xs ${
+              levelFeedback.ok
+                ? "border-emerald-500/40 bg-emerald-950/25 text-emerald-300"
+                : "border-rose-500/40 bg-rose-950/30 text-rose-300"
+            }`}
+          >
+            <p className="font-semibold">{levelFeedback.message}</p>
+          </div>
+        )}
       </Card>
 
       {/* Atributos Fundamentais */}

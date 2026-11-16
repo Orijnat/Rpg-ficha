@@ -6,6 +6,9 @@ import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
 import AuthScaffold from "../../components/auth/AuthScaffold";
 import { DEFAULT_CLASSES } from "../../lib/classes";
+import { getHitDieForClass } from "../../lib/classes";
+import { DEFAULT_RACES, applyRaceBonuses } from "../../lib/races";
+import { AttributePointBuy } from "../components/character/AttributePointBuy";
 import { fetchInviteInfo } from "../../lib/api";
 import {
   Lock,
@@ -86,6 +89,8 @@ function RegisterForm() {
   // Dados do Primeiro Personagem (apenas para jogadores)
   const [characterName, setCharacterName] = useState("");
   const [characterJob, setCharacterJob] = useState("");
+  const [raceId, setRaceId] = useState("");
+  const [baseAttrs, setBaseAttrs] = useState({ FOR: 8, DES: 8, CON: 8, SAB: 8, ESP: 8, CAR: 8, INT: 8 });
 
   // Código de Convite da Mesa
   const initialInvite = searchParams ? (searchParams.get("invite") || searchParams.get("convite") || searchParams.get("code") || "") : "";
@@ -172,9 +177,18 @@ function RegisterForm() {
           setLoading(false);
           return;
         }
+        if (!raceId) {
+          setError("Escolha a raça do seu herói.");
+          setLoading(false);
+          return;
+        }
+        const finalAttrs = applyRaceBonuses(baseAttrs, raceId);
         payload.characterName = heroName;
         payload.characterJob = heroJob;
         payload.customClass = heroJob;
+        payload.race = raceId;
+        payload.hitDie = getHitDieForClass(heroJob, "1d8");
+        Object.assign(payload, finalAttrs);
         if (inviteCode.trim()) {
           payload.inviteCode = inviteCode.trim().toUpperCase();
         }
@@ -511,6 +525,26 @@ function RegisterForm() {
                       ))}
                     </datalist>
                   </FormField>
+
+                  <FormField label="Raça" icon={Scroll}>
+                    <select
+                      value={raceId}
+                      onChange={(e) => setRaceId(e.target.value)}
+                      className={inputBase}
+                      style={inputFont}
+                      required={!isMaster}
+                      aria-label="Raça do herói"
+                    >
+                      <option value="">Escolha a raça…</option>
+                      {DEFAULT_RACES.map((race) => (
+                        <option key={race.id} value={race.id}>
+                          {race.name} — {race.trait}
+                        </option>
+                      ))}
+                    </select>
+                  </FormField>
+
+                  <AttributePointBuy base={baseAttrs} raceId={raceId} onChange={setBaseAttrs} />
                 </div>
               </div>
             )}

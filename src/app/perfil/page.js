@@ -22,6 +22,8 @@ import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { useCharacter } from "../context/CharacterContext";
 import { joinCampaign, listCampaigns } from "../../lib/api";
+import { DEFAULT_RACES, applyRaceBonuses } from "../../lib/races";
+import { getHitDieForClass } from "../../lib/classes";
 
 export default function PerfilPage() {
   const {
@@ -43,6 +45,7 @@ export default function PerfilPage() {
 
   const [newCharName, setNewCharName] = useState("");
   const [newCharJob, setNewCharJob] = useState("");
+  const [newCharRace, setNewCharRace] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [createMsg, setCreateMsg] = useState("");
   const [profileForm, setProfileForm] = useState({ username: "", email: "", perfil: "jogador" });
@@ -121,19 +124,32 @@ export default function PerfilPage() {
       setCreateMsg("Informe o nome e a classe do personagem.");
       return;
     }
+    if (!newCharRace) {
+      setCreateMsg("Informe a raça do personagem.");
+      return;
+    }
 
     setIsCreating(true);
     setCreateMsg("");
     try {
+      const baseAttrs = { FOR: 10, DES: 10, CON: 10, SAB: 10, ESP: 10, CAR: 10, INT: 10 };
+      const finalAttrs = applyRaceBonuses(baseAttrs, newCharRace);
       await createCharacter({
         name: newCharName.trim(),
         job: newCharJob.trim(),
         hp: 70,
         hpMax: 70,
         level: 1,
+        ...finalAttrs,
+        dadosExtras: {
+          race: newCharRace,
+          hitDie: getHitDieForClass(newCharJob.trim(), "1d8"),
+          customClass: newCharJob.trim(),
+        },
       });
       setNewCharName("");
       setNewCharJob("");
+      setNewCharRace("");
       setCreateMsg("Novo personagem criado com sucesso!");
       setTimeout(() => setCreateMsg(""), 3000);
     } catch (err) {
@@ -374,6 +390,20 @@ export default function PerfilPage() {
                   className="min-h-10 rounded-lg border border-border bg-input-background px-3 text-xs text-foreground outline-none focus:border-primary"
                 />
               </div>
+              <select
+                value={newCharRace}
+                onChange={(e) => setNewCharRace(e.target.value)}
+                className="w-full min-h-10 rounded-lg border border-border bg-input-background px-3 text-xs text-foreground outline-none focus:border-primary"
+                aria-label="Raça do personagem"
+                required
+              >
+                <option value="">Escolha a raça…</option>
+                {DEFAULT_RACES.map((race) => (
+                  <option key={race.id} value={race.id}>
+                    {race.name} — {race.trait}
+                  </option>
+                ))}
+              </select>
               <button
                 type="submit"
                 disabled={isCreating}
