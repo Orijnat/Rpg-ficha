@@ -1,18 +1,20 @@
 /**
  * Catálogo Oficial de Raças do Grimorium RPG (d20 customizado, fantasia sombria).
- * Cada raça concede bônus de atributos aplicados na CRIAÇÃO do herói.
- * O dado de vida vem da CLASSE (ver lib/classes.js), não da raça.
+ * A raça define os STATUS BASE e o DADO DE VIDA do herói no momento da criação.
+ * A subida de nível rola o dado de vida da raça (ver lib/leveling.js).
  */
 
+const ATTRS = ["FOR", "DES", "CON", "SAB", "ESP", "CAR", "INT"];
+
 export const DEFAULT_RACES = [
-  { id: "humano", name: "Humano", bonuses: { FOR: 1, DES: 1, CON: 1, SAB: 1, ESP: 1, CAR: 1, INT: 1 }, trait: "Versátil — +1 em todos os atributos." },
-  { id: "elfo", name: "Elfo", bonuses: { DES: 2, SAB: 1 }, trait: "Visão no Escuro · Sentidos Aguçados — +2 DES, +1 SAB." },
-  { id: "anao", name: "Anão", bonuses: { CON: 2, FOR: 1 }, trait: "Resistência Anã — +2 CON, +1 FOR." },
-  { id: "halfling", name: "Halfling", bonuses: { DES: 2, CAR: 1 }, trait: "Sortudo — +2 DES, +1 CAR." },
-  { id: "draconato", name: "Draconato", bonuses: { FOR: 2, CAR: 1 }, trait: "Sopro Dracônico — +2 FOR, +1 CAR." },
-  { id: "gnomo", name: "Gnomo", bonuses: { INT: 2, CAR: 1 }, trait: "Astúcia Gnômica — +2 INT, +1 CAR." },
-  { id: "tiefling", name: "Tiefling", bonuses: { CAR: 2, INT: 1 }, trait: "Legado Abissal — +2 CAR, +1 INT." },
-  { id: "orc", name: "Orc", bonuses: { FOR: 2, CON: 1 }, trait: "Vigor Selvagem — +2 FOR, +1 CON." },
+  { id: "humano", name: "Humano", hitDie: "1d8", base: { FOR: 12, DES: 12, CON: 12, SAB: 12, ESP: 12, CAR: 12, INT: 10 }, trait: "Versátil — linhagem equilibrada." },
+  { id: "elfo", name: "Elfo", hitDie: "1d8", base: { FOR: 10, DES: 15, CON: 10, SAB: 12, ESP: 13, CAR: 10, INT: 12 }, trait: "Visão no Escuro · Sentidos Aguçados." },
+  { id: "anao", name: "Anão", hitDie: "1d10", base: { FOR: 14, DES: 9, CON: 15, SAB: 12, ESP: 11, CAR: 10, INT: 11 }, trait: "Resistência Anã." },
+  { id: "halfling", name: "Halfling", hitDie: "1d6", base: { FOR: 10, DES: 14, CON: 11, SAB: 13, ESP: 12, CAR: 13, INT: 9 }, trait: "Sortudo." },
+  { id: "draconato", name: "Draconato", hitDie: "1d10", base: { FOR: 14, DES: 10, CON: 13, SAB: 10, ESP: 10, CAR: 15, INT: 10 }, trait: "Sopro Dracônico." },
+  { id: "gnomo", name: "Gnomo", hitDie: "1d6", base: { FOR: 8, DES: 11, CON: 13, SAB: 10, ESP: 11, CAR: 13, INT: 16 }, trait: "Astúcia Gnômica." },
+  { id: "tiefling", name: "Tiefling", hitDie: "1d8", base: { FOR: 10, DES: 10, CON: 11, SAB: 9, ESP: 10, CAR: 17, INT: 15 }, trait: "Legado Abissal." },
+  { id: "orc", name: "Orc", hitDie: "1d12", base: { FOR: 15, DES: 12, CON: 13, SAB: 10, ESP: 11, CAR: 10, INT: 10 }, trait: "Vigor Selvagem." },
 ];
 
 export const RACE_IDS = DEFAULT_RACES.map((race) => race.id);
@@ -23,39 +25,13 @@ export function getRaceById(id) {
   return DEFAULT_RACES.find((race) => race.id === needle || race.name.toLowerCase() === needle) ?? null;
 }
 
-/** Bônus de atributos da raça (objeto parcial { FOR: n, ... }). */
-export function getRaceBonuses(raceId) {
-  return getRaceById(raceId)?.bonuses ?? {};
+/** Atributos base da raça (cópia; objeto imutável de entrada). */
+export function getRaceBaseAttributes(raceId) {
+  const race = getRaceById(raceId);
+  return race ? { ...race.base } : Object.fromEntries(ATTRS.map((attr) => [attr, 10]));
 }
 
-/** Aplica os bônus raciais sobre os atributos base. */
-export function applyRaceBonuses(base = {}, raceId) {
-  const bonuses = getRaceBonuses(raceId);
-  const out = { ...base };
-  for (const attr of ["FOR", "DES", "CON", "SAB", "ESP", "CAR", "INT"]) {
-    out[attr] = Math.max(1, Math.floor(Number(base[attr]) || 10)) + (Number(bonuses[attr]) || 0);
-  }
-  return out;
-}
-
-// ── Point buy (27 pontos, base 8–15) ─────────────────────────────
-export const POINT_BUY_POOL = 27;
-export const POINT_BUY_MIN = 8;
-export const POINT_BUY_MAX = 15;
-
-/** Custo de cada valor base no point buy (estilo D&D). */
-export const POINT_BUY_COST = Object.freeze({
-  8: 0, 9: 1, 10: 2, 11: 3, 12: 4, 13: 5, 14: 7, 15: 9,
-});
-
-export function pointBuyCost(value) {
-  const clamped = Math.min(POINT_BUY_MAX, Math.max(POINT_BUY_MIN, Math.floor(Number(value) || POINT_BUY_MIN)));
-  return POINT_BUY_COST[clamped];
-}
-
-export function pointBuySpent(base = {}) {
-  return ["FOR", "DES", "CON", "SAB", "ESP", "CAR", "INT"].reduce(
-    (total, attr) => total + pointBuyCost(base[attr]),
-    0
-  );
+/** Dado de vida definido pela raça (fallback 1d8). */
+export function getRaceHitDie(raceId, fallback = "1d8") {
+  return getRaceById(raceId)?.hitDie ?? fallback;
 }

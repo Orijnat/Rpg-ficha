@@ -22,8 +22,7 @@ import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { useCharacter } from "../context/CharacterContext";
 import { joinCampaign, listCampaigns } from "../../lib/api";
-import { DEFAULT_RACES, applyRaceBonuses } from "../../lib/races";
-import { getHitDieForClass } from "../../lib/classes";
+import { DEFAULT_RACES, getRaceBaseAttributes, getRaceHitDie } from "../../lib/races";
 
 export default function PerfilPage() {
   const {
@@ -132,18 +131,16 @@ export default function PerfilPage() {
     setIsCreating(true);
     setCreateMsg("");
     try {
-      const baseAttrs = { FOR: 10, DES: 10, CON: 10, SAB: 10, ESP: 10, CAR: 10, INT: 10 };
-      const finalAttrs = applyRaceBonuses(baseAttrs, newCharRace);
       await createCharacter({
         name: newCharName.trim(),
         job: newCharJob.trim(),
         hp: 70,
         hpMax: 70,
         level: 1,
-        ...finalAttrs,
+        ...getRaceBaseAttributes(newCharRace),
         dadosExtras: {
           race: newCharRace,
-          hitDie: getHitDieForClass(newCharJob.trim(), "1d8"),
+          hitDie: getRaceHitDie(newCharRace, "1d8"),
           customClass: newCharJob.trim(),
         },
       });

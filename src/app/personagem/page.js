@@ -173,7 +173,7 @@ export default function Personagem() {
           <div className="min-w-0">
             <SectionHeader
               title="Raça & Ascensão"
-              subtitle="A raça molda seus atributos; subir de nível rola o Dado de Vida da classe"
+              subtitle="A raça define seus status base e o Dado de Vida"
               icon={<Dna size={15} />}
             />
             <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -191,11 +191,11 @@ export default function Personagem() {
                 ))}
               </select>
               <span className="text-[10px] text-muted-foreground">
-                {race ? race.trait : "Escolha a raça para registrar sua linhagem."}
+                {race ? `${race.trait} (alterar a raça não recalcula os status)` : "Escolha a raça para registrar sua linhagem."}
               </span>
             </div>
             <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-              Dado de Vida (classe): <span className="text-primary">{hitDie}</span> · Mod(CON){" "}
+              Dado de Vida (raça): <span className="text-primary">{hitDie}</span> · Mod(CON){" "}
               <span className={conMod >= 0 ? "text-emerald-400" : "text-rose-400"}>
                 {conMod >= 0 ? "+" : ""}{conMod}
               </span>

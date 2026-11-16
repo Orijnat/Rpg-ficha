@@ -1,13 +1,8 @@
 import {
   DEFAULT_RACES,
   getRaceById,
-  getRaceBonuses,
-  applyRaceBonuses,
-  pointBuyCost,
-  pointBuySpent,
-  POINT_BUY_POOL,
-  POINT_BUY_MIN,
-  POINT_BUY_MAX,
+  getRaceBaseAttributes,
+  getRaceHitDie,
 } from "../races.js";
 import { parseHitDie, hpGainFromRoll } from "../leveling.js";
 
@@ -21,39 +16,40 @@ function assert(condition, message) {
 console.log("🧪 Testes de Raças e Progressão de Nível...");
 
 console.log("\n--- 1. Catálogo de raças ---");
+const ATTRS = ["FOR", "DES", "CON", "SAB", "ESP", "CAR", "INT"];
 assert(Array.isArray(DEFAULT_RACES) && DEFAULT_RACES.length === 8, "8 raças clássicas disponíveis");
 for (const race of DEFAULT_RACES) {
   assert(race.id && race.name && race.trait, `${race.id} tem id, nome e traço`);
-  assert(typeof race.bonuses === "object", `${race.id} tem bônus`);
-  const bonusSum = Object.values(race.bonuses).reduce((a, b) => a + b, 0);
-  assert(race.id === "humano" ? bonusSum === 7 : bonusSum === 3, `${race.id} concede 3 pontos (humano: 7)`);
+  assert(race.base && typeof race.base === "object", `${race.id} define atributos base`);
+  assert(ATTRS.every((attr) => Number.isInteger(race.base[attr]) && race.base[attr] >= 1), `${race.id}: 7 atributos base inteiros ≥ 1`);
+  const total = ATTRS.reduce((sum, attr) => sum + race.base[attr], 0);
+  assert(total >= 78 && total <= 84, `${race.id}: soma total ${total} coerente (78–84)`);
+  assert(/^(?:[1-9]\d{0,1})?d(?:4|6|8|10|12|20)$/i.test(race.hitDie), `${race.id}: dado de vida ${race.hitDie} válido`);
 }
 
 console.log("\n--- 2. Resolução por id/nome ---");
 assert(getRaceById("elfo")?.name === "Elfo", "getRaceById por id");
 assert(getRaceById("Elfo")?.id === "elfo", "getRaceById case-insensitive");
 assert(getRaceById("nao-existe") === null, "raça inválida retorna null");
-assert(getRaceBonuses("anao").CON === 2, "Anão: +2 CON");
-assert(getRaceBonuses("humano").INT === 1, "Humano: +1 INT");
-assert(Object.keys(getRaceBonuses("inexistente")).length === 0, "bônus de raça desconhecida são vazios");
 
-console.log("\n--- 3. Aplicação de bônus sobre a base ---");
-const base = { FOR: 10, DES: 10, CON: 10, SAB: 10, ESP: 10, CAR: 10, INT: 10 };
-const elfo = applyRaceBonuses(base, "elfo");
-assert(elfo.DES === 12 && elfo.SAB === 11, "Elfo: DES 10+2, SAB 10+1");
-assert(elfo.FOR === 10, "atributos sem bônus permanecem");
-assert(base.DES === 10, "objeto base não é mutado");
+console.log("\n--- 3. Status base e dado de vida da raça ---");
+const humano = getRaceBaseAttributes("humano");
+assert(humano.FOR === 12 && humano.INT === 10, "Humano base: FOR 12, INT 10");
+const orc = getRaceBaseAttributes("orc");
+assert(orc.FOR === 15 && orc.CON === 13, "Orc base: FOR 15, CON 13");
+assert(getRaceHitDie("orc") === "1d12", "Orc: dado de vida 1d12");
+assert(getRaceHitDie("gnomo") === "1d6", "Gnomo: dado de vida 1d6");
+assert(getRaceHitDie("anao") === "1d10", "Anão: dado de vida 1d10");
+assert(getRaceHitDie("nao-existe") === "1d8", "fallback de dado de vida é 1d8");
+assert(getRaceHitDie("nao-existe", "1d10") === "1d10", "fallback aceita override");
+const fallback = getRaceBaseAttributes("nada");
+assert(ATTRS.every((attr) => fallback[attr] === 10), "raça desconhecida cai em 10 em todos os atributos");
+const baseCopy = getRaceBaseAttributes("elfo");
+baseCopy.DES = 99;
+assert(getRaceBaseAttributes("elfo").DES === 15, "getRaceBaseAttributes devolve cópia, não a referência");
 
-console.log("\n--- 4. Point buy (27 pontos) ---");
-assert(pointBuyCost(POINT_BUY_MIN) === 0, "valor mínimo custa 0");
-assert(pointBuyCost(15) === 9, "15 custa 9");
-assert(pointBuyCost(14) === 7, "14 custa 7");
-assert(pointBuySpent({ FOR: 8, DES: 8, CON: 8, SAB: 8, ESP: 8, CAR: 8, INT: 8 }) === 0, "tudo 8 gasta 0");
-assert(pointBuySpent({ FOR: 15, DES: 15, CON: 15, SAB: 8, ESP: 8, CAR: 8, INT: 8 }) === 27, "15/15/15 gasta exatamente 27");
-assert(POINT_BUY_POOL === 27, "pool padrão é 27");
-
-console.log("\n--- 5. Parse de Dado de Vida ---");
-assert(parseHitDie("1d10").sides === 10, "1d10 → 10 lados");
+console.log("\n--- 4. Parse de Dado de Vida ---");
+assert(parseHitDie("1d12").sides === 12, "1d12 → 12 lados");
 assert(parseHitDie("d8").sides === 8 && parseHitDie("d8").count === 1, "d8 aceito sem contagem (default 1)");
 assert(parseHitDie("2d6+1").count === 2 && parseHitDie("2d6+1").modifier === 1, "2d6+1 parseia contagem e bônus");
 assert(parseHitDie("lixo").sides === 8, "entrada inválida cai no fallback");

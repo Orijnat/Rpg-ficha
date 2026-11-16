@@ -6,9 +6,7 @@ import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
 import AuthScaffold from "../../components/auth/AuthScaffold";
 import { DEFAULT_CLASSES } from "../../lib/classes";
-import { getHitDieForClass } from "../../lib/classes";
-import { DEFAULT_RACES, applyRaceBonuses } from "../../lib/races";
-import { AttributePointBuy } from "../components/character/AttributePointBuy";
+import { DEFAULT_RACES, getRaceById, getRaceBaseAttributes, getRaceHitDie } from "../../lib/races";
 import { fetchInviteInfo } from "../../lib/api";
 import {
   Lock,
@@ -90,7 +88,6 @@ function RegisterForm() {
   const [characterName, setCharacterName] = useState("");
   const [characterJob, setCharacterJob] = useState("");
   const [raceId, setRaceId] = useState("");
-  const [baseAttrs, setBaseAttrs] = useState({ FOR: 8, DES: 8, CON: 8, SAB: 8, ESP: 8, CAR: 8, INT: 8 });
 
   // Código de Convite da Mesa
   const initialInvite = searchParams ? (searchParams.get("invite") || searchParams.get("convite") || searchParams.get("code") || "") : "";
@@ -182,13 +179,12 @@ function RegisterForm() {
           setLoading(false);
           return;
         }
-        const finalAttrs = applyRaceBonuses(baseAttrs, raceId);
+        Object.assign(payload, getRaceBaseAttributes(raceId));
         payload.characterName = heroName;
         payload.characterJob = heroJob;
         payload.customClass = heroJob;
         payload.race = raceId;
-        payload.hitDie = getHitDieForClass(heroJob, "1d8");
-        Object.assign(payload, finalAttrs);
+        payload.hitDie = getRaceHitDie(raceId, "1d8");
         if (inviteCode.trim()) {
           payload.inviteCode = inviteCode.trim().toUpperCase();
         }
@@ -544,7 +540,19 @@ function RegisterForm() {
                     </select>
                   </FormField>
 
-                  <AttributePointBuy base={baseAttrs} raceId={raceId} onChange={setBaseAttrs} />
+                  {raceId && (
+                    <div className="rounded-lg border border-[#4a3d2a]/60 bg-[#0f0d0a]/60 px-3 py-2">
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--theme-subtitle)]">
+                        Status base & Dado de Vida — {getRaceById(raceId)?.name}
+                      </p>
+                      <p className="mt-1 font-mono text-[11px] text-[#f1e7d2]">
+                        {Object.entries(getRaceBaseAttributes(raceId)).map(([attr, value]) => `${attr} ${value}`).join(" · ")}
+                      </p>
+                      <p className="mt-1 text-[10px] uppercase tracking-wider text-[var(--theme-accent)]">
+                        Dado de Vida: {getRaceHitDie(raceId)}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
