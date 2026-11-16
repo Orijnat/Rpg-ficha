@@ -21,6 +21,11 @@
 - Atalho no Inventário: ícone de arquivo em cada linha abre `DepositToBankModal` (quantidade unidade a unidade + nº de espaços livres; deposita no 1º espaço vazio; avisa se cofre cheio). Banner de feedback na Mochila.
 - Build OK, testes 158/158, eslint 0 erros. NÃO commitado.
 
+## ✅ Atualização 2026-11-16 (Banco — campo simples de quantidade)
+- A pedido do usuário, os pips do UnitPicker foram substituídos por **um único campo numérico**: "Quantidade que deseja deixar no banco" (depósito, nos dois modais) e "Quantidade que deseja retirar" (devolução); hint com o máximo; foco/seleciona o campo ao abrir; clamp 1..máx.
+- `UnitPicker.jsx` e a pasta `components/ui/` removidos (sem uso).
+- Build OK, testes 158/158, eslint limpo. NÃO commitado.
+
 ## ✅ Push 2026-11-16
 - Commits `4b5ab5d` (feat inventario/banco) e `cb68efc` (docs memory) enviados ao origin/main. `.github/workflows/ci.yml` segue untracked local (PAT sem scope workflow).
 
