@@ -2,7 +2,7 @@
 
 **Última Atualização**: 2026-11-16T14:20:00-03:00  
 **Branch Atual**: `main`  
-**Status**: Fix de scroll aplicado — Lenis `allowNestedScroll: true` (SmoothScroll.jsx) restaura scroll nativo dos containers internos (mapa tatico, modais, listas). Anterior: Log de Batalha implementado de ponta a ponta (2 repos) — tabela log_batalha, ACL por campanha, visão do jogador no mapa tático + visão do mestre na Sala de Guerra. Build OK, front 148/148, back 63/63. Nada commitado. Pendência: aplicar migration 20261116000000-log-batalha.js no Supabase (produção) — NÃO aplicada.
+**Status**: REGRESSÃO DE SCROLL CORRIGIDA — allowNestedScroll (commit 88e5372, no main publicado) matou a roda do mouse; revertido e aplicados data-lenis-prevent nos 15 containers internos. Corrigido e commitado (923f890) e pushed. Anterior: Log de Batalha implementado de ponta a ponta (2 repos) — tabela log_batalha, ACL por campanha, visão do jogador no mapa tático + visão do mestre na Sala de Guerra. Build OK, front 148/148, back 63/63. Commitado e pushed nos 2 repos (front: banco cofre, log de batalha, fix scroll, docs; back: log_batalha). CI workflows SEGREGADAS localmente (PAT sem scope workflow). Pendência: migration log-batalha no Supabase (produção).
 **Anterior**: Login em produção corrigido (trust proxy 04a2a5c + migrações prod). Mapa tático: bug da miniatura sumindo corrigido + ícones personalizáveis (e4b7eb9 back / 76243c7 front). Imagens do mapa: fix CORP (77cc96a). Fundo do mapa por sessão + URL externa commitado (c1c1365). Mandato autônomo "desenvolver até 17h": backend +26 testes (54/54: mapa_tatico ACL + security_auth), frontend +5 (145/145), refactor TOKEN_ICONS→lib/mapaTatico.js, skills `mapa-tatico` e `render-supabase-producao` (espelhadas), docs atualizados. Lote autônomo completo: 54/54 back, 145/145 front, build 31/31, lint 0 erros (42 warnings pré-existentes). text-[9px]→[10px] (54×); audit fix typescript-eslint; docs/COISAS/TROUBLESHOOTING/RUNBOOK atualizados; skills novas espelhadas. jwt.js hardening (timingSafeEqual, sem unsigned), sessão restaurada confia só em /auth/me, rpg_auth_user não persiste mais → 148/148. Tudo NÃO commitado (aguardar pedido de commit).
 
 ---
@@ -128,3 +128,9 @@ Pedido do usuário: log de batalha que persiste TODAS as ações de jogadores e 
 - Causa: Lenis root com `smoothWheel` interceptava todos os wheel events e dava preventDefault — containers `overflow-y-auto` internos ficavam sem scroll nativo.
 - Fix: `allowNestedScroll: true` em `src/components/SmoothScroll.jsx` — Lenis cede o scroll aos descendants scrolláveis sob o cursor e reassume na borda (scroll chaining para a página).
 - Build OK (31/31), lint 0 erros. NÃO commitado. Verificar no navegador: rolar listas do mapa-tatico e modais com o wheel.
+
+## ✅ Atualização 2026-11-16 (Regressão da roda do scroll — corrigida)
+- Relato pós-push: "a roda de rolagem não está funcionando mais no site" (culpa do commit 88e5372 / allowNestedScroll).
+- Fix definitivo: revertido `allowNestedScroll` em `SmoothScroll.jsx` (site volta ao comportamento anterior — página volta a rolar) + `data-lenis-prevent` (atributo oficial do Lenis) injetado nos 15 containers internos `overflow-y-auto`/`overflow-auto` (mapa tático, FloatingWindow, modais, log de batalha, encontros).
+- Comportamento: sobre containers marcados, Lenis ignora o wheel → scroll nativo funciona dentro; fora deles, a página rola como antes.
+- Build OK 31/31, lint 0 erros. Commitado como 923f890 e pushed.
