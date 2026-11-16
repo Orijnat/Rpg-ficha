@@ -31,6 +31,13 @@
 - **XP em encontros**: Sala de Guerra ganhou painel "Recompensa de XP" (`EncounterXpPanel.jsx`) — define XP por herói, mostra progresso de cada herói presente (Nv + barra até o próximo nível), botão "Distribuir XP" aplica a recompensa via `updateCharacterOnBackend` (xp/experiencia) e registra no log (tipo `recursos`); `dadosExtras.xpDistribuidoEm` marca distribuição (permite redistribuir com confirmação). Jogadores veem o progresso na XPBar da ficha (atualiza no próximo sync/refresh).
 - Build OK, frontend 158/158, backend 70/70. NÃO commitado.
 
+## ✅ Atualização 2026-11-16 (Raças + subida de nível com dado de vida)
+- **Raças (clássicas D&D)** `src/lib/races.js`: Humano(+1 tudo), Elfo(+2 DES,+1 SAB), Anão(+2 CON,+1 FOR), Halfling(+2 DES,+1 CAR), Draconato(+2 FOR,+1 CAR), Gnomo(+2 INT,+1 CAR), Tiefling(+2 CAR,+1 INT), Orc(+2 FOR,+1 CON). Hit die vem da CLASSE (lib/classes.js), não da raça.
+- **Criação**: registro (jogador) ganhou select de raça (obrigatória) + `AttributePointBuy` (27 pontos, base 8–15, bônus racial mostrado ao vivo; payload envia FOR..INT finais + race + hitDie). Quick-create do perfil idem (bônus sobre base 10; raça obrigatória). `personagem` (ficha) tem card "Raça & Ascensão" com select de raça (grava dadosExtras.race) + botão "Subir de Nível".
+- **Subir de nível (jogador rola na ficha)**: exige XP suficiente (gate por `calculateLevelFromXP`), rola Dado de Vida da classe + Mod(CON) (mín. 1 HP), aumenta `hpMax` e `hp`, sobe `level`, loga no log de batalha (tipo recursos). `admin/personagens` (promoção individual/lote) faz a mesma rolagem por herói.
+- **Backend**: register aceita atributos finais (clamp 1–30), `race` obrigatória para jogador, `hitDie` validado (`1d8` fallback); grava em `AtributosPersonagem` + `dadosExtras.race/hitDie`. Testes atualizados (70/70).
+- Novos libs `races.js`/`leveling.js` + `races-leveling.test.mjs` (159/159 front). Build OK. NÃO commitado.
+
 ## ✅ Push 2026-11-16 (2)
 - Commits `b08ece0` (feat campo simples) e `b6e74ea` (docs memory) enviados ao origin/main.
 

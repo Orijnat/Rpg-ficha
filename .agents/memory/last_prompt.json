@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-16T22:30:00-03:00",
+  "timestamp": "2026-11-16T23:20:00-03:00",
   "agent": "opencode",
-  "prompt": "commite e de pus da salteracoes",
-  "action": "Preparar commits: XP por encontro (frente) + remoção de dados fixos (front e back); push em ambos os repos."
+  "prompt": "commite e de pus da salteracoes (raças, point buy, subir de nível)",
+  "action": "Commit das raças/subida de nível no front e do register no back; push em ambos."
 }
