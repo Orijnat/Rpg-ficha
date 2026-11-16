@@ -155,3 +155,20 @@ Pedido do usuário: log de batalha que persiste TODAS as ações de jogadores e 
 - Alteradas todas as ocorrências do banco: `src/app/page.js` (landing), `banco/page.jsx` (comentário), `BankLockedView.jsx`, `BankUnlockedView.jsx`, `BankChestModal.jsx` (comentário + "Cofre de Azedarack"), `constants.js` (bankTitle, não mais referenciado em lugar nenhum).
 - "Crônicas de Glenor" no placeholder de admin/campanhas também trocado para "Crônicas de Azedarack: O Eclipse de Sangue" (pedido seguinte do usuário). Backend sem ocorrências.
 - Commitado e pushed junto com COISAS-A-FAZER.md (seção 6: Google → "permitir criar conta de maneira dinamica com um email") a pedido do usuário. `.github/workflows/` NÃO incluída (CI segregada localmente por falta de scope do PAT).
+
+## ✅ Atualização 2026-11-16 (Limpeza total do banco Supabase — PRODUÇÃO)
+- Pedido do usuário (com confirmação solene em 3 etapas): apagar TODOS os dados do banco de produção (Supabase pooler, db `postgres`).
+- pg_dump prévio gerado: `/tmp/opencode/backup-pre-purge-2026-11-16.dump` (120 KB, chmod 600, custom format, schema public — contém hashes de senha; manter em local seguro ou apagar).
+- Executado `TRUNCATE ... RESTART IDENTITY CASCADE` em TODAS as tabelas public, EXCETO `sequelize_meta` (10) e `SequelizeMeta` (1) (histórico de migrações preservado). Verificado ao vivo: count=0 em todas as demais; migrations intactas.
+- auth.* e storage.* já estavam vazios (verificado antes). Uploads em disco (private_uploads) não são apagados por este procedimento.
+- Todos os 10 usuários/13 personagens/1 campanha foram apagados; sessões invalidadas — app volta a exigir registro do zero.
+- `/tmp/opencode/dburl.txt` removido (continha a connection string).
+
+## ✅ Atualização 2026-11-16 (Mercado do Mundo → banco; dados mockados removidos)
+- Pedido do usuário: "não existam mais dados mockados, e sim que puxem tudo do banco". Escopo aprovado: Mercado do Mundo + 2 extras (NPC placeholder do /admin; seed.js demo).
+- BACKEND `../Rpg-backend`: novas tabelas `mercado_vendedores` e `mercado_itens` (migration `20261116170000-mercado.js`, RLS enabled, índices FK; criado_por_id por mestre, sem FK item→vendedor — formulário aceita vendedor em texto livre). Models `MercadoVendedor`/`MercadoItem`; schemas zod strict; controller `mercadoController` (listar/criar/atualizar/remover, owner-scoped 404 para não-dono); rotas `/api/mercado/{vendedores,itens}` atrás de authMiddleware+requireMaster; montado em server.js. `database/seed.js` DELETADO e script `db:seed` removido do package.json (COISAS-A-FAZER-BACKEND.md atualizado).
+- Migration APLICADA no Supabase (produção) via `node database/migrate.js` (todas as incrementais re-aplicadas idempotentemente; sequelize_meta registrado; RLS verificado t/t).
+- FRONTEND: `/admin/mercado` reescrito para persistir no banco (list no mount; create/update/delete via API; estoque com atualização otimista + reconciliação; botão "Restaurar Catálogo Padrão" e localStorage removidos; banners de erro/loading). `api.js`: 8 novas funções market CRUD + comentário atualizado. `src/lib/market.js`: VENDEDORES_PADRAO e DEFAULT_MARKET_ITEMS REMOVIDOS (restam REGIOES_CANONICAS/CATEGORIAS/RARIDADES/MOEDAS + funções puras). `/admin/page.js`: defaultTable.npcs agora `[]` (NPC placeholder removido). `market.test.mjs` ajustado (158/158). api.js comment atualizado. lint limpo; build 31/31.
+- Verificado end-to-end em Postgres 16 descartável (Docker, container removido ao final): migrations do zero OK; registro jogador cria ficha; registro MESTRE NÃO cria ficha (characters undefined); CRUD mercado OK; outro mestre → 404 em item/vendedor alheio; DECIMAL volta como string→convertido para number no serializer.
+- ATENÇÃO: nada commitado. Backend precisa ser DEPLOYADO (Render) para /api/mercado e o fix de registro de mestre valerem em produção; frontend na Vercel na sequência. `.github/workflows/` permanece local (PAT sem scope).
+- Detalhe: resposta de register de MESTRE agora omite `character` e retorna `characters: []`; frontend AuthContext já tolerava (chars=[]).

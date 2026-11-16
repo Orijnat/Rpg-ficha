@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-11-16T15:30:00-03:00",
+  "timestamp": "2026-11-16T17:30:00-03:00",
   "agent": "opencode",
-  "skill": "frontend-artisan",
-  "prompt": "poderia alterar o noem do banco de lenor para Azedarack",
-  "action": "Renomeado \"Banco de Glenor\" para \"Banco de Azedarack\" em todos os pontos do frontend (landing page.js, /banco, BankLockedView, BankUnlockedView, BankChestModal, constants.js bankTitle) e o placeholder de campanha no admin (Crônicas de Azedarack). Backend sem ocorrências. eslint limpo. Commitado e pushed com COISAS-A-FAZER.md (seção 6). .github/workflows/ excluída (PAT sem scope workflow)."
+  "skill": "banco-de-dados-ops",
+  "prompt": "poderia fazer com que nao existam mais dados mockados, e sim que puxem tudo do banco?",
+  "action": "Mercado do Mundo migrado para o banco (tabelas mercado_vendedores/mercado_itens, por mestre, RLS, CRUD /api/mercado); seeds hardcoded e localStorage removidos; /admin sem NPC placeholder; seed.js demo removido; migration aplicada no Supabase; produção ainda depende de deploy do backend."
 }

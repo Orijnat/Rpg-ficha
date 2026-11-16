@@ -178,8 +178,8 @@ Este mapeamento conecta diretamente cada tela da interface com as necessidades d
 - [~] Consolidar migrations das entidades em arquivos separados; atualmente existe
   uma migration baseline que aplica `database/banco.sql`.
 - [x] Substituir o uso de `sequelize.sync({ alter: true })` por execução formal de migrations.
-- [~] Criar script de Seeds (`npm run db:seed`) com mestre, dois jogadores,
-  personagens, campanha e NPC; o mapa de exemplo ainda não é criado pelo seed.
+- [x] ~~Criar script de Seeds~~ REMOVIDO em 2026-11-16: o produto não deve nascer com
+  dados de demonstração (banco zerado); seed.js excluído e script `db:seed` removido.
 
 ---
 
