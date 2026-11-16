@@ -26,6 +26,11 @@
 - `UnitPicker.jsx` e a pasta `components/ui/` removidos (sem uso).
 - Build OK, testes 158/158, eslint limpo. NÃO commitado.
 
+## ✅ Atualização 2026-11-16 (Dados fixos removidos + XP por encontro)
+- **Zero dados fixos/demonstração**: `defaultData` (Geralt de Rívia) deletado; `createBlankCharacterData` é a única origem de fichas (HP unificado em 70 via `NEW_HERO_HP`); registro/admin/perfil/campanha exigem nome (e classe) informado pelo usuário; fallback "Aventureiro"/"Novo Herói"/"Novo Personagem"/"Novo contrato"/"Novo" eliminados (criação e exibição); "Mestre Garrick" no MarketItemModal → vendedor obrigatório; `schema.sql` sem bloco de seed comentado; Character model sem defaultValue "Novo Herói"; jwt sem fallback "Aventureiro". Testes backend atualizados (registro exige herói nomeado; 70/70). Frontend 158/158, build OK.
+- **XP em encontros**: Sala de Guerra ganhou painel "Recompensa de XP" (`EncounterXpPanel.jsx`) — define XP por herói, mostra progresso de cada herói presente (Nv + barra até o próximo nível), botão "Distribuir XP" aplica a recompensa via `updateCharacterOnBackend` (xp/experiencia) e registra no log (tipo `recursos`); `dadosExtras.xpDistribuidoEm` marca distribuição (permite redistribuir com confirmação). Jogadores veem o progresso na XPBar da ficha (atualiza no próximo sync/refresh).
+- Build OK, frontend 158/158, backend 70/70. NÃO commitado.
+
 ## ✅ Push 2026-11-16 (2)
 - Commits `b08ece0` (feat campo simples) e `b6e74ea` (docs memory) enviados ao origin/main.
 
