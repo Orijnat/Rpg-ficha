@@ -117,14 +117,17 @@ export default function PerfilPage() {
 
   const handleCreate = async (e) => {
     e.preventDefault();
-    if (!newCharName.trim()) return;
+    if (!newCharName.trim() || !newCharJob.trim()) {
+      setCreateMsg("Informe o nome e a classe do personagem.");
+      return;
+    }
 
     setIsCreating(true);
     setCreateMsg("");
     try {
       await createCharacter({
         name: newCharName.trim(),
-        job: newCharJob.trim() || "Aventureiro",
+        job: newCharJob.trim(),
         hp: 70,
         hpMax: 70,
         level: 1,
@@ -182,7 +185,7 @@ export default function PerfilPage() {
                 </span>
               </div>
               <h1 className="mt-1 font-serif text-2xl font-black text-foreground sm:text-3xl">
-                @{user?.username || "Aventureiro"}
+                @{user?.username || ""}
               </h1>
               <p className="text-xs text-muted-foreground">
                 {user?.email || "Sessão local ativa com token criptografado"}
@@ -313,7 +316,7 @@ export default function PerfilPage() {
                           )}
                         </div>
                         <p className="text-xs text-muted-foreground truncate">
-                          {char.job || "Aventureiro"} · Nível {char.level || 1} · {char.hp ?? 70}/{char.hpMax ?? 70} PV
+                          {char.job || ""} · Nível {char.level || 1} · {char.hp ?? "—"}/{char.hpMax ?? "—"} PV
                         </p>
                       </div>
                     </div>

@@ -101,7 +101,7 @@ export default function PersonagensAdmin() {
           ...h,
           entryType: "hero",
           displayName: h.name,
-          displaySubtitle: `${h.job || "Aventureiro"} · Nível ${h.level || 1}`,
+          displaySubtitle: `${h.job || ""} · Nível ${h.level || 1}`,
           hp: Number(h.hp || 0),
           hpMax: Number(h.hpMax || 1),
           tags: [],

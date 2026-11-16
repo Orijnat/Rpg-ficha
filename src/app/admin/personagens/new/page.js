@@ -16,9 +16,14 @@ export default function NewPersonagem() {
   async function submit(e) {
     e.preventDefault();
     setError("");
+    const trimmedName = name.trim();
+    if (!trimmedName) {
+      setError("Informe o nome do personagem.");
+      return;
+    }
     setLoading(true);
     try {
-      const payload = { name: name.trim() || "Novo Personagem", job: job.trim() || "Aventureiro", hp: 10, hpMax: 10, level: 1 };
+      const payload = { name: trimmedName, job: job.trim() };
       await createCharacterOnBackend(payload, token);
       router.push("/admin/personagens");
     } catch (err) {

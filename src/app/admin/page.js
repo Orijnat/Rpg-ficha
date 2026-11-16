@@ -786,7 +786,7 @@ export default function AdminIndex() {
                     </span>
                   )}
                 </div>
-                <p className="mt-1 text-xs text-muted-foreground">{character.job || "Aventureiro"} · Nível {character.level || 1}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{character.job || ""} · Nível {character.level || 1}</p>
                 <div className="mt-3 flex items-center gap-1.5 text-xs text-primary">
                   <HeartPulse size={13} /> {character.hp}/{character.hpMax} PV
                 </div>

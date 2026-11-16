@@ -13,8 +13,7 @@ import { ensureCanonicalSkills } from "../../lib/modifiers";
 import { applyItemUse, tickActiveEffects } from "../../lib/items";
 import { useAuth } from "./AuthContext";
 
-import { defaultData, createBlankCharacterData } from "../../lib/defaultCharacter";
-export { defaultData };
+import { createBlankCharacterData } from "../../lib/defaultCharacter";
 
 const CharacterContext = createContext(null);
 
@@ -384,7 +383,8 @@ export function CharacterProvider({ children }) {
 
   const addItem = (itemData) => {
     const payload = itemData && typeof itemData === "object" ? itemData : {};
-    const name = String(payload.name ?? "").trim() || "Novo item";
+    const name = String(payload.name ?? "").trim();
+    if (!name) return; // item sem nome não é criado
     const qty = Math.max(0, Math.floor(Number(payload.qty) || 1));
     const weight = Math.max(0, Number(payload.weight ?? 1) || 0);
     const item = { id: uid(), name, qty, weight };
@@ -508,7 +508,7 @@ export function CharacterProvider({ children }) {
   const addContract = () => {
     setData((current) => ({
       ...current,
-      contracts: [...current.contracts, { id: uid(), title: "Novo contrato", reward: "???", done: false }],
+      contracts: [...current.contracts, { id: uid(), title: "", reward: "", done: false }],
     }));
   };
 
@@ -529,7 +529,7 @@ export function CharacterProvider({ children }) {
   const addPerson = (list) => {
     setData((current) => ({
       ...current,
-      [list]: [...current[list], { id: uid(), name: "Novo", note: "" }],
+      [list]: [...current[list], { id: uid(), name: "", note: "" }],
     }));
   };
 

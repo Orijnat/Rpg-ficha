@@ -568,7 +568,7 @@ export default function AdminCampanhasPage() {
                                     {hero.name}
                                   </span>
                                   <span className="text-[10px] text-muted-foreground">
-                                    ({hero.job || "Aventureiro"} · Nv {hero.level || 1})
+                                    ({hero.job || ""} · Nv {hero.level || 1})
                                   </span>
                                   <button
                                     type="button"

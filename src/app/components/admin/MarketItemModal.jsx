@@ -21,7 +21,7 @@ export default function MarketItemModal({
   const [formData, setFormData] = useState({
     nome: "",
     regiao: availableRegions[0] || "Capital Valíria & Terras da Coroa",
-    vendedor: availableVendors[0]?.nome || "Mestre Garrick Martelo-de-Prata",
+    vendedor: availableVendors[0]?.nome || "",
     tipo: CATEGORIAS_ITEM[0] || "Armas",
     quantidade: 1,
     preco: 10,
@@ -63,7 +63,7 @@ export default function MarketItemModal({
       setFormData({
         nome: "",
         regiao: availableRegions[0] || "Capital Valíria & Terras da Coroa",
-        vendedor: availableVendors[0]?.nome || "Mestre Garrick Martelo-de-Prata",
+        vendedor: availableVendors[0]?.nome || "",
         tipo: CATEGORIAS_ITEM[0] || "Armas",
         quantidade: 1,
         preco: 10,

@@ -165,9 +165,16 @@ function RegisterForm() {
       };
 
       if (!isMaster) {
-        payload.characterName = characterName.trim() || "Novo Herói";
-        payload.characterJob = characterJob.trim() || "Aventureiro";
-        payload.customClass = characterJob.trim();
+        const heroName = characterName.trim();
+        const heroJob = characterJob.trim();
+        if (!heroName || !heroJob) {
+          setError("Informe o nome e a classe/ocupação do seu herói.");
+          setLoading(false);
+          return;
+        }
+        payload.characterName = heroName;
+        payload.characterJob = heroJob;
+        payload.customClass = heroJob;
         if (inviteCode.trim()) {
           payload.inviteCode = inviteCode.trim().toUpperCase();
         }
@@ -482,7 +489,7 @@ function RegisterForm() {
                       type="text"
                       value={characterName}
                       onChange={(e) => setCharacterName(e.target.value)}
-                      placeholder="Ex: Geralt de Rívia (padrão: Novo Herói)"
+                      placeholder="Nome do seu herói"
                       className={inputBase}
                       style={inputFont}
                     />

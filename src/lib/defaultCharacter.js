@@ -1,112 +1,37 @@
-import { DEFAULT_ABILITIES } from "./abilities.js";
-
 /**
- * Dados padrão e estrutura canônica do Personagem (7 Atributos, 19 Perícias, 80 Slots de Banco)
- * Mantido por: @rpg-rules-engine & @frontend-artisan
+ * Estrutura canônica do Personagem (7 Atributos, 19 Perícias, 80 Slots de Banco)
+ * Nenhuma ficha de demonstração é criada — toda ficha nasce a partir de `createBlankCharacterData`.
  */
 
-export const defaultData = {
-  name: "Geralt de Rívia",
-  job: "Bruxeiro",
-  level: 2,
-  xp: 300,
-  customClass: "",
-  hp: 70,
-  hpMax: 70,
-  age: "Cerca de 100",
-  eyes: "Amarelos felinos",
-  height: "1,85m",
-  skin: "Pálida",
-  weight: "85kg",
-  hair: "Branco leitoso",
-  appearance: "Cicatriz no olho esquerdo, porte atlético, medalhão de lobo.",
-  FOR: 16,
-  DES: 16,
-  CON: 16,
-  SAB: 14,
-  ESP: 14,
-  CAR: 10,
-  INT: 12,
-  skills: [
-    { name: "Atletismo", attr: "FOR", trained: true, bonus: 5 },
-    { name: "Acrobacia", attr: "DES", trained: true, bonus: 5 },
-    { name: "Furtividade", attr: "DES", trained: false, bonus: null },
-    { name: "Prestidigitação", attr: "DES", trained: false, bonus: null },
-    { name: "História", attr: "SAB", trained: false, bonus: null },
-    { name: "Investigação", attr: "SAB", trained: true, bonus: 4 },
-    { name: "Sobrevivência", attr: "SAB", trained: true, bonus: 5 },
-    { name: "Provocação", attr: "SAB", trained: false, bonus: null },
-    { name: "Animais", attr: "SAB", trained: true, bonus: 4 },
-    { name: "Medicina", attr: "SAB", trained: false, bonus: null },
-    { name: "Intuição", attr: "ESP", trained: true, bonus: 4 },
-    { name: "Percepção", attr: "ESP", trained: true, bonus: 6 },
-    { name: "Atuação", attr: "ESP", trained: false, bonus: null },
-    { name: "Enganação", attr: "CAR", trained: false, bonus: null },
-    { name: "Intimidação", attr: "CAR", trained: true, bonus: 5 },
-    { name: "Persuasão", attr: "CAR", trained: false, bonus: null },
-    { name: "Arcanismo", attr: "INT", trained: true, bonus: 3 },
-    { name: "Religião", attr: "INT", trained: false, bonus: null },
-    { name: "Natureza", attr: "INT", trained: true, bonus: 3 },
-  ],
-  latina: 0,
-  ouro: 66,
-  prata: 70,
-  cobre: 3,
-  inventory: [
-    { id: "1", name: "Espada de Aço", qty: 1, weight: 1 },
-    { id: "2", name: "Espada de Prata", qty: 1, weight: 1 },
-    { id: "3", name: "Óleo contra Espectros", qty: 2, weight: 0.5 },
-    { id: "4", name: "Poção Andorinha", qty: 3, weight: 0.25 },
-    { id: "5", name: "Besta de mão com virotes", qty: 1, weight: 2 },
-  ],
-  contracts: [
-    { id: "1", title: "O Monstro do Poço", reward: "50 Ouro", done: false },
-    { id: "2", title: "Bestas nas Colinas", reward: "120 Ouro", done: true },
-  ],
-  players: [
-    { id: "1", name: "Marosso", note: "Bárbaro guerreiro" },
-    { id: "2", name: "Skjar", note: "Caçador" },
-  ],
-  npcs: [
-    { id: "1", name: "Mithril", note: "Ferreiro da vila" },
-    { id: "2", name: "Luma", note: "Curandeira" },
-  ],
-  bankSlots: Array.from({ length: 80 }, (_, index) =>
+// Perícias canônicas do sistema (conteúdo de regras, não dados de usuário).
+const CANONICAL_SKILLS = [
+  { name: "Atletismo", attr: "FOR" },
+  { name: "Acrobacia", attr: "DES" },
+  { name: "Furtividade", attr: "DES" },
+  { name: "Prestidigitação", attr: "DES" },
+  { name: "História", attr: "SAB" },
+  { name: "Investigação", attr: "SAB" },
+  { name: "Sobrevivência", attr: "SAB" },
+  { name: "Provocação", attr: "SAB" },
+  { name: "Animais", attr: "SAB" },
+  { name: "Medicina", attr: "SAB" },
+  { name: "Intuição", attr: "ESP" },
+  { name: "Percepção", attr: "ESP" },
+  { name: "Atuação", attr: "ESP" },
+  { name: "Enganação", attr: "CAR" },
+  { name: "Intimidação", attr: "CAR" },
+  { name: "Persuasão", attr: "CAR" },
+  { name: "Arcanismo", attr: "INT" },
+  { name: "Religião", attr: "INT" },
+  { name: "Natureza", attr: "INT" },
+];
 
-    index === 0 ? { item: "Relíquia Antiga de Prata" } : { item: "" }
-  ),
-  notes: "Medalhão vibra na presença de monstros ou fontes de magia.",
-  notesImages: [],
-  roomNotes: "Aposentos na estalagem do centro da vila.",
-  mountName: "Carpeado",
-  mountHP: 30,
-  mountHPMax: 30,
-  mountNotes: "Sela de viagem reforçada, alforjes de couro duplo.",
-  abilities: [],
-  levelAbilities: {},
-  dadosExtras: {
-    inventoryCapacity: 20,
-    insanityMax: 0,
-    insanityCurrent: 0,
-    bpMax: 0,
-    bpCurrent: 0,
-    peMax: 10,
-    peCurrent: 10,
-    hitDie: "1d10",
-    armorClass: 0,
-    initiative: 0,
-    customAbilities: [],
-    training: [],
-    abilities: [],
-    levelAbilities: {},
-  },
-};
+// Pontos de vida iniciais de um herói recém-criado (linha de base mecânica única).
+export const NEW_HERO_HP = 70;
 
 /**
- * Ficha em branco para novas contas/fallbacks.
- * Diferente de `defaultData` (demonstração "Geralt de Rívia"), não contém
- * itens, ouro, anotações ou senha de cofre — evita vazamento de dados de
- * demonstração para fichas reais de outros usuários.
+ * Ficha em branco — ponto de partida neutro para novas contas/fallbacks.
+ * Nenhum item, moeda, anotação ou dado de demonstração é criado.
  */
 export function createBlankCharacterData() {
   return {
@@ -115,8 +40,8 @@ export function createBlankCharacterData() {
     level: 1,
     xp: 0,
     customClass: "",
-    hp: 10,
-    hpMax: 10,
+    hp: NEW_HERO_HP,
+    hpMax: NEW_HERO_HP,
     age: "",
     eyes: "",
     height: "",
@@ -131,7 +56,7 @@ export function createBlankCharacterData() {
     ESP: 10,
     CAR: 10,
     INT: 10,
-    skills: defaultData.skills.map(({ name, attr }) => ({ name, attr, trained: false, bonus: null })),
+    skills: CANONICAL_SKILLS.map(({ name, attr }) => ({ name, attr, trained: false, bonus: null })),
     latina: 0,
     ouro: 0,
     prata: 0,

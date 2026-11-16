@@ -79,7 +79,7 @@ export default function Personagem() {
               </div>
               <div className="medallion-plate rounded-xl p-3 text-center">
                 <span className="block font-cinzel text-[10px] uppercase tracking-wider text-muted-foreground/80">Ofício / Classe</span>
-                <EditableText value={data.customClass || data.job || "Aventureiro"} onChange={(value) => upd("customClass", value)} className="font-cinzel text-xs sm:text-sm font-bold text-foreground hover:text-primary transition-colors" label="Classe ou ofício" />
+                <EditableText value={data.customClass || data.job || ""} onChange={(value) => upd("customClass", value)} className="font-cinzel text-xs sm:text-sm font-bold text-foreground hover:text-primary transition-colors" label="Classe ou ofício" />
               </div>
             </div>
           </div>

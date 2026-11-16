@@ -135,7 +135,7 @@ export function getUserFromToken(token) {
 
   return {
     id: payload.id || payload.sub || null,
-    username: payload.username || payload.name || "Aventureiro",
+    username: payload.username || payload.name || "",
     email: payload.email || "",
     role: profileInfo.role,
     perfil: profileInfo.perfil,

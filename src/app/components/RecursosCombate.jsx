@@ -76,7 +76,7 @@ export default function RecursosCombate() {
         data.campanhaId || "ativa",
         {
           characterId: data.id,
-          name: data.name || "Aventureiro",
+          name: data.name || "",
           initiative: roll?.total ?? initiativeData.total,
           hp: data.hp ?? 10,
           hpMax: data.hpMax ?? 10,

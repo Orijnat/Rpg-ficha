@@ -133,7 +133,7 @@ export default function MundoPage() {
                   <div>
                     <strong className="font-cinzel text-sm text-foreground">{hero.name}</strong>
                     <p className="font-journal text-xs italic text-muted-foreground">
-                      Herói · {hero.customClass || hero.job || "Aventureiro"} · Nível {hero.level || 1}
+                      Herói · {hero.customClass || hero.job || ""} · Nível {hero.level || 1}
                     </p>
                   </div>
                 </div>
