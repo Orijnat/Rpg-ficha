@@ -1,8 +1,6 @@
 "use client";
 
-import { Coins, X } from "lucide-react";
 import { useCharacter } from "../context/CharacterContext";
-import { Card, EditableText, SectionHeader } from "../components/ui";
 import { BankUnlockedView } from "../components/banco/BankUnlockedView";
 import { BankLockedView } from "../components/banco/BankLockedView";
 
@@ -18,7 +16,8 @@ export default function BancoPage() {
     bankError,
     setBankInput,
     setBankUnlocked,
-    updBank,
+    depositToBank,
+    withdrawFromBank,
     tryUnlock,
   } = useCharacter();
 
@@ -35,10 +34,11 @@ export default function BancoPage() {
 
   return (
     <BankUnlockedView
-      characterId={data.id}
       bankSlots={data.bankSlots}
+      inventory={data.inventory}
       onLogout={() => setBankUnlocked(false)}
-      onSlotUpdate={updBank}
+      onDeposit={depositToBank}
+      onWithdraw={withdrawFromBank}
     />
   );
 }

@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { Coins, X, ArrowRightLeft } from "lucide-react";
+import { Coins, LogOut, ArrowRightLeft } from "lucide-react";
 import { Card, SectionHeader } from "../ui";
-import { setBankPasswordOnBackend } from "../../../lib/api";
 import { BankSlotGrid } from "./BankSlotGrid";
+import { BankChestModal } from "./BankChestModal";
 import { convertCurrency, CURRENCY_RATES } from "../../../lib/modifiers";
 
 const CURRENCY_LABELS = {
@@ -18,14 +18,17 @@ const CURRENCY_KEYS = Object.keys(CURRENCY_RATES);
 
 /**
  * Componente exibido quando o banco está desbloqueado
- * Mostra header com controles, grid de slots e conversor de moedas
+ * Mostra header com controles, grid de slots, modal de depósito e conversor de moedas
  */
 export function BankUnlockedView({
-  characterId,
   bankSlots,
+  inventory,
   onLogout,
-  onSlotUpdate,
+  onDeposit,
+  onWithdraw,
 }) {
+  const [activeSlot, setActiveSlot] = useState(null); // índice do slot com o modal aberto
+
   return (
     <div className="space-y-4">
       <Card>
@@ -33,15 +36,22 @@ export function BankUnlockedView({
         <div className="mb-3 flex items-center justify-between">
           <SectionHeader title="Banco de Glenor" icon={<Coins size={14} />} />
 
-          <BankHeaderControls
-            characterId={characterId}
-            onLogout={onLogout}
-          />
+          <BankHeaderControls onLogout={onLogout} />
         </div>
 
         {/* Grid de slots */}
-        <BankSlotGrid slots={bankSlots} onSlotUpdate={onSlotUpdate} />
+        <BankSlotGrid slots={bankSlots} onSlotClick={setActiveSlot} />
       </Card>
+
+      {/* Modal de depósito/retirada */}
+      <BankChestModal
+        slotIndex={activeSlot}
+        slot={activeSlot !== null ? bankSlots[activeSlot] : null}
+        inventory={inventory}
+        onClose={() => setActiveSlot(null)}
+        onDeposit={onDeposit}
+        onWithdraw={onWithdraw}
+      />
 
       {/* Conversor de Moedas */}
       <CurrencyConverter />
@@ -50,68 +60,20 @@ export function BankUnlockedView({
 }
 
 /**
- * Controles do header do banco (senha e logout)
- * Não exibe a senha atual (ela é um hash no servidor); apenas define/remove uma personalizada.
+ * Controles do header do banco.
+ * Apenas a opção de sair (fechar o cofre).
  */
-function BankHeaderControls({ characterId, onLogout }) {
-  const [newPassword, setNewPassword] = useState("");
-  const [saving, setSaving] = useState(false);
-  const [feedback, setFeedback] = useState(null); // { text, ok }
-
-  const handleSetPassword = async (password) => {
-    setSaving(true);
-    setFeedback(null);
-    try {
-      const result = await setBankPasswordOnBackend(characterId, password);
-      setFeedback({ text: result?.message || (password ? "Senha personalizada definida." : "Senha personalizada removida."), ok: true });
-      setNewPassword("");
-    } catch (error) {
-      setFeedback({ text: error.message || "Erro ao alterar a senha.", ok: false });
-    } finally {
-      setSaving(false);
-    }
-  };
-
+function BankHeaderControls({ onLogout }) {
   return (
-    <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--theme-subtitle)]">
-      <span className="hidden sm:inline">Senha personalizada:</span>
-      <form
-        className="flex items-center gap-1.5"
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleSetPassword(newPassword);
-        }}
-      >
-        <input
-          type="password"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          placeholder="Nova senha (vazio = remover)"
-          aria-label="Definir senha personalizada do cofre"
-          className="w-44 rounded-lg border border-white/10 bg-white/5 px-2 py-1.5 text-[var(--theme-accent)] outline-none placeholder:text-[#6b5a3e]/60 focus:border-primary/60"
-        />
-        <button
-          type="submit"
-          disabled={saving}
-          className="rounded-lg border border-primary/40 bg-primary/15 px-2.5 py-1.5 font-cinzel text-[10px] font-bold uppercase tracking-wider text-primary transition hover:bg-primary/25 disabled:opacity-50"
-        >
-          {saving ? "..." : newPassword ? "Salvar" : "Remover"}
-        </button>
-      </form>
-      {feedback && (
-        <span className={feedback.ok ? "text-emerald-400" : "text-rose-400"} role="status">
-          {feedback.text}
-        </span>
-      )}
-      <button
-        onClick={onLogout}
-        className="text-[var(--theme-subtitle)] transition-colors hover:text-[var(--theme-accent)]"
-        title="Fechar o cofre"
-        aria-label="Fechar o cofre"
-      >
-        <X size={13} />
-      </button>
-    </div>
+    <button
+      onClick={onLogout}
+      className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 font-cinzel text-[11px] font-bold uppercase tracking-wider text-[var(--theme-subtitle)] transition hover:border-primary/40 hover:text-[var(--theme-accent)]"
+      title="Fechar o cofre"
+      aria-label="Fechar o cofre"
+    >
+      <LogOut size={13} />
+      Sair
+    </button>
   );
 }
 

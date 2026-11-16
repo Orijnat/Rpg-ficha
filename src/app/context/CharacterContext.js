@@ -452,6 +452,44 @@ export function CharacterProvider({ children }) {
     });
   };
 
+  const depositToBank = (slotIndex, inventoryItemId) => {
+    setData((current) => {
+      const slot = current.bankSlots[slotIndex];
+      const item = (current.inventory || []).find((entry) => entry.id === inventoryItemId);
+      if (!slot || slot.item || !item) return current;
+      const next = [...current.bankSlots];
+      next[slotIndex] = {
+        item: item.name,
+        qty: Number(item.qty) > 0 ? Number(item.qty) : 1,
+        weight: Number(item.weight) > 0 ? Number(item.weight) : 1,
+      };
+      return {
+        ...current,
+        bankSlots: next,
+        inventory: current.inventory.filter((entry) => entry.id !== inventoryItemId),
+      };
+    });
+  };
+
+  const withdrawFromBank = (slotIndex) => {
+    setData((current) => {
+      const slot = current.bankSlots[slotIndex];
+      if (!slot?.item) return current;
+      const qty = Number(slot.qty) > 0 ? Number(slot.qty) : 1;
+      const weight = Number(slot.weight) > 0 ? Number(slot.weight) : 1;
+      const next = [...current.bankSlots];
+      next[slotIndex] = { item: "" };
+      return {
+        ...current,
+        bankSlots: next,
+        inventory: [
+          ...current.inventory,
+          { id: uid(), name: slot.item, qty, weight },
+        ],
+      };
+    });
+  };
+
   const addAbility = (ability, isMasterActor = false) => {
     const id = ability?.id || uid();
     const baseAbility = {
@@ -726,6 +764,8 @@ export function CharacterProvider({ children }) {
     removePerson,
     updPerson,
     updBank,
+    depositToBank,
+    withdrawFromBank,
     tryUnlock,
     addAbility,
     removeAbility,
