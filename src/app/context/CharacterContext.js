@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { syncCharacterWithBackend, verifyBankPasswordOnBackend, fetchCharacterFromBackend } from "../../lib/api";
+import { syncCharacterWithBackend, verifyBankPasswordOnBackend, fetchCharacterFromBackend, postBattleLogEvent } from "../../lib/api";
 import {
   avancarTreinoHabilidade,
   criarSolicitacaoHabilidade,
@@ -10,6 +10,7 @@ import {
   podeTreinarHabilidade,
 } from "../../lib/abilities";
 import { ensureCanonicalSkills } from "../../lib/modifiers";
+import { applyItemUse, tickActiveEffects } from "../../lib/items";
 import { useAuth } from "./AuthContext";
 
 import { defaultData, createBlankCharacterData } from "../../lib/defaultCharacter";
@@ -395,6 +396,86 @@ export function CharacterProvider({ children }) {
     }));
   };
 
+  // Aplica o próximo estado de forma síncrona no ref para que cliques rápidos
+  // consecutivos (Atacar/Usar) sempre partam do dado mais fresco, sem esperar o render.
+  const commitSheet = (nextData) => {
+    latestData.current = nextData;
+    setData(nextData);
+  };
+
+  const configureItemUse = (id, usePatch) => {
+    const current = latestData.current;
+    commitSheet({
+      ...current,
+      inventory: (current.inventory || []).map((item) =>
+        item.id === id ? { ...item, use: { ...(item.use || {}), ...usePatch } } : item
+      ),
+    });
+  };
+
+  const postItemLog = (mensagem, dados) => {
+    const campanhaId = latestData.current?.campanhaId;
+    if (!token || !campanhaId) return;
+    postBattleLogEvent(campanhaId, { tipo: "recursos", mensagem, dados }, token).catch(() => {});
+  };
+
+  const consumeItem = (id) => {
+    const current = latestData.current;
+    const result = applyItemUse(current.inventory || [], current.dadosExtras?.activeEffects || [], id);
+    if (!result.ok) return result;
+    commitSheet({
+      ...current,
+      inventory: result.inventory,
+      dadosExtras: { ...(current.dadosExtras || {}), activeEffects: result.activeEffects },
+    });
+    postItemLog(result.message, { itemId: id, ...(result.logDados || {}) });
+    return result;
+  };
+
+  const tickActiveEffect = (effectId, amount = 1) => {
+    const current = latestData.current;
+    const effects = current.dadosExtras?.activeEffects || [];
+    const target = effects.find((effect) => effect.id === effectId);
+    if (!target) return { expired: null };
+    const remaining = Math.max(0, Number(target.remaining ?? 0) - amount);
+    const updated =
+      remaining === 0
+        ? effects.filter((effect) => effect.id !== effectId)
+        : effects.map((effect) => (effect.id === effectId ? { ...effect, remaining } : effect));
+    commitSheet({
+      ...current,
+      dadosExtras: { ...(current.dadosExtras || {}), activeEffects: updated },
+    });
+    return { expired: remaining === 0 ? target : null };
+  };
+
+  // Avança uma rodada: decrementa TODOS os efeitos temporizados em "rodadas" e expira os zerados
+  const advanceRoundEffects = () => {
+    const current = latestData.current;
+    const effects = current.dadosExtras?.activeEffects || [];
+    if (!effects.some((effect) => effect.unidade === "rodadas")) return [];
+    const { activeEffects, expired } = tickActiveEffects(effects, "rodadas", 1);
+    commitSheet({
+      ...current,
+      dadosExtras: { ...(current.dadosExtras || {}), activeEffects },
+    });
+    for (const effect of expired) {
+      postItemLog(`Efeito "${effect.nome}" expirou (${effect.origem}).`, { efeito: effect.nome, origem: effect.origem });
+    }
+    return expired;
+  };
+
+  const removeActiveEffect = (effectId) => {
+    const current = latestData.current;
+    commitSheet({
+      ...current,
+      dadosExtras: {
+        ...(current.dadosExtras || {}),
+        activeEffects: (current.dadosExtras?.activeEffects || []).filter((effect) => effect.id !== effectId),
+      },
+    });
+  };
+
   const updItem = (id, patch) => {
     setData((current) => ({
       ...current,
@@ -757,6 +838,11 @@ export function CharacterProvider({ children }) {
     addItem,
     removeItem,
     updItem,
+    configureItemUse,
+    consumeItem,
+    tickActiveEffect,
+    advanceRoundEffects,
+    removeActiveEffect,
     addContract,
     removeContract,
     updContract,

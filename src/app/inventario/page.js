@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import {
   ChevronDown,
   ChevronUp,
@@ -13,18 +13,106 @@ import {
   ArrowUpDown,
   Filter,
   AlertTriangle,
+  Sparkles,
+  Swords,
+  Wrench,
+  ChevronsRight,
+  Minus,
+  Zap,
 } from "lucide-react";
 import { useCharacter } from "../context/CharacterContext";
 import { useDice } from "../context/DiceContext";
 import { Card, EditableNumber, EditableText, SectionHeader } from "../components/ui";
 import { calculateCapacity, consumeAmmunition } from "../../lib/modifiers";
+import {
+  isAmmunitionName,
+  previewUseCost,
+  USE_KINDS,
+  getUseKindLabel,
+} from "../../lib/items";
 
 export default function InventarioPage() {
-  const { data, upd, addItem, removeItem, updItem } = useCharacter();
+  const {
+    data,
+    upd,
+    addItem,
+    removeItem,
+    updItem,
+    consumeItem,
+    configureItemUse,
+    tickActiveEffect,
+    advanceRoundEffects,
+    removeActiveEffect,
+  } = useCharacter();
   const { executeRoll } = useDice();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("default"); // "default" | "name" | "qty-desc" | "qty-asc"
   const [filterType, setFilterType] = useState("all"); // "all" | "weapons" | "consumables" | "others"
+  const [expandedUseId, setExpandedUseId] = useState(null);
+  const [useFeedback, setUseFeedback] = useState(null); // { ok, message, warnings[] }
+  const feedbackTimer = useRef(null);
+
+  useEffect(() => () => window.clearTimeout(feedbackTimer.current), []);
+
+  const activeEffects = useMemo(() => data.dadosExtras?.activeEffects || [], [data.dadosExtras?.activeEffects]);
+  const usableItems = useMemo(
+    () => data.inventory.filter((item) => item?.use?.kind),
+    [data.inventory]
+  );
+  const ammoItems = useMemo(
+    () => data.inventory.filter((item) => isAmmunitionName(item.name)),
+    [data.inventory]
+  );
+  const unconfiguredItems = useMemo(
+    () => data.inventory.filter((item) => !item?.use?.kind),
+    [data.inventory]
+  );
+
+  const showUseFeedback = (res) => {
+    if (!res) return;
+    setUseFeedback({ ok: Boolean(res.ok), message: res.message, warnings: res.warnings || [] });
+    window.clearTimeout(feedbackTimer.current);
+    feedbackTimer.current = window.setTimeout(() => setUseFeedback(null), 5000);
+  };
+
+  // Gatilho automático: rolar o dado do item também aplica o consumo do perfil.
+  // Poções/mágicos sem fórmula no nome não rolam (só consumir); ataques sempre rolam.
+  const handleUseAndRoll = (item) => {
+    const isAttack = item?.use?.kind === "melee" || item?.use?.kind === "ranged";
+    const formula = extractDiceFormula(item?.name || "");
+    if (item?.use?.kind) {
+      const res = consumeItem(item.id);
+      showUseFeedback(res);
+      if (!res.ok) return; // bloqueado (sem munição/cargas/quebrada): não rola
+      if (isAttack || formula) {
+        executeRoll({
+          sides: 20,
+          mode: "normal",
+          label: `Dano/Efeito: ${item.name}`,
+        });
+      }
+      return;
+    }
+    executeRoll({
+      sides: 20,
+      mode: "normal",
+      label: `Dano/Efeito: ${item.name}`,
+    });
+  };
+
+  const handleAddUseProfile = (itemId) => {
+    if (!itemId) return;
+    const item = data.inventory.find((entry) => entry.id === itemId);
+    if (!item) return;
+    const lower = item.name.toLowerCase();
+    const kind = /arco|besta|pistola|rifle|revolver|flecha/.test(lower)
+      ? "ranged"
+      : /poção|pocao|gotas|erva/.test(lower)
+        ? "consumable"
+        : "melee";
+    configureItemUse(itemId, { kind });
+    setExpandedUseId(itemId);
+  };
 
   const capacity = useMemo(() => calculateCapacity(data), [data]);
 
@@ -132,6 +220,362 @@ export default function InventarioPage() {
             );
           })}
         </div>
+      </Card>
+
+      {/* Efeitos Ativos — poções e bênçãos com duração */}
+      <Card>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
+          <div className="flex items-center gap-3">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-violet-500/40 bg-violet-500/15 text-violet-300">
+              <Sparkles size={16} aria-hidden="true" />
+            </span>
+            <div>
+              <h3 className="font-cinzel text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-foreground">
+                Efeitos Ativos ({activeEffects.length})
+              </h3>
+              <p className="text-[10px] text-muted-foreground">
+                Poções e bênçãos temporizadas — «Rodada +1» decrementa as de rodadas
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              const expired = advanceRoundEffects();
+              if (expired.length > 0) {
+                showUseFeedback({
+                  ok: true,
+                  message: expired.map((effect) => `"${effect.nome}" expirou.`).join(" "),
+                  warnings: [],
+                });
+              }
+            }}
+            className="flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary transition hover:bg-primary/20 active:scale-95"
+            title="Avançar 1 rodada: decrementa todos os efeitos temporizados em rodadas e expira os zerados"
+          >
+            <ChevronsRight size={13} /> Rodada +1
+          </button>
+        </div>
+
+        {activeEffects.length === 0 ? (
+          <p className="py-5 text-center text-xs italic text-muted-foreground">
+            Nenhum efeito ativo. Configure uma poção como consumível com duração no painel abaixo e use-a — o efeito aparece aqui com contagem regressiva.
+          </p>
+        ) : (
+          <div data-lenis-prevent className="mt-3 max-h-48 space-y-1.5 overflow-y-auto pr-1">
+            {activeEffects.map((effect) => (
+              <div
+                key={effect.id}
+                className="flex items-center gap-2 rounded-lg border border-violet-500/25 bg-violet-950/20 px-2.5 py-2 text-xs"
+              >
+                <Sparkles size={13} className="shrink-0 text-violet-300" aria-hidden="true" />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-semibold text-violet-200">{effect.nome}</p>
+                  <p className="truncate text-[10px] text-muted-foreground">de {effect.origem}</p>
+                </div>
+                <span className="shrink-0 rounded border border-violet-500/30 bg-violet-500/15 px-1.5 py-0.5 font-mono text-[10px] font-bold text-violet-200">
+                  {effect.remaining} {effect.unidade === "minutos" ? (effect.remaining === 1 ? "min" : "min") : (effect.remaining === 1 ? "rodada" : "rodadas")}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const res = tickActiveEffect(effect.id, 1);
+                    if (res?.expired) {
+                      showUseFeedback({ ok: true, message: `"${res.expired.nome}" expirou.`, warnings: [] });
+                    }
+                  }}
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded border border-border bg-secondary text-muted-foreground transition hover:border-primary/40 hover:text-primary"
+                  title="Passar 1 unidade de tempo"
+                  aria-label={`Decrementar duração de ${effect.nome}`}
+                >
+                  <Minus size={12} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => removeActiveEffect(effect.id)}
+                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded border border-border bg-secondary text-muted-foreground transition hover:border-rose-500/40 hover:text-rose-400"
+                  title="Remover efeito"
+                  aria-label={`Remover efeito ${effect.nome}`}
+                >
+                  <Trash2 size={12} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
+
+      {/* Usar & Consumir — painel dedicado de ação com consumo automático */}
+      <Card>
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
+          <div className="flex items-center gap-3">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-primary/40 bg-primary/15 text-primary">
+              <Zap size={16} aria-hidden="true" />
+            </span>
+            <div>
+              <h3 className="font-cinzel text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-foreground">
+                Usar & Consumir
+              </h3>
+              <p className="text-[10px] text-muted-foreground">
+                Atacar/usar consome munição, cargas, durabilidade e ativa efeitos
+              </p>
+            </div>
+          </div>
+          {unconfiguredItems.length > 0 && (
+            <select
+              value=""
+              onChange={(e) => handleAddUseProfile(e.target.value)}
+              className="h-8 rounded-lg border border-border bg-input-background px-2 text-xs text-foreground outline-none focus:border-primary"
+              aria-label="Adicionar perfil de uso a um item"
+            >
+              <option value="">+ Configurar um item…</option>
+              {unconfiguredItems.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
+
+        {useFeedback && (
+          <div
+            role="status"
+            className={`mt-3 rounded-lg border px-3 py-2 text-xs ${
+              useFeedback.ok
+                ? "border-emerald-500/40 bg-emerald-950/25 text-emerald-300"
+                : "border-rose-500/40 bg-rose-950/30 text-rose-300"
+            }`}
+          >
+            <p className="font-semibold">{useFeedback.message}</p>
+            {useFeedback.warnings.length > 0 && (
+              <ul className="mt-1 list-inside list-disc text-[10px] opacity-90">
+                {useFeedback.warnings.map((warning, idx) => (
+                  <li key={idx}>{warning}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+
+        {usableItems.length === 0 ? (
+          <p className="py-5 text-center text-xs italic text-muted-foreground">
+            Nenhum item com perfil de uso ainda. Escolha um item no seletor acima para configurar como ele consome algo.
+          </p>
+        ) : (
+          <div data-lenis-prevent className="mt-3 max-h-72 space-y-1.5 overflow-y-auto pr-1">
+            {usableItems.map((item) => {
+              const use = item.use || {};
+              const isAttack = use.kind === "melee" || use.kind === "ranged";
+              const preview = previewUseCost(item, data.inventory);
+              const broken = (use.kind === "melee" || use.kind === "ranged") && use.durability != null && use.durability <= 0;
+              const depleted = (use.kind === "magic" || use.kind === "consumable") && use.charges != null && use.charges <= 0;
+              const isExpanded = expandedUseId === item.id;
+
+              return (
+                <div key={item.id} className="rounded-lg border border-white/10 bg-background/40 p-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-xs font-semibold text-foreground">{item.name}</p>
+                      <p className="text-[10px] text-muted-foreground">
+                        {getUseKindLabel(item)}
+                        {preview && <span className="text-amber-300/90"> · {preview.texto}</span>}
+                        {broken && <span className="text-rose-400"> · QUEBRADA</span>}
+                        {depleted && <span className="text-rose-400"> · SEM CARGAS</span>}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleUseAndRoll(item)}
+                      className="flex h-8 items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/15 px-2.5 text-[10px] font-bold uppercase tracking-wide text-primary transition hover:bg-primary/30 active:scale-95"
+                      title={isAttack ? "Rolar ataque e consumir (munição/durabilidade)" : "Usar e consumir (cargas/quantidade + efeito)"}
+                    >
+                      {isAttack ? <Swords size={12} /> : <Sparkles size={12} />}
+                      {isAttack ? "Atacar" : "Usar"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setExpandedUseId(isExpanded ? null : item.id)}
+                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground transition hover:border-primary/40 hover:text-primary"
+                      aria-label={`Configurar perfil de uso de ${item.name}`}
+                      aria-expanded={isExpanded}
+                      title="Configurar consumo"
+                    >
+                      <Wrench size={13} />
+                    </button>
+                  </div>
+
+                  {isExpanded && (
+                    <div className="mt-2 grid grid-cols-2 gap-2 border-t border-white/10 pt-2 text-[10px] sm:grid-cols-4">
+                      <label className="col-span-2 flex flex-col gap-1 text-muted-foreground">
+                        Perfil de uso
+                        <select
+                          value={use.kind || "melee"}
+                          onChange={(e) => configureItemUse(item.id, { kind: e.target.value })}
+                          className="h-8 rounded border border-border bg-input-background px-2 text-foreground outline-none focus:border-primary"
+                        >
+                          {USE_KINDS.map((kind) => (
+                            <option key={kind.id} value={kind.id}>
+                              {kind.label}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+
+                      {(use.kind === "melee" || use.kind === "ranged") && (
+                        <>
+                          <label className="flex flex-col gap-1 text-muted-foreground">
+                            Durabilidade
+                            <input
+                              type="number"
+                              min={0}
+                              max={999}
+                              value={use.durability ?? ""}
+                              placeholder="∞"
+                              onChange={(e) =>
+                                configureItemUse(item.id, {
+                                  durability: e.target.value === "" ? null : Math.max(0, Math.floor(Number(e.target.value) || 0)),
+                                })
+                              }
+                              className="h-8 rounded border border-border bg-input-background px-2 text-foreground outline-none focus:border-primary"
+                            />
+                          </label>
+                          <label className="flex flex-col gap-1 text-muted-foreground">
+                            Durabilidade máx.
+                            <input
+                              type="number"
+                              min={1}
+                              max={999}
+                              value={use.durabilityMax ?? ""}
+                              placeholder="—"
+                              onChange={(e) =>
+                                configureItemUse(item.id, {
+                                  durabilityMax: e.target.value === "" ? null : Math.max(1, Math.floor(Number(e.target.value) || 1)),
+                                })
+                              }
+                              className="h-8 rounded border border-border bg-input-background px-2 text-foreground outline-none focus:border-primary"
+                            />
+                          </label>
+                        </>
+                      )}
+
+                      {use.kind === "ranged" && (
+                        <label className="col-span-2 flex flex-col gap-1 text-muted-foreground">
+                          Munição vinculada
+                          <select
+                            value={use.ammo || ""}
+                            onChange={(e) => configureItemUse(item.id, { ammo: e.target.value || null })}
+                            className="h-8 rounded border border-border bg-input-background px-2 text-foreground outline-none focus:border-primary"
+                          >
+                            <option value="">Detectar automaticamente (flechas/virotes/balas)</option>
+                            {ammoItems.map((ammo) => (
+                              <option key={ammo.id} value={ammo.id}>
+                                {ammo.name} ({ammo.qty}×)
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      )}
+
+                      {(use.kind === "magic" || use.kind === "consumable") && (
+                        <>
+                          <label className="flex flex-col gap-1 text-muted-foreground">
+                            Cargas
+                            <input
+                              type="number"
+                              min={0}
+                              max={999}
+                              value={use.charges ?? ""}
+                              placeholder={use.kind === "consumable" ? "usa qtd." : "∞"}
+                              onChange={(e) =>
+                                configureItemUse(item.id, {
+                                  charges: e.target.value === "" ? null : Math.max(0, Math.floor(Number(e.target.value) || 0)),
+                                })
+                              }
+                              className="h-8 rounded border border-border bg-input-background px-2 text-foreground outline-none focus:border-primary"
+                            />
+                          </label>
+                          <label className="flex flex-col gap-1 text-muted-foreground">
+                            Cargas máx.
+                            <input
+                              type="number"
+                              min={1}
+                              max={999}
+                              value={use.chargesMax ?? ""}
+                              placeholder="—"
+                              onChange={(e) =>
+                                configureItemUse(item.id, {
+                                  chargesMax: e.target.value === "" ? null : Math.max(1, Math.floor(Number(e.target.value) || 1)),
+                                })
+                              }
+                              className="h-8 rounded border border-border bg-input-background px-2 text-foreground outline-none focus:border-primary"
+                            />
+                          </label>
+                        </>
+                      )}
+
+                      {use.kind === "consumable" && (
+                        <>
+                          <label className="col-span-2 flex flex-col gap-1 text-muted-foreground">
+                            Efeito ao usar
+                            <input
+                              type="text"
+                              value={use.efeito || ""}
+                              placeholder="Ex.: Pés Leves, Pele de Pedra…"
+                              maxLength={120}
+                              onChange={(e) => configureItemUse(item.id, { efeito: e.target.value || null })}
+                              className="h-8 rounded border border-border bg-input-background px-2 text-foreground outline-none focus:border-primary"
+                            />
+                          </label>
+                          <label className="flex flex-col gap-1 text-muted-foreground">
+                            Duração
+                            <input
+                              type="number"
+                              min={0}
+                              max={999}
+                              value={use.duracao ?? ""}
+                              placeholder="—"
+                              onChange={(e) =>
+                                configureItemUse(item.id, {
+                                  duracao: e.target.value === "" ? null : Math.max(0, Math.floor(Number(e.target.value) || 0)),
+                                })
+                              }
+                              className="h-8 rounded border border-border bg-input-background px-2 text-foreground outline-none focus:border-primary"
+                            />
+                          </label>
+                          <label className="flex flex-col gap-1 text-muted-foreground">
+                            Unidade
+                            <select
+                              value={use.unidade || "rodadas"}
+                              onChange={(e) => configureItemUse(item.id, { unidade: e.target.value })}
+                              className="h-8 rounded border border-border bg-input-background px-2 text-foreground outline-none focus:border-primary"
+                            >
+                              <option value="rodadas">Rodadas</option>
+                              <option value="minutos">Minutos</option>
+                            </select>
+                          </label>
+                        </>
+                      )}
+
+                      <div className="col-span-2 flex items-end justify-end sm:col-span-4">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            configureItemUse(item.id, { kind: null });
+                            setExpandedUseId(null);
+                          }}
+                          className="text-[10px] font-semibold uppercase text-muted-foreground underline-offset-2 hover:text-rose-400 hover:underline"
+                        >
+                          Remover perfil de uso
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </Card>
 
       {/* Seção de Inventário e Mochila */}
@@ -275,13 +719,7 @@ export default function InventarioPage() {
                 {/* Botão de Rolagem Rápida se o item tiver dados no nome (ex: 1d6) */}
                 {formula && (
                   <button
-                    onClick={() => {
-                      executeRoll({
-                        sides: 20,
-                        mode: "normal",
-                        label: `Dano/Efeito: ${item.name}`,
-                      });
-                    }}
+                    onClick={() => handleUseAndRoll(item)}
                     className="flex items-center gap-1 rounded border border-primary/30 bg-primary/15 px-2 py-0.5 text-[10px] font-mono font-bold text-primary hover:bg-primary/30"
                     title={`Rolar teste com ${item.name}`}
                   >
