@@ -382,10 +382,32 @@ export function CharacterProvider({ children }) {
     }));
   };
 
-  const addItem = () => {
+  const addItem = (itemData) => {
+    const payload = itemData && typeof itemData === "object" ? itemData : {};
+    const name = String(payload.name ?? "").trim() || "Novo item";
+    const qty = Math.max(0, Math.floor(Number(payload.qty) || 1));
+    const weight = Math.max(0, Number(payload.weight ?? 1) || 0);
+    const item = { id: uid(), name, qty, weight };
+    if (typeof payload.descricao === "string" && payload.descricao.trim()) {
+      item.descricao = payload.descricao.trim();
+    }
+    if (typeof payload.categoria === "string" && payload.categoria.trim()) {
+      item.categoria = payload.categoria.trim();
+    }
+    if (typeof payload.raridade === "string" && payload.raridade.trim()) {
+      item.raridade = payload.raridade.trim();
+    }
+    const preco = Number(payload.preco);
+    if (Number.isFinite(preco) && preco >= 0 && payload.preco !== "" && payload.preco != null) {
+      item.preco = preco;
+      item.moeda = typeof payload.moeda === "string" && payload.moeda ? payload.moeda : "ouro";
+    }
+    if (payload.use?.kind) {
+      item.use = { ...payload.use };
+    }
     setData((current) => ({
       ...current,
-      inventory: [...current.inventory, { id: uid(), name: "Novo item", qty: 1, weight: 1 }],
+      inventory: [...current.inventory, item],
     }));
   };
 
@@ -533,40 +555,55 @@ export function CharacterProvider({ children }) {
     });
   };
 
-  const depositToBank = (slotIndex, inventoryItemId) => {
+  const depositToBank = (slotIndex, inventoryItemId, qty) => {
     setData((current) => {
       const slot = current.bankSlots[slotIndex];
       const item = (current.inventory || []).find((entry) => entry.id === inventoryItemId);
       if (!slot || slot.item || !item) return current;
+      const itemQty = Math.max(1, Number(item.qty ?? item.quantidade) || 1);
+      const amount = Math.min(Math.max(1, Math.floor(Number(qty) || itemQty)), itemQty);
+      const weight = Number(item.weight ?? item.peso) > 0 ? Number(item.weight ?? item.peso) : 1;
       const next = [...current.bankSlots];
       next[slotIndex] = {
         item: item.name,
-        qty: Number(item.qty) > 0 ? Number(item.qty) : 1,
-        weight: Number(item.weight) > 0 ? Number(item.weight) : 1,
+        qty: amount,
+        weight,
+        storedItem: { ...item, id: uid(), qty: amount },
       };
-      return {
-        ...current,
-        bankSlots: next,
-        inventory: current.inventory.filter((entry) => entry.id !== inventoryItemId),
-      };
+      const remaining = itemQty - amount;
+      const inventory = remaining > 0
+        ? current.inventory.map((entry) =>
+            entry.id === inventoryItemId
+              ? { ...entry, qty: remaining, quantidade: remaining, esgotado: false, depleted: false }
+              : entry
+          )
+        : current.inventory.filter((entry) => entry.id !== inventoryItemId);
+      return { ...current, bankSlots: next, inventory };
     });
   };
 
-  const withdrawFromBank = (slotIndex) => {
+  const withdrawFromBank = (slotIndex, qty) => {
     setData((current) => {
       const slot = current.bankSlots[slotIndex];
       if (!slot?.item) return current;
-      const qty = Number(slot.qty) > 0 ? Number(slot.qty) : 1;
-      const weight = Number(slot.weight) > 0 ? Number(slot.weight) : 1;
+      const slotQty = Math.max(1, Number(slot.qty) || 1);
+      const amount = Math.min(Math.max(1, Math.floor(Number(qty) || slotQty)), slotQty);
+      const weight = Number(slot.weight ?? slot.storedItem?.weight ?? slot.storedItem?.peso) > 0
+        ? Number(slot.weight ?? slot.storedItem?.weight ?? slot.storedItem?.peso)
+        : 1;
+      const stored = slot.storedItem && typeof slot.storedItem === "object" ? slot.storedItem : null;
+      const base = stored ? { ...stored } : { name: slot.item, weight };
+      const restored = { ...base, id: uid(), qty: amount, weight };
+      if (stored?.quantidade != null) restored.quantidade = amount;
       const next = [...current.bankSlots];
-      next[slotIndex] = { item: "" };
+      const remaining = slotQty - amount;
+      next[slotIndex] = remaining > 0
+        ? { ...slot, qty: remaining, storedItem: stored ? { ...stored, qty: remaining } : undefined }
+        : { item: "" };
       return {
         ...current,
         bankSlots: next,
-        inventory: [
-          ...current.inventory,
-          { id: uid(), name: slot.item, qty, weight },
-        ],
+        inventory: [...current.inventory, restored],
       };
     });
   };

@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Package, Search, X, Archive, Undo2 } from "lucide-react";
+import { Package, Search, X, Archive, Undo2, Check } from "lucide-react";
+import { UnitPicker } from "../ui/UnitPicker";
 
 /**
  * Modal de cofre do Banco de Azedarack.
- * - Espaço vazio: lista os itens do inventário para guardá-los no slot.
- * - Espaço ocupado: mostra o item guardado e permite devolvê-lo ao inventário.
+ * - Espaço vazio: lista o inventário; selecione um item e escolha a quantidade a guardar.
+ * - Espaço ocupado: mostra o item guardado e permite devolver (total ou parcial) ao inventário.
  */
 export function BankChestModal({ slotIndex, slot, inventory, onClose, onDeposit, onWithdraw }) {
   const isOpen = slotIndex !== null && slotIndex !== undefined;
@@ -26,6 +27,9 @@ export function BankChestModal({ slotIndex, slot, inventory, onClose, onDeposit,
 
 function ChestDialog({ slotIndex, slot, inventory, onClose, onDeposit, onWithdraw }) {
   const [search, setSearch] = useState("");
+  const [selectedId, setSelectedId] = useState(null);
+  const [depositQty, setDepositQty] = useState(1);
+  const [withdrawQty, setWithdrawQty] = useState(() => Math.max(1, Number(slot?.qty) || 1));
   const dialogRef = useRef(null);
   const occupied = Boolean(slot?.item);
 
@@ -46,6 +50,17 @@ function ChestDialog({ slotIndex, slot, inventory, onClose, onDeposit, onWithdra
   const filtered = (inventory || []).filter((item) =>
     !term || (item.name || "").toLowerCase().includes(term)
   );
+  const selectedItem = selectedId ? (inventory || []).find((item) => item.id === selectedId) || null : null;
+  const selectedMax = selectedItem ? Math.max(1, Number(selectedItem.qty ?? selectedItem.quantidade) || 1) : 1;
+  const depositAmount = Math.min(Math.max(1, Math.floor(Number(depositQty) || 1)), selectedMax);
+
+  const slotQty = Math.max(1, Number(slot?.qty) || 1);
+  const withdrawAmount = Math.min(Math.max(1, Math.floor(Number(withdrawQty) || 1)), slotQty);
+
+  const handleSelect = (item) => {
+    setSelectedId(item.id);
+    setDepositQty(Math.max(1, Number(item.qty ?? item.quantidade) || 1));
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md" role="presentation" onClick={onClose}>
@@ -82,7 +97,7 @@ function ChestDialog({ slotIndex, slot, inventory, onClose, onDeposit, onWithdra
         </div>
 
         {occupied ? (
-          /* ── Estado ocupado: devolver ao inventário ── */
+          /* ── Estado ocupado: devolver ao inventário (total ou parcial) ── */
           <div className="px-5 py-5">
             <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-[var(--theme-accent)]/30 bg-[var(--theme-accent)]/10 text-[var(--theme-accent)]">
@@ -91,21 +106,29 @@ function ChestDialog({ slotIndex, slot, inventory, onClose, onDeposit, onWithdra
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold text-[var(--theme-title)]">{slot.item}</p>
                 <p className="text-[11px] text-[var(--theme-subtitle)]">
-                  {Number(slot.qty) > 1 ? `${slot.qty} unidades` : "1 unidade"}
+                  {slotQty > 1 ? `${slotQty} unidades` : "1 unidade"}
                   {Number(slot.weight) > 0 ? ` · ${Number(slot.weight)} kg cada` : ""}
                 </p>
               </div>
             </div>
+            {slotQty > 1 && (
+              <div className="mt-4">
+                <span className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-[var(--theme-subtitle)]">
+                  Unidades a devolver (clique uma a uma)
+                </span>
+                <UnitPicker value={withdrawAmount} max={slotQty} onChange={setWithdrawQty} label="Quantidade a devolver" />
+              </div>
+            )}
             <button
               type="button"
               onClick={() => {
-                onWithdraw(slotIndex);
+                onWithdraw(slotIndex, withdrawAmount);
                 onClose();
               }}
               className="mt-4 flex w-full items-center justify-center gap-2 rounded-lg border border-[var(--theme-accent)]/50 bg-[var(--theme-accent)]/10 px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-[var(--theme-accent)] transition hover:bg-[var(--theme-accent)]/20"
             >
               <Undo2 size={14} />
-              Devolver ao Inventário
+              Devolver {withdrawAmount > 1 ? `${withdrawAmount}× ` : ""}ao Inventário
             </button>
           </div>
         ) : (
@@ -135,35 +158,61 @@ function ChestDialog({ slotIndex, slot, inventory, onClose, onDeposit, onWithdra
                 </p>
               ) : (
                 <ul className="space-y-1">
-                  {filtered.map((item) => (
-                    <li key={item.id}>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          onDeposit(slotIndex, item.id);
-                          onClose();
-                        }}
-                        className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition hover:bg-[var(--theme-accent)]/10 focus:outline-none focus:ring-1 focus:ring-[var(--theme-accent)]/40"
-                      >
-                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-white/10 bg-white/5 text-[var(--theme-accent)]">
-                          <Package size={14} />
-                        </span>
-                        <span className="min-w-0 flex-1">
-                          <span className="block truncate text-xs font-semibold text-[var(--theme-title)]">
-                            {item.name}
+                  {filtered.map((item) => {
+                    const itemQty = Math.max(1, Number(item.qty ?? item.quantidade) || 1);
+                    const isSelected = selectedId === item.id;
+                    return (
+                      <li key={item.id}>
+                        <button
+                          type="button"
+                          onClick={() => handleSelect(item)}
+                          aria-pressed={isSelected}
+                          className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition focus:outline-none focus:ring-1 focus:ring-[var(--theme-accent)]/40 ${
+                            isSelected ? "bg-[var(--theme-accent)]/15 ring-1 ring-[var(--theme-accent)]/50" : "hover:bg-[var(--theme-accent)]/10"
+                          }`}
+                        >
+                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-white/10 bg-white/5 text-[var(--theme-accent)]">
+                            <Package size={14} />
                           </span>
-                          <span className="text-[10px] text-[var(--theme-subtitle)]">
-                            {Number(item.qty) > 0 ? `${item.qty}×` : "1×"}
-                            {Number(item.weight) > 0 ? ` · ${Number(item.weight)} kg` : ""}
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-xs font-semibold text-[var(--theme-title)]">
+                              {item.name}
+                            </span>
+                            <span className="text-[10px] text-[var(--theme-subtitle)]">
+                              {itemQty}×
+                              {Number(item.weight) > 0 ? ` · ${Number(item.weight)} kg cada` : ""}
+                            </span>
                           </span>
-                        </span>
-                        <span className="shrink-0 text-[10px] font-bold uppercase tracking-wider text-[var(--theme-accent)]/80">
-                          Guardar
-                        </span>
-                      </button>
-                    </li>
-                  ))}
+                          {isSelected && <Check size={14} className="shrink-0 text-[var(--theme-accent)]" aria-hidden="true" />}
+                        </button>
+                      </li>
+                    );
+                  })}
                 </ul>
+              )}
+            </div>
+
+            {/* Rodapé: quantidade + confirmar depósito */}
+            <div className="border-t border-white/10 bg-white/[0.02] px-5 py-3">
+              {selectedItem ? (
+                <div className="flex flex-col gap-2.5">
+                  <UnitPicker value={depositAmount} max={selectedMax} onChange={setDepositQty} label="Quantidade a guardar" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onDeposit(slotIndex, selectedItem.id, depositAmount);
+                      onClose();
+                    }}
+                    className="flex h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-[var(--theme-accent)]/50 bg-[var(--theme-accent)]/15 px-4 text-xs font-bold uppercase tracking-wider text-[var(--theme-accent)] transition hover:bg-[var(--theme-accent)]/25 active:scale-95"
+                  >
+                    <Archive size={14} />
+                    Guardar {depositAmount > 1 ? `${depositAmount}×` : ""}
+                  </button>
+                </div>
+              ) : (
+                <p className="text-center text-[10px] uppercase tracking-wider text-[var(--theme-subtitle)]">
+                  Selecione um item acima para guardar
+                </p>
               )}
             </div>
           </>

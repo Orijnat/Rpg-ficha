@@ -19,10 +19,14 @@ import {
   ChevronsRight,
   Minus,
   Zap,
+  Archive,
 } from "lucide-react";
 import { useCharacter } from "../context/CharacterContext";
 import { useDice } from "../context/DiceContext";
 import { Card, EditableNumber, EditableText, SectionHeader } from "../components/ui";
+import { AddItemModal } from "../components/inventario/AddItemModal";
+import { MOEDAS, RARIDADES } from "../../lib/market";
+import { DepositToBankModal } from "../components/inventario/DepositToBankModal";
 import { calculateCapacity, consumeAmmunition } from "../../lib/modifiers";
 import {
   isAmmunitionName,
@@ -36,6 +40,7 @@ export default function InventarioPage() {
     data,
     upd,
     addItem,
+    depositToBank,
     removeItem,
     updItem,
     consumeItem,
@@ -49,10 +54,17 @@ export default function InventarioPage() {
   const [sortBy, setSortBy] = useState("default"); // "default" | "name" | "qty-desc" | "qty-asc"
   const [filterType, setFilterType] = useState("all"); // "all" | "weapons" | "consumables" | "others"
   const [expandedUseId, setExpandedUseId] = useState(null);
+  const [addModalOpen, setAddModalOpen] = useState(false);
+  const [bankItem, setBankItem] = useState(null);
+  const [bankNotice, setBankNotice] = useState(null);
+  const bankTimer = useRef(null);
   const [useFeedback, setUseFeedback] = useState(null); // { ok, message, warnings[] }
   const feedbackTimer = useRef(null);
 
-  useEffect(() => () => window.clearTimeout(feedbackTimer.current), []);
+  useEffect(() => () => {
+    window.clearTimeout(feedbackTimer.current);
+    window.clearTimeout(bankTimer.current);
+  }, []);
 
   const activeEffects = useMemo(() => data.dadosExtras?.activeEffects || [], [data.dadosExtras?.activeEffects]);
   const usableItems = useMemo(
@@ -73,6 +85,28 @@ export default function InventarioPage() {
     setUseFeedback({ ok: Boolean(res.ok), message: res.message, warnings: res.warnings || [] });
     window.clearTimeout(feedbackTimer.current);
     feedbackTimer.current = window.setTimeout(() => setUseFeedback(null), 5000);
+  };
+
+  const freeBankSlots = useMemo(
+    () => (data.bankSlots || []).filter((slot) => !slot?.item).length,
+    [data.bankSlots]
+  );
+
+  const showBankNotice = (res) => {
+    setBankNotice(res);
+    window.clearTimeout(bankTimer.current);
+    bankTimer.current = window.setTimeout(() => setBankNotice(null), 5000);
+  };
+
+  const handleSendToBank = (item, qty) => {
+    const slotIndex = (data.bankSlots || []).findIndex((slot) => !slot?.item);
+    if (slotIndex === -1) {
+      showBankNotice({ ok: false, message: "O Banco está cheio — nenhum espaço vazio." });
+      return;
+    }
+    depositToBank(slotIndex, item.id, qty);
+    showBankNotice({ ok: true, message: `${qty}× ${item.name} guardado${qty > 1 ? "s" : ""} no Banco.` });
+    setBankItem(null);
   };
 
   // Gatilho automático: rolar o dado do item também aplica o consumo do perfil.
@@ -655,7 +689,7 @@ export default function InventarioPage() {
             </div>
 
             <button
-              onClick={addItem}
+              onClick={() => setAddModalOpen(true)}
               className="flex items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary transition-all hover:bg-primary/20 active:scale-95"
             >
               <Plus size={13} /> Novo Item
@@ -689,6 +723,19 @@ export default function InventarioPage() {
           ))}
         </div>
 
+        {bankNotice && (
+          <div
+            role="status"
+            className={`mb-3 rounded-lg border px-3 py-2 text-xs ${
+              bankNotice.ok
+                ? "border-emerald-500/40 bg-emerald-950/25 text-emerald-300"
+                : "border-rose-500/40 bg-rose-950/30 text-rose-300"
+            }`}
+          >
+            <p className="font-semibold">{bankNotice.message}</p>
+          </div>
+        )}
+
         <div className="space-y-1">
           {filteredAndSortedItems.map((item) => {
             const formula = extractDiceFormula(item.name);
@@ -698,12 +745,31 @@ export default function InventarioPage() {
                 key={item.id}
                 className="group flex items-center gap-3 rounded-lg border border-transparent px-2 py-2 transition-all hover:border-white/5 hover:bg-white/[0.02]"
               >
-                <div className="flex-1">
+                <div className="min-w-0 flex-1" title={item.descricao || undefined}>
                   <EditableText
                     value={item.name}
                     onChange={(value) => updItem(item.id, { name: value })}
                     className="text-xs font-medium text-[#e8d5b0] transition hover:text-[var(--theme-title)]"
                   />
+                  {(item.raridade || item.categoria || item.preco != null) && (
+                    <p className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[9px] leading-tight text-muted-foreground">
+                      {item.raridade && (
+                        <span
+                          className={`inline-flex items-center rounded border px-1 py-px font-semibold uppercase tracking-wider ${
+                            RARIDADES.find((entry) => entry.id === item.raridade)?.color || "text-zinc-400 border-zinc-700"
+                          }`}
+                        >
+                          {item.raridade}
+                        </span>
+                      )}
+                      {item.categoria && <span className="truncate">{item.categoria}</span>}
+                      {item.preco != null && (
+                        <span className="font-mono">
+                          {Number(item.preco).toLocaleString("pt-BR")} {MOEDAS.find((m) => m.id === item.moeda)?.sigla || "PO"}
+                        </span>
+                      )}
+                    </p>
+                  )}
                 </div>
 
                 <div className="flex shrink-0 items-center gap-1 text-[10px] text-muted-foreground" title="Peso por unidade">
@@ -790,6 +856,17 @@ export default function InventarioPage() {
                   </button>
                 </div>
 
+                {/* Enviar ao Banco */}
+                <button
+                  type="button"
+                  aria-label={`Guardar ${item.name || "item"} no Banco`}
+                  onClick={() => setBankItem(item)}
+                  className="rounded p-1 text-muted-foreground transition-all hover:bg-amber-500/10 hover:text-amber-400"
+                  title="Guardar no Banco"
+                >
+                  <Archive size={13} />
+                </button>
+
                 {/* Remover Item */}
                 <button
                   type="button"
@@ -813,6 +890,17 @@ export default function InventarioPage() {
           )}
         </div>
       </Card>
+      <AddItemModal
+        open={addModalOpen}
+        onClose={() => setAddModalOpen(false)}
+        onAdd={(payload) => addItem(payload)}
+      />
+      <DepositToBankModal
+        item={bankItem}
+        freeSlots={freeBankSlots}
+        onClose={() => setBankItem(null)}
+        onConfirm={(qty) => handleSendToBank(bankItem, qty)}
+      />
     </div>
   );
 }
