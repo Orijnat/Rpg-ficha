@@ -49,6 +49,11 @@
 - Classe não define mais dado de vida na criação (hitDie de classe permanece em lib/classes.js, apenas como referência legada).
 - Testes atualizados (159/159), build OK, eslint 0 erros. NÃO commitado.
 
+## ✅ Atualização 2026-11-17 (Subir de nível via rolador de dados)
+- "Subir de Nível" agora usa o rolador de dados animado (`useDice().executeRoll`): modal/animação com o dado de vida (lados da raça) + modificador = bônus do dado + Mod(CON). O total já inclui o Mod(CON) e vira o HP ganho (mín. 1).
+- `CharacterContext.levelUp` virou `applyLevelUp(gain, details)` — aplica o ganho pré-rolado pela UI (gate por XP continua, 1 rolagem/nível); rolagem vai para o log como tipo `rolagem` (via DiceContext) e a ascensão como `recursos`.
+- `leveling.js` ganhou `levelUpGate(level, xp)` (compartilhado UI/contexto) — testes de gate cobertos (159/159). Build OK. NÃO commitado.
+
 ## ✅ Push 2026-11-17 (2)
 - `06e285e` (raça define status base + dado de vida) + `1cf9f23` (docs memory) enviados.
 

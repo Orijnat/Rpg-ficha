@@ -10,10 +10,13 @@ import Pericia from "../components/Pericia";
 import RecursosCombate from "../components/RecursosCombate";
 import { calculateCapacity, calculateLevelFromXP, calculateModifier } from "../../lib/modifiers";
 import { DEFAULT_RACES, getRaceById } from "../../lib/races";
+import { parseHitDie, hpGainFromRoll, levelUpGate } from "../../lib/leveling";
+import { useDice } from "../context/DiceContext";
 import { DEFAULT_ABILITIES, isHabilidadeDesbloqueada } from "../../lib/abilities";
 
 export default function Personagem() {
-  const { data, upd, syncStatus, syncError, retrySync, reloadFromCloud, overwriteCloud, updateDadosExtras, levelUp } = useCharacter();
+  const { data, upd, syncStatus, syncError, retrySync, reloadFromCloud, overwriteCloud, updateDadosExtras, applyLevelUp } = useCharacter();
+  const { executeRoll } = useDice();
   const [levelFeedback, setLevelFeedback] = useState(null);
   const feedbackTimer = useRef(null);
   const capacity = calculateCapacity(data);
@@ -29,12 +32,26 @@ export default function Personagem() {
   useEffect(() => () => window.clearTimeout(feedbackTimer.current), []);
 
   const handleLevelUp = () => {
-    const result = levelUp();
-    if (!result) return;
+    const gate = levelUpGate(characterLevel, data.xp ?? data.dadosExtras?.xp ?? 0);
+    if (!gate.ok) {
+      setLevelFeedback({ ok: false, message: gate.message });
+      return;
+    }
+    const { count, sides, modifier } = parseHitDie(hitDie, { count: 1, sides: 8, modifier: 0 });
+    // Rola no rolador de dados com animação/modal; o total já inclui o Mod(CON).
+    const roll = executeRoll({
+      sides,
+      count,
+      mode: "normal",
+      modifier: modifier + conMod,
+      label: `Dado de Vida · Nível ${characterLevel + 1}`,
+    });
+    const gain = hpGainFromRoll(roll.total, 0); // total já inclui Mod(CON)
+    const applied = applyLevelUp(gain, { hitDie, roll: roll.total, conMod });
     setLevelFeedback(
-      result.ok
-        ? { ok: true, message: `Você ascendeu ao nível ${result.level}! Dado de Vida (${hitDie}) rolou ${result.roll} + Mod(CON) ${result.conMod >= 0 ? "+" : ""}${result.conMod} = +${result.gain} HP máximo.` }
-        : { ok: false, message: result.message }
+      applied.ok
+        ? { ok: true, message: `Você ascendeu ao nível ${applied.level}! Dado de Vida (${hitDie}) rolou ${roll.total} (inclui Mod(CON)) = +${applied.gain} HP máximo.` }
+        : { ok: false, message: applied.message }
     );
     window.clearTimeout(feedbackTimer.current);
     feedbackTimer.current = window.setTimeout(() => setLevelFeedback(null), 7000);

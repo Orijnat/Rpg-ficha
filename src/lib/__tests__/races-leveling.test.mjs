@@ -4,7 +4,7 @@ import {
   getRaceBaseAttributes,
   getRaceHitDie,
 } from "../races.js";
-import { parseHitDie, hpGainFromRoll } from "../leveling.js";
+import { parseHitDie, hpGainFromRoll, levelUpGate } from "../leveling.js";
 
 let passed = 0;
 let failed = 0;
@@ -48,7 +48,15 @@ const baseCopy = getRaceBaseAttributes("elfo");
 baseCopy.DES = 99;
 assert(getRaceBaseAttributes("elfo").DES === 15, "getRaceBaseAttributes devolve cópia, não a referência");
 
-console.log("\n--- 4. Parse de Dado de Vida ---");
+console.log("\n--- 4. Gate de subida de nível ---");
+assert(levelUpGate(1, 0).ok === false, "1 com 0 XP não sobe");
+assert(levelUpGate(1, 300).ok === true && levelUpGate(1, 300).nextLevel === 2, "300 XP libera nível 2");
+assert(levelUpGate(2, 300).ok === false, "já no nível liberado pelo XP, não rola de novo");
+assert(levelUpGate(1, 900).ok === true && levelUpGate(1, 900).nextLevel === 2, "900 XP libera apenas 1 nível por vez");
+assert(levelUpGate(20, 999999).ok === false, "nível 20 é teto");
+assert(levelUpGate(1, 299).message.includes("XP"), "mensagem informa XP faltante");
+
+console.log("\n--- 5. Parse de Dado de Vida ---");
 assert(parseHitDie("1d12").sides === 12, "1d12 → 12 lados");
 assert(parseHitDie("d8").sides === 8 && parseHitDie("d8").count === 1, "d8 aceito sem contagem (default 1)");
 assert(parseHitDie("2d6+1").count === 2 && parseHitDie("2d6+1").modifier === 1, "2d6+1 parseia contagem e bônus");
