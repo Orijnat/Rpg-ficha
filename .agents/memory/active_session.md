@@ -43,6 +43,12 @@
 - Jogador rola 1× por nível: botão "Subir de Nível" na ficha (card Raça & Ascensão) — exige XP suficiente (gate por calculateLevelFromXP), rola dado de vida + Mod(CON) uma vez por nível e soma ao HP máximo/atual. Promoção em lote do admin também rola uma vez por nível por herói (sem clique extra). Fluxo único por nível garantido nas duas vias.
 - Build OK, front 159/159, eslint 0 erros. NÃO commitado.
 
+## ✅ Atualização 2026-11-17 (Raça define status base e dado de vida)
+- Mudança de design pedida pelo usuário: a RAÇA define os 7 status base (fixos por raça, soma ~80–82) e o DADO DE VIDA (Humano 1d8, Elfo 1d8, Anão 1d10, Halfling 1d6, Draconato 1d10, Gnomo 1d6, Tiefling 1d8, Orc 1d12). `lib/races.js` reescrito com `base` + `hitDie`; `AttributePointBuy` removido.
+- Registro: sem point buy; preview ao vivo dos status e do dado de vida da raça; envia atributos base da raça + `hitDie` da raça. Quick-create do perfil idem. Ficha: select de raça apenas exibe (alterar não recalcula, hint exibido); `levelUp` continua rolando o hitDie de `dadosExtras.hitDie` (agora de origem racial).
+- Classe não define mais dado de vida na criação (hitDie de classe permanece em lib/classes.js, apenas como referência legada).
+- Testes atualizados (159/159), build OK, eslint 0 erros. NÃO commitado.
+
 ## ✅ Push 2026-11-17
 - `daa9eec` (seletor de raça sem traço + dado de vida validado) enviado ao origin/main.
 
