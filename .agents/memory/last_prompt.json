@@ -1,7 +1,6 @@
 {
-  "timestamp": "2026-11-16T17:30:00-03:00",
+  "timestamp": "2026-11-16T19:40:00-03:00",
   "agent": "opencode",
-  "skill": "banco-de-dados-ops",
-  "prompt": "poderia fazer com que nao existam mais dados mockados, e sim que puxem tudo do banco?",
-  "action": "Mercado do Mundo migrado para o banco (tabelas mercado_vendedores/mercado_itens, por mestre, RLS, CRUD /api/mercado); seeds hardcoded e localStorage removidos; /admin sem NPC placeholder; seed.js demo removido; migration aplicada no Supabase; produção ainda depende de deploy do backend."
+  "prompt": "ao add um item no inventario poderia fazer um modal para cadastrar o item",
+  "action": "AddItemModal virou cadastro completo (descrição, categoria, raridade, preço+moeda, qty, peso, perfil de uso); item exibe badges na mochila; build OK, 158/158 testes."
 }

@@ -7,6 +7,26 @@
 
 ---
 
+## ✅ Atualização 2026-11-16 (Inventário — modal de adicionar item)
+- Pedido: modal para adicionar itens no inventário (formulário de item novo, escolhido pelo usuário).
+- Novo `src/app/components/inventario/AddItemModal.jsx`: nome (obrigatório), quantidade, peso/unidade, perfil de uso opcional (corpo a corpo/à distância → durabilidade; mágico/consumível → cargas; consumível → efeito/duração/unidade). Padrão BankChestModal (Escape/backdrop fecha, autofocus, role=dialog, data-lenis-prevent).
+- `CharacterContext.js`: `addItem(itemData)` agora aceita payload `{ name, qty, weight, use }` (retrocompatível sem args).
+- `inventario/page.js`: botão "Novo Item" abre o modal; itens criados com perfil de uso já aparecem em "Usar & Consumir".
+- Build OK, testes 158/158, eslint 0 erros. NÃO commitado.
+
+## ✅ Atualização 2026-11-16 (Banco ↔ Inventário — ligação corrigida + seleção unidade a unidade)
+- `depositToBank(slotIndex, itemId, qty)` / `withdrawFromBank(slotIndex, qty)`: depósito/saque **parcial** com clamp; `storedItem` no slot preserva o item inteiro (perfil `use`, peso, campos legados); saque devolve com id novo e qty da seleção; pilha restante mantém `qty/quantidade`.
+- `BankChestModal.jsx` reescrito: seleção de item com destaque, **UnitPicker** (pips numerados clicáveis, 1..N unidade por unidade; entrada exata se pilha > 24) para depositar e devolver; slots antigos continuam compatíveis.
+- Novo `src/app/components/ui/UnitPicker.jsx` (compartilhado, tema via --theme-accent).
+- Atalho no Inventário: ícone de arquivo em cada linha abre `DepositToBankModal` (quantidade unidade a unidade + nº de espaços livres; deposita no 1º espaço vazio; avisa se cofre cheio). Banner de feedback na Mochila.
+- Build OK, testes 158/158, eslint 0 erros. NÃO commitado.
+
+## ✅ Atualização 2026-11-16 (Inventário — modal de cadastro COMPLETO do item)
+- `AddItemModal.jsx` reescrito como cadastro completo: nome*, descrição (textarea), categoria (CATEGORIAS_ITEM), raridade (RARIDADES, com badge colorido ao vivo), quantidade, peso, preço + moeda (MOEDAS), perfil de uso (durabilidade/cargas/efeito/duração).
+- `CharacterContext.addItem` persiste `descricao`, `categoria`, `raridade`, `preco`, `moeda` (campos aditivos, retrocompatíveis). Perfil de uso e `storedItem` do banco preservam tudo.
+- Mochila: linha do item mostra badge de raridade + categoria + preço (ex.: "1.200 PO") e tooltip com a descrição.
+- Build OK, testes 158/158, eslint 0 erros. NÃO commitado.
+
 ## ✅ Concluído Nesta Sessão (S1 da auditoria)
 
 | Item | Status |
@@ -177,3 +197,11 @@ Pedido do usuário: log de batalha que persiste TODAS as ações de jogadores e 
 - Commitado e pushed nos 2 repos (nada pendente de código): back `0d8da1b` fix(auth) registro de mestre sem ficha + `ce94916` feat(mercado) (tabelas/CRUD/RLS; Supabase já migrado); front `3dd84f6` feat(mercado) página conectada ao banco, `085ab95` chore(admin) placeholder removido, `cc3a4be` docs(memory).
 - .github/ e .github/workflows/ permanecem não rastreados nos 2 repos (PAT sem scope workflow — push falharia).
 - PRODUÇÃO ainda precisa de deploy do backend (Render) e frontend (Vercel) para /api/mercado e o fix de registro de mestre valerem ao vivo.
+
+## ✅ Atualização 2026-11-16 (2ª limpeza total do banco Supabase — PRODUÇÃO, sem backup)
+- Pedido do usuário: limpar novamente o banco, SEM backup (2 usuários/2 personagens criados desde a 1ª limpeza foram apagados mediante confirmação solene dupla).
+- Mesmo procedimento da 1ª vez: TRUNCATE ... RESTART IDENTITY CASCADE em todas as tabelas public EXCETO sequelize_meta (11) e SequelizeMeta (1). Inclui as novas mercado_vendedores/mercado_itens. Verificado ao vivo: zero linhas em todas as demais tabelas; migrations intactas. auth.*/storage.* não tocados.
+- Sem backup desta vez (decisão explícita do usuário).
+
+## ✅ Atualização 2026-11-16 (Relatório simples do sistema)
+- Pedido do usuário: "me faca um relatorio simples do sistema". Relatório apresentado no chat (stack, arquitetura, módulos, estado de produção/testes). Nenhum arquivo criado.
