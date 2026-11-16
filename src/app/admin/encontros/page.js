@@ -29,11 +29,13 @@ import {
   listCharacters,
   listEncounters,
   listNpcs,
+  updateCharacterOnBackend,
   updateEncounter,
 } from "../../../lib/api";
 import { normalizeLegacyBattleLogEntry } from "../../../lib/battleLog";
 import { CONDITIONS_LIST, advanceTurn, applyHealthChange } from "../../../lib/modifiers";
 import { rollDice } from "../../../lib/dice";
+import { EncounterXpPanel } from "../../components/admin/EncounterXpPanel";
 import { useAuth } from "../../context/AuthContext";
 
 export default function AdminEncontrosPage() {
@@ -62,6 +64,8 @@ export default function AdminEncontrosPage() {
   const [encounterToDelete, setEncounterToDelete] = useState(null);
 
   const [openConditionPickerId, setOpenConditionPickerId] = useState(null);
+  const [distributing, setDistributing] = useState(false);
+  const [confirmDistribute, setConfirmDistribute] = useState(false);
 
   // Log persistente da batalha: entradas marcadas pelo encontro a que pertencem,
   // para nunca renderizar eventos do encontro anterior enquanto a carga está em curso
@@ -293,6 +297,62 @@ export default function AdminEncontrosPage() {
       `Avançado para o turno de ${list[next.turnIndex]?.name} (Rodada ${next.round}).`,
       "turno"
     );
+  };
+
+  const handleSaveEncounterXp = (xp) => {
+    const reward = Math.max(0, Math.floor(Number(xp) || 0));
+    syncEncounterUpdate(
+      { recursos: { ...(activeEncounter?.recursos || {}), xp: reward } },
+      `Recompensa de XP definida para ${reward} por herói.`,
+      "recursos"
+    );
+  };
+
+  const handleDistributeXp = async () => {
+    if (!activeEncounter) return;
+    const reward = Math.max(0, Math.floor(Number(activeEncounter.recursos?.xp) || 0));
+    if (reward <= 0) {
+      setConfirmDistribute(false);
+      setError("Defina uma recompensa de XP maior que zero.");
+      return;
+    }
+    const combatants = (activeEncounter.dadosExtras?.iniciativa || []).filter((c) => c.type === "Herói");
+    if (combatants.length === 0) {
+      setConfirmDistribute(false);
+      setError("Nenhum herói no encontro para receber XP.");
+      return;
+    }
+    setDistributing(true);
+    setError("");
+    try {
+      const fresh = (await listCharacters(token)) || [];
+      const awarded = [];
+      for (const combatant of combatants) {
+        const charId = String(combatant.id).replace(/^pc-/, "");
+        const hero = fresh.find((h) => String(h.id) === charId);
+        if (!hero) continue;
+        const currentXp = Number(hero.xp) || 0;
+        await updateCharacterOnBackend(charId, { xp: currentXp + reward }, token);
+        awarded.push(hero);
+      }
+      if (awarded.length > 0) {
+        const awardedIds = new Set(awarded.map((h) => String(h.id)));
+        setHeroes(fresh.map((h) => (awardedIds.has(String(h.id)) ? { ...h, xp: (Number(h.xp) || 0) + reward } : h)));
+      }
+      const names = awarded.map((h) => h.name).join(", ") || "nenhum herói encontrado";
+      await syncEncounterUpdate(
+        { dadosExtras: { ...(activeEncounter.dadosExtras || {}), xpDistribuidoEm: new Date().toISOString() } },
+        `Recompensa de ${reward} XP distribuída para: ${names}.`,
+        "recursos"
+      );
+      setSuccessMsg(`${reward} XP distribuído para ${awarded.length} herói(s) da party.`);
+      setConfirmDistribute(false);
+    } catch (err) {
+      setError(err.message || "Falha ao distribuir XP.");
+      setConfirmDistribute(false);
+    } finally {
+      setDistributing(false);
+    }
   };
 
   const handleDeleteEncounter = async () => {
@@ -670,8 +730,15 @@ export default function AdminEncontrosPage() {
             </Card>
           </div>
 
-          {/* Coluna 2: Histórico de Alterações em Tempo Real (Combat Log) */}
-          <div>
+          {/* Coluna 2: Recompensa de XP + Histórico de Alterações em Tempo Real (Combat Log) */}
+          <div className="flex flex-col gap-4">
+            <EncounterXpPanel
+              encounter={activeEncounter}
+              heroes={heroes}
+              onSaveXp={handleSaveEncounterXp}
+              onDistribute={() => setConfirmDistribute(true)}
+              distributing={distributing}
+            />
             <Card className="h-full max-h-[600px] flex flex-col justify-between">
               <div>
                 <SectionHeader title="Histórico de Alterações" icon={<History size={16} />} />
@@ -706,6 +773,18 @@ export default function AdminEncontrosPage() {
           </div>
         </div>
       ) : null}
+
+      {/* Confirmação de Distribuição de XP */}
+      <ConfirmDialog
+        isOpen={confirmDistribute}
+        title={`Distribuir ${Math.max(0, Math.floor(Number(activeEncounter?.recursos?.xp) || 0))} XP para a party?`}
+        message={`Cada herói presente no encontro (${(activeEncounter?.dadosExtras?.iniciativa || []).filter((c) => c.type === "Herói").map((c) => c.name).join(", ") || "nenhum"}) receberá o XP imediatamente na ficha. Esta ação não pode ser desfeita automaticamente.`}
+        confirmText="Distribuir XP"
+        cancelText="Cancelar"
+        dangerLevel="warning"
+        onConfirm={handleDistributeXp}
+        onCancel={() => setConfirmDistribute(false)}
+      />
 
       {/* Confirmação de Exclusão */}
       <ConfirmDialog
