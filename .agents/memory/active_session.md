@@ -43,13 +43,13 @@
 
 ---
 
-## 🔧 Atualização 2026-11-17 (Dado FÍSICO em todo rolamento) — NÃO commitado
+## ✅ Push 2026-11-17 (5) — Dado físico (NÃO verificado no navegador)
 - Pedido: "para cada rolamento, poderia colocar a opção de adicionar o valor manualmente, pois em alguns casos será usado o dado físico".
 - **lib/dice.js**: novo `manualRollResult()` puro (valida faces 1..sides, vantagem/desvantagem kh1/kl1, críticos d20, fórmula idêntica à do virtual, `manual: true`); novo teste `manual-roll.test.mjs` (28 asserts) → suite 161.
 - **DiceContext reescrito**: novo `requestRoll(config)` → Promise `result|null` — abre o modal em modo chooser (Normal/Vantagem/Desvantagem virtual OU seção "Usou o dado físico?" com inputs de faces). `resolveVirtualRoll`, `resolveManualRoll` (valida e retorna `{ok}|{ok:false,message}`), `executeManualRoll` (registro avulso na bandeja), `cancelRollRequest`/`closeModal` resolvem `null` (callers abortam limpo). `executeRoll`/`promptRoll`/`pendingTarget` REMOVIDOS — toda rolagem do jogo passa pelo chooser com opção física. Persist/log idênticos; battle log marca " (dado físico)" e `manual:true` no JSONB (payload do backend inalterado — schema strict).
 - **DiceModal**: nova `RollChooser` (pré-rolagem: label/mod, 3 botões virtuais + seção âmbar expansível com modo Normal/Vantagem/Desvantagem, inputs por dado, validação inline, Cancelar) e aba permanente **"Dado Físico"** (sides/qtd/mod/label/modo/faces → registra avulso sem chooser). FaceInputs compartilhado (autoFocus, Enter confirma). Histórico e resultado exibem selo "Físico" e legenda "Valores informados do dado físico". Re-rolagem no resultado reabre o chooser.
 - **Call sites migrados** (todos os rolamentos): personagem (subir de nível), DanoCuraPainel (cura com Dado de Vida), RecursosCombate (iniciativa ×2, enviar à mesa, Dado de Vida), Pericia, habilidades (sessão de treino; bug `naturalRoll`→`kept` corrigido), AbilityCard, LevelProgressionGrid, ui.js StatBox, inventario. Sites que consomem o resultado usam `await` e abortam em `null`.
-- Verificação: front **161/161**, build 30/30, lint 0 erros (44 warnings pré-existentes, nenhum nos arquivos novos). NÃO commitado. UX do chooser ainda não verificada no navegador (dev server parado).
+- Verificação: front **161/161**, build 30/30, lint 0 erros (44 warnings pré-existentes, nenhum nos arquivos novos). Commitado e pushado: `4bd15a8` feat(dice) + `fcd50d6` docs(memory). UX do chooser ainda não verificada no navegador (dev server parado).
 
 ---
 
