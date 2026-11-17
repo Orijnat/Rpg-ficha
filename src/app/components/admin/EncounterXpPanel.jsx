@@ -10,7 +10,7 @@ import { calculateLevelFromXP } from "../../../lib/modifiers";
  * - Mostra o progresso de cada herói presente para o próximo nível.
  * - "Distribuir XP" aplica a recompensa no XP de cada herói no encontro.
  */
-export function EncounterXpPanel({ encounter, heroes, onDistribute, distributing, onFinalizeEncounter, onManualFinalize }) {
+export function EncounterXpPanel({ encounter, heroes, onDistribute, distributing, onFinalizeEncounter }) {
   const reward = Math.max(0, Math.floor(Number(encounter?.recursos?.xp) || 0));
   const distributedAt = encounter?.dadosExtras?.xpDistribuidoEm || null;
 
@@ -116,22 +116,12 @@ export function EncounterXpPanel({ encounter, heroes, onDistribute, distributing
           <button
             type="button"
             onClick={onFinalizeEncounter}
-            className="mt-2 flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-emerald-500/50 bg-emerald-500/10 text-[10px] font-bold uppercase tracking-wider text-emerald-300 transition hover:bg-emerald-500/20 active:scale-95"
-            title="Encerra o encontro distribuindo automaticamente o XP Total (÷ heróis na iniciativa)"
+            className="mt-2 flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-amber-500/50 bg-amber-500/15 text-[10px] font-bold uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/25 active:scale-95"
+            title="Abre o seletor de quem recebe o XP e encerra o encontro"
           >
             <Trophy size={12} />
-            Encerrar Encontro (XP automático)
+            Finalizar Encontro
           </button>
-          {onManualFinalize && (
-            <button
-              type="button"
-              onClick={onManualFinalize}
-              className="mt-1.5 w-full text-center text-[9px] uppercase tracking-[0.2em] text-muted-foreground/80 underline-offset-2 transition hover:text-amber-300 hover:underline"
-              title="Abrir desfecho manual: vitoria/derrota/fuga por herói"
-            >
-              Desfecho manual por herói (vitória / derrota / fuga)
-            </button>
-          )}
         </>
       )}
       {distributedAt && (

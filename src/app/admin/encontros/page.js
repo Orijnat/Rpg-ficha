@@ -350,23 +350,6 @@ export default function AdminEncontrosPage() {
     }
   };
 
-  // Finaliza o encontro distribuindo AUTOMATICAMENTE o XP Total (÷ heróis na iniciativa).
-  const handleAutoFinalizeEncounter = async () => {
-    if (!activeEncounter) return;
-    const combatants = (activeEncounter.dadosExtras?.iniciativa || []).filter((c) => c.type === "Herói");
-    const reward = Math.max(0, Math.floor(Number(activeEncounter?.recursos?.xp) || 0));
-    const perHero = combatants.length > 0 ? Math.floor(reward / combatants.length) : 0;
-    const rows = combatants.map((c) => ({
-      id: String(c.id).replace(/^pc-/, ""),
-      name: c.name,
-      outcome: "vitoria",
-      included: true,
-      xp: perHero,
-    }));
-    const result = await handleFinalizeEncounter(rows);
-    if (!result?.ok) setError(result?.message || "Falha ao finalizar o encontro.");
-  };
-
   const handleFinalizeEncounter = async (rows) => {
     if (!activeEncounter) return { ok: false, message: "Nenhum encontro ativo." };
     setError("");
@@ -638,9 +621,9 @@ export default function AdminEncontrosPage() {
                   {activeEncounter.ativo !== false ? (
                     <button
                       type="button"
-                      onClick={handleAutoFinalizeEncounter}
+                      onClick={() => setFinalizeOpen(true)}
                       className="flex min-h-9 items-center gap-1.5 rounded-lg border border-amber-500/60 bg-amber-500/20 px-3 text-xs font-bold uppercase text-amber-200 transition hover:bg-amber-500/30 active:scale-95"
-                      title="Distribui automaticamente o XP Total (÷ heróis na iniciativa) e encerra o encontro"
+                      title="Seleciona quem recebe o XP e encerra o encontro"
                     >
                       <Trophy size={13} /> Finalizar
                     </button>
@@ -837,8 +820,7 @@ export default function AdminEncontrosPage() {
               heroes={heroes}
               onDistribute={() => setConfirmDistribute(true)}
               distributing={distributing}
-              onFinalizeEncounter={handleAutoFinalizeEncounter}
-              onManualFinalize={() => setFinalizeOpen(true)}
+              onFinalizeEncounter={() => setFinalizeOpen(true)}
             />
             <Card className="h-full max-h-[600px] flex flex-col justify-between">
               <div>
