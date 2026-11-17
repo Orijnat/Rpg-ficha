@@ -449,6 +449,31 @@ export function CharacterProvider({ children }) {
     }));
   };
 
+  const updateRace = (raca) => {
+    setData((current) => {
+      if (!raca) {
+        return {
+          ...current,
+          raceId: null,
+          dadosExtras: {
+            ...(current.dadosExtras || {}),
+            race: null,
+            hitDie: current.dadosExtras?.hitDie || "1d8",
+          },
+        };
+      }
+      return {
+        ...current,
+        raceId: raca.id,
+        dadosExtras: {
+          ...(current.dadosExtras || {}),
+          race: raca.slug ?? null,
+          hitDie: raca.hitDie ?? current.dadosExtras?.hitDie ?? "1d8",
+        },
+      };
+    });
+  };
+
   // Subida de nível estilo D&D: a UI rola o Dado de Vida no rolador de dados
   // (com animação/modal) e aplica o ganho aqui — 1 rolagem por nível, exige XP suficiente.
   const applyLevelUp = (gain, details = {}) => {
@@ -914,6 +939,7 @@ export function CharacterProvider({ children }) {
     advanceRoundEffects,
     removeActiveEffect,
     updateDadosExtras,
+    updateRace,
     applyLevelUp,
     addContract,
     removeContract,

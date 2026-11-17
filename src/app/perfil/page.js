@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -21,8 +21,8 @@ import { Card, SectionHeader } from "../components/ui";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import { useCharacter } from "../context/CharacterContext";
-import { joinCampaign, listCampaigns } from "../../lib/api";
-import { DEFAULT_RACES, getRaceBaseAttributes, getRaceHitDie } from "../../lib/races";
+import { joinCampaign, listCampaigns, listRaces } from "../../lib/api";
+import { DEFAULT_RACES } from "../../lib/races";
 
 export default function PerfilPage() {
   const {
@@ -44,8 +44,9 @@ export default function PerfilPage() {
 
   const [newCharName, setNewCharName] = useState("");
   const [newCharJob, setNewCharJob] = useState("");
-  const [newCharRace, setNewCharRace] = useState("");
-  const newCharRaceRef = useRef(null);
+  const [newCharRaceId, setNewCharRaceId] = useState("");
+  const [racas, setRacas] = useState(DEFAULT_RACES);
+  const [racasErro, setRacasErro] = useState("");
   const [isCreating, setIsCreating] = useState(false);
   const [createMsg, setCreateMsg] = useState("");
   const [profileForm, setProfileForm] = useState({ username: "", email: "", perfil: "jogador" });
@@ -58,6 +59,28 @@ export default function PerfilPage() {
   const [joining, setJoining] = useState(false);
   const [userCampaigns, setUserCampaigns] = useState([]);
   const [loadingCampaigns, setLoadingCampaigns] = useState(false);
+
+  React.useEffect(() => {
+    let active = true;
+    listRaces()
+      .then((rows) => {
+        if (!active) return;
+        if (Array.isArray(rows) && rows.length > 0) {
+          setRacas(rows);
+          setRacasErro("");
+        } else {
+          setRacasErro("Não foi possível carregar as raças do servidor. Usando o catálogo padrão.");
+        }
+      })
+      .catch(() => {
+        if (active) setRacasErro("Não foi possível carregar as raças do servidor. Usando o catálogo padrão.");
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const selectedRace = racas.find((race) => race.id === newCharRaceId) || null;
 
   const loadUserCampaigns = React.useCallback(async () => {
     if (!token || isMaster) return;
@@ -124,7 +147,6 @@ export default function PerfilPage() {
       setCreateMsg("Informe o nome e a classe do personagem.");
       return;
     }
-    const selectedRace = newCharRaceRef?.current?.value || newCharRace;
     if (!selectedRace) {
       setCreateMsg("Informe a raça do personagem.");
       return;
@@ -139,17 +161,17 @@ export default function PerfilPage() {
         hp: 70,
         hpMax: 70,
         level: 1,
-        ...getRaceBaseAttributes(selectedRace),
+        ...(selectedRace.base || {}),
+        raceId: selectedRace.id,
         dadosExtras: {
-          race: selectedRace,
-          hitDie: getRaceHitDie(selectedRace, "1d8"),
+          race: selectedRace.slug || selectedRace.id,
+          hitDie: selectedRace.hitDie,
           customClass: newCharJob.trim(),
         },
       });
       setNewCharName("");
       setNewCharJob("");
-      setNewCharRace("");
-      if (newCharRaceRef.current) newCharRaceRef.current.value = "";
+      setNewCharRaceId("");
       setCreateMsg("Novo personagem criado com sucesso!");
       setTimeout(() => setCreateMsg(""), 3000);
     } catch (err) {
@@ -390,18 +412,20 @@ export default function PerfilPage() {
                   className="min-h-10 rounded-lg border border-border bg-input-background px-3 text-xs text-foreground outline-none focus:border-primary"
                 />
               </div>
+              {racasErro && (
+                <p className="text-[11px] text-amber-300">{racasErro}</p>
+              )}
               <div className="space-y-1">
                 <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-[#b59a6e]" style={{ fontFamily: "Cinzel, serif" }}>Raça</label>
                 <select
-                  ref={newCharRaceRef}
                   name="race"
-                  defaultValue=""
-                  onChange={(e) => setNewCharRace(e.target.value)}
+                  value={newCharRaceId}
+                  onChange={(e) => setNewCharRaceId(e.target.value)}
                   className="w-full min-h-10 rounded-lg border border-border bg-input-background px-3 text-xs text-foreground outline-none focus:border-primary"
                   aria-label="Raça do personagem"
                 >
                   <option value="">Escolha a raça…</option>
-                  {DEFAULT_RACES.map((race) => (
+                  {racas.map((race) => (
                     <option key={race.id} value={race.id}>
                       {race.name}
                     </option>

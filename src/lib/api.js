@@ -149,6 +149,7 @@ export async function registerUser(payload) {
     inviteCode,
     codigoConvite,
     race,
+    raceId,
     hitDie,
     FOR,
     DES,
@@ -176,6 +177,7 @@ export async function registerUser(payload) {
       role: selectedRole,
       inviteCode: code || undefined,
       race,
+      raceId,
       hitDie,
       FOR,
       DES,
@@ -313,6 +315,13 @@ export async function logoutUser(token = getStoredToken()) {
     method: "POST",
     headers: authHeaders(token),
   }, "Erro ao encerrar a sessão.");
+}
+
+export async function listRaces() {
+  return safeFetchJson(`${API_BASE_URL}/racas`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  }, "Não foi possível carregar as raças.");
 }
 
 export async function createCharacterOnBackend(characterData, token = getStoredToken()) {

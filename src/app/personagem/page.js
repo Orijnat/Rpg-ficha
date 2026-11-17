@@ -9,27 +9,42 @@ import Aparencia from "../components/Aparencia";
 import Pericia from "../components/Pericia";
 import RecursosCombate from "../components/RecursosCombate";
 import { calculateCapacity, calculateLevelFromXP, calculateModifier } from "../../lib/modifiers";
-import { DEFAULT_RACES, getRaceById } from "../../lib/races";
+import { DEFAULT_RACES } from "../../lib/races";
+import { listRaces } from "../../lib/api";
 import { parseHitDie, hpGainFromRoll, levelUpGate } from "../../lib/leveling";
 import { useDice } from "../context/DiceContext";
 import { DEFAULT_ABILITIES, isHabilidadeDesbloqueada } from "../../lib/abilities";
 
 export default function Personagem() {
-  const { data, upd, syncStatus, syncError, retrySync, reloadFromCloud, overwriteCloud, updateDadosExtras, applyLevelUp } = useCharacter();
+  const { data, upd, syncStatus, syncError, retrySync, reloadFromCloud, overwriteCloud, updateDadosExtras, updateRace, applyLevelUp } = useCharacter();
   const { executeRoll } = useDice();
   const [levelFeedback, setLevelFeedback] = useState(null);
   const feedbackTimer = useRef(null);
+  const [racas, setRacas] = useState(DEFAULT_RACES);
   const capacity = calculateCapacity(data);
   const abilities = Array.isArray(data.abilities) ? data.abilities : [];
   const characterLevel = Math.max(1, Number(data.level) || 1);
   const xpInfo = calculateLevelFromXP(data.xp ?? data.dadosExtras?.xp ?? 0);
   const conMod = calculateModifier(data.CON);
   const hitDie = typeof data.dadosExtras?.hitDie === "string" && data.dadosExtras.hitDie ? data.dadosExtras.hitDie : "1d8";
-  const race = getRaceById(data.dadosExtras?.race);
+  const currentRaceId = data.raceId ?? racas.find((race) => race.slug === data.dadosExtras?.race)?.id ?? null;
+  const race = racas.find((raca) => raca.id === currentRaceId) ?? null;
   const canLevelUp = characterLevel < xpInfo.level && characterLevel < 20;
   const xpMissing = Math.max(0, (xpInfo.nextLevelXP ?? 0) - Number(data.xp || 0));
 
   useEffect(() => () => window.clearTimeout(feedbackTimer.current), []);
+
+  useEffect(() => {
+    let active = true;
+    listRaces()
+      .then((rows) => {
+        if (active && Array.isArray(rows) && rows.length > 0) setRacas(rows);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleLevelUp = () => {
     const gate = levelUpGate(characterLevel, data.xp ?? data.dadosExtras?.xp ?? 0);
@@ -194,12 +209,15 @@ export default function Personagem() {
               icon={<Dna size={15} />}
             />
             <div className="mt-2 flex flex-wrap items-center gap-2">
-              <select
-                value={race?.id || ""}
-                onChange={(e) => updateDadosExtras({ race: e.target.value || null })}
-                className="h-9 rounded-lg border border-border bg-input-background px-2.5 text-xs text-foreground outline-none focus:border-primary"
-                aria-label="Raça do herói"
-              >
+                <select
+                  value={race?.id || ""}
+                  onChange={(e) => {
+                    const option = e.target.value ? racas.find((raca) => raca.id === e.target.value) : null;
+                    updateRace(option || null);
+                  }}
+                  className="h-9 rounded-lg border border-border bg-input-background px-2.5 text-xs text-foreground outline-none focus:border-primary"
+                  aria-label="Raça do herói"
+                >
                 <option value="">Raça não definida</option>
                 {DEFAULT_RACES.map((option) => (
                   <option key={option.id} value={option.id}>
