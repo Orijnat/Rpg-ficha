@@ -302,15 +302,6 @@ export default function AdminEncontrosPage() {
     );
   };
 
-  const handleSaveEncounterXp = (xp) => {
-    const reward = Math.max(0, Math.floor(Number(xp) || 0));
-    syncEncounterUpdate(
-      { recursos: { ...(activeEncounter?.recursos || {}), xp: reward } },
-      `Recompensa de XP definida para ${reward} no total (dividida entre os heróis).`,
-      "recursos"
-    );
-  };
-
   const handleDistributeXp = async () => {
     if (!activeEncounter) return;
     const reward = Math.max(0, Math.floor(Number(activeEncounter.recursos?.xp) || 0));
@@ -827,7 +818,6 @@ export default function AdminEncontrosPage() {
             <EncounterXpPanel
               encounter={activeEncounter}
               heroes={heroes}
-              onSaveXp={handleSaveEncounterXp}
               onDistribute={() => setConfirmDistribute(true)}
               distributing={distributing}
               onFinalizeEncounter={() => setFinalizeOpen(true)}
