@@ -141,6 +141,12 @@ export default function MasterCharacterSheet() {
         itensInventario: character.inventory,
         pericias: character.skills,
       };
+      // A associação `classe` (include do Sequelize) chega como OBJETO — o Zod do PUT
+      // espera texto(80); reduz ao slug (ou nome) ou descarta.
+      if (payload.classe && typeof payload.classe !== "string") {
+        const slug = payload.classe.slug ?? payload.classe.nome;
+        payload.classe = typeof slug === "string" && slug.trim() ? slug.trim().slice(0, 80) : undefined;
+      }
       const saved = await updateCharacterOnBackend(id, payload, token);
       setCharacter(normalizeCharacter(saved));
       setMessage("Ficha do jogador atualizada.");

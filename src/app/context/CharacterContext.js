@@ -65,6 +65,19 @@ const ATTRIBUTE_ALIASES = {
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const asUuid = (value) => (typeof value === "string" && UUID_RE.test(value) ? value : undefined);
 
+// Reduz qualquer valor a texto curto para campos texto(n) do Zod do backend.
+// A associação `classe` (include do Sequelize) chega como OBJETO
+// ({ id, slug, nome, dadoDeVida }) — preferimos o slug (casa com o currentSlug
+// do classGuardError) e o nome como fallback; qualquer outro tipo é descartado.
+const asTextoCurto = (value, max = 80) => {
+  if (value && typeof value === "object") {
+    value = value.slug ?? value.nome ?? value.name;
+  }
+  if (typeof value !== "string") return undefined;
+  const trimmed = value.trim();
+  return trimmed ? trimmed.slice(0, max) : undefined;
+};
+
 function normalizeCharacterForSync(charData, activeChar) {
   if (!charData) return charData;
   const forca = Number(charData.FOR ?? charData.forca ?? 10);
@@ -120,6 +133,10 @@ function normalizeCharacterForSync(charData, activeChar) {
     // o Dado de Vida vem da classe (a raça não define mais o dado de vida).
     classId: asUuid(charData.classId ?? charData.classeId),
     class: (charData.dadosExtras && charData.dadosExtras.class) || undefined,
+    // O backend serializa a associação da classe como OBJETO em `classe` (include
+    // do Sequelize) — o Zod espera texto(80). Envia só o slug legível (ou omite);
+    // o vínculo real vai por classId/class.
+    classe: asTextoCurto(charData.dadosExtras?.class ?? charData.classe, 80),
   };
 }
 
