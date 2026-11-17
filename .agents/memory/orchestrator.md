@@ -610,3 +610,7 @@ Commitado e pushado: `d800e1e` (fix(registro): remover recomendação de classe 
 
 - Subir de nível exige XP (tabela existente, inalterada) + flag `dadosExtras.levelUpLiberado` setada pelo mestre.
 - Botões: /personagem ("Liberar Ascensão", cadeado) e /admin/personagens (cadeado por herói; +1 Nv. e Nível da Mesa só promovem liberados). Liberação consumida a cada subida. 162/162, build OK. NÃO commitado.
+
+## Entrega — 2026-11-17 (Logo/favicon Âmbar Vulcânico)
+
+- public/ambar-vulcanico.svg (do Downloads do Windows) vira favicon (metadata.icons; favicon.ico removido) e logo da app (AppShell, Cabecalho, landing, login, registro, rodapé). 162/162, build OK. NÃO commitado.

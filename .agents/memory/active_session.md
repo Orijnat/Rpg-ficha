@@ -1,5 +1,11 @@
 # 🧠 Sessão Ativa — Grimorium RPG
 
+## 🖼️ 2026-11-17 — Logo/favicon "Âmbar Vulcânico" (do Downloads do Windows)
+- Arquivo: `/mnt/c/Users/cledi/Downloads/ambar-vulcanico.svg` (SVG 64×64, livro âmbar, 1.4 KB, sem scripts/refs externas) → copiado para `public/ambar-vulcanico.svg`.
+- **Favicon**: `src/app/favicon.ico` removido (`git rm`); `metadata.icons` em `layout.js` (icon + shortcut → `/ambar-vulcanico.svg`). Verificado no HTML do build: `<link rel="icon" href="/ambar-vulcanico.svg" type="image/svg+xml"/>`.
+- **Logo aplicado** (next/image, priority): AppShell sidebar desktop · Cabecalho (visão jogador; mestre mantém Crown) · landing header + rodapé · login e registro (emblema central, antes ⚔/Sparkles).
+- **Verificado**: 162/162, build OK, lint 0 erros (45 warnings pré-existentes). **NÃO commitado/pushado**.
+
 ## 🔓 2026-11-17 — "Liberar Ascensão": subir de nível exige XP + feito liberado pelo mestre
 - Tabela enviada pelo usuário (Nível/XP/Bônus de proficiência) **já era o critério** em produção: `XP_TABLE` idêntico em `modifiers.js` (0→355.000) e `calculateProficiencyBonusByLevel` (+2/+3/+4/+5/+6 por tiers) — usado em Pericia.jsx e RecursosCombate.jsx. Nada a alterar na tabela.
 - **Novidade**: subir de nível agora exige (1) XP no limite **E** (2) liberação do mestre via novo flag `dadosExtras.levelUpLiberado` (bool, zod dadosExtras é livre).
@@ -722,3 +728,10 @@ Criar tabela de raças no banco; selects de raça passam a enviar o ID da raça;
 - **Incidente resolvido**: o CASCADE arrastou `classes` e `classe_habilidades` (FK `criado_por` → `usuarios`, e o TRUNCATE não dispara ON DELETE SET NULL). Restauradas do backup: drop da FK `classes_criado_por_fkey`, `pg_restore --data-only --single-transaction --table=classes --table=classe_habilidades`, `criado_por` anulado (equivalente ao ON DELETE SET NULL), FK recriada e validada.
 - **Estado final verificado**: todas as tabelas de dados = 0; `racas`=8, `classes`=10, `classe_habilidades`=0, `sequelize_meta`=17, `SequelizeMeta`=1. auth.*/storage.* intocados. Uploads em disco (private_uploads) NÃO apagados (órfãos no disco).
 - Produção agora exige registro do zero; sessões server-side zeradas. Deploy do backend (Render) segue pendente.
+
+## ✅ Atualização 2026-11-17 (4ª limpeza total do banco Supabase — PRODUÇÃO, com backup)
+- Pedido do usuário: "limpe o banco novamente, com os mesmos requisitos anteriores" (backup + manter racas/classes/classe_habilidades + histórico de migrations).
+- Pré-estado: usuarios 2 · personagens 1 · atributos 1 · campanhas 1 · membros 2 · encontros 1 · log_batalha 5 · rolagens 1 · auditoria 4 · sessoes_autenticacao 5 · **classes 11** (1ª limpeza restaurou 10; uma NOVA classe foi criada desde então, e havia test-classes "Sa", "Sas", "Ses" no catálogo — preservadas por serem classes).
+- Backup: `/tmp/opencode/backup-pre-purge-2026-11-17-2.dump` (133 KB, 335 objetos, chmod 600).
+- Correção antecipada do incidente anterior: `UPDATE classes SET criado_por=NULL` (1 linha) + drop temporário de `classes_criado_por_fkey` ANTES do TRUNCATE (a FK era o que fazia o CASCADE arrastar classes); FK recriada e validada ao final. **Nenhuma classe foi perdida desta vez.**
+- TRUNCATE ... RESTART IDENTITY CASCADE nas demais tabelas public. Verificado: tudo em 0; `racas`=8, `classes`=11, `classe_habilidades`=0, `sequelize_meta`=17, `SequelizeMeta`=1. auth.*/storage.* intocados; uploads em disco órfãos.
