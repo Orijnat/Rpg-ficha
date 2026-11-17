@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-17T23:58:00-03:00",
+  "timestamp": "2026-11-17T23:59:59-03:00",
   "agent": "opencode",
-  "prompt": "limpe o banco novamente",
-  "action": "3a limpeza total do Supabase producao SEM backup (decisao do usuario): TRUNCATE RESTART IDENTITY CASCADE em 28 tabelas public (usuarios 7, personagens 6, campanhas, log_batalha, rolagens, montarias etc) preservando apenas sequelize_meta (17) e SequelizeMeta (1). auth.*/storage.* intocados. Re-seed aplicado via db:migrate — racas 8 e classes 8 restauradas; demais tabelas zeradas. Nada mais tocado."
+  "prompt": "o XP Total do Encontro deverá ser definido ali, e este valor será dividido pela quantidade de jogadores no encontro",
+  "action": "XP do encontro travado na criação: painel Recompensa de XP virou read-only (badge com total + rateio '÷ N = perHero cada'); handleSaveEncounterXp/onSaveXp removidos; campo joso fica 'XP Total do Encontro' no formulario de criacao. Distribuicao inalterada. 161/161 testes, build OK, lint 0 erros. Nao commitado."
 }

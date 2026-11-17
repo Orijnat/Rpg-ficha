@@ -76,6 +76,16 @@
 - **Sem backup** (decisão explícita). Nada mais foi tocado.
 - Pendência de sempre: deploy do backend no Render.
 
+## 🔧 2026-11-17 — XP do Encontro travado na CRIAÇÃO — NÃO commitado
+- Pedido: "o XP Total do Encontro deverá ser definido ali" (opção: só na criação travar depois).
+- O campo agora existe APENAS no formulário de criação do encontro ("XP Total do Encontro"). O painel "Recompensa de XP" da Sala de Guerra virou **somente leitura**: badge âmbar "XP total do encontro" com totais e rateio ("R XP ÷ N herói(s) = perHero XP cada"); `handleSaveEncounterXp`/`onSaveXp` removidos; distribuição (Distribuir / Finalizar) inalterada (floor(total ÷ N heróis)).
+- Verificação: 161/161 testes, build OK, lint 0 erros (44 warnings pré-existentes). NÃO commitado, NÃO conferido no navegador.
+
+## 🔧 2026-11-17 — Mensagem "enviaremos um código de 6 dígitos" Removida do cadastro — NÃO commitado
+- Pedido: "retire do login a mensagem que sera enviado um codigo e do cadastro tbm".
+- Único remanescente do fluxo de verificação (já extinto no backend/front): o aviso no `/registro/page.jsx` dentro do botão de submit — removido (login não tinha a mensagem; import `Mail` mantido — e-mail ainda é exigido). Hard refresh em produção se o usuário ainda a vê (cache/build antigo).
+- Verificado: 161/161 testes, build OK, lint 0 erros. NÃO commitado, NÃO conferido no navegador (nítido).
+
 ## 🔧 2026-11-17 — XP de encontro é TOTAL dividido pelos heróis; jogadores não alteram XP/nível; HP na navbar — commitado (lote de pus)
 - Pedido: "ao criar um encontro, o xp ... sera o total do xp informado na cracao do encontro, dividido pela quantidade de pessoas no encontro".
 - **XP de encontro agora é TOTAL** (`recursos.xp`): rótulo de criação virado para "XP Total do Encontro" (com title); `handleDistributeXp` divide por heróis na iniciativa (`Math.floor(reward/N)`) e distribui esse valor por herói (logs/mensagens/toast refletem "X XP cada"); `EncounterXpPanel`: entrada vira "XP total do encontro", mostra "÷N = Y XP cada", por herói "+Y com esta vitória", botão "Distribuir X XP para cada herói (total Y)"; `FinalizarEncounterModal`: default de cada linha = floor(reward/N) (vitoria/toggle/set-all também), rodapé mostra "XP do encontro: R ÷ N herói(s) = perHero XP cada"; modal de confirmação cita a divisão.
