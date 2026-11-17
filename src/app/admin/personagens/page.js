@@ -549,15 +549,16 @@ export default function PersonagensAdmin() {
                           </>
                         ) : (
                           <>
-                            <button
-                              type="button"
-                              onClick={() => window.open(`/personagem?inspect=${item.id}`, "_blank", "noopener,noreferrer")}
+                            <Link
+                              href={`/personagem?inspect=${item.id}`}
+                              target="_blank"
+                              rel="noreferrer noopener"
                               title="Abre a ficha completa do herói em uma nova guia"
                               className="flex items-center gap-1.5 rounded-lg border border-primary/50 bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground shadow-md shadow-primary/20 hover:brightness-110 active:scale-95 transition"
                             >
                               <ScrollText size={13} />
                               <span>Acessar Ficha Completa</span>
-                            </button>
+                            </Link>
                             <Link
                               href={`/admin/personagens/${item.id}/ficha`}
                               target="_blank"

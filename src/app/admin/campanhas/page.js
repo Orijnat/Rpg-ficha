@@ -39,7 +39,7 @@ import {
 import { useAuth } from "../../context/AuthContext";
 
 export default function AdminCampanhasPage() {
-  const { token, isMaster, user, inspectCharacter } = useAuth();
+  const { token, isMaster, user } = useAuth();
 
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -570,15 +570,16 @@ export default function AdminCampanhasPage() {
                                   <span className="text-[10px] text-muted-foreground">
                                     ({hero.job || ""} · Nv {hero.level || 1})
                                   </span>
-                                  <button
-                                    type="button"
-                                    onClick={() => inspectCharacter(hero.id)}
+                                  <Link
+                                    href={`/personagem?inspect=${hero.id}`}
+                                    target="_blank"
+                                    rel="noreferrer noopener"
                                     className="ml-1 inline-flex items-center gap-1 rounded bg-primary px-2 py-0.5 text-[10px] font-bold uppercase text-primary-foreground hover:brightness-110 transition active:scale-95 shadow-sm shadow-primary/20"
-                                    title="Abrir a ficha completa do jogador diretamente no aplicativo"
+                                    title="Abrir a ficha completa do jogador em uma nova guia"
                                   >
                                     <ScrollText size={10} />
                                     <span>Acessar Ficha Completa</span>
-                                  </button>
+                                  </Link>
                                   <Link
                                     href={`/admin/personagens/${hero.id}/ficha`}
                                     target="_blank"

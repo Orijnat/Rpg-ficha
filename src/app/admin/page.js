@@ -122,7 +122,7 @@ export default function AdminIndex() {
   const [characterError, setCharacterError] = useState("");
   const [campaignLoaded, setCampaignLoaded] = useState(false);
   const [campaignError, setCampaignError] = useState("");
-  const { isMaster, loading: authLoading, inspectCharacter, user } = useAuth();
+  const { isMaster, loading: authLoading, user } = useAuth();
   const [openConditionPickerId, setOpenConditionPickerId] = useState(null);
 
   // Múltiplas mesas / campanhas do mestre
@@ -793,14 +793,16 @@ export default function AdminIndex() {
               </div>
 
               <div className="mt-4 pt-3 border-t border-border/80 flex items-center justify-between gap-2">
-                <button
-                  type="button"
-                  onClick={() => inspectCharacter(character.id)}
+                <Link
+                  href={`/personagem?inspect=${character.id}`}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  title="Abre a ficha do jogador em uma nova guia"
                   className="flex items-center gap-1 rounded bg-primary px-2.5 py-1 text-xs font-bold text-primary-foreground hover:brightness-110 active:scale-95 transition"
                 >
                   <ScrollText size={12} />
                   <span>Acessar Ficha</span>
-                </button>
+                </Link>
                 <Link
                   href={`/admin/personagens/${character.id}/ficha`}
                   target="_blank"
