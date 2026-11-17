@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Calendar,
   Check,
@@ -9,7 +9,10 @@ import {
   Crown,
   FileText,
   Gift,
+  History,
   ListTodo,
+  LoaderCircle,
+  NotebookPen,
   Plus,
   Save,
   Sparkles,
@@ -25,6 +28,59 @@ import {
   updateGameSession,
 } from "../../../lib/api";
 import { useAuth } from "../../context/AuthContext";
+
+const ESTADO_SESSAO = {
+  planejada: { label: "Planejada", cls: "border-sky-500/40 bg-sky-500/10 text-sky-300" },
+  em_andamento: { label: "Em Andamento", cls: "border-amber-500/40 bg-amber-500/10 text-amber-300" },
+  concluida: { label: "Concluída", cls: "border-emerald-500/40 bg-emerald-500/10 text-emerald-300" },
+  cancelada: { label: "Cancelada", cls: "border-rose-500/40 bg-rose-500/10 text-rose-300" },
+};
+
+function estadoMeta(estado) {
+  return ESTADO_SESSAO[estado] ?? { label: estado || "Planejada", cls: "border-border text-muted-foreground" };
+}
+
+function SessionNotesField({ session, onSave }) {
+  const [texto, setTexto] = useState(session.resumo ?? "");
+  const [saving, setSaving] = useState(false);
+  const dirty = texto !== (session.resumo ?? "");
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await onSave(session, texto);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="rounded-xl border border-primary/25 bg-background/40 p-3">
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <label className="flex items-center gap-1.5 font-serif text-xs font-bold uppercase tracking-wider text-primary" htmlFor={`notas-${session.id}`}>
+          <NotebookPen size={13} className="text-primary" /> O que aconteceu na sessão?
+        </label>
+        <button
+          type="button"
+          onClick={handleSave}
+          disabled={!dirty || saving}
+          className="flex min-h-9 items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-2.5 text-[10px] font-bold uppercase tracking-wider text-primary transition hover:bg-primary/20 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {saving ? <LoaderCircle size={12} className="animate-spin" /> : <Save size={12} />}
+          Salvar registro
+        </button>
+      </div>
+      <textarea
+        id={`notas-${session.id}`}
+        value={texto}
+        onChange={(e) => setTexto(e.target.value)}
+        rows={3}
+        placeholder="Resumo do que rolou na mesa: cenas marcantes, decisões tomadas, XP pago, recados dos heróis..."
+        className="w-full resize-none rounded-lg border border-border bg-input-background px-3 py-2 text-xs text-foreground outline-none placeholder:text-muted-foreground/60 focus:border-primary"
+      />
+    </div>
+  );
+}
 
 export default function AdminSessoesPage() {
   const { token, isMaster } = useAuth();
@@ -54,6 +110,8 @@ export default function AdminSessoesPage() {
 
   // Exclusão
   const [sessionToDeleteIndex, setSessionToDeleteIndex] = useState(null);
+  const [sessionToCloseId, setSessionToCloseId] = useState(null);
+  const [view, setView] = useState("sessoes"); // "sessoes" | "timeline"
 
   const normalizeSession = (session) => ({
     ...session,
@@ -145,6 +203,29 @@ export default function AdminSessoesPage() {
     }
   };
 
+  const closeSession = async () => {
+    if (!sessionToCloseId) return;
+    try {
+      await updateGameSession(sessionToCloseId, { estado: "concluida" }, token);
+      setSessionToCloseId(null);
+      setSuccessMsg("Sessão encerrada — marcada como concluída (nada foi excluído).");
+      await loadCampaign(selectedCampaignId);
+    } catch (err) {
+      setError(err.message);
+      setSessionToCloseId(null);
+    }
+  };
+
+  const saveSessionNotes = async (session, texto) => {
+    try {
+      await updateGameSession(session.id, { resumo: texto }, token);
+      setSuccessMsg("Registro do mestre salvo.");
+      await loadCampaign(selectedCampaignId);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   const toggleObjective = async (sessionIndex, objId) => {
     const updated = [...sessoes];
     const sessao = { ...updated[sessionIndex] };
@@ -180,6 +261,36 @@ export default function AdminSessoesPage() {
     }
   };
 
+  const timelineGroups = useMemo(() => {
+    const events = [];
+    for (const sessao of sessoes) {
+      for (const ev of sessao.dadosExtras?.registro || []) {
+        if (!ev?.timestamp || !ev?.evento) continue;
+        const date = new Date(ev.timestamp);
+        if (Number.isNaN(date.getTime())) continue;
+        events.push({
+          ...ev,
+          date,
+          numero: sessao.numero,
+          titulo: sessao.titulo,
+        });
+      }
+    }
+    events.sort((a, b) => b.date.getTime() - a.date.getTime());
+    const groups = [];
+    const byDay = new Map();
+    for (const ev of events) {
+      const key = ev.date.toDateString();
+      if (!byDay.has(key)) {
+        const group = { key, label: ev.date.toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" }), items: [] };
+        byDay.set(key, group);
+        groups.push(group);
+      }
+      byDay.get(key).items.push(ev);
+    }
+    return groups;
+  }, [sessoes]);
+
   if (!isMaster) return null;
 
   return (
@@ -211,6 +322,29 @@ export default function AdminSessoesPage() {
               ))}
             </select>
           )}
+
+          <div className="flex items-center gap-1 rounded-lg border border-border bg-input-background p-1">
+            <button
+              type="button"
+              onClick={() => setView("sessoes")}
+              aria-pressed={view === "sessoes"}
+              className={`flex min-h-9 items-center gap-1.5 rounded-md px-2.5 text-[10px] font-bold uppercase tracking-wider transition ${
+                view === "sessoes" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <Calendar size={12} /> Sessões
+            </button>
+            <button
+              type="button"
+              onClick={() => setView("timeline")}
+              aria-pressed={view === "timeline"}
+              className={`flex min-h-9 items-center gap-1.5 rounded-md px-2.5 text-[10px] font-bold uppercase tracking-wider transition ${
+                view === "timeline" ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <History size={12} /> Linha do Tempo
+            </button>
+          </div>
 
           <button
             type="button"
@@ -327,7 +461,48 @@ export default function AdminSessoesPage() {
         </Card>
       )}
 
+      {/* Linha do Tempo da Campanha (log geral) */}
+      {view === "timeline" && (
+        <div className="space-y-4">
+          {timelineGroups.length === 0 ? (
+            <Card className="py-12 text-center text-muted-foreground">
+              <History size={28} className="mx-auto text-primary opacity-40 mb-2" />
+              <p className="font-serif text-base text-foreground font-bold">Nada registrado por aqui ainda.</p>
+              <p className="mt-1 text-xs">Encerrar sessões, concluir objetivos e criar sessões geram entradas na linha do tempo.</p>
+            </Card>
+          ) : (
+            timelineGroups.map((group) => (
+              <div key={group.key} className="rounded-2xl border border-primary/20 bg-card/60">
+                <div className="flex items-center gap-2 border-b border-border/80 bg-primary/5 px-4 py-2">
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg border border-primary/40 bg-primary/10">
+                    <History size={14} className="text-primary" />
+                  </span>
+                  <h2 className="font-serif text-xs font-bold uppercase tracking-[0.2em] text-foreground">{group.label}</h2>
+                </div>
+                <ul className="divide-y divide-border/60">
+                  {group.items.map((ev, i) => (
+                    <li key={`${ev.date.toISOString()}-${i}`} className="flex flex-wrap items-baseline gap-x-3 gap-y-1 px-4 py-2.5 text-xs">
+                      <span className="w-12 shrink-0 font-mono text-[11px] text-primary">
+                        {ev.date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+                      </span>
+                      <span className="rounded border border-border bg-secondary/60 px-1.5 py-0.5 font-mono text-[9px] uppercase text-muted-foreground">
+                        Sessão #{ev.numero}
+                      </span>
+                      {ev.autor && (
+                        <span className="font-semibold text-foreground">{ev.autor}</span>
+                      )}
+                      <span className="w-full sm:w-auto sm:flex-1 text-muted-foreground">{ev.evento}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
       {/* Lista de Sessões */}
+      {view === "sessoes" && (
       <div className="space-y-4">
         {sessoes.length === 0 ? (
           <Card className="py-12 text-center text-muted-foreground">
@@ -358,9 +533,23 @@ export default function AdminSessoesPage() {
                   </div>
 
                   <div className="flex items-center gap-2">
+                    <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${estadoMeta(sessao.estado).cls}`}>
+                      {estadoMeta(sessao.estado).label}
+                    </span>
                     <span className="rounded-full border border-primary/40 bg-primary/10 px-2.5 py-0.5 text-xs font-bold text-primary">
                       {objsConcluidos}/{totalObjs} Objetivos Concluídos
                     </span>
+                    {sessao.estado !== "concluida" && (
+                      <button
+                        type="button"
+                        onClick={() => setSessionToCloseId(sessao.id)}
+                        className="flex min-h-9 items-center gap-1 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-2.5 text-[10px] font-bold uppercase tracking-wider text-emerald-300 transition hover:bg-emerald-500/20"
+                        title="Marca a sessão como concluída (nada é excluído)"
+                      >
+                        <CheckCircle2 size={13} />
+                        Encerrar
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={() => setSessionToDeleteIndex(sIdx)}
@@ -417,6 +606,9 @@ export default function AdminSessoesPage() {
                   </div>
                 </div>
 
+                {/* Registro do que aconteceu na sessão */}
+                <SessionNotesField key={sessao.id} session={sessao} onSave={saveSessionNotes} />
+
                 {/* Recompensas da Sessão */}
                 {sessao.recompensas && (
                   <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 flex flex-wrap items-center justify-between text-xs">
@@ -436,6 +628,18 @@ export default function AdminSessoesPage() {
           })
         )}
       </div>
+
+      )}
+
+      {/* Confirmação de Encerrar */}
+      <ConfirmDialog
+        isOpen={Boolean(sessionToCloseId)}
+        title="Encerrar esta sessão?"
+        message="A sessão será apenas marcada como concluída — nada é excluído, e o registro aparece na Linha do Tempo."
+        confirmText="Encerrar sessão"
+        onConfirm={closeSession}
+        onCancel={() => setSessionToCloseId(null)}
+      />
 
       {/* Confirmação de Exclusão */}
       <ConfirmDialog
