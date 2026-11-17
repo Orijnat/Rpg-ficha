@@ -119,15 +119,21 @@ export function AuthProvider({ children }) {
 
           setCharacters(allChars);
 
-          // Recupera o personagem ativo salvo ou pega o primeiro da lista
+          // Recupera a ficha ativa salva. O mestre NUNCA herda a ficha de um herói de
+          // terceiros: para ele, só vale o que é dele (data.characters) ou o ?inspect= explícito.
+          // Jogadores comuns só têm os próprios personagens na lista de qualquer forma.
+          const ownChars = data.characters || [];
           const savedCharId = window.sessionStorage.getItem("rpg_current_char_id")
             || window.localStorage.getItem("rpg_current_char_id");
-          const found = inspectFound ?? allChars.find((c) => c.id === savedCharId);
+          const found = inspectFound ?? ownChars.find((c) => c.id === savedCharId);
           if (found) {
             setActiveCharacterId(found.id);
-          } else if (allChars.length > 0) {
-            setActiveCharacterId(allChars[0].id);
-            window.sessionStorage.setItem("rpg_current_char_id", allChars[0].id);
+          } else if (ownChars.length > 0) {
+            setActiveCharacterId(ownChars[0].id);
+            window.sessionStorage.setItem("rpg_current_char_id", ownChars[0].id);
+          } else {
+            setActiveCharacterId(null);
+            window.sessionStorage.removeItem("rpg_current_char_id");
           }
         } else {
           clearAuth();
@@ -184,10 +190,16 @@ export function AuthProvider({ children }) {
     }
     setCharacters(allChars);
 
-    if (allChars.length > 0) {
-      const firstChar = allChars[0];
+    // O mestre nunca é jogado na ficha de um herói de terceiros: seleciona apenas do
+    // que é dele (data.characters, retorno do login). Jogadores não têm heróis de terceiros na lista.
+    const ownChars = data.characters || [];
+    if (ownChars.length > 0) {
+      const firstChar = ownChars[0];
       setActiveCharacterId(firstChar.id);
       window.sessionStorage.setItem("rpg_current_char_id", firstChar.id);
+    } else {
+      setActiveCharacterId(null);
+      window.sessionStorage.removeItem("rpg_current_char_id");
     }
 
     return data;
@@ -229,6 +241,9 @@ export function AuthProvider({ children }) {
     if (chars.length > 0) {
       setActiveCharacterId(chars[0].id);
       window.sessionStorage.setItem("rpg_current_char_id", chars[0].id);
+    } else {
+      setActiveCharacterId(null);
+      window.sessionStorage.removeItem("rpg_current_char_id");
     }
 
     return { ...data, user: finalUser, token: finalToken };

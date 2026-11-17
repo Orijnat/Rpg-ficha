@@ -284,6 +284,13 @@ export function CharacterProvider({ children }) {
     latestData.current = data;
     writeSheetStore(isNpcSheet, cacheKey, JSON.stringify(data));
 
+    // Sem ficha ativa (ex.: mestre sem ficha própria): o cache local anônimo NUNCA sincroniza —
+    // evita empurrar um rascunho velho para a nuvem por acidente.
+    if (!activeCharacter && !isNpcSheet) {
+      setSyncStatus("idle");
+      return;
+    }
+
     if (isNpcSheet) {
       // Cópia de trabalho do monstro: nunca sincroniza nem oferece conflito.
       setSyncStatus("offline");
@@ -337,6 +344,10 @@ export function CharacterProvider({ children }) {
     try {
       if (isNpcSheet) {
         if (sequence === syncSequence.current) setSyncStatus("offline");
+        return;
+      }
+      if (!activeCharacter) {
+        if (sequence === syncSequence.current) setSyncStatus("idle");
         return;
       }
       if (skipSyncRef.current) {

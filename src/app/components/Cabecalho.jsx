@@ -16,7 +16,7 @@ export default function Cabecalho() {
   const pathname = usePathname();
   const { data, upd } = useCharacter();
   const { activeThemeObj } = useTheme();
-  const { isMaster, playerCharacters = [], inspectCharacter, activeCharacterId } = useAuth();
+  const { isMaster, playerCharacters = [], inspectCharacter, activeCharacterId, activeCharacter, loading: authLoading } = useAuth();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isHpModalOpen, setIsHpModalOpen] = useState(false);
 
@@ -57,7 +57,16 @@ export default function Cabecalho() {
 
             {/* Lado Direito: Estatísticas do Jogador OU Status da Mesa */}
             <div className="flex items-center justify-between gap-4 sm:justify-end">
-              {!isMasterView ? (
+              {!isMasterView && !authLoading && !activeCharacter ? (
+                <div className="hidden sm:flex flex-col text-right">
+                  <span className="wax-seal bg-amber-500/20 text-amber-300 border border-amber-400/50 shadow-[0_0_12px_rgba(245,158,11,0.25)]">
+                    <Shield size={11} /> {isMaster ? "Nenhuma ficha própria" : "Nenhuma ficha ativa"}
+                  </span>
+                  <span className="font-cinzel text-xs text-muted-foreground/80 mt-1">
+                    {isMaster ? "Abra a ficha de um herói pelo Painel do Mestre" : "Nenhuma ficha vinculada a esta conta"}
+                  </span>
+                </div>
+              ) : !isMasterView ? (
                 <div className="min-w-0 text-left sm:text-right">
                   <div className="flex items-center gap-2 sm:justify-end">
                     <EditableText
