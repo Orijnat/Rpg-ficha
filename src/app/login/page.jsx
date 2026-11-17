@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
 import AuthScaffold from "../../components/auth/AuthScaffold";
-import { Lock, User, Eye, EyeOff, LogIn, Sparkles, AlertCircle, Link2 } from "lucide-react";
+import { Lock, User, Eye, EyeOff, LogIn, Sparkles, AlertCircle, Link2, MailCheck } from "lucide-react";
 
 function LoginForm() {
   const searchParams = useSearchParams();
@@ -15,6 +15,7 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [notVerifiedEmail, setNotVerifiedEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
@@ -39,7 +40,8 @@ function LoginForm() {
         router.push(data.user?.role === "master" || data.user?.perfil === "mestre" ? "/admin" : "/personagem");
       }
     } catch (err) {
-      setError(err.message || "Erro ao conectar. Verifique suas credenciais.");
+      setError(err?.message || "Erro ao conectar. Verifique suas credenciais.");
+      setNotVerifiedEmail(err?.code === "EMAIL_NOT_VERIFIED" ? err?.email || identifier : "");
     } finally {
       setLoading(false);
     }
@@ -164,6 +166,18 @@ function LoginForm() {
             <div className="mb-5 flex items-start gap-2.5 rounded-lg border border-red-800/40 bg-red-950/30 px-3.5 py-3 text-xs text-red-300/90 shadow-inner">
               <AlertCircle size={15} className="mt-0.5 shrink-0 text-red-400/80" />
               <span style={{ fontFamily: "Crimson Text, serif" }}>{error}</span>
+            </div>
+          )}
+          {notVerifiedEmail && (
+            <div className="mb-5 rounded-lg border border-amber-600/40 bg-amber-950/20 px-3.5 py-3 text-xs text-amber-200">
+              <p className="font-semibold">Sua conta ainda não foi verificada.</p>
+              <p className="mt-1">Informe o código de 6 dígitos enviado para <strong>{notVerifiedEmail}</strong>:</p>
+              <Link
+                href={`/verificar-email?email=${encodeURIComponent(notVerifiedEmail.trim().toLowerCase())}`}
+                className="mt-2.5 inline-flex min-h-10 items-center gap-2 rounded-lg border border-amber-500/50 bg-amber-500/10 px-4 text-[#f0d9a0] transition hover:bg-amber-500/20"
+              >
+                <MailCheck size={14} /> Informar o código de verificação
+              </Link>
             </div>
           )}
 

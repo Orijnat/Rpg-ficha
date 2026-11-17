@@ -151,6 +151,7 @@ export async function registerUser(payload) {
     race,
     raceId,
     hitDie,
+    confirmPassword,
     FOR,
     DES,
     CON,
@@ -179,6 +180,7 @@ export async function registerUser(payload) {
       race,
       raceId,
       hitDie,
+      confirmPassword,
       FOR,
       DES,
       CON,
@@ -190,6 +192,14 @@ export async function registerUser(payload) {
   }, "Erro ao realizar cadastro.");
   storeAuth(data.token, data.user);
   return data;
+}
+
+export async function verifyEmailCodeOnBackend({ email, code }) {
+  return safeFetchJson(`${API_BASE_URL}/auth/verify-email-code`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, code }),
+  }, "Não foi possível verificar o código.");
 }
 
 export async function verifyEmailOnBackend(token) {

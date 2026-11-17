@@ -122,6 +122,12 @@ export function AuthProvider({ children }) {
 
   const register = async (formData) => {
     const data = await registerUser(formData);
+
+    if (!data?.token) {
+      // Novo fluxo: verificação de e-mail obrigatória antes do primeiro login
+      return { ...data, nextStep: "verify-email", characters: [] };
+    }
+
     const wantsMaster = formData?.perfil === "mestre" || formData?.role === "master";
 
     let finalUser = data.user || {};

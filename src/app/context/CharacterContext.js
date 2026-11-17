@@ -462,9 +462,16 @@ export function CharacterProvider({ children }) {
           },
         };
       }
+      const hadRace = Boolean(current.raceId) || Boolean(current.dadosExtras?.race);
+      const baseAttrs = hadRace ? {} : (raca.base || {});
       return {
         ...current,
         raceId: raca.id,
+        ...baseAttrs,
+        attributes: {
+          ...(current.attributes || {}),
+          ...baseAttrs,
+        },
         dadosExtras: {
           ...(current.dadosExtras || {}),
           race: raca.slug ?? null,
