@@ -4,7 +4,7 @@
 - Causa-raiz: backend (`encontroController.criar`) guarda `recursos` DENTRO de `dadosExtras.recursos` ({ xp, tesouro }); a tabela `encontros` NÃO tem coluna top-level `recursos` e a API retorna o row cru — o frontend lia `encounter.recursos?.xp` → sempre undefined → 0 XP em todo lugar (painel, modal, rateio, confirmação de distribuição).
 - Fix: novo `src/lib/encounter.js` → `getEncounterXpReward(encounter)` (lê `dadosExtras.recursos.xp`, tolera legado top-level, clamp ≥ 0, floor, NaN/Infinity → 0). Consumidores migrados: FinalizarEncounterModal, EncounterXpPanel, encontros/page.js (distribuição + ConfirmDialog de XP). Novo teste `encounter.test.mjs` → **162/162**, build OK, lint 0 erros.
 - Agora o "XP Total do Encontro" do cadastro (formulário de criação) é exatamente o que a modal/painel dividem entre os heróis (`R ÷ N = perHero`).
-- NÃO commitado — aguardar pedido de commit/push.
+- Commitado e pushado: `e06eb06` fix(encontros) + `e20812f` docs(memory) — push `77a003c..e20812f` (2026-11-17 ~19:05). `.github/workflows/` segue não rastreado. Aguardar deploy da Vercel + Ctrl+Shift+R.
 
 ## 🔧 Pedido 2026-11-17 — "eu prefiro o modal antigo" → modal COMPLETO restaurado (NÃO commitado)
 - Usuário escolheu "Finalizar completo (desfecho)": restaurado `FinalizarEncounterModal.jsx` para a versão pré-simplificação (via `git show dad47b3:`): desfecho por herói (Vitória/Derrota/Fugiu), XP individual (clamp 0..1M), checkbox "Recebe XP", ações rápidas Todos: Vitória/Derrota/Fugiu, rateio R÷N=perHero no rodapé, confirm "Finalizar Encontro" (handleFinalizeEncounter inalterado — já trata outcome).
