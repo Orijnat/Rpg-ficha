@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { DoorOpen, LoaderCircle, Skull, Trophy, X } from "lucide-react";
 import { calculateLevelFromXP } from "../../../lib/modifiers";
+import { getEncounterXpReward } from "../../../lib/encounter";
 
 const OUTCOMES = [
   { id: "vitoria", label: "Vitória", Icon: Trophy, activeClass: "border-emerald-500/60 bg-emerald-500/15 text-emerald-300" },
@@ -25,7 +26,7 @@ function clampXp(value) {
  *
  * Props:
  * - isOpen, onClose: controle do modal
- * - encounter: encontro ativo (initiative + recursos.xp)
+ * - encounter: encontro ativo (iniciativa + dadosExtras.recursos.xp do cadastro)
  * - heroes: lista atualizada de fichas (para XP/nível atuais)
  * - onFinalize: (rows) => Promise<{ ok, message? }> — aplica o XP, encerra o
  *   encontro e registra no log; em erro, o modal exibe a mensagem.
@@ -49,7 +50,7 @@ export default function FinalizarEncounterModal({ isOpen, onClose, encounter, he
         };
       });
   }, [encounter?.dadosExtras?.iniciativa, heroes]);
-  const reward = Math.max(0, Math.floor(Number(encounter?.recursos?.xp) || 0));
+  const reward = getEncounterXpReward(encounter);
   const encounterKey = `${encounter?.id}:${isOpen ? "open" : "closed"}`;
 
   if (!isOpen) return null;

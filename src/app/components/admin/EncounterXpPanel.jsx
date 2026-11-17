@@ -3,6 +3,7 @@
 import { Star, Sparkles, Trophy, Lock } from "lucide-react";
 import { Card, SectionHeader } from "../ui";
 import { calculateLevelFromXP } from "../../../lib/modifiers";
+import { getEncounterXpReward } from "../../../lib/encounter";
 
 /**
  * Painel de recompensa de XP do encontro (Sala de Guerra do Mestre).
@@ -11,7 +12,7 @@ import { calculateLevelFromXP } from "../../../lib/modifiers";
  * - "Distribuir XP" aplica a recompensa no XP de cada herói no encontro.
  */
 export function EncounterXpPanel({ encounter, heroes, onDistribute, distributing, onFinalizeEncounter }) {
-  const reward = Math.max(0, Math.floor(Number(encounter?.recursos?.xp) || 0));
+  const reward = getEncounterXpReward(encounter);
   const distributedAt = encounter?.dadosExtras?.xpDistribuidoEm || null;
 
   const initiative = encounter?.dadosExtras?.iniciativa || [];

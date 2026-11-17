@@ -36,6 +36,7 @@ import {
 import { normalizeLegacyBattleLogEntry } from "../../../lib/battleLog";
 import { CONDITIONS_LIST, advanceTurn, applyHealthChange } from "../../../lib/modifiers";
 import { rollDice } from "../../../lib/dice";
+import { getEncounterXpReward } from "../../../lib/encounter";
 import { EncounterXpPanel } from "../../components/admin/EncounterXpPanel";
 import FinalizarEncounterModal from "../../components/admin/FinalizarEncounterModal";
 import { useAuth } from "../../context/AuthContext";
@@ -304,7 +305,7 @@ export default function AdminEncontrosPage() {
 
   const handleDistributeXp = async () => {
     if (!activeEncounter) return;
-    const reward = Math.max(0, Math.floor(Number(activeEncounter.recursos?.xp) || 0));
+    const reward = getEncounterXpReward(activeEncounter);
     if (reward <= 0) {
       setConfirmDistribute(false);
       setError("Defina uma recompensa de XP maior que zero.");
@@ -869,8 +870,8 @@ export default function AdminEncontrosPage() {
       {/* Confirmação de Distribuição de XP */}
       <ConfirmDialog
         isOpen={confirmDistribute}
-        title={`Distribuir ${Math.max(0, Math.floor(Number(activeEncounter?.recursos?.xp) || 0))} XP para a party?`}
-        message={`Cada herói presente no encontro (${(activeEncounter?.dadosExtras?.iniciativa || []).filter((c) => c.type === "Herói").map((c) => c.name).join(", ") || "nenhum"}) receberá ${Math.floor((Number(activeEncounter?.recursos?.xp) || 0) / Math.max(1, (activeEncounter?.dadosExtras?.iniciativa || []).filter((c) => c.type === "Herói").length))} XP na ficha (total do encontro dividido). Esta ação não pode ser desfeita automaticamente.`}
+        title={`Distribuir ${getEncounterXpReward(activeEncounter)} XP para a party?`}
+        message={`Cada herói presente no encontro (${(activeEncounter?.dadosExtras?.iniciativa || []).filter((c) => c.type === "Herói").map((c) => c.name).join(", ") || "nenhum"}) receberá ${Math.floor(getEncounterXpReward(activeEncounter) / Math.max(1, (activeEncounter?.dadosExtras?.iniciativa || []).filter((c) => c.type === "Herói").length))} XP na ficha (total do encontro dividido). Esta ação não pode ser desfeita automaticamente.`}
         confirmText="Distribuir XP"
         cancelText="Cancelar"
         dangerLevel="warning"
