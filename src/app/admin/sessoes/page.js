@@ -111,7 +111,9 @@ export default function AdminSessoesPage() {
   // Exclusão
   const [sessionToDeleteIndex, setSessionToDeleteIndex] = useState(null);
   const [sessionToCloseId, setSessionToCloseId] = useState(null);
-  const [view, setView] = useState("sessoes"); // "sessoes" | "timeline"
+  const [xpConfirm, setXpConfirm] = useState(null);
+  const [distributingXpId, setDistributingXpId] = useState(null);
+  const [view, setView] = useState("sessoes"); // sessoes | timeline
 
   const normalizeSession = (session) => ({
     ...session,
@@ -200,6 +202,53 @@ export default function AdminSessoesPage() {
       await loadCampaign(selectedCampaignId);
     } catch (err) {
       setError(err.message);
+    }
+  };
+
+  const prepareXpDistribution = async (sessao) => {
+    const total = Math.max(0, Math.floor(Number(sessao.recompensas?.xp) || 0));
+    if (total <= 0) {
+      setError("Defina a recompensa de XP da sessão maior que zero antes de distribuir.");
+      return;
+    }
+    if (!selectedCampaignId) return;
+    setError("");
+    try {
+      const heroes = (await listCharacters(token, selectedCampaignId)) || [];
+      if (heroes.length === 0) {
+        setError("Nenhum herói nesta campanha para receber XP.");
+        return;
+      }
+      const perHero = Math.floor(total / heroes.length);
+      setXpConfirm({ sessao, heroes, perHero, total });
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const confirmXpDistribution = async () => {
+    const pending = xpConfirm;
+    if (!pending) return;
+    const { sessao, heroes, perHero, total } = pending;
+    setDistributingXpId(sessao.id);
+    setError("");
+    try {
+      for (const hero of heroes) {
+        const currentXp = Number(hero.xp) || 0;
+        await updateCharacterOnBackend(hero.id, { xp: currentXp + perHero }, token);
+      }
+      const recompensas = {
+        ...(sessao.recompensas || {}),
+        xpDistribuidoEm: new Date().toISOString(),
+      };
+      await updateGameSession(sessao.id, { recompensas }, token);
+      setXpConfirm(null);
+      setSuccessMsg(`${total} XP da sessão dividido em ${perHero} XP para cada um dos ${heroes.length} heróis.`);
+      await loadCampaign(selectedCampaignId);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setDistributingXpId(null);
     }
   };
 
@@ -417,7 +466,7 @@ export default function AdminSessoesPage() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <label className="block text-xs font-bold uppercase text-muted-foreground">
-                  Recompensa de XP Prevista
+                  Recompensa de XP Total da Sessão
                 </label>
                 <input
                   type="number"
@@ -611,15 +660,42 @@ export default function AdminSessoesPage() {
 
                 {/* Recompensas da Sessão */}
                 {sessao.recompensas && (
-                  <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 flex flex-wrap items-center justify-between text-xs">
-                    <span className="flex items-center gap-1.5 text-primary font-bold">
-                      <Gift size={14} /> Recompensas da Sessão:
-                    </span>
-                    <div className="flex items-center gap-4 text-muted-foreground">
-                      <span>XP: <strong className="text-foreground font-mono">+{sessao.recompensas.xp}</strong></span>
-                      {sessao.recompensas.tesouro && (
-                        <span>Tesouro: <strong className="text-foreground">{sessao.recompensas.tesouro}</strong></span>
+                  <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 space-y-2 text-xs">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="flex items-center gap-1.5 text-primary font-bold uppercase tracking-wider">
+                        <Gift size={14} /> Recompensa de XP da Sessão
+                      </span>
+                      {sessao.recompensas.xpDistribuidoEm ? (
+                        <span className="rounded-full border border-emerald-500/40 bg-emerald-500/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-300">
+                          Distribuída em {new Date(sessao.recompensas.xpDistribuidoEm).toLocaleString("pt-BR")}
+                        </span>
+                      ) : (
+                        <span className="rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-300">
+                          XP ainda não distribuído
+                        </span>
                       )}
+                    </div>
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div className="flex flex-wrap items-center gap-4 text-muted-foreground">
+                        <span>Total: <strong className="font-mono text-foreground">{Number(sessao.recompensas.xp || 0).toLocaleString("pt-BR")} XP</strong></span>
+                        {sessao.recompensas.tesouro && (
+                          <span>Tesouro: <strong className="text-foreground">{sessao.recompensas.tesouro}</strong></span>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => prepareXpDistribution(sessao)}
+                        disabled={distributingXpId === sessao.id || !sessao.recompensas?.xp}
+                        className="flex min-h-9 items-center gap-1.5 rounded-lg border border-amber-500/50 bg-amber-500/15 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/25 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+                        title="Divide o total do XP da sessão igualmente entre os heróis da campanha"
+                      >
+                        {distributingXpId === sessao.id ? (
+                          <LoaderCircle size={13} className="animate-spin" />
+                        ) : (
+                          <Sparkles size={13} />
+                        )}
+                        Distribuir XP da sessão
+                      </button>
                     </div>
                   </div>
                 )}
@@ -630,6 +706,16 @@ export default function AdminSessoesPage() {
       </div>
 
       )}
+
+      {/* Confirmação de Distribuição de XP */}
+      <ConfirmDialog
+        isOpen={Boolean(xpConfirm)}
+        title="Distribuir recompensa de XP da sessão?"
+        message={xpConfirm ? `${xpConfirm.total} XP serão divididos igualmente entre ${xpConfirm.heroes.length} herói(s) da campanha — ${xpConfirm.perHero} XP para cada. Não pode ser desfeito.` : ""}
+        confirmText="Distribuir XP"
+        onConfirm={confirmXpDistribution}
+        onCancel={() => setXpConfirm(null)}
+      />
 
       {/* Confirmação de Encerrar */}
       <ConfirmDialog

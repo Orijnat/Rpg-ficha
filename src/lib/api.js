@@ -333,9 +333,10 @@ export async function createCharacterOnBackend(characterData, token = getStoredT
   }, "Erro ao criar novo personagem.");
 }
 
-export async function listCharacters(token = getStoredToken()) {
+export async function listCharacters(token = getStoredToken(), campanhaId = null) {
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
-  return safeFetchJson(`${API_BASE_URL}/characters`, { headers }, "Erro ao carregar personagens.");
+  const query = campanhaId ? `?campanhaId=${encodeURIComponent(campanhaId)}` : "";
+  return safeFetchJson(`${API_BASE_URL}/characters${query}`, { headers }, "Erro ao carregar personagens.");
 }
 
 export async function listMounts(characterId, token = getStoredToken()) {
