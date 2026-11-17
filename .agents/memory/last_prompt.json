@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-17T23:59:30-03:00",
+  "timestamp": "2026-11-17T23:58:00-03:00",
   "agent": "opencode",
-  "prompt": "coloque lvl/ xp atual/ pro prox nivel Nível 1 0 / 300 (0%)XP ✎ / sim o jogador não pode alterar o nível e nem o xp dele mesmo / ao criar um encontro, o xp que sera distribuido par aos jooaroes, sera o total do xp informado na cracao do encontro, dividido pela quantidade de pessoas no encontro",
-  "action": "XP do encontro é TOTAL: criação 'XP Total do Encontro', distribuicao divide igualmente entre os heróis na iniciativa; FinalizarEncounterModal e EncounterXpPanel atualizados (defaults, hints, botoes); confirm modal cita divisao. Jogadores não alteram XP/nível: backend sync descarta experiencia/level/xp p/ não-mestres (silencioso; preserva extras.xp); XPBar read-only p/ jogadores; 'Subir de Nível' oculto p/ não-mestres. Navbar: barra PV read-only restaurada ao lado do Dano/Cura. Back 109/109, front 161/161, build OK, lint 0 erros."
+  "prompt": "limpe o banco novamente",
+  "action": "3a limpeza total do Supabase producao SEM backup (decisao do usuario): TRUNCATE RESTART IDENTITY CASCADE em 28 tabelas public (usuarios 7, personagens 6, campanhas, log_batalha, rolagens, montarias etc) preservando apenas sequelize_meta (17) e SequelizeMeta (1). auth.*/storage.* intocados. Re-seed aplicado via db:migrate — racas 8 e classes 8 restauradas; demais tabelas zeradas. Nada mais tocado."
 }

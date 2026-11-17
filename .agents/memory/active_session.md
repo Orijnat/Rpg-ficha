@@ -68,6 +68,14 @@
 - **Migration `20261117210000-montaria-a-partir-de-json.js` APLICADA no Supabase de produção** (via `npm run db:migrate`; todas as incrementos re-aplicados com sucesso/idempotência). `montarias` passou de 0 → **1** linha ("sas", 20/20 PV, dono "wqw") — exatamente o que havia em dados_extras.mounts. `sequelize_meta` registra a migration. **Backend AINDA NÃO DEPLOYADO no Render** → os endpoints `/api/characters/:id/mounts` não existem em produção até o Manual Deploy (até lá, a página /montaria mostrará o erro + retry).
 - **Estado do mapeamento**: achado principal = schema drift (tabelas relacionais nunca usadas: pericias_personagem, itens_inventario, contratos, cofres, imagens — candidatas a drop após decisão do operador; montarias agora É utilizada).
 
+## ✅ 2026-11-17 (3ª limpeza total do banco Supabase — PRODUÇÃO, sem backup)
+- Pedido: "limpe o banco novamente". Confirmação dupla do usuário: TRUNCATE de todas as tabelas public, SEM backup.
+- Estado antes: usuarios 7, personagens 6, campanhas 1, atributos_personagem 6, auditoria 26, anotacoes 1, log_batalha 61, rolagens 31, sessoes_autenticacao 18, sessoes_jogo 2, encontros 3, recursos_campanha 3, mapa_tatico 1, npcs 1, montarias 1, classes 8, racas 8.
+- Executado: `TRUNCATE … RESTART IDENTITY CASCADE` em 28 tabelas public EXCETO `sequelize_meta` (17) e `SequelizeMeta` (1) — via script de contagem dinâmica. `auth.*`/`storage.*` intactos (sempre vazios).
+- **Re-semeadeiro aplicado**: `npm run db:migrate` rodou idempotentemente após o purge (nada de erros); `racas` (8) e `classes` (8) restabelecidas pelo seed das migrations; o app funciona do zero.
+- **Sem backup** (decisão explícita). Nada mais foi tocado.
+- Pendência de sempre: deploy do backend no Render.
+
 ## 🔧 2026-11-17 — XP de encontro é TOTAL dividido pelos heróis; jogadores não alteram XP/nível; HP na navbar — commitado (lote de pus)
 - Pedido: "ao criar um encontro, o xp ... sera o total do xp informado na cracao do encontro, dividido pela quantidade de pessoas no encontro".
 - **XP de encontro agora é TOTAL** (`recursos.xp`): rótulo de criação virado para "XP Total do Encontro" (com title); `handleDistributeXp` divide por heróis na iniciativa (`Math.floor(reward/N)`) e distribui esse valor por herói (logs/mensagens/toast refletem "X XP cada"); `EncounterXpPanel`: entrada vira "XP total do encontro", mostra "÷N = Y XP cada", por herói "+Y com esta vitória", botão "Distribuir X XP para cada herói (total Y)"; `FinalizarEncounterModal`: default de cada linha = floor(reward/N) (vitoria/toggle/set-all também), rodapé mostra "XP do encontro: R ÷ N herói(s) = perHero XP cada"; modal de confirmação cita a divisão.
