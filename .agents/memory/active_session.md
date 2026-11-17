@@ -55,6 +55,13 @@
 - `CharacterContext.levelUp` virou `applyLevelUp(gain, details)` — aplica o ganho pré-rolado pela UI (gate por XP continua, 1 rolagem/nível); rolagem vai para o log como tipo `rolagem` (via DiceContext) e a ascensão como `recursos`.
 - `leveling.js` ganhou `levelUpGate(level, xp)` (compartilhado UI/contexto) — testes de gate cobertos (159/159). Build OK. NÃO commitado.
 
+## 🔧 Atualização 2026-11-17 (Vida máxima inicial = valor do Dado de Vida) — NÃO commitado
+- Pedido: "altere a vida máxima inicial para o valor do dado de vida".
+- `lib/leveling.js`: novo helper puro `hitDieMax(hitDie, fallback=8)` (count×sides de parseHitDie).
+- `CharacterContext.updateRace`: na 1ª escolha da raça + herói nível ≤ 1, `hp` e `hpMax` viram `hitDieMax(raca.hitDie)` (ex.: Anão→10, Orc→12). Heróis já acima do nível 1 NÃO têm a vida cortada. Base de atributos como antes; sync propaga.
+- Fluxos que já aplicavam hit die no HP: register com raça (backend `hitDieMax`), quick-create do perfil, `characterController.create` com raceId. Placeholder pré-seleção continua 70 (`NEW_HERO_HP`) até a raça ser selada; convite auto-create idem.
+- /personagem: hint do card de raça menciona vida máxima aplicada ao selecionar. Build OK, testes 159/159, eslint 0 erros (warnings pré-existentes). NÃO commitado.
+
 ## 🔧 Atualização 2026-11-17 (Raça: escolha única + trava por mestre) — NÃO commitado
 - Pedido: "ao entrar no sistema, selecionar a raça apenas 1 vez; se escolhido errado, só o mestre pode alterar; após selecionar a raça, colocar o valor dos status nos status".
 - **Backend** (`../Rpg-backend`): guard novo em `characterController` (`isMasterActor` + `raceGuardError`) no `update` e no `sync` — payload com raça diferente da atual de quem não é mestre → **403 "Apenas o mestre pode alterar a raça do herói."** Eco do estado do servidor (no-op) é liberado; primeira escolha do jogador liberada; mestre (perfil/role) altera/limpa livremente; limpar FK (`raceId:null`) zera também `dadosExtras.race` (sem fallback legado). Normalize payload inalterado (race slug → extras.race). Novo `test/raca_lock.test.js` (7 casos: player não troca/não limpa, eco sync permitido, primeira escolha, update player 403, mestre troca/limpa). Suíte **79/79**.

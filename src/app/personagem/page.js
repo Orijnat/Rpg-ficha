@@ -229,7 +229,7 @@ export default function Personagem() {
               <span className="text-[10px] text-muted-foreground">
                 {race
                   ? `${race.trait} · A raça já foi selada; só o mestre pode alterar.`
-                  : "Defina a raça uma única vez. Ao escolher, os status base e o Dado de Vida são aplicados automaticamente — depois, só o mestre pode mudar."}
+                  : "Defina a raça uma única vez. Ao escolher, os status base, o Dado de Vida e a Vida máxima são aplicados automaticamente — depois, só o mestre pode mudar."}
               </span>
             </div>
             <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">

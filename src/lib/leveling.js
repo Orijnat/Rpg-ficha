@@ -18,6 +18,12 @@ export function parseHitDie(hitDie, fallback = { count: 1, sides: 8, modifier: 0
   return { count: Math.min(Math.max(1, count), 100), sides, modifier };
 }
 
+/** Valor máximo do Dado de Vida ("1d10" → 10). Usado na vida base inicial do herói. */
+export function hitDieMax(hitDie, fallback = 8) {
+  const { count, sides } = parseHitDie(hitDie, { count: 1, sides: fallback, modifier: 0 });
+  return Math.max(1, count * sides);
+}
+
 /** HP ganho num nível: rolagem do dado de vida + Mod(CON), mínimo 1. */
 export function hpGainFromRoll(rollTotal, conMod) {
   return Math.max(1, Math.floor(Number(rollTotal) || 0) + (Number(conMod) || 0));

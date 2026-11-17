@@ -10,7 +10,7 @@ import {
   podeTreinarHabilidade,
 } from "../../lib/abilities";
 import { ensureCanonicalSkills } from "../../lib/modifiers";
-import { levelUpGate } from "../../lib/leveling";
+import { levelUpGate, hitDieMax } from "../../lib/leveling";
 import { applyItemUse, tickActiveEffects } from "../../lib/items";
 import { useAuth } from "./AuthContext";
 
@@ -460,10 +460,14 @@ export function CharacterProvider({ children }) {
       if (!raca) return current; // limpeza não é permitida ao jogador
       if (hadRace) return current; // já escolhida: no-op
       const baseAttrs = raca.base || {};
+      // Vida máxima inicial = valor máximo do Dado de Vida (só na criação — não pisa em herói já evoluído).
+      const heroLevel = Math.max(1, Number(current.level) || 1);
+      const initialHp = heroLevel <= 1 ? hitDieMax(raca.hitDie, 8) : null;
       return {
         ...current,
         raceId: raca.id,
         ...baseAttrs,
+        ...(initialHp ? { hp: initialHp, hpMax: initialHp } : {}),
         attributes: {
           ...(current.attributes || {}),
           ...baseAttrs,
