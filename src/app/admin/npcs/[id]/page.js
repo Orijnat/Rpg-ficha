@@ -12,13 +12,14 @@ import {
   Save,
   Shield,
   ShieldAlert,
+  ScrollText,
   Sparkles,
   Sword,
   Trash2,
 } from "lucide-react";
 import { Card, SectionHeader } from "../../../components/ui";
 import ConfirmDialog from "../../../components/admin/ConfirmDialog";
-import { deleteNpc, duplicateNpc, fetchNpcById, updateNpc } from "../../../../lib/api";
+import { deleteNpc, createNpc, fetchNpcById, updateNpc } from "../../../../lib/api";
 import { useAuth } from "../../../context/AuthContext";
 import { NpcAttributesCard, NpcAbilitiesCard, NPC_ATTR_DEFAULTS } from "../../../components/admin/NpcSheetBlocks";
 
@@ -48,23 +49,60 @@ export default function EditNpcPage() {
   const [error, setError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [isOverwriteOpen, setIsOverwriteOpen] = useState(false);
   const [isVariantOpen, setIsVariantOpen] = useState(false);
   const [variantSuffix, setVariantSuffix] = useState(" (Elite)");
   const [variantHpMultiplier, setVariantHpMultiplier] = useState(1.5);
   const [customTagInput, setCustomTagInput] = useState("");
 
+  // Esta guia sempre trabalha sobre uma CÓPIA do NPC (draft em sessionStorage por guia).
+  // O NPC original no catálogo fica intocado até ação explícita do mestre.
+  const draftKey = `rpg-npc-draft:${id}`;
+
   useEffect(() => {
     if (!id || !isMaster) return;
+    try {
+      const raw = window.sessionStorage.getItem(draftKey);
+      if (raw) {
+        const cached = JSON.parse(raw);
+        if (cached && cached.id === id) {
+          const frame = window.requestAnimationFrame(() => {
+            setNpc(cached);
+            setLoading(false);
+          });
+          return () => window.cancelAnimationFrame(frame);
+        }
+      }
+    } catch {
+      // sessionStorage indisponível ou draft corrompido — segue pelo servidor.
+    }
     fetchNpcById(id, token)
       .then((data) => {
         setNpc(data);
+        try {
+          window.sessionStorage.setItem(draftKey, JSON.stringify(data));
+        } catch {
+          // Sem storage, a cópia vive só em memória (refresh perde, mas nada quebra).
+        }
         setLoading(false);
       })
       .catch((err) => {
         setError(err.message);
         setLoading(false);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, isMaster, token]);
+
+  // Persiste cada edição da cópia desta guia.
+  useEffect(() => {
+    if (!npc) return;
+    try {
+      window.sessionStorage.setItem(draftKey, JSON.stringify(npc));
+    } catch {
+      // Ignora — a edição continua em memória.
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [npc]);
 
   if (!isMaster) return null;
   if (loading) return <div className="p-8 text-center text-sm text-muted-foreground">Carregando NPC...</div>;
@@ -116,35 +154,44 @@ export default function EditNpcPage() {
     updateExtras({ acoes: current.filter((_, i) => i !== index) });
   };
 
-  const handleSave = async (e) => {
-    e.preventDefault();
+  const buildPayload = () => ({
+    nome: npc.nome,
+    papel: npc.papel,
+    descricao: npc.descricao,
+    campanhaId: npc.campanhaId || undefined,
+    hp: Number(npc.hp),
+    hpMax: Number(npc.hpMax),
+    ca: Number(npc.dadosExtras?.ca || 10),
+    iniciativa: Number(npc.dadosExtras?.iniciativa || 0),
+    avatar: npc.dadosExtras?.avatar || "",
+    tags: npc.dadosExtras?.tags || [],
+    status: npc.dadosExtras?.status || "Ativo",
+    attitude: npc.dadosExtras?.attitude || "Hostil",
+    sharedWithPlayers: Boolean(npc.dadosExtras?.sharedWithPlayers),
+    acoes: npc.dadosExtras?.acoes || [],
+    notasMestre: npc.dadosExtras?.notasMestre || "",
+    atributos: atributosAtuais,
+    abilities: abilitiesAtuais,
+  });
+
+  const clearDraft = () => {
+    try {
+      window.sessionStorage.removeItem(draftKey);
+    } catch {
+      // sessionStorage indisponível.
+    }
+  };
+
+  // Salva a cópia desta guia como um NOVO NPC no catálogo (o original fica intocado).
+  const handleSaveAsNew = async () => {
     setSaving(true);
     setError("");
     setSuccessMsg("");
 
     try {
-      const payload = {
-        nome: npc.nome,
-        papel: npc.papel,
-        descricao: npc.descricao,
-        hp: Number(npc.hp),
-        hpMax: Number(npc.hpMax),
-        ca: Number(npc.dadosExtras?.ca || 10),
-        iniciativa: Number(npc.dadosExtras?.iniciativa || 0),
-        avatar: npc.dadosExtras?.avatar || "",
-        tags: npc.dadosExtras?.tags || [],
-        status: npc.dadosExtras?.status || "Ativo",
-        attitude: npc.dadosExtras?.attitude || "Hostil",
-        sharedWithPlayers: Boolean(npc.dadosExtras?.sharedWithPlayers),
-        acoes: npc.dadosExtras?.acoes || [],
-        notasMestre: npc.dadosExtras?.notasMestre || "",
-        atributos: atributosAtuais,
-        abilities: abilitiesAtuais,
-      };
-
-      const saved = await updateNpc(id, payload, token);
-      setNpc(saved);
-      setSuccessMsg("NPC atualizado com sucesso!");
+      const created = await createNpc(buildPayload(), token);
+      clearDraft();
+      router.push(`/admin/npcs/${created.id}`);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -152,20 +199,69 @@ export default function EditNpcPage() {
     }
   };
 
+  // Escapa explícito: sobrescreve o NPC original no catálogo.
+  const handleOverwriteOriginal = async () => {
+    setSaving(true);
+    setError("");
+    setSuccessMsg("");
+
+    try {
+      const saved = await updateNpc(id, buildPayload(), token);
+      setNpc(saved);
+      clearDraft();
+      setSuccessMsg("Original sobrescrito no catálogo (e replicado na ficha desta guia).");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+      setIsOverwriteOpen(false);
+    }
+  };
+
+  // Descarta a cópia de trabalho desta guia e recarrega o NPC original do catálogo.
+  const handleRestoreOriginal = async () => {
+    setError("");
+    setSuccessMsg("");
+    try {
+      const fresh = await fetchNpcById(id, token);
+      setNpc(fresh);
+      try {
+        window.sessionStorage.setItem(draftKey, JSON.stringify(fresh));
+      } catch {
+        // sessionStorage indisponível.
+      }
+      setSuccessMsg("Cópia descartada — ficha restaurada a partir do original do catálogo.");
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  // Descarta a cópia de trabalho e volta ao catálogo.
+  const handleDiscardCopy = () => {
+    clearDraft();
+    router.push("/admin/personagens");
+  };
+
   const handleDuplicate = async () => {
     setDuplicating(true);
     setError("");
     try {
-      const novo = await duplicateNpc(
-        id,
+      // A variante nasce a partir da CÓPIA desta guia (inclui as edições atuais).
+      const mult = Math.max(0.5, Number(variantHpMultiplier) || 1);
+      const baseHpMax = Math.max(1, Number(npc.hpMax) || 1);
+      const variantHpMax = Math.max(1, Math.round(baseHpMax * mult));
+      const variantHp = Math.min(variantHpMax, Math.max(1, Math.round((Number(npc.hp) || baseHpMax) * mult)));
+      const created = await createNpc(
         {
-          variantSuffix,
-          hpMultiplier: Number(variantHpMultiplier),
-          addTags: ["Variante", "Elite"],
+          ...buildPayload(),
+          nome: `${npc.nome}${variantSuffix}`,
+          hp: variantHp,
+          hpMax: variantHpMax,
+          tags: Array.from(new Set([...(npc.dadosExtras?.tags || []), "Variante", "Elite"])),
         },
         token
       );
-      router.push(`/admin/npcs/${novo.id}`);
+      router.push(`/admin/npcs/${created.id}`);
     } catch (err) {
       setError(err.message);
       setDuplicating(false);
@@ -174,6 +270,7 @@ export default function EditNpcPage() {
 
   const handleDelete = async () => {
     try {
+      clearDraft();
       await deleteNpc(id, token);
       router.push("/admin/personagens");
     } catch (err) {
@@ -186,7 +283,7 @@ export default function EditNpcPage() {
   const lastModAt = npc.dadosExtras?.lastModifiedAt;
 
   return (
-    <form onSubmit={handleSave} className="space-y-6">
+    <form onSubmit={(event) => event.preventDefault()} className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b-2 border-primary/40 pb-4">
         <div>
           <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-primary">
@@ -205,6 +302,15 @@ export default function EditNpcPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <Link
+            href={`/personagem?inspect=${id}&type=npc`}
+            target="_blank"
+            rel="noreferrer noopener"
+            title="Abre a ficha no layout do jogador em uma nova guia (cópia local; o original fica intacto)"
+            className="flex min-h-11 items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-950/20 px-3 text-xs font-bold uppercase tracking-wider text-emerald-300 hover:bg-emerald-950/40"
+          >
+            <ScrollText size={14} /> Acessar Ficha
+          </Link>
           <button
             type="button"
             onClick={() => setIsVariantOpen(true)}
@@ -214,18 +320,54 @@ export default function EditNpcPage() {
           </button>
           <button
             type="button"
+            onClick={() => setIsOverwriteOpen(true)}
+            className="flex min-h-11 items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-950/20 px-3 text-xs font-bold uppercase tracking-wider text-amber-400 hover:bg-amber-950/40"
+            title="Sobrescreve o NPC original no catálogo com os dados desta cópia"
+          >
+            <ShieldAlert size={14} /> Sobrepor original…
+          </button>
+          <button
+            type="button"
             onClick={() => setIsDeleteOpen(true)}
             className="flex min-h-11 items-center gap-1.5 rounded-lg border border-rose-500/30 bg-rose-950/20 px-3 text-xs font-bold uppercase tracking-wider text-rose-400 hover:bg-rose-950/40"
+            title="Exclui o NPC original do catálogo (requer digitar o nome)"
           >
             <Trash2 size={14} /> Excluir
           </button>
           <button
-            type="submit"
+            type="button"
             disabled={saving}
+            onClick={handleSaveAsNew}
             className="flex min-h-11 items-center gap-2 rounded-lg bg-primary px-5 font-serif text-xs font-bold uppercase tracking-wider text-primary-foreground shadow-lg shadow-primary/20 hover:brightness-110 active:scale-95 disabled:opacity-50"
           >
             <Save size={15} />
-            {saving ? "Salvando..." : "Salvar Alterações"}
+            {saving ? "Salvando..." : "Salvar como novo NPC"}
+          </button>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-amber-500/35 bg-amber-500/10 px-4 py-2.5 text-xs text-amber-200/90">
+        <p className="flex items-center gap-2">
+          <ShieldAlert size={14} className="shrink-0 text-amber-400" />
+          <span>
+            <strong>Cópia de trabalho desta guia.</strong> O NPC original no catálogo fica intocado —
+            cada guia aberta mantém a sua cópia (refresh não perde).
+          </span>
+        </p>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleRestoreOriginal}
+            className="rounded-lg border border-amber-500/40 px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/15"
+          >
+            Restaurar do original
+          </button>
+          <button
+            type="button"
+            onClick={handleDiscardCopy}
+            className="rounded-lg border border-amber-500/40 px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/15"
+          >
+            Descartar cópia
           </button>
         </div>
       </div>
@@ -588,6 +730,16 @@ export default function EditNpcPage() {
           </div>
         </div>
       )}
+
+      {/* Confirmação de sobrescrita do original (escape explícito do mestre) */}
+      <ConfirmDialog
+        isOpen={isOverwriteOpen}
+        title={`Sobrescrever o NPC original "${npc.nome}"?`}
+        message="Esta ação substitui os dados do NPC no catálogo pelos desta cópia de trabalho. Encontros e tabelas que referenciam este NPC passarão a usar os dados sobrescritos. Prefira 'Salvar como novo NPC' para preservar o original."
+        requireTypedText={npc.nome}
+        onConfirm={handleOverwriteOriginal}
+        onCancel={() => setIsOverwriteOpen(false)}
+      />
 
       {/* Confirmação de Exclusão */}
       <ConfirmDialog

@@ -10,6 +10,7 @@ import {
   registerUser,
   fetchMe,
   fetchCharacterFromBackend,
+  fetchNpcById,
   listCharacters,
   createCharacterOnBackend,
   updateProfileOnBackend,
@@ -61,14 +62,62 @@ export function AuthProvider({ children }) {
               console.warn("Falha ao carregar heróis das campanhas para o mestre:", e);
             }
           }
-          setCharacters(allChars);
-
-          // O mestre pode abrir a ficha completa de um herói em uma NOVA GUIA
-          // (/personagem?inspect=<characterId>) — nesse caso a guia mostra esse herói.
+          // O mestre pode abrir a ficha completa de um herói OU de um monstro em uma NOVA GUIA.
+          // /personagem?inspect=<id>            → herói da campanha (registro compartilhado)
+          // /personagem?inspect=<id>&type=npc   → monstro (guia trabalha sobre uma CÓPIA local)
           const inspectParam = window.location?.search
             ? new URLSearchParams(window.location.search).get("inspect")
             : null;
-          const inspectFound = inspectParam ? allChars.find((c) => c.id === inspectParam) : null;
+          const inspectType = window.location?.search
+            ? new URLSearchParams(window.location.search).get("type")
+            : null;
+
+          let inspectFound = inspectParam ? allChars.find((c) => c.id === inspectParam) : null;
+          if (inspectParam && inspectType === "npc") {
+            try {
+              const npc = await fetchNpcById(inspectParam, storedToken);
+              if (npc) {
+                const attrs = npc.dadosExtras?.attributes ?? {};
+                const synthetic = {
+                  __npc: true,
+                  id: npc.id,
+                  nome: npc.nome,
+                  name: npc.nome,
+                  papel: npc.papel,
+                  job: npc.papel,
+                  descricao: npc.descricao ?? "",
+                  hp: npc.hp,
+                  hpMax: npc.hpMax,
+                  avatar: npc.avatar ?? npc.dadosExtras?.avatar ?? "",
+                  ca: npc.dadosExtras?.ca ?? 10,
+                  FOR: attrs.FOR ?? 10,
+                  DES: attrs.DES ?? 10,
+                  CON: attrs.CON ?? 10,
+                  SAB: attrs.SAB ?? 10,
+                  ESP: attrs.ESP ?? 10,
+                  CAR: attrs.CAR ?? 10,
+                  INT: attrs.INT ?? 10,
+                  xp: 0,
+                  level: 1,
+                  userId: `npc:${npc.id}`,
+                  abilities: npc.dadosExtras?.abilities ?? [],
+                  dadosExtras: {
+                    ...(npc.dadosExtras || {}),
+                    abilities: npc.dadosExtras?.abilities ?? [],
+                  },
+                  updatedAt: npc.updatedAt ?? null,
+                  owner: { username: "Monstro" },
+                  campanhaId: npc.campanhaId ?? null,
+                };
+                allChars.push(synthetic);
+                inspectFound = synthetic;
+              }
+            } catch (e) {
+              console.warn("Falha ao abrir ficha do monstro:", e);
+            }
+          }
+
+          setCharacters(allChars);
 
           // Recupera o personagem ativo salvo ou pega o primeiro da lista
           const savedCharId = window.sessionStorage.getItem("rpg_current_char_id")
@@ -294,7 +343,7 @@ export function AuthProvider({ children }) {
   const isMaster = profileInfo.isMaster;
   const isPlayer = profileInfo.isPlayer;
   const activeCharacter = characters.find((c) => c.id === activeCharacterId) || null;
-  const playerCharacters = isMaster ? characters.filter((c) => c.userId !== user?.id) : [];
+  const playerCharacters = isMaster ? characters.filter((c) => c.userId !== user?.id && !c.__npc) : [];
   const isInspecting = Boolean(isMaster && activeCharacter && activeCharacter.userId !== user?.id);
 
   const value = {

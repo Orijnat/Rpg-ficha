@@ -12,6 +12,7 @@ import {
   Plus,
   RefreshCw,
   Search,
+  ScrollText,
   Shield,
   ShieldAlert,
   Skull,
@@ -457,6 +458,16 @@ export default function NpcCataloguePage() {
                     </button>
                   </div>
 
+                  <Link
+                    href={`/personagem?inspect=${npc.id}&type=npc`}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="inline-flex items-center gap-1 rounded-md border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-300 transition hover:bg-emerald-500/20"
+                    title="Abre a ficha no layout do jogador em uma nova guia (cópia local)"
+                  >
+                    <ScrollText size={12} />
+                    <span>Acessar Ficha</span>
+                  </Link>
                   <Link
                     href={`/admin/npcs/${npc.id}`}
                     target="_blank"

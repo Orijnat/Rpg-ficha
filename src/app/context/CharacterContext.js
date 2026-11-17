@@ -15,6 +15,32 @@ import { addRaceBonus } from "../../lib/races";
 import { applyItemUse, tickActiveEffects } from "../../lib/items";
 import { useAuth } from "./AuthContext";
 
+// Fichas de monstro abertas pelo mestre (?inspect=<id>&type=npc) trabalham sobre uma
+// CÓPIA local mantida no sessionStorage da guia: nada sincroniza e nada grava no catálogo.
+function readSheetStore(isNpcSheet, key) {
+  try {
+    return (isNpcSheet ? window.sessionStorage : window.localStorage).getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function writeSheetStore(isNpcSheet, key, value) {
+  try {
+    (isNpcSheet ? window.sessionStorage : window.localStorage).setItem(key, value);
+  } catch {
+    // Storage indisponível — a ficha vive só em memória.
+  }
+}
+
+function removeSheetStore(isNpcSheet, key) {
+  try {
+    (isNpcSheet ? window.sessionStorage : window.localStorage).removeItem(key);
+  } catch {
+    // Ignora.
+  }
+}
+
 import { createBlankCharacterData } from "../../lib/defaultCharacter";
 
 const CharacterContext = createContext(null);
@@ -109,7 +135,11 @@ export function CharacterProvider({ children }) {
 
   const { activeCharacter, token, user, loading: authLoading, isMaster, upsertCharacter } = useAuth();
 
-  const cacheKey = `bruxeiro-sheet:v2:${user?.id || "anonymous"}:${activeCharacter?.id || "default"}`;
+  // Cópia de trabalho do monstro (guia do mestre via ?inspect=...&type=npc)
+  const isNpcSheet = Boolean(activeCharacter?.__npc);
+  const cacheKey = isNpcSheet
+    ? `rpg-npc-sheet:v1:${user?.id || "anonymous"}:${activeCharacter?.id || "default"}`
+    : `bruxeiro-sheet:v2:${user?.id || "anonymous"}:${activeCharacter?.id || "default"}`;
 
   // Remove caches legados (v1) que podiam estar contaminados com dados de demonstração.
   useEffect(() => {
@@ -131,7 +161,7 @@ export function CharacterProvider({ children }) {
   useEffect(() => {
     if (authLoading || activeCharacter) return;
     try {
-      const saved = window.localStorage.getItem(cacheKey);
+      const saved = readSheetStore(isNpcSheet, cacheKey);
       if (saved) setData({ ...createBlankCharacterData(), ...JSON.parse(saved) });
       else setData(createBlankCharacterData());
     } catch {
@@ -140,7 +170,7 @@ export function CharacterProvider({ children }) {
       setHydrated(true);
       setHydratedKey(cacheKey);
     }
-  }, [activeCharacter, authLoading, cacheKey]);
+  }, [activeCharacter, authLoading, cacheKey, isNpcSheet]);
 
   // Monta a ficha local a partir do personagem retornado pelo backend
   const buildSheetFromActive = (activeChar) => {
@@ -226,6 +256,7 @@ export function CharacterProvider({ children }) {
 
   // Descarta a versão local e repuxa a ficha do backend (resolve conflitos 409)
   const reloadFromCloud = async () => {
+    if (isNpcSheet) return false; // a cópia de trabalho é local por definição
     if (!activeCharacter?.id) return false;
     try {
       const fresh = await fetchCharacterFromBackend(activeCharacter.id, token);
@@ -251,8 +282,13 @@ export function CharacterProvider({ children }) {
     }
 
     latestData.current = data;
-    window.localStorage.setItem(cacheKey, JSON.stringify(data));
+    writeSheetStore(isNpcSheet, cacheKey, JSON.stringify(data));
 
+    if (isNpcSheet) {
+      // Cópia de trabalho do monstro: nunca sincroniza nem oferece conflito.
+      setSyncStatus("offline");
+      return;
+    }
     if (skipSyncRef.current) {
       // Ficha foi "restaurada para os dados padrão" localmente: nunca sobrescrever a nuvem com isso.
       setSyncStatus("offline");
@@ -299,6 +335,10 @@ export function CharacterProvider({ children }) {
     setSyncStatus("saving");
     setSyncError(null);
     try {
+      if (isNpcSheet) {
+        if (sequence === syncSequence.current) setSyncStatus("offline");
+        return;
+      }
       if (skipSyncRef.current) {
         if (sequence === syncSequence.current) setSyncStatus("offline");
         return;
@@ -942,7 +982,7 @@ export function CharacterProvider({ children }) {
   const resetCharacter = () => {
     skipSyncRef.current = true; // nunca sincroniza a ficha em branco por cima da nuvem
     setData(createBlankCharacterData());
-    window.localStorage.removeItem(cacheKey);
+    removeSheetStore(isNpcSheet, cacheKey);
   };
 
   const value = {

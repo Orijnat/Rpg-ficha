@@ -275,18 +275,31 @@ export default function AppShell({ children }) {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="font-serif text-xs font-bold uppercase tracking-wider text-primary">
-                    Modo Mestre · Inspecionando Ficha do Jogador
+                    {activeCharacter?.__npc
+                      ? "Modo Mestre · Ficha do Monstro"
+                      : "Modo Mestre · Inspecionando Ficha do Jogador"}
                   </span>
                   <span className="rounded-full bg-primary/20 border border-primary/40 px-2 py-0.2 text-[10px] font-bold text-primary animate-pulse">
-                    Ao Vivo
+                    {activeCharacter?.__npc ? "Cópia desta guia" : "Ao Vivo"}
                   </span>
                 </div>
                 <p className="text-xs text-foreground mt-0.5">
-                  Visualizando e editando a ficha completa de <strong>{activeCharacter?.name}</strong>{" "}
-                  {activeCharacter?.owner?.username && (
-                    <span className="text-muted-foreground">
-                      (Jogador: <strong className="text-foreground">{activeCharacter.owner.username}</strong>)
-                    </span>
+                  {activeCharacter?.__npc ? (
+                    <>
+                      Cópia de trabalho de <strong>{activeCharacter?.name}</strong>{" "}
+                      <span className="text-muted-foreground">
+                        — o NPC original no catálogo não é alterado
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      Visualizando e editando a ficha completa de <strong>{activeCharacter?.name}</strong>{" "}
+                      {activeCharacter?.owner?.username && (
+                        <span className="text-muted-foreground">
+                          (Jogador: <strong className="text-foreground">{activeCharacter.owner.username}</strong>)
+                        </span>
+                      )}
+                    </>
                   )}
                 </p>
               </div>

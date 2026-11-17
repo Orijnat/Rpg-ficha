@@ -530,9 +530,19 @@ export default function PersonagensAdmin() {
                               target="_blank"
                               rel="noreferrer"
                               className="rounded-lg border border-primary/40 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary transition hover:bg-primary/20"
-                              title="Abre a ficha do monstro em uma nova guia"
+                              title="Editar blocos administrativos do monstro em nova guia"
                             >
                               Editar Ficha
+                            </Link>
+                            <Link
+                              href={`/personagem?inspect=${item.id}&type=npc`}
+                              target="_blank"
+                              rel="noreferrer noopener"
+                              className="flex items-center gap-1 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-300 transition hover:bg-emerald-500/20"
+                              title="Abre a ficha no layout do jogador em nova guia (cópia local)"
+                            >
+                              <ScrollText size={11} />
+                              <span>Acessar Ficha</span>
                             </Link>
                             <button
                               type="button"
