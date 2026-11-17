@@ -65,6 +65,12 @@
 - `1d2d848` feat(dice) o dado em si rolando com todos os lados — 3D WebGL/Three.js (Dice3D.jsx; d10 bipirâmide pentagonal; números por face via CanvasTexture; d100 = par de dados; d2 removido) · `74f4fe4` docs(memory). Pushed: `6fbbdd8..74f4fe4`.
 - Verificado antes do commit: front 161/161, build OK, lint 0 erros. **Sem conferência no navegador** — revisar visual/enquadramento/luzes e o fallback estático.
 
+## 🔧 2026-11-17 — Montarias ganham "Status Fundamentais" (iguais aos dos heróis) — NÃO commitado
+- Pedido: "poderia adicionar apenas status para ela? similar a dos jogadores".
+- `/montaria/page.js`: card "Status Fundamentais" entre Vitalidade e Anotações — 7 `StatBox` idênticos aos do jogador (valor, +/−, modificador, **clique no modificador rola d20** via DiceContext). Shape nova `mount.attributes { FOR..INT }` (default 10; legado sem o campo nasce com 10s; clamp 1..30). `mountAttributes()` preenche/lê; `patchMountAttribute` edita por atributo (persiste em dadosExtras.mounts).
+- Modal de criação (AddMountModal) NÃO expõe status; montaria nasce com 10s — editável na ficha como a dos jogadores.
+- Verificado: 161/161 testes, build OK, lint 0 erros (44 warnings pré-existentes). NÃO commitado, NÃO conferido no navegador.
+
 ## 🔧 2026-11-17 — Modal de criação de montarias — NÃO commitado
 - Pedido: "poderia fazer um modal para a criação de montarias?".
 - Novo `src/app/components/montaria/AddMountModal.jsx`: cadastro completo no padrão AddItemModal (Escape fecha, autofocus no nome, role=dialog/aria-modal, data-lenis-prevent): Nome*, Espécie com sugestões (datalist: Corcel, Alce Real, Lobo de Pântano, Grifo, Quimera, Dragão jovem…), PV máximo (default 20, PV atual acompanha até ser tocado manualmente), PV atual (clamp 0..máx), Anotações. Confirma só entra na ficha após "Adotar montaria".
