@@ -65,6 +65,12 @@
 - `1d2d848` feat(dice) o dado em si rolando com todos os lados — 3D WebGL/Three.js (Dice3D.jsx; d10 bipirâmide pentagonal; números por face via CanvasTexture; d100 = par de dados; d2 removido) · `74f4fe4` docs(memory). Pushed: `6fbbdd8..74f4fe4`.
 - Verificado antes do commit: front 161/161, build OK, lint 0 erros. **Sem conferência no navegador** — revisar visual/enquadramento/luzes e o fallback estático.
 
+## 🔧 2026-11-17 — Modal de criação de montarias — NÃO commitado
+- Pedido: "poderia fazer um modal para a criação de montarias?".
+- Novo `src/app/components/montaria/AddMountModal.jsx`: cadastro completo no padrão AddItemModal (Escape fecha, autofocus no nome, role=dialog/aria-modal, data-lenis-prevent): Nome*, Espécie com sugestões (datalist: Corcel, Alce Real, Lobo de Pântano, Grifo, Quimera, Dragão jovem…), PV máximo (default 20, PV atual acompanha até ser tocado manualmente), PV atual (clamp 0..máx), Anotações. Confirma só entra na ficha após "Adotar montaria".
+- `/montaria/page.js`: botões "Adicionar montaria" e "Adotar primeira montaria" agora abrem o modal; `handleAddMount` cria `{ id: uid(), name, species, hp, hpMax, notes, alive: hp>0 }` em dadosExtras.mounts. Preview ao vivo removido (antes criava "Nova montaria" instantaneamente).
+- Verificado: 161/161 testes, build OK, lint 0 erros (44 warnings pré-existentes). NÃO commitado, NÃO conferido no navegador.
+
 ## 🔧 2026-11-17 — NPC: botão "Acessar Ficha" abrindo a ficha NO LAYOUT DO JOGADOR — NÃO commitado
 - Pedido: "para npc, poderia fazer um botao de acessar ficha, na qual o layout e igual ao dos players".
 - Novo fluxo `/personagem?inspect=<id>&type=npc`: `AuthContext` (initAuth) agora detecta `type=npc`, busca o NPC com `fetchNpcById` e injeta um **personagem sintético** no `characters` — `{ __npc: true, userId: "npc:<id>" (≠ user.id → modo inspeção), name/nome/job espelho, FOR..INT a partir de dadosExtras.attributes, xp:0, level:1, abilities/dadosExtras}` — o /personagem renderiza o monstro **idêntico** a um herói (Cabecalho, StatBox com rolagens, Perícias, RecursosCombate, XP 0 bloqueado, Aparencia vazia).

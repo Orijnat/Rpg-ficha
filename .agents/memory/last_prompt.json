@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-17T22:15:00-03:00",
+  "timestamp": "2026-11-17T22:45:00-03:00",
   "agent": "opencode",
-  "prompt": "para npc, poderia fazer um botao de acessar fica, na qual o layout e iual ao dos players",
-  "action": "Botao 'Acessar Ficha' (3 lugares: editor NPC, Ameacas & Herois NPC, catalogo npcs) -> /personagem?inspect=<id>&type=npc. AuthContext injeta personagem sintetico __npc (attrs de dadosExtras.attributes, xp 0) na lista; CharacterContext trata __npc como trabalho local (sessionStorage por guia, sync DESATIVADO) — original intocado. AppShell mostra banner 'Ficha do Monstro · Copia desta guia'; switcher nao lista o sintetico. 161/161 testes, build OK, lint 0 erros. Nao commitado."
+  "prompt": "poderia fazer um modal para a criacao de montrias?",
+  "action": "Novo AddMountModal.jsx (nome*, especie c/ sugestoes, PV max/atual, anotacoes; Escape/backdrop; data-lenis-prevent). /montaria usa modal no lugar de criar 'Nova montaria' instantanea; handleAddMount grava em dadosExtras.mounts. 161/161 testes, build OK, lint 0 erros. Nao commitado."
 }
