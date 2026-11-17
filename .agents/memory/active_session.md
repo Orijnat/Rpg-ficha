@@ -68,6 +68,13 @@
 - **Migration `20261117210000-montaria-a-partir-de-json.js` APLICADA no Supabase de produção** (via `npm run db:migrate`; todas as incrementos re-aplicados com sucesso/idempotência). `montarias` passou de 0 → **1** linha ("sas", 20/20 PV, dono "wqw") — exatamente o que havia em dados_extras.mounts. `sequelize_meta` registra a migration. **Backend AINDA NÃO DEPLOYADO no Render** → os endpoints `/api/characters/:id/mounts` não existem em produção até o Manual Deploy (até lá, a página /montaria mostrará o erro + retry).
 - **Estado do mapeamento**: achado principal = schema drift (tabelas relacionais nunca usadas: pericias_personagem, itens_inventario, contratos, cofres, imagens — candidatas a drop após decisão do operador; montarias agora É utilizada).
 
+## 🔧 2026-11-17 — Contraste em superfícies fixas-escuras + botão Dano/Cura com texto branco — NÃO commitado
+- Pedido: "botoes por exemplo o do dano/cura que estao muito escuros, poderia colocar a fonte das letras em branco ali".
+- `.btn-rpg` (botão glossy escuro usado no Dano/Cura do Cabeçalho e na ficha): texto agora **branco** (antes `var(--theme-title)` — ilegível nos temas claros, onde title é #450a0a sobre quase-preto).
+- Substituição de `text-[var(--theme-title)]`→`#f5efdf` e `text-[var(--theme-subtitle)]`→`#cbb288` (cores fixas claras) nas superfícies FIXAS-escuras onde o tema não deve vazar: **DiceModal** (45 ocorrências), AddItemModal, AddMountModal, DepositToBankModal, consts.js do inventário, **login/registro/convite** (cards "pergaminho" sempre escuros), inputs de **/admin/personagens/[id]** e **/new** (fundo #0b0d12 fixo).
+- Fora de escopo (corrigível sob demanda): demais superfícies escuras fixas em páginas do admin (campanhas, MarketItemModal, BankChestModal, ConfirmDialog, mapa-tatico — mesmo padrão) e auditoria completa de contraste nos temas claros.
+- Verificado: 161/161 testes, build OK, lint 0 erros (44 warnings pré-existentes). NÃO commitado, NÃO conferido no navegador.
+
 ## 🔧 2026-11-17 — Temas: Jade e Fogo Fátuo removidos; botões de AÇÃO mais claros nos claros — NÃO commitado
 - Pedido: "retire o jade de avalon, foo fatuo, os temas claros continue usando a paleta de cor mas nos botoes que nao sejam os dos dados coloque uma cor mais clarar" (escolha: só botões de Ação ficam mais claros; dados mantêm a cor).
 - **Removidos**: jade e felflame (CSS, themes.js, THEME_ICONS, themes.test.mjs; LEGACY_THEME_MAP: forest→amber, mist→sapphire). Catálogo final: amber, abyss, bloodmoon, frostfall, aurora, sapphire (6).

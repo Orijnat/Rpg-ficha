@@ -1,6 +1,6 @@
 {
   "timestamp": "2026-11-17T23:59:59-03:00",
   "agent": "opencode",
-  "prompt": "retire o jade de avalon, foo fatuo, os temas claros continue usando a paleta de cor mas nos botoes que nao sejam os dos dados coloque uma cor mais clarar",
-  "action": "Removidos jade e felflame. Catalogo final: amber, abyss, bloodmoon, frostfall, aurora, sapphire. Nos temas claros, --primary/--ring mais claros (aurora #dc2626, sapphire #2563eb); accent intocado (dados mantem cor). StatBox neutral travado na cor antiga via override .from-primary/15.to-primary/5. 161/161 testes, build OK, lint 0 erros. Nao commitado."
+  "prompt": "botoes por exemplo o do dano/cura que estao muito escuros, poderia colocar a fonte das letras em branco ali",
+  "action": ".btn-rpg agora com texto branco; substituicao theme-title/subtitle por cores fixas claras nas superficies fixas-escuras (DiceModal, AddItemModal, AddMountModal, DepositToBankModal, consts inventario, login/registro/convite, inputs admin personagens). 161/161 testes, build OK, lint 0 erros. Nao commitado ate 'pus'."
 }
