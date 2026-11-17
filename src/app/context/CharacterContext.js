@@ -78,6 +78,15 @@ const asTextoCurto = (value, max = 80) => {
   return trimmed ? trimmed.slice(0, max) : undefined;
 };
 
+// Erro "genérico" = vale repetir sozinho: falha de rede (sem status), 408, 429 ou 5xx.
+// 4xx (400/401/403/404/409/422…) é determinístico — repetir não muda o resultado.
+const isRetryableSyncError = (error) => {
+  const status = error?.status;
+  if (!status) return true;
+  if (status === 408 || status === 429) return true;
+  return status >= 500;
+};
+
 function normalizeCharacterForSync(charData, activeChar) {
   if (!charData) return charData;
   const forca = Number(charData.FOR ?? charData.forca ?? 10);
@@ -149,12 +158,48 @@ export function CharacterProvider({ children }) {
   const [bankError, setBankError] = useState(false);
   const [syncStatus, setSyncStatus] = useState("idle");
   const [syncError, setSyncError] = useState(null);
+  // Retentativa automática de sync em erros genéricos (rede/5xx/408/429):
+  // backoff 5s → 10s → 20s → 40s → 60s, máx. 5 tentativas; a ficha LOCAL nunca
+  // é descartada. Erros determinísticos (4xx, incl. 409/422) não repetem.
+  const MAX_AUTO_RETRY = 5;
+  const autoRetryRef = useRef({ attempts: 0, timer: null });
+  const [autoRetryAttempt, setAutoRetryAttempt] = useState(0);
+  const lastSyncErrorRef = useRef(null);
+  const retrySyncRef = useRef(null);
   const latestData = useRef(data);
   const syncSequence = useRef(0);
   const skipSyncRef = useRef(false);
   // Versão remota conhecida (updatedAt do servidor). Usada para concorrência otimista;
   // não vive no estado porque cada save do servidor a invalida e re-dispararia o efeito de sync.
   const remoteVersionRef = useRef(null);
+
+  const clearAutoRetry = () => {
+    if (autoRetryRef.current.timer) clearTimeout(autoRetryRef.current.timer);
+    autoRetryRef.current.timer = null;
+    autoRetryRef.current.attempts = 0;
+    setAutoRetryAttempt(0);
+  };
+
+  // Agenda a próxima tentativa automática (até MAX_AUTO_RETRY). `force` nunca
+  // repete sozinho: sobrescrever a nuvem é decisão explícita do jogador (409).
+  const scheduleAutoRetry = (error, { force = false } = {}) => {
+    if (force || !isRetryableSyncError(error)) return;
+    const state = autoRetryRef.current;
+    if (state.attempts >= MAX_AUTO_RETRY) {
+      // Esgotou as tentativas: zera o contador — a ficha segue LOCAL e o botão manual continua valendo.
+      state.attempts = 0;
+      setAutoRetryAttempt(0);
+      return;
+    }
+    state.attempts += 1;
+    const delay = Math.min(60000, 5000 * 2 ** (state.attempts - 1));
+    setAutoRetryAttempt(state.attempts);
+    if (state.timer) clearTimeout(state.timer);
+    state.timer = setTimeout(() => {
+      state.timer = null;
+      retrySyncRef.current?.();
+    }, delay);
+  };
 
   const { activeCharacter, token, user, loading: authLoading, isMaster, upsertCharacter } = useAuth();
 
@@ -333,6 +378,9 @@ export function CharacterProvider({ children }) {
       return;
     }
 
+    // Edição nova supersede qualquer retentativa automática pendente — este efeito já sincroniza.
+    clearAutoRetry();
+
     // Sincronização em segundo plano com o backend (debounce de 800ms)
     const sequence = ++syncSequence.current;
     setSyncStatus("saving");
@@ -347,12 +395,16 @@ export function CharacterProvider({ children }) {
           if (remoteChar?.id && !latestData.current?.id) {
             adoptRemoteCharacter(remoteChar);
           }
+          lastSyncErrorRef.current = null;
+          clearAutoRetry();
           setSyncStatus(result ? "saved" : "offline");
         })
         .catch((error) => {
           if (sequence !== syncSequence.current) return;
+          lastSyncErrorRef.current = error;
           setSyncError(error);
           setSyncStatus(error.status === 409 ? "conflict" : "error");
+          if (error.status !== 409) scheduleAutoRetry(error);
         });
     }, 800);
 
@@ -396,13 +448,42 @@ export function CharacterProvider({ children }) {
         adoptRemoteCharacter(remoteChar);
       }
       setSyncStatus(result ? "saved" : "offline");
+      lastSyncErrorRef.current = null;
+      clearAutoRetry();
     } catch (error) {
       if (sequence === syncSequence.current) {
+        lastSyncErrorRef.current = error;
         setSyncError(error);
         setSyncStatus(error.status === 409 ? "conflict" : "error");
+        if (error.status !== 409) scheduleAutoRetry(error, { force });
       }
     }
   };
+
+  // Mantém a ref apontada para o retrySync mais recente (auto-retry e evento "online")
+  useEffect(() => {
+    retrySyncRef.current = retrySync;
+  });
+
+  // Volta a tentar sozinho quando a rede retorna (se a última falha era retentável)
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+    const handleOnline = () => {
+      const lastError = lastSyncErrorRef.current;
+      if (lastError && isRetryableSyncError(lastError)) {
+        clearAutoRetry();
+        retrySyncRef.current?.();
+      }
+    };
+    window.addEventListener("online", handleOnline);
+    return () => window.removeEventListener("online", handleOnline);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Limpa o timer de retentativa ao desmontar
+  useEffect(() => () => {
+    if (autoRetryRef.current.timer) clearTimeout(autoRetryRef.current.timer);
+  }, []);
 
   const upd = (key, value) => {
     setData((current) => {
@@ -1032,6 +1113,7 @@ export function CharacterProvider({ children }) {
     bankError,
     syncStatus,
     syncError,
+    autoRetryAttempt,
     retrySync,
     reloadFromCloud,
     overwriteCloud,

@@ -18,7 +18,7 @@ import { useAuth } from "../context/AuthContext";
 import { DEFAULT_ABILITIES, isHabilidadeDesbloqueada } from "../../lib/abilities";
 
 export default function Personagem() {
-  const { data, upd, syncStatus, syncError, retrySync, reloadFromCloud, overwriteCloud, updateDadosExtras, updateRace, updateClass, applyLevelUp } = useCharacter();
+  const { data, upd, syncStatus, syncError, autoRetryAttempt, retrySync, reloadFromCloud, overwriteCloud, updateDadosExtras, updateRace, updateClass, applyLevelUp } = useCharacter();
   const { requestRoll } = useDice();
   const { isMaster, activeCharacter, loading: authLoading, logout } = useAuth();
   const [levelFeedback, setLevelFeedback] = useState(null);
@@ -157,6 +157,11 @@ export default function Personagem() {
                     <button type="button" onClick={retrySync} className="ml-1 inline-flex min-h-8 items-center gap-1 rounded px-2 text-[10px] underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label="Tentar sincronizar novamente">
                       <RefreshCw size={11} aria-hidden="true" /> Tentar novamente
                     </button>
+                    {syncStatus === "error" && autoRetryAttempt > 0 && (
+                      <span className="ml-1 inline-flex min-h-8 items-center text-[9px] text-muted-foreground" title="Em caso de erro o app mantém seus dados locais e tenta sincronizar sozinho em segundo plano (backoff 5s → 60s, até 5 tentativas).">
+                        tentativa automática {autoRetryAttempt}/5
+                      </span>
+                    )}
                     {(syncError?.status === 401 || syncError?.status === 403) && (
                       <button type="button" onClick={() => { logout(); }} className="ml-1 inline-flex min-h-8 items-center gap-1 rounded border border-rose-500/50 bg-rose-500/15 px-2 text-[10px] font-bold text-rose-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label="Sair e entrar novamente">
                         Sair e entrar de novo
