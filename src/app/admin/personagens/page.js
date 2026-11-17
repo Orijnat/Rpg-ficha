@@ -10,6 +10,8 @@ import {
   HeartPulse,
   Plus,
   ChevronsUp,
+  Lock,
+  LockOpen,
   ScrollText,
   Search,
   Shield,
@@ -175,13 +177,38 @@ export default function PersonagensAdmin() {
     return combined;
   }, [heroes, npcs, activeTab, searchTerm, selectedTag, statusFilter, sortBy]);
 
+  // Liberação da ascensão (o "feito"): o XP pode estar no limite pela tabela,
+  // mas o mestre decide quando a subida está liberada. Consumida ao subir de nível.
+  const toggleHeroLevelUpRelease = async (hero) => {
+    const liberado = Boolean(hero?.dadosExtras?.levelUpLiberado);
+    try {
+      await updateCharacterOnBackend(hero.id, { dadosExtras: { levelUpLiberado: !liberado } }, token);
+      setLevelUpMsg(!liberado
+        ? `Ascensão de «${hero?.name || hero?.displayName || "herói"}» liberada — o botão «Subir de Nível» fica disponível na ficha (e o +1 Nv. aqui).`
+        : `Ascensão de «${hero?.name || hero?.displayName || "herói"}» revogada.`);
+      await loadData();
+    } catch (err) {
+      setError(err.message || "Não foi possível alterar a liberação da ascensão.");
+    }
+  };
+
   const runLevelUp = async () => {
     if (!levelUpTarget || levelUpBusy) return;
     setLevelUpBusy(true);
     setLevelUpMsg("");
-    const targets = levelUpTarget.type === "single"
+    const pool = levelUpTarget.type === "single"
       ? heroes.filter((h) => h.id === levelUpTarget.id)
       : heroes;
+    const targets = pool.filter((hero) => Boolean(hero?.dadosExtras?.levelUpLiberado));
+    const skipped = pool.length - targets.length;
+    if (targets.length === 0) {
+      setLevelUpBusy(false);
+      setLevelUpTarget(null);
+      setLevelUpMsg(pool.length === 1
+        ? `«${pool[0]?.name || "Herói"}» não tem a ascensão liberada — clique no cadeado «Liberar» antes de promover (XP no limite exige um feito).`
+        : "Nenhuma ficha de herói com a ascensão liberada. Use o cadeado «Liberar» nas fichas desejadas.");
+      return;
+    }
     let ok = 0;
     let fail = 0;
     for (const hero of targets) {
@@ -201,6 +228,8 @@ export default function PersonagensAdmin() {
           level: level + 1,
           hpMax: (Number(hero.hpMax) || 1) + gain,
           hp: (Number(hero.hp) || 0) + gain,
+          // A subida consome a liberação — o próximo nível exige um novo feito.
+          dadosExtras: { levelUpLiberado: false },
         }, token);
         ok += 1;
       } catch {
@@ -210,9 +239,10 @@ export default function PersonagensAdmin() {
     setLevelUpBusy(false);
     setLevelUpTarget(null);
     setLevelUpMsg(
-      fail === 0
+      (fail === 0
         ? `${ok} ficha(s) promovida(s) com sucesso (níveis até 20).`
-        : `${ok} promovida(s); ${fail} falhou(aram) ou já estão no nível máximo.`
+        : `${ok} promovida(s); ${fail} falhou(aram) ou já estão no nível máximo.`)
+      + (skipped > 0 ? ` ${skipped} ignorada(s) por falta de liberação da ascensão.` : "")
     );
     loadData();
   };
@@ -281,9 +311,9 @@ export default function PersonagensAdmin() {
           <button
             type="button"
             onClick={() => setLevelUpTarget({ type: "all" })}
-            disabled={heroes.length === 0}
+            disabled={heroes.length === 0 || !heroes.some((hero) => hero?.dadosExtras?.levelUpLiberado)}
             className="flex min-h-11 items-center gap-1.5 rounded-lg border border-amber-400/50 bg-amber-500/15 px-3.5 text-xs font-bold uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/25 disabled:cursor-not-allowed disabled:opacity-40"
-            title="Sobe o nível de todas as fichas de heróis exibidas"
+            title="Sobe o nível de todas as fichas de heróis exibidas com a ascensão liberada (cadeado «Liberar»)"
           >
             <ChevronsUp size={15} /> Nível da Mesa
           </button>
@@ -581,9 +611,29 @@ export default function PersonagensAdmin() {
                             </Link>
                             <button
                               type="button"
-                              onClick={() => setLevelUpTarget({ type: "single", id: item.id, name: item.displayName })}
+                              onClick={() => toggleHeroLevelUpRelease(item)}
+                              aria-pressed={Boolean(item.dadosExtras?.levelUpLiberado)}
+                              aria-label={item.dadosExtras?.levelUpLiberado ? `Revogar ascensão de ${item.displayName}` : `Liberar ascensão de ${item.displayName}`}
+                              className={`rounded-lg border px-2 py-1 text-xs font-bold transition ${
+                                item.dadosExtras?.levelUpLiberado
+                                  ? "border-emerald-500/50 bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25"
+                                  : "border-border bg-secondary text-muted-foreground hover:border-primary hover:text-primary"
+                              }`}
+                              title={item.dadosExtras?.levelUpLiberado ? `Ascensão de ${item.displayName} liberada — clique para revogar` : `Liberar a ascensão de ${item.displayName} (XP no limite exige um feito)`}
+                            >
+                              {item.dadosExtras?.levelUpLiberado ? <LockOpen size={13} aria-hidden="true" /> : <Lock size={13} aria-hidden="true" />}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (Boolean(item.dadosExtras?.levelUpLiberado)) {
+                                  setLevelUpTarget({ type: "single", id: item.id, name: item.displayName });
+                                } else {
+                                  setLevelUpMsg(`«${item.displayName}» não tem a ascensão liberada — clique no cadeado «Liberar» (XP no limite exige um feito) antes de promover.`);
+                                }
+                              }}
                               className="rounded-lg border border-amber-400/40 bg-amber-500/10 px-2 py-1 text-xs font-bold text-amber-300 transition hover:bg-amber-500/20"
-                              title={`Subir nível de ${item.displayName}`}
+                              title={item.dadosExtras?.levelUpLiberado ? `Subir nível de ${item.displayName}` : `${item.displayName} aguarda a liberação da ascensão (cadeado)`}
                             >
                               +1 Nv.
                             </button>
@@ -689,8 +739,8 @@ export default function PersonagensAdmin() {
         title={levelUpTarget?.type === "single" ? `Subir o nível de "${levelUpTarget?.name}"?` : `Subir o nível de todos os heróis?`}
         message={
           levelUpTarget?.type === "single"
-            ? "O nível será aumentado em 1 (máx. 20). O Dado de Vida da classe será rolado (+ Mod(CON)) e o HP máximo aumentará automaticamente."
-            : `O nível de TODAS as fichas de heróis exibidas será aumentado em 1 (máx. 20). O Dado de Vida será rolado individualmente para cada herói. Confirmar a promoção em massa?`
+            ? "O nível será aumentado em 1 (máx. 20). O Dado de Vida da classe será rolado (+ Mod(CON)) e o HP máximo aumentará automaticamente. A ascensão será consumida — para o próximo nível será preciso liberar de novo."
+            : `O nível das fichas de heróis exibidas com a ascensão LIBERADA (cadeado) será aumentado em 1 (máx. 20). O Dado de Vida será rolado individualmente para cada herói; fichas sem liberação serão ignoradas. Confirmar a promoção em massa?`
         }
         confirmText={levelUpBusy ? "Promovendo..." : "Promover"}
         cancelText="Cancelar"

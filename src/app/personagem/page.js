@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Check, CloudOff, Crown, LoaderCircle, RefreshCw, Sparkles, Sword, TriangleAlert, Package, ChevronsUp, Dna } from "lucide-react";
+import { Check, CloudOff, Crown, LoaderCircle, RefreshCw, Sparkles, Sword, TriangleAlert, Package, ChevronsUp, Dna, Lock, LockOpen } from "lucide-react";
 import Link from "next/link";
 import { useCharacter } from "../context/CharacterContext";
 import { Card, EditableText, SectionHeader, StatBox } from "../components/ui";
@@ -34,7 +34,11 @@ export default function Personagem() {
   const hitDie = typeof data.dadosExtras?.hitDie === "string" && data.dadosExtras.hitDie ? data.dadosExtras.hitDie : "1d8";
   const race = racas.find((raca) => raca.id === data.raceId || raca.slug === data.dadosExtras?.race) ?? null;
   const classe = findSelectedClass(classes, data);
-  const canLevelUp = characterLevel < xpInfo.level && characterLevel < 20;
+  // Ascensão exige DOIS fatores: XP no limite da tabela E a liberação do mestre (o "feito").
+  // DadosExtras.levelUpLiberado é consumido ao subir de nível (CharacterContext.applyLevelUp).
+  const xpReady = characterLevel < xpInfo.level && characterLevel < 20;
+  const liberado = Boolean(data.dadosExtras?.levelUpLiberado);
+  const canLevelUp = xpReady && liberado;
   const xpMissing = Math.max(0, (xpInfo.nextLevelXP ?? 0) - Number(data.xp || 0));
 
   useEffect(() => () => window.clearTimeout(feedbackTimer.current), []);
@@ -57,6 +61,10 @@ export default function Personagem() {
   }, []);
 
   const handleLevelUp = async () => {
+    if (xpReady && !liberado) {
+      setLevelFeedback({ ok: false, message: "XP no limite, mas a ascensão não foi liberada — o mestre precisa liberar (requerido um feito) antes da subida." });
+      return;
+    }
     const gate = levelUpGate(characterLevel, data.xp ?? data.dadosExtras?.xp ?? 0);
     if (!gate.ok) {
       setLevelFeedback({ ok: false, message: gate.message });
@@ -355,29 +363,51 @@ export default function Personagem() {
                 Apenas o mestre promove o herói de nível
               </span>
             ) : (
-            <button
-              type="button"
-              onClick={handleLevelUp}
-              disabled={!canLevelUp}
-              title={
-                characterLevel >= 20
-                  ? "Nível máximo alcançado"
-                  : canLevelUp
-                    ? `Rolar ${hitDie} + Mod(CON) e subir para o nível ${characterLevel + 1}`
-                    : `Faltam ${xpMissing.toLocaleString("pt-BR")} XP para o nível ${characterLevel + 1}`
-              }
-              className="flex min-h-11 items-center justify-center gap-2 rounded-lg border border-amber-500/50 bg-amber-500/15 px-4 text-xs font-bold uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/25 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              <ChevronsUp size={15} />
-              Subir de Nível
-            </button>
+              <>
+                <button
+                  type="button"
+                  onClick={() => updateDadosExtras({ levelUpLiberado: !liberado })}
+                  aria-pressed={liberado}
+                  title={liberado
+                    ? "Ascensão liberada — o herói pode subir de nível. Clique para revogar."
+                    : "Liberar a ascensão: o XP chegou ao limite, mas é necessário um feito. «Subir de Nível» só habilita após esta liberação."}
+                  className={`flex min-h-11 items-center justify-center gap-2 rounded-lg border px-4 text-xs font-bold uppercase tracking-wider transition active:scale-95 ${
+                    liberado
+                      ? "border-emerald-500/50 bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25"
+                      : "border-border bg-secondary text-muted-foreground hover:border-primary hover:text-primary"
+                  }`}
+                >
+                  {liberado ? <LockOpen size={15} aria-hidden="true" /> : <Lock size={15} aria-hidden="true" />}
+                  {liberado ? "Ascensão liberada" : "Liberar Ascensão"}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleLevelUp}
+                  disabled={!canLevelUp}
+                  title={
+                    characterLevel >= 20
+                      ? "Nível máximo alcançado"
+                      : !xpReady
+                        ? `Faltam ${xpMissing.toLocaleString("pt-BR")} XP para o nível ${characterLevel + 1}`
+                        : !liberado
+                          ? "XP no limite — a ascensão precisa ser liberada pelo mestre (feito)"
+                          : `Rolar ${hitDie} + Mod(CON) e subir para o nível ${characterLevel + 1}`
+                  }
+                  className="flex min-h-11 items-center justify-center gap-2 rounded-lg border border-amber-500/50 bg-amber-500/15 px-4 text-xs font-bold uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/25 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <ChevronsUp size={15} />
+                  Subir de Nível
+                </button>
+              </>
             )}
             <span className="text-center font-mono text-[10px] text-muted-foreground sm:text-right">
               {characterLevel >= 20
                 ? "Nível máximo (20)"
-                : canLevelUp
-                  ? `XP suficiente — ascensão disponível!`
-                  : `Faltam ${xpMissing.toLocaleString("pt-BR")} XP para o nível ${characterLevel + 1}`}
+                : !xpReady
+                  ? `Faltam ${xpMissing.toLocaleString("pt-BR")} XP para o nível ${characterLevel + 1}`
+                  : liberado
+                    ? "XP suficiente e ascensão liberada — o herói pode subir!"
+                    : "XP no limite — aguardando o mestre liberar a ascensão (feito)"}
             </span>
           </div>
         </div>

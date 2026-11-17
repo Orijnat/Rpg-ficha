@@ -680,6 +680,8 @@ export function CharacterProvider({ children }) {
       level: gate.nextLevel,
       hpMax: (Number(current.hpMax) || 1) + appliedGain,
       hp: (Number(current.hp) || 0) + appliedGain,
+      // A subida consome a liberação: o próximo nível exige um novo feito liberado.
+      dadosExtras: { ...(current.dadosExtras || {}), levelUpLiberado: false },
     });
     const hitDie = details.hitDie || current.dadosExtras?.hitDie || "1d8";
     postItemLog(`Subiu para o nível ${gate.nextLevel} (+${appliedGain} HP máx. — Dado de Vida ${hitDie}).`, {
