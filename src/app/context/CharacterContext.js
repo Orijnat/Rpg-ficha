@@ -80,6 +80,9 @@ function normalizeCharacterForSync(charData, activeChar) {
       carisma,
       inteligencia,
     },
+    // O backend resolve a raça pelo vínculo FK (raceId) ou pelo slug (race) —
+    // enviar o slug garante persistência mesmo com raceId em formato de slug (fallback offline).
+    race: (charData.dadosExtras && charData.dadosExtras.race) || undefined,
   };
 }
 
@@ -449,21 +452,14 @@ export function CharacterProvider({ children }) {
     }));
   };
 
+  // A raça é escolhida UMA ÚNICA VEZ pelo jogador; depois disso só o mestre
+  // pode alterar (proteção de defesa em profundidade — a UI já trava o select e o servidor barra 403).
   const updateRace = (raca) => {
     setData((current) => {
-      if (!raca) {
-        return {
-          ...current,
-          raceId: null,
-          dadosExtras: {
-            ...(current.dadosExtras || {}),
-            race: null,
-            hitDie: current.dadosExtras?.hitDie || "1d8",
-          },
-        };
-      }
       const hadRace = Boolean(current.raceId) || Boolean(current.dadosExtras?.race);
-      const baseAttrs = hadRace ? {} : (raca.base || {});
+      if (!raca) return current; // limpeza não é permitida ao jogador
+      if (hadRace) return current; // já escolhida: no-op
+      const baseAttrs = raca.base || {};
       return {
         ...current,
         raceId: raca.id,

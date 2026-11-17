@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-17T04:30:00-03:00",
+  "timestamp": "2026-11-17T05:10:00-03:00",
   "agent": "opencode",
-  "prompt": "retire tudo sobre envio de código e verificação por email",
-  "action": "Remoção completa: backend (mailer deletado, endpoints/schemas/rotas de verify/reset removidos, register loga direto, 72/72 testes), migration de drop aplicada no Supabase, frontend (3 páginas deletadas, api.js/AppShell/registro/login/AuthContext limpos, build 28/28, 159/159), skill email-api deletada, docs atualizados. NÃO commitado; deploy Render pendente."
+  "prompt": "a questao das racas, ao entrar no sistema, selecionar a raca apenas 1 vez, se acaso for escolido errado apenas o mestre podera alterar, e apos selecionar a raca, colocar o valor dos status nos status",
+  "action": "Raça com escolha única: select do jogador trava após a 1ª seleção; ao escolher, status base+Dado de Vida são aplicados; guarda server-side no update/sync (403 para não-mestre alterando raça existente; no-op de sync liberado; primeira escolha liberada); admin ficha ganhou select de raça do mestre que aplica base automaticamente. Back 79/79, front 159/159, build OK. Não commitado; deploy Render pendente."
 }

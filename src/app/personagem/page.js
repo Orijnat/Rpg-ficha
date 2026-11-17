@@ -27,8 +27,7 @@ export default function Personagem() {
   const xpInfo = calculateLevelFromXP(data.xp ?? data.dadosExtras?.xp ?? 0);
   const conMod = calculateModifier(data.CON);
   const hitDie = typeof data.dadosExtras?.hitDie === "string" && data.dadosExtras.hitDie ? data.dadosExtras.hitDie : "1d8";
-  const currentRaceId = data.raceId ?? racas.find((race) => race.slug === data.dadosExtras?.race)?.id ?? null;
-  const race = racas.find((raca) => raca.id === currentRaceId) ?? null;
+  const race = racas.find((raca) => raca.id === data.raceId || raca.slug === data.dadosExtras?.race) ?? null;
   const canLevelUp = characterLevel < xpInfo.level && characterLevel < 20;
   const xpMissing = Math.max(0, (xpInfo.nextLevelXP ?? 0) - Number(data.xp || 0));
 
@@ -213,20 +212,24 @@ export default function Personagem() {
                   value={race?.id || ""}
                   onChange={(e) => {
                     const option = e.target.value ? racas.find((raca) => raca.id === e.target.value) : null;
-                    updateRace(option || null);
+                    if (option) updateRace(option); // a raça só pode ser definida uma vez
                   }}
-                  className="h-9 rounded-lg border border-border bg-input-background px-2.5 text-xs text-foreground outline-none focus:border-primary"
+                  disabled={Boolean(race)}
+                  className="h-9 rounded-lg border border-border bg-input-background px-2.5 text-xs text-foreground outline-none focus:border-primary disabled:cursor-not-allowed disabled:opacity-70"
                   aria-label="Raça do herói"
+                  title={race ? "A raça já foi definida e só o mestre pode alterar." : "Escolha com cuidado: a raça só pode ser definida uma vez."}
                 >
-                <option value="">Raça não definida</option>
-                {DEFAULT_RACES.map((option) => (
+                {!race && <option value="">Selecione a raça (uma única vez)</option>}
+                {racas.map((option) => (
                   <option key={option.id} value={option.id}>
                     {option.name}
                   </option>
                 ))}
               </select>
               <span className="text-[10px] text-muted-foreground">
-                {race ? `${race.trait} (alterar a raça não recalcula os status)` : "Selecione a raça aqui na ficha (o cadastro não exige raça)."}
+                {race
+                  ? `${race.trait} · A raça já foi selada; só o mestre pode alterar.`
+                  : "Defina a raça uma única vez. Ao escolher, os status base e o Dado de Vida são aplicados automaticamente — depois, só o mestre pode mudar."}
               </span>
             </div>
             <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">

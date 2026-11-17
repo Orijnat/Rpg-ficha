@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Check, Crown, HeartPulse, LoaderCircle, Save, Shield, Sparkles, Trash2 } from "lucide-react";
-import { fetchCharacterFromBackend, updateCharacterOnBackend } from "../../../../../lib/api";
+import { fetchCharacterFromBackend, updateCharacterOnBackend, listRaces } from "../../../../../lib/api";
+import { DEFAULT_RACES } from "../../../../../lib/races";
 import { useAuth } from "../../../../context/AuthContext";
 
 const ATTRIBUTES = ["FOR", "DES", "CON", "SAB", "ESP", "CAR", "INT"];
@@ -32,6 +33,7 @@ export default function MasterCharacterSheet() {
   const router = useRouter();
   const { token, isMaster, loading: authLoading } = useAuth();
   const [character, setCharacter] = useState(null);
+  const [racas, setRacas] = useState(DEFAULT_RACES);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -39,6 +41,9 @@ export default function MasterCharacterSheet() {
 
   useEffect(() => {
     if (authLoading || !isMaster || !id) return;
+    listRaces().then((rows) => {
+      if (Array.isArray(rows) && rows.length > 0) setRacas(rows);
+    }).catch(() => {});
     fetchCharacterFromBackend(id, token)
       .then((data) => setCharacter(normalizeCharacter(data)))
       .catch((loadError) => setError(loadError.message))
@@ -59,6 +64,25 @@ export default function MasterCharacterSheet() {
   const updateInventory = (index, patch) => update({ inventory: character.inventory.map((item, itemIndex) => itemIndex === index ? { ...item, ...patch } : item) });
   const addInventory = () => update({ inventory: [...character.inventory, { id: `item-${Date.now()}`, name: "Novo item", qty: 1 }] });
   const removeInventory = (index) => update({ inventory: character.inventory.filter((_, itemIndex) => itemIndex !== index) });
+  const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const currentRaceId = racas.find((raca) => raca.id === character?.raceId || raca.slug === character?.dadosExtras?.race)?.id ?? "";
+  const handleRaceChange = (event) => {
+    const value = event.target.value;
+    const option = value ? racas.find((raca) => raca.id === value) : null;
+    setCharacter((current) => ({
+      ...current,
+      // raceId só quando for UUID (API); senão o backend resolve pelo slug `race`
+      raceId: option ? (uuidRe.test(String(option.id)) ? option.id : undefined) : null,
+      race: option?.slug ?? null,
+      ...(option?.base ? Object.fromEntries(ATTRIBUTES.map((key) => [key, option.base[key] ?? current[key] ?? 10])) : {}),
+      attributes: option?.base ? { ...(current.attributes || {}), ...option.base } : current.attributes,
+      dadosExtras: {
+        ...(current.dadosExtras || {}),
+        race: option?.slug ?? null,
+        hitDie: option?.hitDie ?? current.dadosExtras?.hitDie ?? "1d8",
+      },
+    }));
+  };
 
   async function save(event) {
     event.preventDefault();
@@ -152,6 +176,19 @@ export default function MasterCharacterSheet() {
               <input type="number" min="0" value={character.inventoryCapacity} onChange={(event) => update({ inventoryCapacity: Math.max(0, Number(event.target.value)) })} className="mt-1 min-h-12 w-full border border-border bg-input-background px-3 text-xl font-bold text-foreground outline-none focus:border-primary" />
             </label>
             <p className={`mt-4 text-sm ${carriedItems > character.inventoryCapacity ? "text-rose-300" : "text-muted-foreground"}`}>Carga atual: <strong>{carriedItems}</strong> / {character.inventoryCapacity} unidades</p>
+          </div>
+        </section>
+
+        <section className="border-2 border-amber-400/30 bg-card p-5">
+          <div className="mb-4 flex items-center gap-2 font-serif text-lg font-bold"><Shield size={18} className="text-amber-300" /> Raça (somente o mestre altera)</div>
+          <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
+            <label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Raça do herói
+              <select value={currentRaceId} onChange={handleRaceChange} className="mt-1 min-h-11 w-full border border-border bg-input-background px-3 text-sm text-foreground outline-none focus:border-primary" aria-label="Raça do herói (mestre)">
+                <option value="">Sem raça</option>
+                {racas.map((raca) => <option key={raca.id} value={raca.id}>{raca.name} ({raca.hitDie})</option>)}
+              </select>
+            </label>
+            <p className="text-[10px] leading-snug text-muted-foreground sm:max-w-[260px]">O jogador só escolhe a raça uma única vez na ficha. Alterar aqui aplica automaticamente os status base da raça e o Dado de Vida.</p>
           </div>
         </section>
 
