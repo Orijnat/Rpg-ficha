@@ -599,3 +599,9 @@ Commitado e pushado: `d800e1e` (fix(registro): remover recomendação de classe 
 - Fix backend: `delete data.classe` em `characterPublic.js` (após derivar classId/classSlug/className/hitDie) + novo teste `public_classe.test.js` → back **111/111**.
 - Fix frontend (defesa em profundidade): `asTextoCurto()` em `normalizeCharacterForSync` (classe só vai como slug/nome/string curta); `/admin/personagens/[id]/ficha` sanitiza `payload.classe` no PUT. **162/162**, build OK, lint 0 erros. NÃO commitado.
 - Deploy: backend precisa de Manual Deploy no Render (o fix do front já segura o 422 sem ele).
+
+## Entrega — 2026-11-17 (Documentação completa do sistema + README)
+
+- docs/ARCHITECTURE.md reescrito (manual completo do sistema: front/back/infra, sync, auth, contrato API, deploy, armadilhas).
+- README.md reescrito (stack, / landing, NEXT_PUBLIC_API_URL com /api, 162 testes, seção Produção, troubleshooting).
+- Fix colateral: retrySyncRef movido para useEffect (lint 0 erros). NÃO commitado.
