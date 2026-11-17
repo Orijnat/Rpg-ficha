@@ -62,6 +62,9 @@ const ATTRIBUTE_ALIASES = {
   inteligencia: "INT",
 };
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const asUuid = (value) => (typeof value === "string" && UUID_RE.test(value) ? value : undefined);
+
 function normalizeCharacterForSync(charData, activeChar) {
   if (!charData) return charData;
   const forca = Number(charData.FOR ?? charData.forca ?? 10);
@@ -110,9 +113,12 @@ function normalizeCharacterForSync(charData, activeChar) {
     // O backend resolve a raça pelo vínculo FK (raceId) ou pelo slug (race) —
     // enviar o slug garante persistência mesmo com raceId em formato de slug (fallback offline).
     race: (charData.dadosExtras && charData.dadosExtras.race) || undefined,
+    // Slug/local-id (ex.: "humano") nunca é um uuid válido para o Zod do backend —
+    // nesse caso o vínculo FK é refeito pelo servidor a partir do slug.
+    raceId: asUuid(charData.raceId),
     // O backend resolve a classe pelo vínculo FK (classId) ou pelo slug (class) —
     // o Dado de Vida vem da classe (a raça não define mais o dado de vida).
-    classId: charData.classId ?? charData.classeId ?? undefined,
+    classId: asUuid(charData.classId ?? charData.classeId),
     class: (charData.dadosExtras && charData.dadosExtras.class) || undefined,
   };
 }

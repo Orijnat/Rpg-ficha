@@ -22,6 +22,7 @@ export default function Personagem() {
   const { requestRoll } = useDice();
   const { isMaster, activeCharacter, loading: authLoading, logout } = useAuth();
   const [levelFeedback, setLevelFeedback] = useState(null);
+  const [showSyncDetails, setShowSyncDetails] = useState(false);
   const feedbackTimer = useRef(null);
   const [racas, setRacas] = useState(DEFAULT_RACES);
   const [classes, setClasses] = useState(DEFAULT_CLASSES);
@@ -123,6 +124,7 @@ export default function Personagem() {
     conflict: { label: "Conflito: revisão necessária", Icon: TriangleAlert, className: "text-amber-300" },
   };
   const syncIndicator = syncLabels[syncStatus];
+  const syncDetails = Array.isArray(syncError?.details) ? syncError.details : [];
 
   return (
     <div className="space-y-5">
@@ -177,11 +179,35 @@ export default function Personagem() {
                   <span aria-hidden="true">&nbsp;</span>
                 )}
             </span>
-            <p className="h-4 max-w-[16rem] break-words text-right font-mono text-[9px] normal-case leading-4 text-rose-300/90 sm:max-w-[20rem]" role="alert">
-              {syncStatus === "error" && syncError
-                ? `${syncError.status ? `HTTP ${syncError.status} · ` : ""}${syncError.message || "Falha desconhecida"}`
-                : "\u00A0"}
-            </p>
+            <div className="relative flex h-4 w-full items-center justify-end sm:w-auto">
+              <p className="max-w-[16rem] break-words text-right font-mono text-[9px] normal-case leading-4 text-rose-300/90 sm:max-w-[20rem]" role="alert">
+                {syncStatus === "error" && syncError ? (
+                  <>
+                    {syncError.status ? `HTTP ${syncError.status} · ` : ""}{syncError.message || "Falha desconhecida"}
+                    {syncDetails.length > 0 && (
+                      <button type="button" onClick={() => setShowSyncDetails((v) => !v)} className="ml-1 underline underline-offset-2 hover:text-rose-200 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-rose-400" aria-expanded={showSyncDetails}>
+                        {syncDetails.length} campo{syncDetails.length > 1 ? "s" : ""}
+                      </button>
+                    )}
+                  </>
+                ) : "\u00A0"}
+              </p>
+              {showSyncDetails && syncDetails.length > 0 && (
+                <ul className="absolute right-0 top-full z-50 mt-1 max-h-44 w-72 space-y-1 overflow-y-auto rounded-lg border border-rose-500/40 bg-card p-2 text-left font-mono text-[9px] leading-snug text-rose-200/90 shadow-2xl" data-lenis-prevent aria-label="Campos inválidos retornados pelo servidor">
+                  {syncDetails.map((issue, index) => (
+                    <li key={index}>
+                      <strong className="text-rose-300">{issue?.field ?? "?"}</strong>
+                      {": "}{issue?.message ?? "valor inválido"}
+                    </li>
+                  ))}
+                  <li>
+                    <button type="button" onClick={() => setShowSyncDetails(false)} className="mt-1 text-[9px] font-bold uppercase tracking-wider text-muted-foreground underline underline-offset-2 hover:text-foreground">
+                      Fechar
+                    </button>
+                  </li>
+                </ul>
+              )}
+            </div>
             <div className="grid grid-cols-2 gap-2.5 sm:min-w-56">
               <div className="medallion-plate rounded-xl p-3 text-center">
                 <span className="block font-cinzel text-[10px] uppercase tracking-wider text-muted-foreground/80">Nível</span>
