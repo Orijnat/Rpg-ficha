@@ -20,6 +20,7 @@ import {
 import { Card, SectionHeader } from "../../../components/ui";
 import { createNpc } from "../../../../lib/api";
 import { useAuth } from "../../../context/AuthContext";
+import { NpcAttributesCard, NpcAbilitiesCard, NPC_ATTR_DEFAULTS } from "../../../components/admin/NpcSheetBlocks";
 
 const PRESET_TAGS = [
   "Chefe",
@@ -61,6 +62,8 @@ export default function NewNpcPage() {
   const [acoes, setAcoes] = useState([
     { nome: "Ataque com Arma", descricao: "Acerto +4, alcance 1.5m. Dano: 1d8+2 cortante.", bonus: "+4", dano: "1d8+2" },
   ]);
+  const [atributos, setAtributos] = useState({ ...NPC_ATTR_DEFAULTS });
+  const [abilities, setAbilities] = useState([]);
   const [notasMestre, setNotasMestre] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -123,6 +126,8 @@ export default function NewNpcPage() {
         tags,
         acoes,
         notasMestre,
+        atributos,
+        abilities,
       };
 
       await createNpc(payload, token);
@@ -385,6 +390,10 @@ export default function NewNpcPage() {
           </div>
         </Card>
       </div>
+
+      {/* Bloco 3: Atributos e Habilidades (mesmo formato do herói) */}
+      <NpcAttributesCard attributes={atributos} onChange={(key, value) => setAtributos((current) => ({ ...current, [key]: value }))} />
+      <NpcAbilitiesCard abilities={abilities} onChange={setAbilities} />
 
       {/* Bloco 3: Ações e Golpes */}
       <Card>

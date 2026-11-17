@@ -20,6 +20,7 @@ import { Card, SectionHeader } from "../../../components/ui";
 import ConfirmDialog from "../../../components/admin/ConfirmDialog";
 import { deleteNpc, duplicateNpc, fetchNpcById, updateNpc } from "../../../../lib/api";
 import { useAuth } from "../../../context/AuthContext";
+import { NpcAttributesCard, NpcAbilitiesCard, NPC_ATTR_DEFAULTS } from "../../../components/admin/NpcSheetBlocks";
 
 const PRESET_TAGS = [
   "Chefe",
@@ -75,6 +76,9 @@ export default function EditNpcPage() {
       ...prev,
       dadosExtras: { ...(prev.dadosExtras || {}), ...patch },
     }));
+
+  const atributosAtuais = { ...NPC_ATTR_DEFAULTS, ...(npc.dadosExtras?.attributes || {}) };
+  const abilitiesAtuais = Array.isArray(npc.dadosExtras?.abilities) ? npc.dadosExtras.abilities : [];
 
   const toggleTag = (tag) => {
     const currentTags = npc.dadosExtras?.tags || [];
@@ -134,6 +138,8 @@ export default function EditNpcPage() {
         sharedWithPlayers: Boolean(npc.dadosExtras?.sharedWithPlayers),
         acoes: npc.dadosExtras?.acoes || [],
         notasMestre: npc.dadosExtras?.notasMestre || "",
+        atributos: atributosAtuais,
+        abilities: abilitiesAtuais,
       };
 
       const saved = await updateNpc(id, payload, token);
@@ -437,6 +443,10 @@ export default function EditNpcPage() {
           </div>
         </Card>
       </div>
+
+      {/* Atributos e Habilidades (mesmo formato do herói) */}
+      <NpcAttributesCard attributes={atributosAtuais} onChange={(key, value) => updateExtras({ attributes: { ...atributosAtuais, [key]: value } })} />
+      <NpcAbilitiesCard abilities={abilitiesAtuais} onChange={(list) => updateExtras({ abilities: list })} />
 
       <Card>
         <div className="flex items-center justify-between border-b border-border pb-3">
