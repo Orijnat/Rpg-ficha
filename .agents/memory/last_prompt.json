@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-17T20:45:00-03:00",
+  "timestamp": "2026-11-17T21:10:00-03:00",
   "agent": "opencode",
-  "prompt": "ao acessar uma ficha de jogador como mestre, nao esta abrindo em nova uia",
-  "action": "Todos os botoes 'Acessar Ficha' do mestre viram ancoras <a target=_blank rel=noreferrer noopener> p/ /personagem?inspect=<id>: Ameacas & Herois (b) Painel do Mestre (botao) e campanhas (botao). inspectCharacter deixou de ser usado nessas telas. Commitado e pushado apos pedido implicito de correcao (26e67b8 + docs). Lembrete: producao so atualiza apos build da Vercel + hard refresh."
+  "prompt": "poderia desenvolver um token por sessao, que fica salvo no naveador inteiro, pois ao abrir a nova aba, ele me pede para fazer loin, e me tira da tela da qual deveria ver",
+  "action": "Token JWT agora persiste no localStorage (navegador inteiro) — nova guia do mestre restaura a sessao via /auth/me. Migracao automatica do sessionStorage legado. Listener 'storage' no AuthContext: logout em uma guia desconecta as demais. 161/161 testes, build OK, lint 0 erros. Nao commitado."
 }

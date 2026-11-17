@@ -65,6 +65,13 @@
 - `1d2d848` feat(dice) o dado em si rolando com todos os lados — 3D WebGL/Three.js (Dice3D.jsx; d10 bipirâmide pentagonal; números por face via CanvasTexture; d100 = par de dados; d2 removido) · `74f4fe4` docs(memory). Pushed: `6fbbdd8..74f4fe4`.
 - Verificado antes do commit: front 161/161, build OK, lint 0 erros. **Sem conferência no navegador** — revisar visual/enquadramento/luzes e o fallback estático.
 
+## 🔧 2026-11-17 — Sessão persistida no NAVEGADOR INTEIRO (localStorage) — NÃO commitado
+- Pedido: "desenvolva um token por sessão, que fica salvo no navegador inteiro, pois ao abrir a nova aba, ele me pede para fazer login e me tira da tela da qual deveria ver" (nova guia do mestre via ?inspect=caía no /login porque o JWT era sessionStorage = por guia).
+- `src/lib/api.js`: `rpg_auth_token` agora gravado/lido do **localStorage** (todo o navegador); migração automática (token legado de sessionStorage sobe uma vez). `clearAuth()` já limpava os dois — mantido. Comentários atualizados.
+- `AuthContext`: novo `useEffect` com listener `storage` — **logout em uma guia desconecta as demais** (zera user/token e manda para /login). Leituras diretas de sessionStorage para ficha (`rpg_current_char_id`) NÃO mudaram (cada guia mantém o herói ativo próprio — era o comportamento desejado para inspeções paralelas).
+- Trade-off de segurança (decisão do usuário): token JS-readable na origem por todo o navegador (antes: por guia). Mitigantes mantidos: revogação server-side (logout/troca de senha revoga), HTTPS-only (Vercel), /auth/me como fonte da verdade. Anterior decisão de endurecimento (sessionStorage) foi explicitamente revertida a pedido do usuário.
+- Verificado: 161/161 testes, build OK, lint 0 erros (44 warnings pré-existentes). NÃO commitado, NÃO conferido no navegador. Comportamento esperado pós-deploy: abrir /personagem?inspect=<id> em nova guia restaura a sessão direto na ficha do herói; login em qualquer guia vale para todas; logout em qualquer guia desconecta todas.
+
 ## 🔧 2026-11-17 — Ficha aberta como mestre abre NOVA GUIA do navegador — NÃO commitado
 - Pedido: "quando eu abrir uma ficha como mestre, abre uma nova guia no navegador com a ficha para ficar mais organizado... talvez precise abrir 3 fichas de esqueleto".
 - `/personagem?inspect=<id>` — `AuthContext` (init) agora prioriza o parâmetro `inspect` (lido via `window.location.search`, sem useSearchParams → sem problema de SSG/Suspense): a guia abre já mostrando a ficha completa do herói da URL; refresh re-aplica (URL é a fonte da verdade da guia). Jogadores não são afetados (param só casa com a própria lista).
