@@ -4,7 +4,7 @@
 - Arquivo: `/mnt/c/Users/cledi/Downloads/ambar-vulcanico.svg` (SVG 64×64, livro âmbar, 1.4 KB, sem scripts/refs externas) → copiado para `public/ambar-vulcanico.svg`.
 - **Favicon**: `src/app/favicon.ico` removido (`git rm`); `metadata.icons` em `layout.js` (icon + shortcut → `/ambar-vulcanico.svg`). Verificado no HTML do build: `<link rel="icon" href="/ambar-vulcanico.svg" type="image/svg+xml"/>`.
 - **Logo aplicado** (next/image, priority): AppShell sidebar desktop · Cabecalho (visão jogador; mestre mantém Crown) · landing header + rodapé · login e registro (emblema central, antes ⚔/Sparkles).
-- **Verificado**: 162/162, build OK, lint 0 erros (45 warnings pré-existentes). **NÃO commitado/pushado**.
+- **Verificado**: 162/162, build OK, lint 0 erros (45 warnings pré-existentes). **PUSHADO** (2026-11-17): `691319c` feat(brand) + `c6159ee` docs(memory) → `584cab6..c6159ee`.
 
 ## 🔓 2026-11-17 — "Liberar Ascensão": subir de nível exige XP + feito liberado pelo mestre
 - Tabela enviada pelo usuário (Nível/XP/Bônus de proficiência) **já era o critério** em produção: `XP_TABLE` idêntico em `modifiers.js` (0→355.000) e `calculateProficiencyBonusByLevel` (+2/+3/+4/+5/+6 por tiers) — usado em Pericia.jsx e RecursosCombate.jsx. Nada a alterar na tabela.
