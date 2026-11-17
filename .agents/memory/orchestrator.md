@@ -586,3 +586,7 @@ Este arquivo é a fonte de memória persistente da liderança técnica do projet
 - Instaladas em ~/.agents/skills (OpenCode e agentes que leem esse diretório): vercel-react-best-practices, web-design-guidelines, vercel-composition-patterns (vercel-labs/agent-skills), frontend-design, skill-creator (anthropics/skills), supabase-postgres-best-practices (supabase/agent-skills), grill-me, improve-codebase-architecture, code-review (mattpocock/skills), systematic-debugging (obra/superpowers), agent-browser (vercel-labs/agent-browser). find-skills já existia.
 - Descartadas por fora do stack do projeto: séries de vídeo/imagem (heygen, remotion, superpowers-ai), Azure, Lark/Feishu, Prisma (sequelize no projeto). `skills-lock.json` (projeto) não foi tocado; instalações foram globais e privadas do usuário (~/.agents).
 - Nota: `npx skills add` falhou com target automático ("PromptScript does not support global"); corrigido com `-a opencode -g -y`.
+
+## Entrega — 2026-11-16 (Remover recomendação de classe no cadastro)
+
+- `src/app/registro/page.jsx`: removidos o `<datalist id="grimorium-classes">` (sugestões de `DEFAULT_CLASSES`) e o atributo `list` do campo "Classe / Ocupação" (texto livre); import `DEFAULT_CLASSES` removido. Build OK, 159/159 testes, eslint 0 erros. NÃO commitado.

@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
 import AuthScaffold from "../../components/auth/AuthScaffold";
-import { DEFAULT_CLASSES } from "../../lib/classes";
 import { DEFAULT_RACES, getRaceById, getRaceBaseAttributes, getRaceHitDie } from "../../lib/races";
 import { fetchInviteInfo } from "../../lib/api";
 import {
@@ -508,18 +507,12 @@ function RegisterForm() {
                   <FormField label="Classe / Ocupação" icon={Sword}>
                     <input
                       type="text"
-                      list="grimorium-classes"
                       value={characterJob}
                       onChange={(e) => setCharacterJob(e.target.value)}
                       placeholder="Ex: Bruxeiro, Pistoleiro Ígneo, Artífice de Guerra..."
                       className={inputBase}
                       style={inputFont}
                     />
-                    <datalist id="grimorium-classes">
-                      {DEFAULT_CLASSES.map((cls) => (
-                        <option key={cls.id} value={cls.name} />
-                      ))}
-                    </datalist>
                   </FormField>
 
                   <FormField label="Raça" icon={Scroll}>
