@@ -23,7 +23,6 @@ import { useTheme } from "../context/ThemeContext";
 import { useCharacter } from "../context/CharacterContext";
 import { joinCampaign, listCampaigns, listRaces } from "../../lib/api";
 import { DEFAULT_RACES } from "../../lib/races";
-import { parseHitDie } from "../../lib/leveling";
 
 export default function PerfilPage() {
   const {
@@ -148,8 +147,9 @@ export default function PerfilPage() {
       setCreateMsg("Informe o nome e a classe do personagem.");
       return;
     }
-    const attributes = selectedRace?.base || { FOR: 10, DES: 10, CON: 10, SAB: 10, ESP: 10, CAR: 10, INT: 10 };
-    const baseHp = selectedRace ? parseHitDie(selectedRace.hitDie).count * parseHitDie(selectedRace.hitDie).sides : 70;
+    // Status base definidos pelo jogador na ficha; a raça SOMA o bônus na seleção (5e clássico).
+    const attributes = { FOR: 10, DES: 10, CON: 10, SAB: 10, ESP: 10, CAR: 10, INT: 10 };
+    const baseHp = 70; // o Dado de Vida vem da classe (escolhida na ficha); até lá, 70 PV
 
     setIsCreating(true);
     setCreateMsg("");
@@ -166,7 +166,6 @@ export default function PerfilPage() {
               raceId: selectedRace.id,
               dadosExtras: {
                 race: selectedRace.slug || selectedRace.id,
-                hitDie: selectedRace.hitDie,
                 customClass: newCharJob.trim(),
               },
             }

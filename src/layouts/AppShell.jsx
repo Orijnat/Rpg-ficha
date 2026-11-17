@@ -56,6 +56,7 @@ const MASTER_NAV_ITEMS = [
   { id: "npcs", href: "/admin/npcs", label: "Bestiário (NPCs)", icon: <Skull size={16} /> },
   { id: "personagens", href: "/admin/personagens", label: "Ameaças & Heróis", icon: <ScrollText size={16} /> },
   { id: "habilidades", href: "/admin/habilidades", label: "Habilidades", icon: <Sparkles size={16} /> },
+  { id: "classes", href: "/admin/classes", label: "Classes & Níveis", icon: <BookOpen size={16} /> },
   { id: "encontros", href: "/admin/encontros", label: "Encontros", icon: <Swords size={16} /> },
   { id: "mapas", href: "/admin/mapas", label: "Mapas & Névoa", icon: <Compass size={16} /> },
   { id: "notas", href: "/admin/notas", label: "Segredos & Notas", icon: <FileText size={16} /> },

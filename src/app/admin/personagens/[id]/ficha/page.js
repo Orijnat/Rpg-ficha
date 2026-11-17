@@ -3,8 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Check, Crown, HeartPulse, LoaderCircle, Save, Shield, Sparkles, Trash2 } from "lucide-react";
-import { fetchCharacterFromBackend, updateCharacterOnBackend, listRaces } from "../../../../../lib/api";
-import { DEFAULT_RACES } from "../../../../../lib/races";
+import { fetchCharacterFromBackend, updateCharacterOnBackend, listRaces, listClasses } from "../../../../../lib/api";
+import { DEFAULT_RACES, formatRaceBonus, addRaceBonus, subtractRaceBonus } from "../../../../../lib/races";
+import { DEFAULT_CLASSES, findSelectedClass } from "../../../../../lib/classes";
+import { hitDieMax } from "../../../../../lib/leveling";
 import { useAuth } from "../../../../context/AuthContext";
 
 const ATTRIBUTES = ["FOR", "DES", "CON", "SAB", "ESP", "CAR", "INT"];
@@ -34,6 +36,7 @@ export default function MasterCharacterSheet() {
   const { token, isMaster, loading: authLoading } = useAuth();
   const [character, setCharacter] = useState(null);
   const [racas, setRacas] = useState(DEFAULT_RACES);
+  const [classes, setClasses] = useState(DEFAULT_CLASSES);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -43,6 +46,9 @@ export default function MasterCharacterSheet() {
     if (authLoading || !isMaster || !id) return;
     listRaces().then((rows) => {
       if (Array.isArray(rows) && rows.length > 0) setRacas(rows);
+    }).catch(() => {});
+    listClasses().then((rows) => {
+      if (Array.isArray(rows) && rows.length > 0) setClasses(rows);
     }).catch(() => {});
     fetchCharacterFromBackend(id, token)
       .then((data) => setCharacter(normalizeCharacter(data)))
@@ -65,23 +71,53 @@ export default function MasterCharacterSheet() {
   const addInventory = () => update({ inventory: [...character.inventory, { id: `item-${Date.now()}`, name: "Novo item", qty: 1 }] });
   const removeInventory = (index) => update({ inventory: character.inventory.filter((_, itemIndex) => itemIndex !== index) });
   const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  const currentRaceId = racas.find((raca) => raca.id === character?.raceId || raca.slug === character?.dadosExtras?.race)?.id ?? "";
+  const currentRaceId = racas.find((raca) => raca.id === character?.raceId || raca.slug === character?.dadosExtras?.race || raca.slug === character?.race)?.id ?? "";
+  const currentClassId = classes.find((classe) => classe.id === character?.classId || classe.slug === character?.dadosExtras?.class || classe.slug === character?.classSlug)?.id ?? "";
+  const currentRace = racas.find((raca) => raca.id === currentRaceId || raca.slug === character?.dadosExtras?.race) ?? null;
+  const flatAttributes = (source) => Object.fromEntries(ATTRIBUTES.map((key) => [key, Number(source[key] ?? source.attributes?.[key] ?? 10)]));
+
   const handleRaceChange = (event) => {
     const value = event.target.value;
     const option = value ? racas.find((raca) => raca.id === value) : null;
-    setCharacter((current) => ({
-      ...current,
-      // raceId só quando for UUID (API); senão o backend resolve pelo slug `race`
-      raceId: option ? (uuidRe.test(String(option.id)) ? option.id : undefined) : null,
-      race: option?.slug ?? null,
-      ...(option?.base ? Object.fromEntries(ATTRIBUTES.map((key) => [key, option.base[key] ?? current[key] ?? 10])) : {}),
-      attributes: option?.base ? { ...(current.attributes || {}), ...option.base } : current.attributes,
-      dadosExtras: {
-        ...(current.dadosExtras || {}),
+    setCharacter((current) => {
+      // Troca de raça: subtrai o bônus da raça anterior e soma o da nova (status nunca acumulam bônus de 2 raças).
+      const baseAttrs = flatAttributes(current);
+      const afterRemove = currentRace ? subtractRaceBonus(baseAttrs, currentRace) : baseAttrs;
+      const finalAttrs = option ? addRaceBonus(afterRemove, option) : afterRemove;
+      return {
+        ...current,
+        // raceId só quando for UUID (API); senão o backend resolve pelo slug `race`
+        raceId: option ? (uuidRe.test(String(option.id)) ? option.id : undefined) : null,
         race: option?.slug ?? null,
-        hitDie: option?.hitDie ?? current.dadosExtras?.hitDie ?? "1d8",
-      },
-    }));
+        ...finalAttrs,
+        attributes: { ...(current.attributes || {}), ...finalAttrs },
+        dadosExtras: {
+          ...(current.dadosExtras || {}),
+          race: option?.slug ?? null,
+        },
+      };
+    });
+  };
+
+  const handleClassChange = (event) => {
+    const value = event.target.value;
+    const option = value ? classes.find((classe) => classe.id === value) : null;
+    setCharacter((current) => {
+      const heroLevel = Math.max(1, Number(current.level) || 1);
+      // A classe define o Dado de Vida; a vida base inicial (nível 1) é o máximo do dado.
+      const initialHp = option && heroLevel <= 1 ? hitDieMax(option.hitDie, 8) : null;
+      return {
+        ...current,
+        classId: option ? (uuidRe.test(String(option.id)) ? option.id : undefined) : null,
+        class: option?.slug ?? null,
+        ...(initialHp ? { hp: initialHp, hpMax: initialHp } : {}),
+        dadosExtras: {
+          ...(current.dadosExtras || {}),
+          class: option?.slug ?? null,
+          hitDie: option?.hitDie ?? current.dadosExtras?.hitDie ?? "1d8",
+        },
+      };
+    });
   };
 
   async function save(event) {
@@ -179,16 +215,29 @@ export default function MasterCharacterSheet() {
           </div>
         </section>
 
+        <section className="border-2 border-primary/30 bg-card p-5">
+          <div className="mb-4 flex items-center gap-2 font-serif text-lg font-bold"><Shield size={18} className="text-primary" /> Classe (somente o mestre altera)</div>
+          <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
+            <label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Classe do herói
+              <select value={currentClassId} onChange={handleClassChange} className="mt-1 min-h-11 w-full border border-border bg-input-background px-3 text-sm text-foreground outline-none focus:border-primary" aria-label="Classe do herói (mestre)">
+                <option value="">Sem classe</option>
+                {classes.map((classe) => <option key={classe.id} value={classe.id}>{classe.name} ({classe.hitDie})</option>)}
+              </select>
+            </label>
+            <p className="text-[10px] leading-snug text-muted-foreground sm:max-w-[260px]">O jogador só escolhe a classe uma única vez na ficha. A classe define o Dado de Vida (rolado ao subir de nível) e as habilidades de nível — em nível 1, a Vida máxima também é ajustada ao máximo do dado.</p>
+          </div>
+        </section>
+
         <section className="border-2 border-amber-400/30 bg-card p-5">
           <div className="mb-4 flex items-center gap-2 font-serif text-lg font-bold"><Shield size={18} className="text-amber-300" /> Raça (somente o mestre altera)</div>
           <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
             <label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Raça do herói
               <select value={currentRaceId} onChange={handleRaceChange} className="mt-1 min-h-11 w-full border border-border bg-input-background px-3 text-sm text-foreground outline-none focus:border-primary" aria-label="Raça do herói (mestre)">
                 <option value="">Sem raça</option>
-                {racas.map((raca) => <option key={raca.id} value={raca.id}>{raca.name} ({raca.hitDie})</option>)}
+                {racas.map((raca) => <option key={raca.id} value={raca.id}>{raca.name} ({formatRaceBonus(raca)})</option>)}
               </select>
             </label>
-            <p className="text-[10px] leading-snug text-muted-foreground sm:max-w-[260px]">O jogador só escolhe a raça uma única vez na ficha. Alterar aqui aplica automaticamente os status base da raça e o Dado de Vida.</p>
+            <p className="text-[10px] leading-snug text-muted-foreground sm:max-w-[260px]">O jogador só escolhe a raça uma única vez na ficha. Alterar aqui remove o bônus da raça anterior (5e clássico) e aplica o da nova sobre os status atuais.</p>
           </div>
         </section>
 

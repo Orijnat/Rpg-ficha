@@ -1,37 +1,69 @@
 /**
- * Catálogo Oficial de Raças do Grimorium RPG (d20 customizado, fantasia sombria).
- * A raça define os STATUS BASE e o DADO DE VIDA do herói no momento da criação.
- * A subida de nível rola o dado de vida da raça (ver lib/leveling.js).
+ * Catálogo de Raças do Grimorium RPG (d20 customizado, fantasia sombria).
+ *
+ * Modelo (clássico 5e): o jogador define os STATUS BASE livremente; a raça
+ * apenas SOMA seu bônus na seleção (nunca sobrescreve). Troca de raça pelo
+ * mestre: subtrai o bônus da raça antiga e soma o da nova.
+ * A raça NÃO define o Dado de Vida — quem define é a classe (lib/classes.js).
  */
 
-const ATTRS = ["FOR", "DES", "CON", "SAB", "ESP", "CAR", "INT"];
-
 export const DEFAULT_RACES = [
-  { id: "humano", slug: "humano", name: "Humano", hitDie: "1d8", base: { FOR: 12, DES: 12, CON: 12, SAB: 12, ESP: 12, CAR: 12, INT: 10 }, trait: "Versátil — linhagem equilibrada." },
-  { id: "elfo", slug: "elfo", name: "Elfo", hitDie: "1d8", base: { FOR: 10, DES: 15, CON: 10, SAB: 12, ESP: 13, CAR: 10, INT: 12 }, trait: "Visão no Escuro · Sentidos Aguçados." },
-  { id: "anao", slug: "anao", name: "Anão", hitDie: "1d10", base: { FOR: 14, DES: 9, CON: 15, SAB: 12, ESP: 11, CAR: 10, INT: 11 }, trait: "Resistência Anã." },
-  { id: "halfling", slug: "halfling", name: "Halfling", hitDie: "1d6", base: { FOR: 10, DES: 14, CON: 11, SAB: 13, ESP: 12, CAR: 13, INT: 9 }, trait: "Sortudo." },
-  { id: "draconato", slug: "draconato", name: "Draconato", hitDie: "1d10", base: { FOR: 14, DES: 10, CON: 13, SAB: 10, ESP: 10, CAR: 15, INT: 10 }, trait: "Sopro Dracônico." },
-  { id: "gnomo", slug: "gnomo", name: "Gnomo", hitDie: "1d6", base: { FOR: 8, DES: 11, CON: 13, SAB: 10, ESP: 11, CAR: 13, INT: 16 }, trait: "Astúcia Gnômica." },
-  { id: "tiefling", slug: "tiefling", name: "Tiefling", hitDie: "1d8", base: { FOR: 10, DES: 10, CON: 11, SAB: 9, ESP: 10, CAR: 17, INT: 15 }, trait: "Legado Abissal." },
-  { id: "orc", slug: "orc", name: "Orc", hitDie: "1d12", base: { FOR: 15, DES: 12, CON: 13, SAB: 10, ESP: 11, CAR: 10, INT: 10 }, trait: "Vigor Selvagem." },
+  { id: "humano", slug: "humano", name: "Humano", bonus: { FOR: 1, DES: 1, CON: 1, SAB: 1, ESP: 1, CAR: 1, INT: 1 }, trait: "Versátil — +1 em todos os atributos." },
+  { id: "elfo", slug: "elfo", name: "Elfo", bonus: { DES: 2, SAB: 1 }, trait: "Visão no Escuro · Sentidos Aguçados — +2 DES, +1 SAB." },
+  { id: "anao", slug: "anao", name: "Anão", bonus: { CON: 2, FOR: 1 }, trait: "Resistência Anã — +2 CON, +1 FOR." },
+  { id: "halfling", slug: "halfling", name: "Halfling", bonus: { DES: 2, CAR: 1 }, trait: "Sortudo — +2 DES, +1 CAR." },
+  { id: "draconato", slug: "draconato", name: "Draconato", bonus: { FOR: 2, CAR: 1 }, trait: "Sopro Dracônico — +2 FOR, +1 CAR." },
+  { id: "gnomo", slug: "gnomo", name: "Gnomo", bonus: { INT: 2, CAR: 1 }, trait: "Astúcia Gnômica — +2 INT, +1 CAR." },
+  { id: "tiefling", slug: "tiefling", name: "Tiefling", bonus: { CAR: 2, INT: 1 }, trait: "Legado Abissal — +2 CAR, +1 INT." },
+  { id: "orc", slug: "orc", name: "Orc", bonus: { FOR: 2, CON: 1 }, trait: "Vigor Selvagem — +2 FOR, +1 CON." },
 ];
 
 export const RACE_IDS = DEFAULT_RACES.map((race) => race.id);
+const ATTRS = ["FOR", "DES", "CON", "SAB", "ESP", "CAR", "INT"];
 
 export function getRaceById(id) {
   if (!id) return null;
   const needle = String(id).trim().toLowerCase();
-  return DEFAULT_RACES.find((race) => race.id === needle || race.name.toLowerCase() === needle) ?? null;
+  return DEFAULT_RACES.find((race) => race.id === needle || race.slug === needle || race.name.toLowerCase() === needle) ?? null;
 }
 
-/** Atributos base da raça (cópia; objeto imutável de entrada). */
-export function getRaceBaseAttributes(raceId) {
-  const race = getRaceById(raceId);
-  return race ? { ...race.base } : Object.fromEntries(ATTRS.map((attr) => [attr, 10]));
+/** Bônus clássico 5e da raça (cópia defensiva; atributos ausentes = 0). */
+export function getRaceBonus(raceOrId) {
+  const race = typeof raceOrId === "string"
+    ? getRaceById(raceOrId)
+    : raceOrId?.bonus
+      ? raceOrId
+      : getRaceById(raceOrId?.slug ?? raceOrId?.id ?? raceOrId?.name);
+  const bonus = {};
+  for (const attr of ATTRS) bonus[attr] = Number(race?.bonus?.[attr]) || 0;
+  return bonus;
 }
 
-/** Dado de vida definido pela raça (fallback 1d8). */
-export function getRaceHitDie(raceId, fallback = "1d8") {
-  return getRaceById(raceId)?.hitDie ?? fallback;
+/** Texto curto do bônus para exibir no select/preview (ex.: "+2 DES, +1 SAB"). */
+export function formatRaceBonus(raceOrId) {
+  const bonus = getRaceBonus(raceOrId);
+  const parts = ATTRS.filter((attr) => bonus[attr] !== 0).map((attr) => `+${bonus[attr]} ${attr}`);
+  return parts.length > 0 ? parts.join(", ") : "sem bônus";
+}
+
+/** Subtrai o bônus de uma raça dos atributos (troca de raça pelo mestre). */
+export function subtractRaceBonus(attributes, raceOrId) {
+  const bonus = getRaceBonus(raceOrId);
+  const next = { ...attributes };
+  for (const attr of ATTRS) {
+    const current = Number(next[attr]) || 10;
+    next[attr] = Math.max(1, Math.min(30, current - bonus[attr]));
+  }
+  return next;
+}
+
+/** Soma o bônus de uma raça aos atributos (seleção da raça). */
+export function addRaceBonus(attributes, raceOrId) {
+  const bonus = getRaceBonus(raceOrId);
+  const next = { ...attributes };
+  for (const attr of ATTRS) {
+    const current = Number(next[attr]) || 10;
+    next[attr] = Math.max(1, Math.min(30, current + bonus[attr]));
+  }
+  return next;
 }

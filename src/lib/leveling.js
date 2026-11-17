@@ -1,6 +1,6 @@
 /**
  * Utilitários puros de progressão (subida de nível) do Grimorium RPG.
- * O dado de vida vem da RAÇA (lib/races.js); a rolagem acontece no
+ * O dado de vida vem da CLASSE (lib/classes.js); a rolagem acontece no
  * momento de subir de nível, somando Mod(CON) — mínimo de 1 HP por nível.
  */
 

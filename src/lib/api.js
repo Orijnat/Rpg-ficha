@@ -294,6 +294,36 @@ export async function listRaces() {
   }, "Não foi possível carregar as raças.");
 }
 
+export async function listClasses() {
+  return safeFetchJson(`${API_BASE_URL}/classes`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  }, "Não foi possível carregar as classes.");
+}
+
+export async function createClassOnBackend(payload, token = getStoredToken()) {
+  return safeFetchJson(`${API_BASE_URL}/classes`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify(payload),
+  }, "Erro ao criar a classe.");
+}
+
+export async function updateClassOnBackend(classeId, payload, token = getStoredToken()) {
+  return safeFetchJson(`${API_BASE_URL}/classes/${classeId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+    body: JSON.stringify(payload),
+  }, "Erro ao atualizar a classe.");
+}
+
+export async function deleteClassOnBackend(classeId, token = getStoredToken()) {
+  return safeFetchJson(`${API_BASE_URL}/classes/${classeId}`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json", ...authHeaders(token) },
+  }, "Erro ao remover a classe.");
+}
+
 export async function createCharacterOnBackend(characterData, token = getStoredToken()) {
   return safeFetchJson(`${API_BASE_URL}/characters`, {
     method: "POST",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Sparkles,
   Plus,
@@ -28,6 +28,9 @@ import { Card, SectionHeader } from "../components/ui";
 import { AbilityCard } from "../components/habilidades/AbilityCard";
 import { AbilityFormModal } from "../components/habilidades/AbilityFormModal";
 import { LevelProgressionGrid } from "../components/habilidades/LevelProgressionGrid";
+import { ClassProgression } from "../components/habilidades/ClassProgression";
+import { listClasses } from "../../lib/api";
+import { DEFAULT_CLASSES, findSelectedClass, getClassAbilities } from "../../lib/classes";
 import {
   agruparPorNivel,
   calcularProgressoTreino,
@@ -62,9 +65,24 @@ export default function HabilidadesPage() {
     assignToLevel: null,
   });
 
+  const [classesCatalog, setClassesCatalog] = useState(DEFAULT_CLASSES);
+  useEffect(() => {
+    let active = true;
+    listClasses()
+      .then((rows) => {
+        if (active && Array.isArray(rows) && rows.length > 0) setClassesCatalog(rows);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const characterLevel = Math.max(1, Number(data.level) || 1);
   const abilities = Array.isArray(data.abilities) ? data.abilities : [];
   const levelAbilities = data.levelAbilities || data.dadosExtras?.levelAbilities || {};
+  const classe = findSelectedClass(classesCatalog, data);
+  const classAbilityCount = classe ? getClassAbilities(classe, characterLevel).length : 0;
 
   const peMax = Number(data.dadosExtras?.peMax ?? 10);
   const peCurrent = Number(data.dadosExtras?.peCurrent ?? 10);
@@ -355,7 +373,7 @@ export default function HabilidadesPage() {
               Habilidades de Nível (1 a 20)
             </h3>
             <p className="text-xs text-zinc-400">
-              {stats.levelSlotsFilled} de 20 slots de nível alocados pelo herói.
+              {classAbilityCount} da classe desbloqueadas · {stats.levelSlotsFilled} de 20 slots próprios alocados.
             </p>
           </div>
         </button>
@@ -402,7 +420,9 @@ export default function HabilidadesPage() {
 
       {/* Exibição da Categoria Selecionada */}
       {mainCategory === "nivel" ? (
-        <LevelProgressionGrid
+        <div className="space-y-4">
+          <ClassProgression classe={classe} characterLevel={characterLevel} />
+          <LevelProgressionGrid
           characterLevel={characterLevel}
           abilities={abilities}
           levelAbilities={levelAbilities}
@@ -415,6 +435,7 @@ export default function HabilidadesPage() {
           onEditAbility={handleOpenEditModal}
           onTrain={trainAbility}
         />
+        </div>
       ) : (
         /* Seção de Habilidades Criadas pelo Jogador */
         <div className="space-y-5">

@@ -5,7 +5,9 @@ import {
   getClassByName,
   getHitDieForClass,
   isValidHitDie,
-  getAbilityPresetsForClass,
+  getClassAbilities,
+  getClassAbilitiesLocked,
+  findSelectedClass,
 } from "../classes.js";
 
 test("catálogo cobre as classes do documento de regras", () => {
@@ -39,7 +41,30 @@ test("isValidHitDie aceita apenas notações d20 de regras", () => {
   assert.equal(isValidHitDie("1d1000"), false);
 });
 
-test("preset de habilidades por classe", () => {
-  assert.deepEqual(getAbilityPresetsForClass("bruxeiro"), ["hab-igni", "hab-quen"]);
-  assert.deepEqual(getAbilityPresetsForClass("inventada"), []);
+const CATALOGO = [
+  {
+    id: "mago", slug: "mago", name: "Mago", hitDie: "1d6",
+    abilities: [
+      { id: "a1", reqLevel: 1, name: "Toque Arcano", type: "ativa" },
+      { id: "a2", reqLevel: 3, name: "Bola de Fogo", type: "ativa" },
+      { id: "a3", reqLevel: 5, name: "Muralha de Força", type: "passiva" },
+    ],
+  },
+];
+
+test("habilidades da classe liberam pelo nível do herói", () => {
+  const lv1 = getClassAbilities(CATALOGO[0], 1);
+  assert.deepEqual(lv1.map((a) => a.name), ["Toque Arcano"]);
+  const lv5 = getClassAbilities(CATALOGO[0], 5);
+  assert.deepEqual(lv5.map((a) => a.name), ["Toque Arcano", "Bola de Fogo", "Muralha de Força"]);
+  const locked = getClassAbilitiesLocked(CATALOGO[0], 1);
+  assert.deepEqual(locked.map((a) => a.name), ["Bola de Fogo", "Muralha de Força"]);
+  assert.deepEqual(getClassAbilities(null, 10), []);
+});
+
+test("findSelectedClass resolve por classId ou slug dos dados extras", () => {
+  assert.equal(findSelectedClass(CATALOGO, { classId: "mago" })?.name, "Mago");
+  assert.equal(findSelectedClass(CATALOGO, { dadosExtras: { class: "mago" } })?.name, "Mago");
+  assert.equal(findSelectedClass(CATALOGO, { dadosExtras: { class: "nao-existe" } }), null);
+  assert.equal(findSelectedClass(CATALOGO, {}), null);
 });

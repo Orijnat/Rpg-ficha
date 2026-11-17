@@ -9,18 +9,20 @@ import Aparencia from "../components/Aparencia";
 import Pericia from "../components/Pericia";
 import RecursosCombate from "../components/RecursosCombate";
 import { calculateCapacity, calculateLevelFromXP, calculateModifier } from "../../lib/modifiers";
-import { DEFAULT_RACES } from "../../lib/races";
-import { listRaces } from "../../lib/api";
+import { DEFAULT_RACES, formatRaceBonus } from "../../lib/races";
+import { DEFAULT_CLASSES, findSelectedClass } from "../../lib/classes";
+import { listRaces, listClasses } from "../../lib/api";
 import { parseHitDie, hpGainFromRoll, levelUpGate } from "../../lib/leveling";
 import { useDice } from "../context/DiceContext";
 import { DEFAULT_ABILITIES, isHabilidadeDesbloqueada } from "../../lib/abilities";
 
 export default function Personagem() {
-  const { data, upd, syncStatus, syncError, retrySync, reloadFromCloud, overwriteCloud, updateDadosExtras, updateRace, applyLevelUp } = useCharacter();
+  const { data, upd, syncStatus, syncError, retrySync, reloadFromCloud, overwriteCloud, updateDadosExtras, updateRace, updateClass, applyLevelUp } = useCharacter();
   const { executeRoll } = useDice();
   const [levelFeedback, setLevelFeedback] = useState(null);
   const feedbackTimer = useRef(null);
   const [racas, setRacas] = useState(DEFAULT_RACES);
+  const [classes, setClasses] = useState(DEFAULT_CLASSES);
   const capacity = calculateCapacity(data);
   const abilities = Array.isArray(data.abilities) ? data.abilities : [];
   const characterLevel = Math.max(1, Number(data.level) || 1);
@@ -28,6 +30,7 @@ export default function Personagem() {
   const conMod = calculateModifier(data.CON);
   const hitDie = typeof data.dadosExtras?.hitDie === "string" && data.dadosExtras.hitDie ? data.dadosExtras.hitDie : "1d8";
   const race = racas.find((raca) => raca.id === data.raceId || raca.slug === data.dadosExtras?.race) ?? null;
+  const classe = findSelectedClass(classes, data);
   const canLevelUp = characterLevel < xpInfo.level && characterLevel < 20;
   const xpMissing = Math.max(0, (xpInfo.nextLevelXP ?? 0) - Number(data.xp || 0));
 
@@ -38,6 +41,11 @@ export default function Personagem() {
     listRaces()
       .then((rows) => {
         if (active && Array.isArray(rows) && rows.length > 0) setRacas(rows);
+      })
+      .catch(() => {});
+    listClasses()
+      .then((rows) => {
+        if (active && Array.isArray(rows) && rows.length > 0) setClasses(rows);
       })
       .catch(() => {});
     return () => {
@@ -203,11 +211,13 @@ export default function Personagem() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
             <SectionHeader
-              title="Raça & Ascensão"
-              subtitle="A raça define seus status base e o Dado de Vida"
+              title="Raça, Classe & Ascensão"
+              subtitle="A raça soma seu bônus 5e; a classe define o Dado de Vida e as habilidades de nível"
               icon={<Dna size={15} />}
             />
             <div className="mt-2 flex flex-wrap items-center gap-2">
+              <label className="flex flex-col gap-1 text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
+                Raça
                 <select
                   value={race?.id || ""}
                   onChange={(e) => {
@@ -215,25 +225,47 @@ export default function Personagem() {
                     if (option) updateRace(option); // a raça só pode ser definida uma vez
                   }}
                   disabled={Boolean(race)}
-                  className="h-9 rounded-lg border border-border bg-input-background px-2.5 text-xs text-foreground outline-none focus:border-primary disabled:cursor-not-allowed disabled:opacity-70"
+                  className="h-9 rounded-lg border border-border bg-input-background px-2.5 text-xs font-normal text-foreground outline-none focus:border-primary disabled:cursor-not-allowed disabled:opacity-70 normal-case"
                   aria-label="Raça do herói"
                   title={race ? "A raça já foi definida e só o mestre pode alterar." : "Escolha com cuidado: a raça só pode ser definida uma vez."}
                 >
-                {!race && <option value="">Selecione a raça (uma única vez)</option>}
-                {racas.map((option) => (
-                  <option key={option.id} value={option.id}>
-                    {option.name}
-                  </option>
-                ))}
-              </select>
-              <span className="text-[10px] text-muted-foreground">
-                {race
-                  ? `${race.trait} · A raça já foi selada; só o mestre pode alterar.`
-                  : "Defina a raça uma única vez. Ao escolher, os status base, o Dado de Vida e a Vida máxima são aplicados automaticamente — depois, só o mestre pode mudar."}
+                  {!race && <option value="">Selecione a raça (uma única vez)</option>}
+                  {racas.map((option) => (
+                    <option key={option.id} value={option.id}>
+                      {option.name} ({formatRaceBonus(option)})
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="flex flex-col gap-1 text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
+                Classe
+                <select
+                  value={classe?.id || ""}
+                  onChange={(e) => {
+                    const option = e.target.value ? classes.find((entry) => entry.id === e.target.value) : null;
+                    if (option) updateClass(option); // a classe só pode ser definida uma vez
+                  }}
+                  disabled={Boolean(classe)}
+                  className="h-9 rounded-lg border border-border bg-input-background px-2.5 text-xs font-normal text-foreground outline-none focus:border-primary disabled:cursor-not-allowed disabled:opacity-70 normal-case"
+                  aria-label="Classe do herói"
+                  title={classe ? "A classe já foi definida e só o mestre pode alterar." : "Escolha com cuidado: a classe só pode ser definida uma vez."}
+                >
+                  {!classe && <option value="">Selecione a classe (uma única vez)</option>}
+                  {classes.map((option) => (
+                    <option key={option.id} value={option.id}>
+                      {option.name} ({option.hitDie})
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <span className="max-w-[16rem] text-[10px] text-muted-foreground">
+                {classe
+                  ? `${classe.description ?? ""} ${race?.trait ? race.trait : ""} · Raça e classe já seladas — só o mestre pode alterar.`
+                  : "Defina a raça e a classe uma única vez. A raça SOMA seu bônus sobre seus status; a classe define o Dado de Vida e a vida máxima (nível 1) — depois, só o mestre pode mudar."}
               </span>
             </div>
             <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
-              Dado de Vida (raça): <span className="text-primary">{hitDie}</span> · Mod(CON){" "}
+              Dado de Vida (classe): <span className="text-primary">{hitDie}</span> · Mod(CON){" "}
               <span className={conMod >= 0 ? "text-emerald-400" : "text-rose-400"}>
                 {conMod >= 0 ? "+" : ""}{conMod}
               </span>
@@ -283,7 +315,7 @@ export default function Personagem() {
       <Card>
         <SectionHeader
           title="Atributos Fundamentais"
-          subtitle="Os 7 pilares arcanos que definem suas rolagens d20"
+          subtitle="Você define os status base; a raça soma o bônus 5e na seleção (+1 em tudo para Humano, etc.)"
           icon={<Sword size={15} />}
         />
         <div className="grid grid-cols-4 gap-2 sm:grid-cols-7 sm:gap-3">

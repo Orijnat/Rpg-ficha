@@ -11,6 +11,7 @@ import {
 } from "../../lib/abilities";
 import { ensureCanonicalSkills } from "../../lib/modifiers";
 import { levelUpGate, hitDieMax } from "../../lib/leveling";
+import { addRaceBonus } from "../../lib/races";
 import { applyItemUse, tickActiveEffects } from "../../lib/items";
 import { useAuth } from "./AuthContext";
 
@@ -83,6 +84,10 @@ function normalizeCharacterForSync(charData, activeChar) {
     // O backend resolve a raça pelo vínculo FK (raceId) ou pelo slug (race) —
     // enviar o slug garante persistência mesmo com raceId em formato de slug (fallback offline).
     race: (charData.dadosExtras && charData.dadosExtras.race) || undefined,
+    // O backend resolve a classe pelo vínculo FK (classId) ou pelo slug (class) —
+    // o Dado de Vida vem da classe (a raça não define mais o dado de vida).
+    classId: charData.classId ?? charData.classeId ?? undefined,
+    class: (charData.dadosExtras && charData.dadosExtras.class) || undefined,
   };
 }
 
@@ -454,28 +459,53 @@ export function CharacterProvider({ children }) {
 
   // A raça é escolhida UMA ÚNICA VEZ pelo jogador; depois disso só o mestre
   // pode alterar (proteção de defesa em profundidade — a UI já trava o select e o servidor barra 403).
+  // A raça NÃO define mais o Dado de Vida — ela apenas SOMA seu bônus 5e clássico
+  // sobre os status definidos pelo jogador (nunca sobrescreve).
   const updateRace = (raca) => {
+    if (!raca) return; // limpeza não é permitida ao jogador
     setData((current) => {
       const hadRace = Boolean(current.raceId) || Boolean(current.dadosExtras?.race);
-      if (!raca) return current; // limpeza não é permitida ao jogador
       if (hadRace) return current; // já escolhida: no-op
-      const baseAttrs = raca.base || {};
-      // Vida máxima inicial = valor máximo do Dado de Vida (só na criação — não pisa em herói já evoluído).
-      const heroLevel = Math.max(1, Number(current.level) || 1);
-      const initialHp = heroLevel <= 1 ? hitDieMax(raca.hitDie, 8) : null;
+      const baseAttrs = {
+        FOR: current.FOR, DES: current.DES, CON: current.CON,
+        SAB: current.SAB, ESP: current.ESP, CAR: current.CAR, INT: current.INT,
+      };
+      const boosted = addRaceBonus(baseAttrs, raca);
       return {
         ...current,
+        ...boosted,
         raceId: raca.id,
-        ...baseAttrs,
-        ...(initialHp ? { hp: initialHp, hpMax: initialHp } : {}),
         attributes: {
           ...(current.attributes || {}),
-          ...baseAttrs,
+          ...boosted,
         },
         dadosExtras: {
           ...(current.dadosExtras || {}),
-          race: raca.slug ?? null,
-          hitDie: raca.hitDie ?? current.dadosExtras?.hitDie ?? "1d8",
+          race: raca.slug ?? raca.id ?? null,
+        },
+      };
+    });
+  };
+
+  // A classe é escolhida UMA ÚNICA VEZ pelo jogador; depois disso só o mestre
+  // pode alterar (mesmo contrato da raça). A classe define o DADO DE VIDA e a
+  // VIDA MÁXIMA inicial do herói (só na criação — heróis evoluídos não são cortados).
+  const updateClass = (classe) => {
+    if (!classe) return; // limpeza não é permitida ao jogador
+    setData((current) => {
+      const hadClass = Boolean(current.classId) || Boolean(current.dadosExtras?.class);
+      if (hadClass) return current; // já escolhida: no-op
+      // Vida máxima inicial = valor máximo do Dado de Vida da classe (só no nível 1).
+      const heroLevel = Math.max(1, Number(current.level) || 1);
+      const initialHp = heroLevel <= 1 ? hitDieMax(classe.hitDie, 8) : null;
+      return {
+        ...current,
+        classId: classe.id,
+        ...(initialHp ? { hp: initialHp, hpMax: initialHp } : {}),
+        dadosExtras: {
+          ...(current.dadosExtras || {}),
+          class: classe.slug ?? null,
+          hitDie: classe.hitDie ?? current.dadosExtras?.hitDie ?? "1d8",
         },
       };
     });
@@ -947,6 +977,7 @@ export function CharacterProvider({ children }) {
     removeActiveEffect,
     updateDadosExtras,
     updateRace,
+    updateClass,
     applyLevelUp,
     addContract,
     removeContract,
