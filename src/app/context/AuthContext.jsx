@@ -95,6 +95,23 @@ export function AuthProvider({ children }) {
     initAuth();
   }, []);
 
+  // Sessão de navegador inteiro: logout em uma guia desconecta as demais.
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+    const handleStorage = (event) => {
+      if (event.key !== "rpg_auth_token") return;
+      if (event.newValue === null && !getStoredToken()) {
+        setUser(null);
+        setToken(null);
+        setActiveCharacterId(null);
+        setCharacters([]);
+        router.push("/login");
+      }
+    };
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, [router]);
+
   const login = async (identifier, password) => {
     const data = await loginUser({ login: identifier, password });
     setUser(data.user);

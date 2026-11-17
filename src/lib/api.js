@@ -14,14 +14,15 @@ export function getApiBaseUrl() {
 export function getStoredToken() {
   if (typeof window === "undefined") return null;
   try {
-    // sessionStorage reduz a persistência do JWT sem mudar o contrato Bearer da API.
-    const sessionToken = window.sessionStorage.getItem("rpg_auth_token");
-    if (sessionToken) return sessionToken;
-    // Compatibilidade de migração: sessões antigas continuam funcionando uma vez.
-    const legacyToken = window.localStorage.getItem("rpg_auth_token");
+    // Sessão de NAVEGADOR INTEIRO: o token fica no localStorage para todas as
+    // guias restaurarem a sessão via /auth/me (o servidor é a fonte da verdade).
+    const browserToken = window.localStorage.getItem("rpg_auth_token");
+    if (browserToken) return browserToken;
+    // Migração: sessões salvas no sessionStorage (formato antigo) sobem uma vez.
+    const legacyToken = window.sessionStorage.getItem("rpg_auth_token");
     if (legacyToken) {
-      window.sessionStorage.setItem("rpg_auth_token", legacyToken);
-      window.localStorage.removeItem("rpg_auth_token");
+      window.localStorage.setItem("rpg_auth_token", legacyToken);
+      window.sessionStorage.removeItem("rpg_auth_token");
     }
     return legacyToken;
   } catch {
@@ -34,8 +35,8 @@ export function storeAuth(token, user) {
   try {
     // Não persistir cópia do usuário — /auth/me é a fonte da verdade
     if (token) {
-      window.sessionStorage.setItem("rpg_auth_token", token);
-      window.localStorage.removeItem("rpg_auth_token");
+      window.localStorage.setItem("rpg_auth_token", token);
+      window.sessionStorage.removeItem("rpg_auth_token");
     }
   } catch {
     // A sessão em memória continua válida mesmo se o navegador bloquear storage.
