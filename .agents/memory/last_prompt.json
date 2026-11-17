@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-17T18:45:00-03:00",
+  "timestamp": "2026-11-17T19:00:00-03:00",
   "agent": "opencode",
-  "prompt": "eu prefiro o modal antio",
-  "action": "Usuario escolheu 'Finalizar completo (desfecho)'. Restaurado FinalizarEncounterModal.jsx para a versao pre-e30f20f (git show dad47b3:): Vitoria/Derrota/Fugiu por heroi + XP individual + checkbox 'Recebe XP' + acoes rapidas em lote + resumo do rateio. Header/painel seguem abrindo a modal. Titulos dos botoes atualizados. Verificado: 161/161 testes, build OK, lint 0 erros. NAO commitado."
+  "prompt": "faltou apenas o xp dinamico, de puxar o xp que sera dividido entre os envolvidos, ser o msm que o do cadastro do encontro",
+  "action": "Causa-raiz: backend guarda recursos dentro de dadosExtras.recursos (encontros nao tem coluna top-level) e o frontend lia encounter.recursos?.xp (sempre undefined → 0). Corrigido com src/lib/encounter.js getEncounterXpReward() (lê dadosExtras.recursos.xp, tolera legado, clamp>=0/floor/NaN→0); migrados FinalizarEncounterModal, EncounterXpPanel e encontros/page.js (handleDistributeXp + ConfirmDialog). Novo teste encounter.test.mjs → 162/162, build OK, lint 0 erros. NAO commitado."
 }
