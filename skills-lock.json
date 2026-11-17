@@ -6,6 +6,132 @@
       "sourceType": "github",
       "skillPath": "skills/frontend-design/SKILL.md",
       "computedHash": "89496d5dd00f4810205f351759594fc2742bf8eea85a2f2b2d1de59f4bd91576"
+    },
+    "audit-as-a11y-eng": {
+      "source": "Recusive/Orbit-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/audit-as-a11y-eng/SKILL.md",
+      "computedHash": "529ea03872c085beb640b653db4499da7dc1ab8d12741c666b22c2c798b79d01"
+    },
+    "audit-as-backend-eng": {
+      "source": "Recusive/Orbit-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/audit-as-backend-eng/SKILL.md",
+      "computedHash": "53bc6f2eafae8106df84c934f642cde0b61d2d4d7ae3734baba399307d55b5ac"
+    },
+    "audit-as-design-eng": {
+      "source": "Recusive/Orbit-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/audit-as-design-eng/SKILL.md",
+      "computedHash": "78b61358919d45791a46bc9a847c12516ca44965bb58513e7b60e9909b0210d6"
+    },
+    "audit-as-dx-eng": {
+      "source": "Recusive/Orbit-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/audit-as-dx-eng/SKILL.md",
+      "computedHash": "8d0c0e9144220f841db5f461a655b9571fdfbcb36cd49e67d4c4995ace2ee396"
+    },
+    "audit-as-frontend-eng": {
+      "source": "Recusive/Orbit-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/audit-as-frontend-eng/SKILL.md",
+      "computedHash": "37cc3a5fcc8b170a7056890f75c7c55fcde736f1c0481f3b796e007d3bea9b36"
+    },
+    "audit-as-perf-eng": {
+      "source": "Recusive/Orbit-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/audit-as-perf-eng/SKILL.md",
+      "computedHash": "98cc9db503ceccc1295b463e15dd762f2154b32d061eb86932c86f404b62f4b3"
+    },
+    "audit-as-prod-readiness": {
+      "source": "Recusive/Orbit-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/audit-as-prod-readiness/SKILL.md",
+      "computedHash": "b8e5f7099df6223d3ccdf5b11c8a460d55c74de47de289c71400d67375177076"
+    },
+    "audit-as-repo-maintainer": {
+      "source": "Recusive/Orbit-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/audit-as-repo-maintainer/SKILL.md",
+      "computedHash": "09796d3e8847b3e419a8c9ad08588ce45d2a64dafe20863d6e524844a3af586b"
+    },
+    "audit-as-structural-eng": {
+      "source": "Recusive/Orbit-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/audit-as-structural-eng/SKILL.md",
+      "computedHash": "3038cf3177f205ab66f12c6324a800bc91977864beccaacab027799f0f73db2f"
+    },
+    "audit-as-ux-eng": {
+      "source": "Recusive/Orbit-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/audit-as-ux-eng/SKILL.md",
+      "computedHash": "4003e96a33e9c62766099cb702729d2480db5f99af8909a24ae1f02d90b48dc8"
+    },
+    "emil-design-engineering": {
+      "source": "Recusive/Orbit-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/emil-design-engineering/SKILL.md",
+      "computedHash": "bbdd3a804ed108bbf2a47d7743a995c07911442b6662d4428cee8228fb1af638"
+    },
+    "full-audit": {
+      "source": "Recusive/Orbit-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/full-audit/SKILL.md",
+      "computedHash": "be5751b37b2500cf6abc0ce214d0237f43c63e9752ef1a6db82652b26670fdb7"
+    },
+    "make-interfaces-feel-better": {
+      "source": "Recusive/Orbit-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/make-interfaces-feel-better/SKILL.md",
+      "computedHash": "ea09cfbc8eb48cb0e676964ff765c5d952b5bdfd992c74ac129dfbb9777b98e0"
+    },
+    "vercel-react-best-practices": {
+      "source": "Recusive/Orbit-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/vercel-react-best-practices/SKILL.md",
+      "computedHash": "89b72306d5bc7b0d1dc74cee7ead350e0dc6fb5380d81f5e4b2394250cb7039e"
+    },
+    "web-animation-design": {
+      "source": "Recusive/Orbit-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/web-animation-design/SKILL.md",
+      "computedHash": "983705c4145c48e85440a7a8f70745510d1fcd9b29d448ede5b7cd9e340543ec"
+    },
+    "web-design-guidelines": {
+      "source": "Recusive/Orbit-plugin",
+      "sourceType": "github",
+      "skillPath": "skills/web-design-guidelines/SKILL.md",
+      "computedHash": "bbd174069eaccf3ec276cf386296a90a28af8639a40a491e5456901e0a3f6dc9"
+    },
+    "fe-build": {
+      "source": "sh5623/fe-rail",
+      "sourceType": "github",
+      "skillPath": "skills/fe-build/SKILL.md",
+      "computedHash": "5e9bd70aba14853263b8b26153d44be732983fa0d1f2f45b97509ab91a930649"
+    },
+    "fe-doc-sync": {
+      "source": "sh5623/fe-rail",
+      "sourceType": "github",
+      "skillPath": "skills/fe-doc-sync/SKILL.md",
+      "computedHash": "628cd3251229c9e4d12485e9dafa4f94c4425383d9a6cbc7ae5d0d448ee3d026"
+    },
+    "fe-review": {
+      "source": "sh5623/fe-rail",
+      "sourceType": "github",
+      "skillPath": "skills/fe-review/SKILL.md",
+      "computedHash": "daa18c8945d653e717e80608c3fe2fd165468eae4f1e353d6c9e59138c2897f8"
+    },
+    "fe-spec": {
+      "source": "sh5623/fe-rail",
+      "sourceType": "github",
+      "skillPath": "skills/fe-spec/SKILL.md",
+      "computedHash": "35c32ab42f49218ec29fd0551af0ff29948b386efee67fd89427b7d520883587"
+    },
+    "fe-start": {
+      "source": "sh5623/fe-rail",
+      "sourceType": "github",
+      "skillPath": "skills/fe-start/SKILL.md",
+      "computedHash": "9d57ded960567c5dc27ccf30e3a654951f6d62e0f8ee42277cf7f74734845fb5"
     }
   }
 }
