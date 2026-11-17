@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-17T23:30:00-03:00",
+  "timestamp": "2026-11-17T23:50:00-03:00",
   "agent": "opencode",
-  "prompt": "faca um mapeamento eral do sistema e use a skill de banco de dados e reformule oque jular necessario para adicionar no bacno de dados",
-  "action": "Mapeamento geral + reform: achado schema drift — tabelas relacionais (montarias, pericias_personagem, itens_inventario, contratos, cofres, imagens) criadas mas nunca usadas; app vive em dados_extras JSONB. Aplicado: MONTARIAS agora persistidas na tabela montarias (Mount.js, mountController + ACL, /api/characters/:id/mounts, migration de backfill idempotente testada ao vivo em Postgres 16 descartável). Frontend /montaria reescrito p/ API com rollback otimista. Back 106/106, front 161/161, build OK, lint 0 erros. NÃO commitado. Prod: db:migrate + Render pendentes."
+  "prompt": "de pus e rode a miranstion",
+  "action": "Commitado e pushado nos 2 repos (front 9f98922+19d431f; back 7e64360). Migration 20261117210000-montaria-a-partir-de-json.js APLICADA no Supabase de producao via npm run db:migrate (todas idempotentes); montarias 0 -> 1 linha ('sas' 20/20, dono wqw); sequelize_meta ok. PENDENTE: Manual Deploy do backend no Render para os endpoints /mounts valerem em producao."
 }
