@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-17T20:30:00-03:00",
+  "timestamp": "2026-11-17T20:45:00-03:00",
   "agent": "opencode",
-  "prompt": "ao abrir a fica ele ainda esta mudadno a tela e nao abrindo uma nova janela",
-  "action": "Trocado window.open por <Link target=_blank rel=noreferrer noopener> no 'Acessar Ficha Completa' (ancora nunca sofre bloqueio de popup). Provável causa em producao: bundle antigo da Vercel (hard refresh apos deploy). 161/161 testes, build OK, lint 0 erros. Nao commitado (aguardando pedido)."
+  "prompt": "ao acessar uma ficha de jogador como mestre, nao esta abrindo em nova uia",
+  "action": "Todos os botoes 'Acessar Ficha' do mestre viram ancoras <a target=_blank rel=noreferrer noopener> p/ /personagem?inspect=<id>: Ameacas & Herois (b) Painel do Mestre (botao) e campanhas (botao). inspectCharacter deixou de ser usado nessas telas. Commitado e pushado apos pedido implicito de correcao (26e67b8 + docs). Lembrete: producao so atualiza apos build da Vercel + hard refresh."
 }
