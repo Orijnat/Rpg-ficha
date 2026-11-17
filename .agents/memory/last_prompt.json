@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-17T23:59:00-03:00",
+  "timestamp": "2026-11-17T23:59:59-03:00",
   "agent": "opencode",
-  "prompt": "seure apenas o tema ambar vulcanico e cripta absisal, o resto dos temas remova e faca mais temas novos com outras cores",
-  "action": "Mantidos apenas amber + abyss (abyss accent alinhado #b05cf9). Removidos forest/crimson/frost/parchment/sunlight/mist. Criados 6 novos: bloodmoon (Lua de Sangue), frostfall (Gelo Eterno), jade (Jade de Avalon), felflame (Fogo Fatua), aurora (Aurora Rubra), sapphire (Safira Real) — contrastes WCAG calculados (todos AAA no titulo). globals.css, themes.js, themes.test.mjs (8 temas), SettingsModal THEME_ICONS, LEGACY_THEME_MAP atualizados. 161/161 testes, build OK, lint 0 erros. Nao commitado."
+  "prompt": "retire o jade de avalon, foo fatuo, os temas claros continue usando a paleta de cor mas nos botoes que nao sejam os dos dados coloque uma cor mais clarar",
+  "action": "Removidos jade e felflame. Catalogo final: amber, abyss, bloodmoon, frostfall, aurora, sapphire. Nos temas claros, --primary/--ring mais claros (aurora #dc2626, sapphire #2563eb); accent intocado (dados mantem cor). StatBox neutral travado na cor antiga via override .from-primary/15.to-primary/5. 161/161 testes, build OK, lint 0 erros. Nao commitado."
 }

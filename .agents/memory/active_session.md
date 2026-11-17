@@ -68,6 +68,14 @@
 - **Migration `20261117210000-montaria-a-partir-de-json.js` APLICADA no Supabase de produção** (via `npm run db:migrate`; todas as incrementos re-aplicados com sucesso/idempotência). `montarias` passou de 0 → **1** linha ("sas", 20/20 PV, dono "wqw") — exatamente o que havia em dados_extras.mounts. `sequelize_meta` registra a migration. **Backend AINDA NÃO DEPLOYADO no Render** → os endpoints `/api/characters/:id/mounts` não existem em produção até o Manual Deploy (até lá, a página /montaria mostrará o erro + retry).
 - **Estado do mapeamento**: achado principal = schema drift (tabelas relacionais nunca usadas: pericias_personagem, itens_inventario, contratos, cofres, imagens — candidatas a drop após decisão do operador; montarias agora É utilizada).
 
+## 🔧 2026-11-17 — Temas: Jade e Fogo Fátuo removidos; botões de AÇÃO mais claros nos claros — NÃO commitado
+- Pedido: "retire o jade de avalon, foo fatuo, os temas claros continue usando a paleta de cor mas nos botoes que nao sejam os dos dados coloque uma cor mais clarar" (escolha: só botões de Ação ficam mais claros; dados mantêm a cor).
+- **Removidos**: jade e felflame (CSS, themes.js, THEME_ICONS, themes.test.mjs; LEGACY_THEME_MAP: forest→amber, mist→sapphire). Catálogo final: amber, abyss, bloodmoon, frostfall, aurora, sapphire (6).
+- **Claros (aurora/sapphire)**: `--primary`/`--ring` em tons mais claros do mesmo matiz (aurora `#dc2626`, sapphire `#2563eb`; `--accent` NÃO mudou — botões dos dados ficam com a cor atual).
+- **StatBox neutral (botão de dado d20)**: override por tema — gradiente e borda travados no accent antigo via `.from-primary\/15.to-primary\/5` (não clareia com o --primary novo).
+- **Transparência**: botões que usam `bg-primary` (maioria dos CTAs — Salvar/Registrar/Confirmar etc.) clarearam automaticamente. Botões de ação que referenciam `var(--theme-accent)` diretamente (ex.: rerrolar, distribuir XP — poucos) mantiveram a cor escura; para migrá-los é só trocá-los para `bg-primary` (conversão rápida sob pedido).
+- Verificado: 161/161 testes, build OK, lint 0 erros (44 warnings pré-existentes). NÃO commitado, NÃO conferido no navegador.
+
 ## 🔧 2026-11-17 — Temas: só Âmbar Vulcânico e Cripta Abissal + 6 temas novos — NÃO commitado
 - Pedido: "seure apenas o tema ambar vulcanico e cripta absisal, o resto dos temas remova e faca mais temas novos com outras cores".
 - **Removidos**: forest (Floresta Ancestral), crimson (Sangue Carmesim), frost (Gelo Eterno), parchment (Pergaminho Antigo), sunlight (Catedral da Luz), mist (Névoa de Avalon) — blocos CSS e metadados.
