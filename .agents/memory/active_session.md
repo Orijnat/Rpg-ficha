@@ -81,6 +81,12 @@
 - `/admin/sessoes`: o campo vira "Recompensa de XP **Total da Sessão**"; novo botão por sessão **"Distribuir XP da sessão"** (só aparece se recompensas.xp > 0) — busca os heróis da campanha (`listCharacters(token, campanhaId)` — helper ganhou o parâmetro `campanhaId`, query string `?campanhaId=` no /characters do backend), calcula `floor(total ÷ N heróis)`, abre `ConfirmDialog` com o cálculo exato, aplica XP a UMA POR SÓ VEZ (updateCharacterOnBackend), grava `recompensas.xpDistribuidoEm` (badge "distribuída em…" / "XP ainda não distribuído") e re-carrega.
 - Verificação: 161/161 testes, build OK, lint 0 erros. NÃO commitado, NÃO conferido no navegador.
 
+## 🔧 2026-11-17 — Finalizar Encontro volta a ser MODAL (só quem recebe XP) — NÃO commitado
+- Pedido: "eu não quero que ele finalize automático, eu quero que ele abra um modal, como o antigo mas apenas para selecionar quem ganha ou não o XP".
+- `FinalizarEncounterModal.jsx` REWRITTEN (simplificado): apenas checkboxes "Recebe XP" por herói (todos pré-marcados), ações Todos/Nenhum, resumo "XP do encontro: R ÷ N herói(s) = perHero XP cada", rodapé com total; confirm "Encerrar Encontro". Sem desfecho (vitória/derrota/fuga) e sem edição de XP individual.
+- `/admin/encontros/page.js`: header "Finalizar" e o painel voltam a abrir a modal; `handleAutoFinalizeEncounter` removido; painel volta ao botão âmbar "Finalizar Encontro" (sem o link desfecho manual).
+- Verificado: 161/161 testes, build OK, lint 0 erros (44 warnings pré-existentes). NÃO conferido no navegador.
+
 ## 🔧 2026-11-17 — Finalizar/Encerrar o encontro agora distribui o XP TOTAL automaticamente — commitado (lote de pus)
 - Pedido: "este valor será o valor que os jogadores irão receber eu gostaria que ele fosse importado automaticamente para lá" (opção: ao encerrar, XP aplicado automaticamente).
 - `handleAutoFinalizeEncounter` em `/admin/encontros`: constrói as rows (todos heróis da iniciativa, todos "vitoria", XP = floor(TOTAL ÷ N)) e chama o mesmo `handleFinalizeEncounter` do modal (que já distribui e fecha o encontro, grava `dadosExtras.resultado`, fecha com `ativo:false` e loga). Header "Finalizar" e o painel agora fazem isso em 1 clique.
