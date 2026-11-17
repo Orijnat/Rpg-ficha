@@ -101,7 +101,7 @@ export default function AppShell({ children }) {
   return (
     <div
       data-theme={isLandingPage ? "amber" : undefined}
-      className="relative min-h-screen overflow-hidden text-[var(--theme-body)] transition-colors duration-300"
+      className="relative min-h-screen overflow-x-clip text-[var(--theme-body)] transition-colors duration-300"
       style={{
         backgroundColor: isLandingPage ? "#090b0e" : "var(--theme-bg, #0b0d12)",
         color: isLandingPage ? "#ebd9be" : "var(--theme-body, #e8d5b0)",
