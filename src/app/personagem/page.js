@@ -226,7 +226,7 @@ export default function Personagem() {
                 ))}
               </select>
               <span className="text-[10px] text-muted-foreground">
-                {race ? `${race.trait} (alterar a raça não recalcula os status)` : "Escolha a raça para registrar sua linhagem."}
+                {race ? `${race.trait} (alterar a raça não recalcula os status)` : "Selecione a raça aqui na ficha (o cadastro não exige raça)."}
               </span>
             </div>
             <p className="mt-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">

@@ -5,8 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
 import AuthScaffold from "../../components/auth/AuthScaffold";
-import { DEFAULT_RACES } from "../../lib/races";
-import { fetchInviteInfo, listRaces } from "../../lib/api";
+import { fetchInviteInfo } from "../../lib/api";
 import {
   Lock,
   User,
@@ -86,9 +85,6 @@ function RegisterForm() {
   // Dados do Primeiro Personagem (apenas para jogadores)
   const [characterName, setCharacterName] = useState("");
   const [characterJob, setCharacterJob] = useState("");
-  const [raceId, setRaceId] = useState("");
-  const [racas, setRacas] = useState(DEFAULT_RACES);
-  const [racasErro, setRacasErro] = useState("");
 
   // Código de Convite da Mesa
   const initialInvite = searchParams ? (searchParams.get("invite") || searchParams.get("convite") || searchParams.get("code") || "") : "";
@@ -137,28 +133,6 @@ function RegisterForm() {
     };
   }, [inviteCode]);
 
-  useEffect(() => {
-    let active = true;
-    listRaces()
-      .then((rows) => {
-        if (!active) return;
-        if (Array.isArray(rows) && rows.length > 0) {
-          setRacas(rows);
-          setRacasErro("");
-        } else {
-          setRacasErro("Não foi possível carregar as raças do servidor. Usando o catálogo padrão.");
-        }
-      })
-      .catch(() => {
-        if (active) setRacasErro("Não foi possível carregar as raças do servidor. Usando o catálogo padrão.");
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  const selectedRace = racas.find((race) => race.id === raceId) || null;
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -197,18 +171,9 @@ function RegisterForm() {
           setLoading(false);
           return;
         }
-        if (!selectedRace) {
-          setError("Escolha a raça do seu herói.");
-          setLoading(false);
-          return;
-        }
-        Object.assign(payload, selectedRace.base || {});
         payload.characterName = heroName;
         payload.characterJob = heroJob;
         payload.customClass = heroJob;
-        payload.race = selectedRace.slug || selectedRace.id;
-        payload.raceId = selectedRace.id;
-        payload.hitDie = selectedRace.hitDie;
         if (inviteCode.trim()) {
           payload.inviteCode = inviteCode.trim().toUpperCase();
         }
@@ -540,41 +505,6 @@ function RegisterForm() {
                     />
                   </FormField>
 
-                  <div className="space-y-1">
-                    <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-[#b59a6e]" style={{ fontFamily: "Cinzel, serif" }}>Raça</label>
-                    <select
-                      name="race"
-                      value={raceId}
-                      onChange={(e) => setRaceId(e.target.value)}
-                      className={inputBase}
-                      style={inputFont}
-                      aria-label="Raça do herói"
-                    >
-                      <option value="">Escolha a raça…</option>
-                      {racas.map((race) => (
-                        <option key={race.id} value={race.id}>
-                          {race.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {racasErro && (
-                    <p className="text-[11px] text-amber-300">{racasErro}</p>
-                  )}
-                  {selectedRace && (
-                    <div className="rounded-lg border border-[#4a3d2a]/60 bg-[#0f0d0a]/60 px-3 py-2">
-                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--theme-subtitle)]">
-                        Status base & Dado de Vida — {selectedRace.name}
-                      </p>
-                      <p className="mt-1 font-mono text-[11px] text-[#f1e7d2]">
-                        {Object.entries(selectedRace.base || {}).map(([attr, value]) => `${attr} ${value}`).join(" · ")}
-                      </p>
-                      <p className="mt-1 text-[10px] uppercase tracking-wider text-[var(--theme-accent)]">
-                        Dado de Vida: {selectedRace.hitDie}
-                      </p>
-                    </div>
-                  )}
                 </div>
               </div>
             )}

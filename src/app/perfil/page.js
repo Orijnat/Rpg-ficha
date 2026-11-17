@@ -23,6 +23,7 @@ import { useTheme } from "../context/ThemeContext";
 import { useCharacter } from "../context/CharacterContext";
 import { joinCampaign, listCampaigns, listRaces } from "../../lib/api";
 import { DEFAULT_RACES } from "../../lib/races";
+import { parseHitDie } from "../../lib/leveling";
 
 export default function PerfilPage() {
   const {
@@ -147,10 +148,8 @@ export default function PerfilPage() {
       setCreateMsg("Informe o nome e a classe do personagem.");
       return;
     }
-    if (!selectedRace) {
-      setCreateMsg("Informe a raça do personagem.");
-      return;
-    }
+    const attributes = selectedRace?.base || { FOR: 10, DES: 10, CON: 10, SAB: 10, ESP: 10, CAR: 10, INT: 10 };
+    const baseHp = selectedRace ? parseHitDie(selectedRace.hitDie).count * parseHitDie(selectedRace.hitDie).sides : 70;
 
     setIsCreating(true);
     setCreateMsg("");
@@ -158,16 +157,20 @@ export default function PerfilPage() {
       await createCharacter({
         name: newCharName.trim(),
         job: newCharJob.trim(),
-        hp: 70,
-        hpMax: 70,
+        hp: baseHp,
+        hpMax: baseHp,
         level: 1,
-        ...(selectedRace.base || {}),
-        raceId: selectedRace.id,
-        dadosExtras: {
-          race: selectedRace.slug || selectedRace.id,
-          hitDie: selectedRace.hitDie,
-          customClass: newCharJob.trim(),
-        },
+        ...attributes,
+        ...(selectedRace
+          ? {
+              raceId: selectedRace.id,
+              dadosExtras: {
+                race: selectedRace.slug || selectedRace.id,
+                hitDie: selectedRace.hitDie,
+                customClass: newCharJob.trim(),
+              },
+            }
+          : { dadosExtras: { customClass: newCharJob.trim() } }),
       });
       setNewCharName("");
       setNewCharJob("");
@@ -424,7 +427,7 @@ export default function PerfilPage() {
                   className="w-full min-h-10 rounded-lg border border-border bg-input-background px-3 text-xs text-foreground outline-none focus:border-primary"
                   aria-label="Raça do personagem"
                 >
-                  <option value="">Escolha a raça…</option>
+                  <option value="">Definir na ficha depois (opcional)</option>
                   {racas.map((race) => (
                     <option key={race.id} value={race.id}>
                       {race.name}
