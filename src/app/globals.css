@@ -137,181 +137,176 @@
   --border: rgba(176, 92, 249, 0.3);
 }
 
-/* 3. Floresta Ancestral */
-[data-theme="forest"] {
-  --theme-id: "forest";
-  --theme-bg: #040c08;
-  --theme-bg-elevated: #08170f;
-  --theme-title: #effdf6;
-  --theme-subtitle: #7cf1c0;
-  --theme-body: #d6fae9;
-  --theme-accent: #19c98d;
-  --theme-accent-hover: #3ee2a7;
-  --theme-accent-contrast: #042014;
-  --theme-accent-glow: rgba(25, 201, 141, 0.4);
-  --theme-glow-1: rgba(25, 201, 141, 0.22);
-  --theme-glow-2: rgba(234, 179, 8, 0.10);
-  --theme-glow-3: rgba(5, 150, 105, 0.16);
-  --background: #040c08;
-  --foreground: #d6fae9;
-  --card: #091710;
-  --primary: #19c98d;
-  --primary-foreground: #042014;
-  --border: rgba(25, 201, 141, 0.3);
+
+
+
+
+
+
+
+/* 3. Lua de Sangue */
+[data-theme="bloodmoon"] {
+  --theme-id: "bloodmoon";
+  --theme-bg: #0f0607;
+  --theme-bg-elevated: #1a0d0f;
+  --theme-title: #ffe4de;
+  --theme-subtitle: #e89c8a;
+  --theme-body: #f5d2c8;
+  --theme-accent: #e8503a;
+  --theme-accent-hover: #ff7a54;
+  --theme-accent-contrast: #1f0a06;
+  --theme-accent-glow: rgba(232, 80, 58, 0.4);
+  --theme-glow-1: rgba(232, 80, 58, 0.22);
+  --theme-glow-2: rgba(251, 146, 60, 0.10);
+  --theme-glow-3: rgba(159, 18, 57, 0.18);
+  --background: #0f0607;
+  --foreground: #f5d2c8;
+  --card: #1a0e10;
+  --primary: #e8503a;
+  --primary-foreground: #1f0a06;
+  --border: rgba(232, 80, 58, 0.3);
 }
 
-/* 4. Sangue Carmesim */
-[data-theme="crimson"] {
-  --theme-id: "crimson";
-  --theme-bg: #0d0406;
-  --theme-bg-elevated: #1a080c;
-  --theme-title: #fff1f2;
-  --theme-subtitle: #fba7a7;
-  --theme-body: #fde8e8;
-  --theme-accent: #f43f5e;
-  --theme-accent-hover: #fb7185;
-  --theme-accent-contrast: #1f0408;
-  --theme-accent-glow: rgba(244, 63, 94, 0.4);
-  --theme-glow-1: rgba(244, 63, 94, 0.24);
-  --theme-glow-2: rgba(245, 158, 11, 0.10);
-  --theme-glow-3: rgba(190, 18, 60, 0.16);
-  --background: #0d0406;
-  --foreground: #fde8e8;
-  --card: #18090d;
-  --primary: #f43f5e;
-  --primary-foreground: #1f0408;
-  --border: rgba(244, 63, 94, 0.3);
-}
-
-/* 5. Gelo Eterno */
-[data-theme="frost"] {
-  --theme-id: "frost";
-  --theme-bg: #050a12;
-  --theme-bg-elevated: #091322;
-  --theme-title: #f1fcfe;
-  --theme-subtitle: #76ebfa;
-  --theme-body: #e2f4ff;
-  --theme-accent: #0ea5e9;
-  --theme-accent-hover: #38bdf8;
-  --theme-accent-contrast: #041624;
-  --theme-accent-glow: rgba(14, 165, 233, 0.4);
-  --theme-glow-1: rgba(14, 165, 233, 0.24);
-  --theme-glow-2: rgba(99, 102, 241, 0.14);
+/* 4. Gelo Eterno */
+[data-theme="frostfall"] {
+  --theme-id: "frostfall";
+  --theme-bg: #050b13;
+  --theme-bg-elevated: #0a1522;
+  --theme-title: #f0faff;
+  --theme-subtitle: #7dd3fc;
+  --theme-body: #dcefff;
+  --theme-accent: #38bdf8;
+  --theme-accent-hover: #7dd3fc;
+  --theme-accent-contrast: #031b28;
+  --theme-accent-glow: rgba(56, 189, 248, 0.4);
+  --theme-glow-1: rgba(56, 189, 248, 0.22);
+  --theme-glow-2: rgba(129, 140, 248, 0.14);
   --theme-glow-3: rgba(56, 189, 248, 0.16);
-  --background: #050a12;
-  --foreground: #e2f4ff;
-  --card: #091422;
-  --primary: #0ea5e9;
-  --primary-foreground: #041624;
-  --border: rgba(14, 165, 233, 0.3);
+  --background: #050b13;
+  --foreground: #dcefff;
+  --card: #0a1420;
+  --primary: #38bdf8;
+  --primary-foreground: #031b28;
+  --border: rgba(56, 189, 248, 0.3);
 }
 
-/* 6. Pergaminho Antigo (Tema Claro Clássico) */
-[data-theme="parchment"] {
-  --theme-id: "parchment";
-  --theme-bg: #f4ecd8;
-  --theme-bg-elevated: #eae1c9;
-  --theme-title: #23150c;
-  --theme-subtitle: #755535;
-  --theme-body: #322115;
-  --theme-accent: #8a5a0d;
-  --theme-accent-hover: #a86e15;
-  --theme-accent-contrast: #ffffff;
-  --theme-accent-glow: rgba(138, 90, 13, 0.3);
-  --theme-glow-1: rgba(138, 90, 13, 0.16);
-  --theme-glow-2: rgba(139, 69, 19, 0.08);
-  --theme-glow-3: rgba(160, 120, 50, 0.10);
-  --background: #f4ecd8;
-  --foreground: #322115;
-  --card: #fdfbf5;
-  --card-foreground: #23150c;
-  --popover: #fdfbf5;
-  --popover-foreground: #23150c;
-  --primary: #8a5a0d;
-  --primary-foreground: #ffffff;
-  --secondary: #e9dec6;
-  --secondary-foreground: #23150c;
-  --muted: #e7dcbf;
-  --muted-foreground: #785a3c;
-  --accent: #8a5a0d;
-  --accent-foreground: #ffffff;
-  --border: rgba(150, 100, 35, 0.28);
-  --input-background: #eee3c8;
-  --ring: #8a5a0d;
+/* 5. Jade de Avalon */
+[data-theme="jade"] {
+  --theme-id: "jade";
+  --theme-bg: #040f0e;
+  --theme-bg-elevated: #08201d;
+  --theme-title: #ecfdf9;
+  --theme-subtitle: #5eead4;
+  --theme-body: #ccfbef;
+  --theme-accent: #2dd4bf;
+  --theme-accent-hover: #5eead4;
+  --theme-accent-contrast: #04211d;
+  --theme-accent-glow: rgba(45, 212, 191, 0.4);
+  --theme-glow-1: rgba(45, 212, 191, 0.22);
+  --theme-glow-2: rgba(250, 204, 21, 0.08);
+  --theme-glow-3: rgba(13, 148, 136, 0.18);
+  --background: #040f0e;
+  --foreground: #ccfbef;
+  --card: #08201d;
+  --primary: #2dd4bf;
+  --primary-foreground: #04211d;
+  --border: rgba(45, 212, 191, 0.3);
 }
 
-/* 7. Catedral da Luz (Tema Claro Paladino/Solar) */
-[data-theme="sunlight"] {
-  --theme-id: "sunlight";
-  --theme-bg: #f8fafc;
-  --theme-bg-elevated: #f1f5f9;
-  --theme-title: #0f172a;
-  --theme-subtitle: #475569;
-  --theme-body: #1e293b;
-  --theme-accent: #8a5a06;
-  --theme-accent-hover: #a8740c;
-  --theme-accent-contrast: #ffffff;
-  --theme-accent-glow: rgba(138, 90, 6, 0.3);
-  --theme-glow-1: rgba(138, 90, 6, 0.16);
-  --theme-glow-2: rgba(59, 130, 246, 0.10);
+/* 6. Fogo Fátuo */
+[data-theme="felflame"] {
+  --theme-id: "felflame";
+  --theme-bg: #070d04;
+  --theme-bg-elevated: #101c07;
+  --theme-title: #f5fbe0;
+  --theme-subtitle: #bef264;
+  --theme-body: #e3f7c8;
+  --theme-accent: #a3e635;
+  --theme-accent-hover: #bef264;
+  --theme-accent-contrast: #131a04;
+  --theme-accent-glow: rgba(163, 230, 53, 0.4);
+  --theme-glow-1: rgba(163, 230, 53, 0.22);
+  --theme-glow-2: rgba(101, 163, 13, 0.14);
   --theme-glow-3: rgba(234, 179, 8, 0.10);
-  --background: #f8fafc;
-  --foreground: #1e293b;
-  --card: #ffffff;
-  --card-foreground: #0f172a;
-  --popover: #ffffff;
-  --popover-foreground: #0f172a;
-  --primary: #8a5a06;
-  --primary-foreground: #ffffff;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #0f172a;
-  --muted: #e2e8f0;
-  --muted-foreground: #64748b;
-  --accent: #8a5a06;
-  --accent-foreground: #ffffff;
-  --border: rgba(196, 132, 29, 0.28);
-  --input-background: #f1f5f9;
-  --ring: #8a5a06;
+  --background: #070d04;
+  --foreground: #e3f7c8;
+  --card: #0e1808;
+  --primary: #a3e635;
+  --primary-foreground: #131a04;
+  --border: rgba(163, 230, 53, 0.3);
 }
 
-/* 8. Névoa de Avalon (Tema Claro Marítimo) */
-[data-theme="mist"] {
-  --theme-id: "mist";
-  --theme-bg: #eef2f6;
-  --theme-bg-elevated: #e2e8ee;
-  --theme-title: #0f2233;
-  --theme-subtitle: #4a6379;
-  --theme-body: #24384a;
-  --theme-accent: #0b6e66;
-  --theme-accent-hover: #128c80;
+/* 7. Aurora Rubra (Tema Claro) */
+[data-theme="aurora"] {
+  --theme-id: "aurora";
+  --theme-bg: #fbf0ec;
+  --theme-bg-elevated: #f5e2dc;
+  --theme-title: #450a0a;
+  --theme-subtitle: #8a3a2b;
+  --theme-body: #421c10;
+  --theme-accent: #b91c1c;
+  --theme-accent-hover: #dc2626;
   --theme-accent-contrast: #ffffff;
-  --theme-accent-glow: rgba(11, 110, 102, 0.3);
-  --theme-glow-1: rgba(11, 110, 102, 0.14);
-  --theme-glow-2: rgba(79, 70, 229, 0.10);
-  --theme-glow-3: rgba(13, 148, 136, 0.12);
-  --background: #eef2f6;
-  --foreground: #24384a;
-  --card: #ffffff;
-  --card-foreground: #0f2233;
-  --popover: #ffffff;
-  --popover-foreground: #0f2233;
-  --primary: #0b6e66;
+  --theme-accent-glow: rgba(185, 28, 28, 0.28);
+  --theme-glow-1: rgba(185, 28, 28, 0.16);
+  --theme-glow-2: rgba(251, 146, 60, 0.10);
+  --theme-glow-3: rgba(153, 27, 27, 0.10);
+  --background: #fbf0ec;
+  --foreground: #421c10;
+  --card: #fff8f6;
+  --card-foreground: #450a0a;
+  --popover: #fff8f6;
+  --popover-foreground: #450a0a;
+  --primary: #b91c1c;
   --primary-foreground: #ffffff;
-  --secondary: #e2e8ee;
-  --secondary-foreground: #0f2233;
-  --muted: #dde5ec;
-  --muted-foreground: #4a6379;
-  --accent: #0b6e66;
+  --secondary: #f3ddd6;
+  --secondary-foreground: #450a0a;
+  --muted: #edd8d2;
+  --muted-foreground: #8a3a2b;
+  --accent: #b91c1c;
   --accent-foreground: #ffffff;
-  --border: rgba(11, 110, 102, 0.3);
-  --input-background: #e6ecf2;
-  --ring: #0b6e66;
+  --border: rgba(185, 28, 28, 0.28);
+  --input-background: #f3ddd6;
+  --ring: #b91c1c;
+}
+
+/* 8. Safira Real (Tema Claro) */
+[data-theme="sapphire"] {
+  --theme-id: "sapphire";
+  --theme-bg: #eef1f7;
+  --theme-bg-elevated: #e2e7f0;
+  --theme-title: #0f1e3d;
+  --theme-subtitle: #3b4d73;
+  --theme-body: #1e2a45;
+  --theme-accent: #1d4ed8;
+  --theme-accent-hover: #2563eb;
+  --theme-accent-contrast: #ffffff;
+  --theme-accent-glow: rgba(29, 78, 216, 0.3);
+  --theme-glow-1: rgba(29, 78, 216, 0.16);
+  --theme-glow-2: rgba(96, 165, 250, 0.12);
+  --theme-glow-3: rgba(29, 78, 216, 0.10);
+  --background: #eef1f7;
+  --foreground: #1e2a45;
+  --card: #ffffff;
+  --card-foreground: #0f1e3d;
+  --popover: #ffffff;
+  --popover-foreground: #0f1e3d;
+  --primary: #1d4ed8;
+  --primary-foreground: #ffffff;
+  --secondary: #e2e7f0;
+  --secondary-foreground: #0f1e3d;
+  --muted: #dde3ec;
+  --muted-foreground: #3b4d73;
+  --accent: #1d4ed8;
+  --accent-foreground: #ffffff;
+  --border: rgba(29, 78, 216, 0.28);
+  --input-background: #e2e7f0;
+  --ring: #1d4ed8;
 }
 
 /* Adaptações Específicas para Temas Claros */
-[data-theme="parchment"] .grimoire-card,
-[data-theme="sunlight"] .grimoire-card,
-[data-theme="mist"] .grimoire-card {
+[data-theme="aurora"] .grimoire-card,
+[data-theme="sapphire"] .grimoire-card {
   box-shadow:
     0 16px 36px -8px rgba(120, 80, 20, 0.15),
     0 2px 8px rgba(0, 0, 0, 0.05),
@@ -319,17 +314,15 @@
     inset 0 0 0 1px color-mix(in srgb, var(--primary) 18%, transparent);
 }
 
-[data-theme="parchment"] .medallion-plate,
-[data-theme="sunlight"] .medallion-plate,
-[data-theme="mist"] .medallion-plate {
+[data-theme="aurora"] .medallion-plate,
+[data-theme="sapphire"] .medallion-plate {
   background: radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--primary) 12%, #ffffff) 0%, var(--card) 95%);
   border-color: color-mix(in srgb, var(--primary) 35%, rgba(0, 0, 0, 0.12));
   box-shadow: 0 4px 14px -2px rgba(100, 60, 20, 0.12), inset 0 1px 1px #fff;
 }
 
-[data-theme="parchment"] body::before,
-[data-theme="sunlight"] body::before,
-[data-theme="mist"] body::before {
+[data-theme="aurora"] body::before,
+[data-theme="sapphire"] body::before {
   background: radial-gradient(
     ellipse 85% 75% at 50% 40%,
     transparent 0%,
@@ -339,22 +332,19 @@
   );
 }
 
-[data-theme="parchment"] body::after,
-[data-theme="sunlight"] body::after,
-[data-theme="mist"] body::after {
+[data-theme="aurora"] body::after,
+[data-theme="sapphire"] body::after {
   opacity: 0.022;
 }
 
-[data-theme="parchment"] .alchemy-vial,
-[data-theme="sunlight"] .alchemy-vial,
-[data-theme="mist"] .alchemy-vial {
+[data-theme="aurora"] .alchemy-vial,
+[data-theme="sapphire"] .alchemy-vial {
   background: radial-gradient(circle at 50% 30%, #f4ebd5 0%, #e8dcbf 100%);
   border-color: rgba(140, 95, 30, 0.35);
 }
 
-[data-theme="parchment"] .gold-gradient-text,
-[data-theme="sunlight"] .gold-gradient-text,
-[data-theme="mist"] .gold-gradient-text {
+[data-theme="aurora"] .gold-gradient-text,
+[data-theme="sapphire"] .gold-gradient-text {
   background: linear-gradient(135deg, #7c4808 0%, #a86b16 35%, #d4922b 70%, #824f0c 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

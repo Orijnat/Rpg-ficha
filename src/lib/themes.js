@@ -1,25 +1,31 @@
 /**
  * Catálogo Oficial de Temas do Grimorium RPG
- * Desenvolvido com base nos padrões cromáticos e regras de harmonia do Adobe Color (https://color.adobe.com/br/):
- * - 3 Temas Escuros:
- *   1. amber (Âmbar Vulcânico) -> Harmonia Complementar Dividida Quente (Ouro Âmbar + Ametista Real + Fogo Vulcânico)
- *   2. abyss (Cripta Abissal) -> Harmonia Análoga Fria (Púrpura Místico + Azul Noturno + Ciano Rúnico)
- *   3. forest (Floresta Ancestral) -> Harmonia Tríade Natural (Esmeralda Silvestre + Ocre Dourado + Teal Aquático)
- * - 3 Temas Claros:
- *   4. parchment (Pergaminho Antigo) -> Harmonia Monocromática Terrosa (Papiro Dourado + Bronze Queimado + Nanquim Sépia)
- *   5. sunlight (Catedral da Luz) -> Harmonia Complementar Sacro-Solar (Marfim Sacro + Ouro Solar Reluzente + Azul Safira)
- *   6. mist (Névoa de Avalon) -> Harmonia Análoga Marítima (Prata Geada Nórdica + Sálvia Marítima + Índigo Bruma)
+ * Harmonias cromáticas inspiradas nos padrões do Adobe Color (https://color.adobe.com/br/):
+ * - 6 Temas Escuros:
+ *   1. amber (Âmbar Vulcânico) -> Complementar Dividida Quente (Ouro Âmbar + Ametista Real + Fogo Vulcânico)
+ *   2. abyss (Cripta Abissal)  -> Análoga Fria (Púrpura Místico + Azul Noturno + Ciano Rúnico)
+ *   3. bloodmoon (Lua de Sangue) -> Complementar Quente (Brasa Rubra + Âmbar Torrado)
+ *   4. frostfall (Gelo Eterno) -> Análoga Fria (Ciano Gelo + Azul Noturno)
+ *   5. jade (Jade de Avalon)   -> Análoga Aquática (Teal das Profundezas + Jade Pálido)
+ *   6. felflame (Fogo Fátuo)   -> Triádica Elétrica (Lima Ácida + Carvão Verde)
+ * - 2 Temas Claros:
+ *   7. aurora (Aurora Rubra)   -> Complementar Quente (Tijolo de Sangue + Marfim Rosado)
+ *   8. sapphire (Safira Real)  -> Complementar Régia (Azul de Luva + Marfim Prateado)
  *
- * Todos os temas atendem aos padrões de contraste WCAG AA/AAA (Adobe Color Accessibility).
+ * Todos os temas atendem aos padrões de contraste WCAG AA/AAA.
  */
 
 export const LEGACY_THEME_MAP = {
   crimson: "amber",
-  frost: "mist",
+  frost: "frostfall",
+  forest: "jade",
+  parchment: "aurora",
+  sunlight: "sapphire",
+  mist: "jade",
 };
 
 export const THEMES = [
-  // ── 3 TEMAS ESCUROS ──
+  // ── TEMAS ESCUROS ──
   {
     id: "amber",
     name: "Âmbar Vulcânico",
@@ -42,7 +48,7 @@ export const THEMES = [
     name: "Cripta Abissal",
     subtitle: "Sombra & Runas Arcanas",
     description: "Névoa púrpura, runas espectrais e mistérios sombrios do plano abissal.",
-    accent: "#a855f7",
+    accent: "#b05cf9",
     bg: "#08060e",
     titleColor: "#f8f4ff",
     subtitleColor: "#b59adf",
@@ -51,77 +57,111 @@ export const THEMES = [
     harmony: "Análoga Fria",
     harmonyFamily: "Adobe Color: Analogous Mystical Shadow",
     contrastRatio: "6.5:1 (WCAG AA)",
-    previewColors: ["#08060e", "#a855f7", "#f8f4ff"],
+    previewColors: ["#08060e", "#b05cf9", "#f8f4ff"],
     iconName: "Skull",
   },
   {
-    id: "forest",
-    name: "Floresta Ancestral",
-    subtitle: "Druidas & Natureza",
-    description: "Densas copas élficas, líquen bioluminescente e esmeralda silvestre viva.",
-    accent: "#10b981",
-    bg: "#040d08",
-    titleColor: "#f0fdf4",
-    subtitleColor: "#6ee7b7",
+    id: "bloodmoon",
+    name: "Lua de Sangue",
+    subtitle: "Caça & Brasas Antigas",
+    description: "Brasa rubra e sangue coagulado sob um céu de eclipse permanente.",
+    accent: "#e8503a",
+    bg: "#0f0607",
+    titleColor: "#ffe4de",
+    subtitleColor: "#e89c8a",
     tag: "Escuro",
     type: "dark",
-    harmony: "Tríade Natural",
-    harmonyFamily: "Adobe Color: Triad Nature Equilibrium",
-    contrastRatio: "8.5:1 (WCAG AAA)",
-    previewColors: ["#040d08", "#10b981", "#f0fdf4"],
-    iconName: "Trees",
+    harmony: "Complementar Quente",
+    harmonyFamily: "Adobe Color: Complementary Ember & Oxblood",
+    contrastRatio: "16.6:1 (WCAG AAA)",
+    previewColors: ["#0f0607", "#e8503a", "#ffe4de"],
+    iconName: "Eclipse",
+  },
+  {
+    id: "frostfall",
+    name: "Gelo Eterno",
+    subtitle: "Tundra & Aurora Gelo",
+    description: "Céu de uma noite polar, aurora ciano e aço congelado do norte.",
+    accent: "#38bdf8",
+    bg: "#050b13",
+    titleColor: "#f0faff",
+    subtitleColor: "#7dd3fc",
+    tag: "Escuro",
+    type: "dark",
+    harmony: "Análoga Fria",
+    harmonyFamily: "Adobe Color: Analogous Polar Frost",
+    contrastRatio: "18.6:1 (WCAG AAA)",
+    previewColors: ["#050b13", "#38bdf8", "#f0faff"],
+    iconName: "Snowflake",
+  },
+  {
+    id: "jade",
+    name: "Jade de Avalon",
+    subtitle: "Profundezas & Ruínas",
+    description: "Águas profundas de teal, jade polido e o silêncio das ruínas submersas.",
+    accent: "#2dd4bf",
+    bg: "#040f0e",
+    titleColor: "#ecfdf9",
+    subtitleColor: "#5eead4",
+    tag: "Escuro",
+    type: "dark",
+    harmony: "Análoga Aquática",
+    harmonyFamily: "Adobe Color: Analogous Deep Aquatic Jade",
+    contrastRatio: "18.5:1 (WCAG AAA)",
+    previewColors: ["#040f0e", "#2dd4bf", "#ecfdf9"],
+    iconName: "Droplets",
+  },
+  {
+    id: "felflame",
+    name: "Fogo Fátuo",
+    subtitle: "Feitiço & Sabugueiro",
+    description: "Chamas verdes-limão dos pântanos, breu verdejante e encantamentos selvagens.",
+    accent: "#a3e635",
+    bg: "#070d04",
+    titleColor: "#f5fbe0",
+    subtitleColor: "#bef264",
+    tag: "Escuro",
+    type: "dark",
+    harmony: "Triádica Elétrica",
+    harmonyFamily: "Adobe Color: Triadic Will-o'-the-Wisp",
+    contrastRatio: "18.5:1 (WCAG AAA)",
+    previewColors: ["#070d04", "#a3e635", "#f5fbe0"],
+    iconName: "Zap",
   },
 
-  // ── 3 TEMAS CLAROS ──
+  // ── TEMAS CLAROS ──
   {
-    id: "parchment",
-    name: "Pergaminho Antigo",
-    subtitle: "Manuscrito & Nanquim",
-    description: "Tomo secular em papiro claro envelhecido, nanquim sépia e filigranas de bronze.",
-    accent: "#8a5a0d",
-    bg: "#f4ecd8",
-    titleColor: "#23150c",
-    subtitleColor: "#785a3c",
+    id: "aurora",
+    name: "Aurora Rubra",
+    subtitle: "Aurora & Rosas Secas",
+    description: "Alvorada de marfim rosado e tijolo de sangue — o novo dia da guilda.",
+    accent: "#b91c1c",
+    bg: "#fbf0ec",
+    titleColor: "#450a0a",
+    subtitleColor: "#8a3a2b",
     tag: "Claro",
     type: "light",
-    harmony: "Monocromática Terrosa",
-    harmonyFamily: "Adobe Color: Monochromatic Warm Earth",
-    contrastRatio: "5.7:1 (WCAG AA)",
-    previewColors: ["#f4ecd8", "#8a5a0d", "#23150c"],
-    iconName: "BookOpen",
+    harmony: "Complementar Quente",
+    harmonyFamily: "Adobe Color: Complementary Dawn Ember",
+    contrastRatio: "14.4:1 (WCAG AAA)",
+    previewColors: ["#fbf0ec", "#b91c1c", "#450a0a"],
+    iconName: "Sunrise",
   },
   {
-    id: "sunlight",
-    name: "Catedral da Luz",
-    subtitle: "Paladinos & Marfim",
-    description: "Mármore sacro banhado pelo sol da alvorada, ouro solar reluzente e aço polido.",
-    accent: "#8a5a06",
-    bg: "#f8fafc",
-    titleColor: "#0f172a",
-    subtitleColor: "#64748b",
+    id: "sapphire",
+    name: "Safira Real",
+    subtitle: "Trono & Medalhão",
+    description: "Marfim prateado, azul de luva e o brilho frio de um trono de safira.",
+    accent: "#1d4ed8",
+    bg: "#eef1f7",
+    titleColor: "#0f1e3d",
+    subtitleColor: "#3b4d73",
     tag: "Claro",
     type: "light",
-    harmony: "Complementar Solar",
-    harmonyFamily: "Adobe Color: Complementary Divine Radiance",
-    contrastRatio: "7.1:1 (WCAG AAA)",
-    previewColors: ["#f8fafc", "#8a5a06", "#0f172a"],
-    iconName: "Sun",
-  },
-  {
-    id: "mist",
-    name: "Névoa de Avalon",
-    subtitle: "Brumas & Sabedoria Celta",
-    description: "Brumas matinais frescas, prata nórdica e sálvia marítima relaxante.",
-    accent: "#0b6e66",
-    bg: "#eef2f6",
-    titleColor: "#0f2233",
-    subtitleColor: "#4a6379",
-    tag: "Claro",
-    type: "light",
-    harmony: "Análoga Marítima",
-    harmonyFamily: "Adobe Color: Analogous Nordic Mist & Sage",
-    contrastRatio: "6.2:1 (WCAG AA)",
-    previewColors: ["#eef2f6", "#0b6e66", "#0f2233"],
-    iconName: "Compass",
+    harmony: "Complementar Régia",
+    harmonyFamily: "Adobe Color: Complementary Royal Sapphire",
+    contrastRatio: "14.6:1 (WCAG AAA)",
+    previewColors: ["#eef1f7", "#1d4ed8", "#0f1e3d"],
+    iconName: "Gem",
   },
 ];

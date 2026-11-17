@@ -3,15 +3,17 @@ import assert from "node:assert/strict";
 import { THEMES } from "../themes.js";
 
 test("Validação dos temas de RPG (Escuros e Claros)", () => {
-  assert.ok(THEMES.length >= 6, "Devem existir pelo menos 6 temas configurados");
+  assert.ok(THEMES.length >= 8, "Devem existir pelo menos 8 temas configurados");
 
   const expectedThemes = [
     { id: "amber", name: "Âmbar Vulcânico", accent: "#d89b38", type: "dark" },
-    { id: "abyss", name: "Cripta Abissal", accent: "#a855f7", type: "dark" },
-    { id: "forest", name: "Floresta Ancestral", accent: "#10b981", type: "dark" },
-    { id: "parchment", name: "Pergaminho Antigo", accent: "#8a5a0d", type: "light" },
-    { id: "sunlight", name: "Catedral da Luz", accent: "#8a5a06", type: "light" },
-    { id: "mist", name: "Névoa de Avalon", accent: "#0b6e66", type: "light" },
+    { id: "abyss", name: "Cripta Abissal", accent: "#b05cf9", type: "dark" },
+    { id: "bloodmoon", name: "Lua de Sangue", accent: "#e8503a", type: "dark" },
+    { id: "frostfall", name: "Gelo Eterno", accent: "#38bdf8", type: "dark" },
+    { id: "jade", name: "Jade de Avalon", accent: "#2dd4bf", type: "dark" },
+    { id: "felflame", name: "Fogo Fátuo", accent: "#a3e635", type: "dark" },
+    { id: "aurora", name: "Aurora Rubra", accent: "#b91c1c", type: "light" },
+    { id: "sapphire", name: "Safira Real", accent: "#1d4ed8", type: "light" },
   ];
 
   expectedThemes.forEach((expected) => {
@@ -28,5 +30,11 @@ test("Validação dos temas de RPG (Escuros e Claros)", () => {
   THEMES.forEach((theme) => {
     assert.ok(theme.tag === "Escuro" || theme.tag === "Claro", `Tag inválida em ${theme.id}`);
     assert.equal(theme.tag === "Escuro", theme.type === "dark", `Tag e tipo divergentes em ${theme.id}`);
+  });
+
+  // Apenas os temas suportados permanecem (sem forest/parchment/sunlight/mist/crimson/frost)
+  const removed = ["forest", "parchment", "sunlight", "mist", "crimson", "frost"];
+  removed.forEach((id) => {
+    assert.equal(THEMES.some((t) => t.id === id), false, `Tema removido "${id}" não deve existir`);
   });
 });
