@@ -55,6 +55,15 @@
 - `CharacterContext.levelUp` virou `applyLevelUp(gain, details)` — aplica o ganho pré-rolado pela UI (gate por XP continua, 1 rolagem/nível); rolagem vai para o log como tipo `rolagem` (via DiceContext) e a ascensão como `recursos`.
 - `leveling.js` ganhou `levelUpGate(level, xp)` (compartilhado UI/contexto) — testes de gate cobertos (159/159). Build OK. NÃO commitado.
 
+## 🔧 Atualização 2026-11-17 (NPC/criatura com atributos e habilidades iguais aos heróis) — NÃO commitado
+- Pedido: cadastro de NPCs/criaturas igual ao dos jogadores: eles também têm status e habilidades.
+- **Backend** (`../Rpg-backend`): `npcController.criar`/`atualizar` aceitam `atributos` ({FOR..INT} clamp 1–30; espelho curto/legenda + `attributes{}` em dados_extras) e `abilities` (array; ids UUID garantidos via crypto.randomUUID, monotarefa de aprovação do mestre `approvalStatus:"aprovada"`/`submittedBy:"mestre"`, máx. 60). Helpers `atributosParaExtras`/`abilitiesParaExtras`. Suíte back **79/79**.
+- **Frontend**: novo `components/admin/NpcSheetBlocks.jsx` (`NpcAttributesCard` — grid 7 atributos com modificador ao vivo igual à ficha; `NpcAbilitiesCard` — habilidades no esquema do herói via AbilityFormModal em modo mestre, badge de aprovada, treino). Integrado em `/admin/npcs/new` (estados `atributos`/`abilities`, no payload) e `/admin/npcs/[id]` (lê/grava via dadosExtras; `atributosAtuais`/`abilitiesAtuais` entram no PUT). Duplicar NPC leva cartas junto (dadosExtras copiado). Ações & Golpes legado preservado (coexistem).
+- Build OK, testes 159/159 front, eslint 0 erros. NÃO commitado.
+
+## 🔧 Atualização 2026-11-17 (Brasas do mapa removidas) — NÃO commitado
+- Pedido: "retire o efeito de brasas do mapa tático". Removido `<EmberCanvas />` e seu import do `/mapa-tatico`; componente `components/mapa/EmberCanvas.jsx` deletado (órfão). Build OK, testes 159/159, lint 0 erros (warnings pré-existentes). NÃO commitado.
+
 ## 🔧 Atualização 2026-11-17 (Mapa tático maior + adaptado à imagem) — NÃO commitado
 - Pedido: "mapa tatico maior, que se adapte à imagem selecionada".
 - `/mapa-tatico`: o canvas agora vive num wrap flex centralizado (`stageWrapRef`) e, quando há imagem de fundo (upload local ou URL/arquivo), o **palco assume a proporção exata da imagem** (`aspectRatio`) e é dimensionado para o maior retângulo que cabe no espaço disponível (ResizeObserver + `stageFit`; tokens são posicionados em %, então nada desloca). Sem imagem: preenche a área como antes. Altura útil do palco aumentada: `min-h-[calc(100vh-88px)]` → `calc(100vh-56px)`.

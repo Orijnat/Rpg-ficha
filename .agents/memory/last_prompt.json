@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-17T06:05:00-03:00",
+  "timestamp": "2026-11-17T06:45:00-03:00",
   "agent": "opencode",
-  "prompt": "eu queria que o mapa tatico fosse maior, que se adapte a imagem selecionada",
-  "action": "Canvas do mapa tático redimensionado para caber o máximo na altura disponível (100vh-56px) e, com imagem de fundo, o palco assume a proporção exata da imagem (aspectRatio + ResizeObserver), centralizado; tokens em % intactos. Build OK, lint 0 erros. Não commitado."
+  "prompt": "gostaria também que o cadastro de npcs e criaturas fosse igual ao dos jogadores, pois eles também têm status e habilidades",
+  "action": "NPC ganhou atributos (7 grid com modificadores) e habilidades no esquema do herói (AbilityFormModal mestre), no cadastro e na edição; backend persiste em dadosExtras (clamp 1-30, ids UUID, aprovação mestre). Front 159/159, back 79/79, build OK, eslint 0. Não commitado."
 }

@@ -36,7 +36,6 @@ import {
   Flame,
 } from "lucide-react";
 import { TOKEN_ICONS, ICON_OPTIONS, defaultTokenIcon, resolveTokenIcon } from "../../lib/mapaTatico";
-import EmberCanvas from "../components/mapa/EmberCanvas";
 import BattleLogPanel from "../components/batalha/BattleLogPanel";
 import FloatingWindow from "../components/mapa/FloatingWindow";
 import { useWindowManager } from "../../hooks/useWindowManager";
@@ -585,7 +584,6 @@ export default function MapaTaticoPage() {
           )}
           {/* Névoa de atmosfera */}
           <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse at 50% 0%, rgba(20,15,8,0.1), transparent 60%), radial-gradient(ellipse at 50% 100%, rgba(8,6,10,0.55), transparent 55%)" }} />
-          <EmberCanvas />
           {/* Grade */}
           {map?.gradeVisivel && (
             <div
