@@ -139,6 +139,7 @@ export default function DanoCuraPainel({ compact = false, onClose = null }) {
       count,
       modifier: conMod,
       label: `Cura com Dado de Vida (${hitDie} + CON ${conMod >= 0 ? "+" + conMod : conMod})`,
+      allowContest: false,
     });
 
     if (roll && typeof roll.total === "number") {

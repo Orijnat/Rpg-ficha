@@ -58,7 +58,9 @@ function RollChooser({ request, onVirtual, onManual, onCancel }) {
   const [faces, setFaces] = useState(() => Array(Math.max(1, request.count)).fill(""));
   const [error, setError] = useState(null);
 
-  const isContest = physMode !== "normal";
+  const allowContest = request.allowContest !== false;
+  const effectivePhysMode = allowContest ? physMode : "normal";
+  const isContest = effectivePhysMode !== "normal";
   const faceCount = isContest ? 2 : Math.max(1, request.count);
   const [prevFaceCount, setPrevFaceCount] = useState(faceCount);
   if (prevFaceCount !== faceCount) {
@@ -73,11 +75,11 @@ function RollChooser({ request, onVirtual, onManual, onCancel }) {
 
   const modText = request.modifier === 0 ? "" : ` ${formatModifier(request.modifier)}`;
   const physFormula = isContest
-    ? `2d${request.sides}${physMode === "advantage" ? "kh1" : "kl1"}${modText}`
+    ? `2d${request.sides}${effectivePhysMode === "advantage" ? "kh1" : "kl1"}${modText}`
     : `${faceCount}d${request.sides}${modText}`;
 
   const handleRegister = () => {
-    const result = onManual(faces.map((v) => String(v).trim()), physMode);
+    const result = onManual(faces.map((v) => String(v).trim()), effectivePhysMode);
     if (result && !result.ok) {
       setError(result.message || "Valores inválidos.");
     }
@@ -87,7 +89,7 @@ function RollChooser({ request, onVirtual, onManual, onCancel }) {
     <button
       type="button"
       onClick={() => setPhysMode(mode)}
-      aria-pressed={physMode === mode}
+      aria-pressed={effectivePhysMode === mode}
       className={`flex-1 rounded-lg border px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider transition active:scale-95 ${
         physMode === mode
           ? activeClass
@@ -113,7 +115,7 @@ function RollChooser({ request, onVirtual, onManual, onCancel }) {
         </span>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div className={`grid grid-cols-1 gap-3 ${allowContest ? "sm:grid-cols-3" : ""}`}>
         <button
           onClick={() => onVirtual("normal")}
           className="flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-all hover:border-[var(--theme-accent)] hover:bg-[var(--theme-accent)]/10 active:scale-95"
@@ -125,27 +127,31 @@ function RollChooser({ request, onVirtual, onManual, onCancel }) {
           </span>
         </button>
 
-        <button
-          onClick={() => onVirtual("advantage")}
-          className="flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-all hover:border-emerald-500 hover:bg-emerald-500/10 active:scale-95"
-        >
-          <Zap className="text-emerald-400" size={24} />
-          <span className="text-xs font-semibold uppercase tracking-wider text-emerald-400">Vantagem</span>
-          <span className="font-mono text-[11px] text-[#cbb288]">
-            2d{request.sides}kh1 {formatModifier(request.modifier)}
-          </span>
-        </button>
+        {allowContest && (
+          <>
+            <button
+              onClick={() => onVirtual("advantage")}
+              className="flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-all hover:border-emerald-500 hover:bg-emerald-500/10 active:scale-95"
+            >
+              <Zap className="text-emerald-400" size={24} />
+              <span className="text-xs font-semibold uppercase tracking-wider text-emerald-400">Vantagem</span>
+              <span className="font-mono text-[11px] text-[#cbb288]">
+                2d{request.sides}kh1 {formatModifier(request.modifier)}
+              </span>
+            </button>
 
-        <button
-          onClick={() => onVirtual("disadvantage")}
-          className="flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-all hover:border-rose-500 hover:bg-rose-500/10 active:scale-95"
-        >
-          <ShieldAlert className="text-rose-400" size={24} />
-          <span className="text-xs font-semibold uppercase tracking-wider text-rose-400">Desvantagem</span>
-          <span className="font-mono text-[11px] text-[#cbb288]">
-            2d{request.sides}kl1 {formatModifier(request.modifier)}
-          </span>
-        </button>
+            <button
+              onClick={() => onVirtual("disadvantage")}
+              className="flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-all hover:border-rose-500 hover:bg-rose-500/10 active:scale-95"
+            >
+              <ShieldAlert className="text-rose-400" size={24} />
+              <span className="text-xs font-semibold uppercase tracking-wider text-rose-400">Desvantagem</span>
+              <span className="font-mono text-[11px] text-[#cbb288]">
+                2d{request.sides}kl1 {formatModifier(request.modifier)}
+              </span>
+            </button>
+          </>
+        )}
       </div>
 
       {/* Dado físico */}
@@ -162,11 +168,13 @@ function RollChooser({ request, onVirtual, onManual, onCancel }) {
         </button>
         {physOpen && (
           <div className="space-y-3 border-t border-amber-500/20 p-4">
-            <div className="flex gap-1.5">
-              {modeButton("normal", "Normal", Dices, "border-amber-500/60 bg-amber-500/20 text-amber-300")}
-              {modeButton("advantage", "Vantagem", Zap, "border-emerald-500/60 bg-emerald-500/20 text-emerald-300")}
-              {modeButton("disadvantage", "Desvant.", ShieldAlert, "border-rose-500/60 bg-rose-500/20 text-rose-300")}
-            </div>
+            {allowContest && (
+              <div className="flex gap-1.5">
+                {modeButton("normal", "Normal", Dices, "border-amber-500/60 bg-amber-500/20 text-amber-300")}
+                {modeButton("advantage", "Vantagem", Zap, "border-emerald-500/60 bg-emerald-500/20 text-emerald-300")}
+                {modeButton("disadvantage", "Desvant.", ShieldAlert, "border-rose-500/60 bg-rose-500/20 text-rose-300")}
+              </div>
+            )}
             <FaceInputs
               count={faceCount}
               sides={request.sides}

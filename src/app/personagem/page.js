@@ -66,6 +66,7 @@ export default function Personagem() {
       count,
       modifier: modifier + conMod,
       label: `Dado de Vida · Nível ${characterLevel + 1}`,
+      allowContest: false,
     });
     if (!roll) {
       setLevelFeedback({ ok: false, message: "Subida de nível cancelada — nada foi aplicado." });

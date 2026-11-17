@@ -103,6 +103,7 @@ export function DiceProvider({ children }) {
       count: Number.isFinite(count) && count >= 1 ? count : 1,
       modifier: Number(config.modifier) || 0,
       label: config.label || "Rolagem",
+      allowContest: config.allowContest !== false,
     };
     // Um novo pedido cancela (null) qualquer pedido anterior ainda pendente.
     rollResolverRef.current?.(null);
