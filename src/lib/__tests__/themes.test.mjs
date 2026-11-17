@@ -8,7 +8,7 @@ test("Validação dos temas de RPG (Escuros e Claros)", () => {
   const expectedThemes = [
     { id: "amber", name: "Âmbar Vulcânico", accent: "#d89b38", type: "dark" },
     { id: "abyss", name: "Cripta Abissal", accent: "#b05cf9", type: "dark" },
-    { id: "bloodmoon", name: "Lua de Sangue", accent: "#e8503a", type: "dark" },
+    { id: "bloodmoon", name: "Lua de Sangue", accent: "#d53c25", type: "dark" },
     { id: "frostfall", name: "Gelo Eterno", accent: "#38bdf8", type: "dark" },
     { id: "aurora", name: "Aurora Rubra", accent: "#b91c1c", type: "light" },
     { id: "sapphire", name: "Safira Real", accent: "#1d4ed8", type: "light" },

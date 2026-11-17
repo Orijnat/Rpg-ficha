@@ -63,7 +63,7 @@ export const THEMES = [
     name: "Lua de Sangue",
     subtitle: "Caça & Brasas Antigas",
     description: "Brasa rubra e sangue coagulado sob um céu de eclipse permanente.",
-    accent: "#e8503a",
+    accent: "#d53c25",
     bg: "#0f0607",
     titleColor: "#ffe4de",
     subtitleColor: "#e89c8a",
@@ -72,7 +72,7 @@ export const THEMES = [
     harmony: "Complementar Quente",
     harmonyFamily: "Adobe Color: Complementary Ember & Oxblood",
     contrastRatio: "16.6:1 (WCAG AAA)",
-    previewColors: ["#0f0607", "#e8503a", "#ffe4de"],
+    previewColors: ["#0f0607", "#d53c25", "#ffe4de"],
     iconName: "Eclipse",
   },
   {

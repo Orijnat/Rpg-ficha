@@ -152,19 +152,19 @@
   --theme-title: #ffe4de;
   --theme-subtitle: #e89c8a;
   --theme-body: #f5d2c8;
-  --theme-accent: #e8503a;
-  --theme-accent-hover: #ff7a54;
+  --theme-accent: #d53c25;
+  --theme-accent-hover: #e66a45;
   --theme-accent-contrast: #1f0a06;
-  --theme-accent-glow: rgba(232, 80, 58, 0.4);
-  --theme-glow-1: rgba(232, 80, 58, 0.22);
+  --theme-accent-glow: rgba(213, 60, 37, 0.4);
+  --theme-glow-1: rgba(213, 60, 37, 0.22);
   --theme-glow-2: rgba(251, 146, 60, 0.10);
   --theme-glow-3: rgba(159, 18, 57, 0.18);
   --background: #0f0607;
   --foreground: #f5d2c8;
   --card: #1a0e10;
-  --primary: #e8503a;
+  --primary: #d53c25;
   --primary-foreground: #1f0a06;
-  --border: rgba(232, 80, 58, 0.3);
+  --border: rgba(213, 60, 37, 0.3);
 }
 
 /* 4. Gelo Eterno */
