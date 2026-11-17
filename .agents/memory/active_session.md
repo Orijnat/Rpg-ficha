@@ -3,7 +3,7 @@
 ## 🔧 Pedido 2026-11-17 — "eu prefiro o modal antigo" → modal COMPLETO restaurado (NÃO commitado)
 - Usuário escolheu "Finalizar completo (desfecho)": restaurado `FinalizarEncounterModal.jsx` para a versão pré-simplificação (via `git show dad47b3:`): desfecho por herói (Vitória/Derrota/Fugiu), XP individual (clamp 0..1M), checkbox "Recebe XP", ações rápidas Todos: Vitória/Derrota/Fugiu, rateio R÷N=perHero no rodapé, confirm "Finalizar Encontro" (handleFinalizeEncounter inalterado — já trata outcome).
 - Header/painel continuam abrindo a modal (comportamento do e30f20f mantido). Títulos dos botões atualizados para citar o desfecho. `handleAutoFinalizeEncounter` NÃO foi recriado (continua não existindo).
-- Verificação: 161/161 testes, build OK, lint 0 erros (44 warnings pré-existentes). Nada commitado — aguardar pedido de commit/push.
+- Verificação: 161/161 testes, build OK, lint 0 erros (44 warnings pré-existentes). Commitado e pushado: `beff5c0` feat(encontros) + `7e617d7` docs(memory) — push `8e367fe..7e617d7` (2026-11-17 18:45). `.github/workflows/` segue não rastreado. Aguardar deploy da Vercel + Ctrl+Shift+R.
 
 ## ✅ Re-verificação 2026-11-17 — "finalizar "auto" voltar a ser modal"
 - Pedido reenviado (idêntico ao já executado): "eu nao quero que ele finalize automatico, eu quero que ele abra um modal, como o antigo mas apenas para selecionar quem ganha ou nao o xp".
