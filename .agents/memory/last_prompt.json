@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-17T05:30:00-03:00",
+  "timestamp": "2026-11-17T06:05:00-03:00",
   "agent": "opencode",
-  "prompt": "altere a vida máxima inicial para o valor do dado de vida",
-  "action": "hitDieMax novo em lib/leveling.js; na 1ª escolha de raça (nível ≤ 1) a ficha aplica hp/hpMax = máximo do Dado de Vida; hint atualizado; build OK, 159/159. Não commitado."
+  "prompt": "eu queria que o mapa tatico fosse maior, que se adapte a imagem selecionada",
+  "action": "Canvas do mapa tático redimensionado para caber o máximo na altura disponível (100vh-56px) e, com imagem de fundo, o palco assume a proporção exata da imagem (aspectRatio + ResizeObserver), centralizado; tokens em % intactos. Build OK, lint 0 erros. Não commitado."
 }

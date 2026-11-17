@@ -113,6 +113,9 @@ export default function MapaTaticoPage() {
   const [urlInput, setUrlInput] = useState("");
   const saveTimer = useRef(null);
   const fieldRef = useRef(null);
+  const stageWrapRef = useRef(null);
+  const [bgDims, setBgDims] = useState(null); // { w, h } da imagem de fundo atual
+  const [stageFit, setStageFit] = useState(null); // { w, h } ajustada à imagem (aspect preservado)
   const { windows, openWindow, closeWindow, toggleMinimize, focusWindow, moveWindow, resizeWindow } = useWindowManager();
 
   const widgets = useMemo(() => {
@@ -326,12 +329,69 @@ export default function MapaTaticoPage() {
     return null;
   }, [sessionBg, map?.urlFundo, map?.urlFundoAssinada]);
 
+  // Mede a imagem de fundo selecionada para adaptar o tamanho do palco (aspect ratio preservado)
+  useEffect(() => {
+    if (!backgroundUrl) {
+      setBgDims(null);
+      return undefined;
+    }
+    let active = true;
+    const img = new window.Image();
+    img.onload = () => {
+      if (active && img.naturalWidth > 0 && img.naturalHeight > 0) {
+        setBgDims({ w: img.naturalWidth, h: img.naturalHeight });
+      }
+    };
+    img.onerror = () => active && setBgDims(null);
+    img.src = backgroundUrl;
+    return () => {
+      active = false;
+    };
+  }, [backgroundUrl]);
+
+  // Encaixa o palco no espaço disponível preservando a proporção da imagem (letterbox)
+  useEffect(() => {
+    const compute = () => {
+      const wrap = stageWrapRef.current;
+      if (!wrap || !bgDims) return;
+      const cw = wrap.clientWidth;
+      const ch = wrap.clientHeight;
+      if (cw <= 0 || ch <= 0) return;
+      const ratio = bgDims.w / bgDims.h;
+      let w = cw;
+      let h = w / ratio;
+      if (h > ch) {
+        h = ch;
+        w = h * ratio;
+      }
+      setStageFit({ w: Math.floor(w), h: Math.floor(h) });
+    };
+    compute();
+    const observer = new ResizeObserver(compute);
+    if (stageWrapRef.current) observer.observe(stageWrapRef.current);
+    window.addEventListener("resize", compute);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", compute);
+    };
+  }, [bgDims]);
+
   const tokens = map?.tokens || [];
   const selected = tokens.find((t) => t.id === selectedToken) || null;
   const canManage = Boolean(map?.podeGerenciar);
 
+  const stageFrameStyle = bgDims
+    ? {
+        aspectRatio: `${bgDims.w} / ${bgDims.h}`,
+        width: stageFit?.w ?? "100%",
+        height: stageFit?.h ?? "100%",
+        maxWidth: "100%",
+        maxHeight: "100%",
+      }
+    : { width: "100%", height: "100%" };
+
   return (
-    <div className="flex min-h-[calc(100vh-88px)] flex-col gap-3 p-3 sm:p-4">
+    <div className="flex min-h-[calc(100vh-56px)] flex-col gap-3 p-3 sm:p-4">
       {/* Barra superior do mapa */}
       <div className="flex flex-col gap-2 rounded-2xl border border-primary/25 bg-card/80 p-3 shadow-sm backdrop-blur-sm lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center gap-3">
@@ -509,10 +569,12 @@ export default function MapaTaticoPage() {
           </button>
         )}
 
-        {/* Canvas do mapa */}
+        {/* Canvas do mapa (palco adaptado à proporção da imagem, centrado) */}
+        <div ref={stageWrapRef} className="relative flex min-h-0 min-w-0 flex-1 items-center justify-center overflow-hidden">
         <div
           ref={fieldRef}
-          className="relative min-h-0 flex-1 select-none overflow-hidden rounded-2xl border border-primary/30 bg-[#0b0d12] shadow-[inset_0_0_80px_rgba(0,0,0,0.9),0_0_60px_color-mix(in_srgb,var(--primary)_15%,transparent)]"
+          style={stageFrameStyle}
+          className="relative select-none overflow-hidden rounded-2xl border border-primary/30 bg-[#0b0d12] shadow-[inset_0_0_80px_rgba(0,0,0,0.9),0_0_60px_color-mix(in_srgb,var(--primary)_15%,transparent)]"
           onPointerDown={() => setSelectedToken(null)}
         >
           {/* Camadas de fundo */}
@@ -581,6 +643,7 @@ export default function MapaTaticoPage() {
               <p className="font-journal text-sm italic text-muted-foreground">Campo vazio.<br />Traga heróis e monstros para a arena.</p>
             </div>
           )}
+        </div>
         </div>
 
         {/* Docas de ferramentas flutuantes (lado direito) */}

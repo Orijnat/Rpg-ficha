@@ -55,6 +55,17 @@
 - `CharacterContext.levelUp` virou `applyLevelUp(gain, details)` — aplica o ganho pré-rolado pela UI (gate por XP continua, 1 rolagem/nível); rolagem vai para o log como tipo `rolagem` (via DiceContext) e a ascensão como `recursos`.
 - `leveling.js` ganhou `levelUpGate(level, xp)` (compartilhado UI/contexto) — testes de gate cobertos (159/159). Build OK. NÃO commitado.
 
+## 🔧 Atualização 2026-11-17 (Mapa tático maior + adaptado à imagem) — NÃO commitado
+- Pedido: "mapa tatico maior, que se adapte à imagem selecionada".
+- `/mapa-tatico`: o canvas agora vive num wrap flex centralizado (`stageWrapRef`) e, quando há imagem de fundo (upload local ou URL/arquivo), o **palco assume a proporção exata da imagem** (`aspectRatio`) e é dimensionado para o maior retângulo que cabe no espaço disponível (ResizeObserver + `stageFit`; tokens são posicionados em %, então nada desloca). Sem imagem: preenche a área como antes. Altura útil do palco aumentada: `min-h-[calc(100vh-88px)]` → `calc(100vh-56px)`.
+- Imagem carregada via `Image` para ler `naturalWidth/naturalHeight` (fallback silencioso: mantém tela cheia). 0 erros de lint (1 warning pré-existente + 1 do mesmo padrão set-state-in-effect). Build OK. NÃO commitado.
+
+## 🔧 Atualização 2026-11-17 (Painel do mestre para habilidades dos jogadores) — NÃO commitado
+- Novo `/admin/habilidades` ("Habilidades dos Heróis", Conselho do Mestre): lista heróis das campanhas do mestre via `listCharacters`, mostra contadores globais (pendentes/aprovadas/rejeitadas), filtro por abas (pendentes/aprovadas/rejeitadas/todas) + busca, cards de herói expansíveis (expande automático os com pendências) e botão "Aprovar todas (n)" por herói.
+- Por habilidade: Aprovar (aprovarHabilidade), Rejeitar com justificativa inline (rejeitarHabilidade), Editar (AbilityFormModal em modo mestre — preserva status) — salva direto via `updateCharacterOnBackend(id, { dadosExtras: { abilities } })` (mesmo padrão do admin ficha; merge raso do backend substitui o array `abilities`). Feedback de salvo/erro com banner; `savingKey` por herói.
+- Abilities vêm de `dadosExtras.abilities`; `isMaster` gate no AdminLayout existente; rota adicionada ao AppShell (MASTER_NAV_ITEMS, ícone Sparkles) após "Ameaças & Heróis". Reutiliza `STATUS_APROVACAO`/`TIPOS_HABILIDADE`/`calcularProgressoTreino` de lib/abilities. AbilityFormModal é puro em props (sem contexto).
+- Build OK (`/admin/habilidades` prerendered), testes 159/159, eslint exit 0. NÃO commitado.
+
 ## 🔧 Atualização 2026-11-17 (Vida máxima inicial = valor do Dado de Vida) — NÃO commitado
 - Pedido: "altere a vida máxima inicial para o valor do dado de vida".
 - `lib/leveling.js`: novo helper puro `hitDieMax(hitDie, fallback=8)` (count×sides de parseHitDie).
