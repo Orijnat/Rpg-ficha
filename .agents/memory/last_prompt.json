@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-17T23:50:00-03:00",
+  "timestamp": "2026-11-17T23:59:00-03:00",
   "agent": "opencode",
-  "prompt": "de pus e rode a miranstion",
-  "action": "Commitado e pushado nos 2 repos (front 9f98922+19d431f; back 7e64360). Migration 20261117210000-montaria-a-partir-de-json.js APLICADA no Supabase de producao via npm run db:migrate (todas idempotentes); montarias 0 -> 1 linha ('sas' 20/20, dono wqw); sequelize_meta ok. PENDENTE: Manual Deploy do backend no Render para os endpoints /mounts valerem em producao."
+  "prompt": "seure apenas o tema ambar vulcanico e cripta absisal, o resto dos temas remova e faca mais temas novos com outras cores",
+  "action": "Mantidos apenas amber + abyss (abyss accent alinhado #b05cf9). Removidos forest/crimson/frost/parchment/sunlight/mist. Criados 6 novos: bloodmoon (Lua de Sangue), frostfall (Gelo Eterno), jade (Jade de Avalon), felflame (Fogo Fatua), aurora (Aurora Rubra), sapphire (Safira Real) — contrastes WCAG calculados (todos AAA no titulo). globals.css, themes.js, themes.test.mjs (8 temas), SettingsModal THEME_ICONS, LEGACY_THEME_MAP atualizados. 161/161 testes, build OK, lint 0 erros. Nao commitado."
 }
