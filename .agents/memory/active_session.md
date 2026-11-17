@@ -61,6 +61,15 @@
 
 ---
 
+## ✅ 2026-11-17 (2) — Animação 3D WebGL do dado (rola com todos os lados) + d2 removido — commitado/pushado junto ao push (7)
+- Pedido: "poderia fazer uma animação do dado em si rolando com todos os seus lados, e remover o d2". Depois: "de pus" (= commit e push). Estilo escolhido pelo usuário: **ado 3D real com Three.js**.
+- **Removido d2**: DICE_TYPES=[4,6,8,10,12,20,100] (bandeja + dado físico), face SVG d2 (CARA/COROA), `.dice-coin`/`dice-coin-flip`/tumble CSS, JSDoc lib/dice.js.
+- Novo `src/app/components/dice/Dice3D.jsx` (three 0.187, dependência adicionada): poliedros de verdade — d4 tetra / d6 cubo / d8 octa / d12 dodeca / d20 icosa (built-ins); **d10 = bipirâmide pentagonal** (a 1ª tentativa — trapezoedro com kites — NÃO era coplanar (desvio 0.39); corrigida por bipirâmide convexa, 10 faces isósceles); d12 lido como 3 tris/face com dedupe de vértices p/ centróide/normais/área. Números em cada face via `CanvasTexture` (Georgia 900, fill escuro + sombra clara — efeito gravado); corpo `MeshStandardMaterial` âmbar `--theme-accent` flatShading + `EdgesGeometry`. Queda com quique (`easeOutBounce`) + giro de ~2+ voltas desfeito por `slerp` (`easeInOutCubic`, 1.3s) até a face sorteada ficar virada p/ câmera (câmera 40° fov, fit por nº de dados, escala p/ 3+ dados). **d100 = par de bipirâmides** (dezenas 00–90 + unidades 0–9; 100 = "00"+"00"). Dados descartados (vantagem/desvantagem) = corpo cinza. `prefers-reduced-motion`/sem WebGL → fallback estático com `DiceFace` SVG.
+- `DiceModal.jsx`: stage `.dice-roll-stage` preservado; `<DiceRoll3D roll={lastRoll}/>` no lugar dos dados CSS 2D; caption "d100 · Percentil" para percentile.
+- `globals.css`: bloco `.dice-roll-*` reescrito p/ o palco 3D (stage, aura + variante crítico, caption, `.dice-3d-mount`, `.dice-static-die`, `.dice-roll-dice`, `.dice-roll-die-discarded`; keyframes de tumble/coin removidos).
+- Geometrias verificadas em Node (7/7 tipos: contagem de faces exata, normais unitárias para fora, áreas>0). Verificado: testes **161/161**, build OK (30/30), lint **0 erros** (44 warnings pré-existentes). **NUNCA renderizado em navegador** — conferir visual (câmera, luzes, enquadramento, textures) em /personagem → rolar.
+- Nada mais pendente exceto a conferência visual. Commitado e pushado (ver Push 2026-11-17 (7)).
+
 ## ✅ Push 2026-11-17 (6) — Comits separados: dados refeitos + skills + encontros + classes (2 repos)
 - Pedido: "commite e ous" (= commit e push). Escopo validado pelo usuário: commits separados por assunto + push, excluindo `.github/workflows/` (PAT sem scope).
 - **Frontend** (`main`): `02c243f` feat(dice) animação de rolagem refeita (DiceFace SVG por tipo + moeda d2) · `5cf9b11` chore(skills) audit-suite Orbit 1.1.0 + fe-rail sh5623 1.20.0 vendorizadas (.agents/skills + .github/skills + skills-lock.json, 165 arquivos) · `5d4eac3` feat(encontros) botões Finalizar Encontro (FinalizarEncounterModal: XP por herói, desfecho vitória/derrota/fuga, ações em lote; painel + header) · `01cc79f` feat(classes) hint no registro (classe criada entra no catálogo do mestre) + cadeado de remoção no /admin/classes (espelha guard 403).

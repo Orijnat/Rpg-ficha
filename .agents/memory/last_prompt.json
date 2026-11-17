@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-17T18:40:00-03:00",
+  "timestamp": "2026-11-17T19:25:00-03:00",
   "agent": "opencode",
-  "prompt": "commite e ous",
-  "action": "Interpretado como commit e push. Commits separados por assunto: frontend 02c243f feat(dice) animação de rolagem, 5cf9b11 chore(skills) audit-suite/fe-rail, 5d4eac3 feat(encontros) FinalizarEncounterModal, 01cc79f feat(classes) hint registro + cadeado de remoção, f24d401 docs(memory). Backend ../Rpg-backend: 22d5f26 feat(classes) catálogo via cadastro, 0a35fcb feat(classes) remoção só do criador. Push nos 2 repos OK (main: 86636ff..f24d401 / 60ad3da..0a35fcb). .github/workflows/ permanece não rastreado."
+  "prompt": "poderia fazer uma animacao do dado em si rolando com todos os seus lados, e remover o d2",
+  "action": "Animacao 3D WebGL (three 0.187) em Dice3D.jsx: poliedros reais (tetra/cubo/octa/dodeca/icosa) + d10 bipiramide pentagonal (trapezoedro original nao era coplanar - corrigido); numeros gravados por face via CanvasTexture; quique easeOutBounce + slerp de ~2 voltas ate a face sorteada ficar p/ camera; d100 = par de bipiramides (dezenas+unidades); descartados (vantagem) cinza; fallback estatico DiceFace p/ reduced-motion/sem WebGL. d2 (moeda) REMOVIDO de todo o rolador. Geometrias validadas em Node (7 tipos OK). 161/161 testes, build OK, lint 0 erros. 'de pus' recebido e executado (commit+push). NUNCA conferido no navegador."
 }
