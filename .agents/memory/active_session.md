@@ -6,7 +6,7 @@
 - **/personagem** (só mestre; ficha própria ou `?inspect=`): novo botão "Liberar Ascensão" (cadeado Lock/LockOpen, `aria-pressed`); "Subir de Nível" só habilita com XP ok E liberado; hint exibe "XP no limite — aguardando o mestre liberar (feito)"; `handleLevelUp` barra com mensagem própria.
 - **CharacterContext.applyLevelUp**: consome a liberação (`levelUpLiberado: false` no commit) — próximo nível exige nova liberação.
 - **/admin/personagens**: cadeado por herói (liberar/revogar, PUT merge `dadosExtras:{levelUpLiberado}`); "+1 Nv." recusa e explica se não liberado; "Nível da Mesa" desabilitado sem liberados e só promove liberados (relata ignorados); promoção consome a liberação.
-- **Verificado**: 162/162, build OK, lint 0 erros. **NÃO commitado/pushado**.
+- **Verificado**: 162/162, build OK, lint 0 erros. **PUSHADO** (2026-11-17): `ef14be1` feat(level) + `0f9e907` docs(memory) → `937815a..0f9e907`.
 
 ## 📚 2026-11-17 — Documentação completa do sistema + README do repositório
 - Pedido do usuário: "documentação completa do sistema, para futuras manutenções, e um readme para o repositório".
