@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Footprints, Heart, Plus, Skull, Sparkles, Trash2 } from "lucide-react";
 import { useCharacter } from "../context/CharacterContext";
-import { Card, EditableNumber, EditableText, HPBar, SectionHeader } from "../components/ui";
+import { Card, EditableNumber, EditableText, HPBar, SectionHeader, StatBox } from "../components/ui";
 import { AddMountModal } from "../components/montaria/AddMountModal";
 import { applyHealthChange } from "../../lib/modifiers";
 
@@ -17,6 +17,15 @@ function uid() {
   return `${Date.now().toString(36)}${Math.random().toString(36).slice(2)}`;
 }
 
+const ATTRS = ["FOR", "DES", "CON", "SAB", "ESP", "CAR", "INT"];
+
+function mountAttributes(mount) {
+  return {
+    ...Object.fromEntries(ATTRS.map((attr) => [attr, 10])),
+    ...(mount?.attributes ?? {}),
+  };
+}
+
 function fromLegacy(data) {
   if (!data?.mountName) return null;
   return {
@@ -27,6 +36,7 @@ function fromLegacy(data) {
     hpMax: Number(data.mountHPMax ?? 20),
     notes: data.mountNotes ?? "",
     alive: (Number(data.mountHP ?? 20) > 0),
+    attributes: mountAttributes(null),
   };
 }
 
@@ -64,6 +74,7 @@ export default function MontariaPage() {
       hpMax: draft.hpMax,
       notes: draft.notes,
       alive: draft.hp > 0,
+      attributes: mountAttributes(null),
     };
     writeMounts([...(hasStored ? storedMounts : (legacy ? [legacy] : [])), mount]);
     setSelectedId(mount.id);
@@ -77,6 +88,13 @@ export default function MontariaPage() {
   const patchMount = (id, patch) => {
     const base = hasStored ? storedMounts : (legacy ? [legacy] : []);
     writeMounts(base.map((m) => (m.id === id ? { ...m, ...patch } : m)));
+  };
+
+  const patchMountAttribute = (attr, value) => {
+    if (!selected) return;
+    const current = mountAttributes(selected);
+    const next = Math.max(1, Math.min(30, Math.floor(Number(value) || 10)));
+    patchMount(selected.id, { attributes: { ...current, [attr]: next } });
   };
 
   const damage = (amount) => {
@@ -246,6 +264,28 @@ export default function MontariaPage() {
                         CHEIO
                       </button>
                     </div>
+                  </div>
+                </div>
+
+                {/* Status Fundamentais (iguais aos dos heróis) */}
+                <div className="rounded-2xl border border-primary/20 bg-background/60 p-4">
+                  <div className="mb-3 flex items-center justify-between">
+                    <span className="font-cinzel text-xs font-bold uppercase tracking-wider text-foreground">
+                      Status Fundamentais
+                    </span>
+                    <span className="font-journal text-[10px] italic text-muted-foreground">
+                      Toque no modificador para rolar d20
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-4 gap-2 sm:grid-cols-7 sm:gap-3">
+                    {ATTRS.map((attr) => (
+                      <StatBox
+                        key={attr}
+                        label={attr}
+                        value={mountAttributes(selected)[attr]}
+                        onChange={(value) => patchMountAttribute(attr, value)}
+                      />
+                    ))}
                   </div>
                 </div>
 
