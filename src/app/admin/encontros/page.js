@@ -306,7 +306,7 @@ export default function AdminEncontrosPage() {
     const reward = Math.max(0, Math.floor(Number(xp) || 0));
     syncEncounterUpdate(
       { recursos: { ...(activeEncounter?.recursos || {}), xp: reward } },
-      `Recompensa de XP definida para ${reward} por herói.`,
+      `Recompensa de XP definida para ${reward} no total (dividida entre os heróis).`,
       "recursos"
     );
   };
@@ -325,6 +325,7 @@ export default function AdminEncontrosPage() {
       setError("Nenhum herói no encontro para receber XP.");
       return;
     }
+    const perHero = Math.floor(reward / combatants.length);
     setDistributing(true);
     setError("");
     try {
@@ -335,20 +336,20 @@ export default function AdminEncontrosPage() {
         const hero = fresh.find((h) => String(h.id) === charId);
         if (!hero) continue;
         const currentXp = Number(hero.xp) || 0;
-        await updateCharacterOnBackend(charId, { xp: currentXp + reward }, token);
+        await updateCharacterOnBackend(charId, { xp: currentXp + perHero }, token);
         awarded.push(hero);
       }
       if (awarded.length > 0) {
         const awardedIds = new Set(awarded.map((h) => String(h.id)));
-        setHeroes(fresh.map((h) => (awardedIds.has(String(h.id)) ? { ...h, xp: (Number(h.xp) || 0) + reward } : h)));
+        setHeroes(fresh.map((h) => (awardedIds.has(String(h.id)) ? { ...h, xp: (Number(h.xp) || 0) + perHero } : h)));
       }
       const names = awarded.map((h) => h.name).join(", ") || "nenhum herói encontrado";
       await syncEncounterUpdate(
         { dadosExtras: { ...(activeEncounter.dadosExtras || {}), xpDistribuidoEm: new Date().toISOString() } },
-        `Recompensa de ${reward} XP distribuída para: ${names}.`,
+        `Recompensa de ${reward} XP (total) distribuída — ${perHero} XP por herói — para: ${names}.`,
         "recursos"
       );
-      setSuccessMsg(`${reward} XP distribuído para ${awarded.length} herói(s) da party.`);
+      setSuccessMsg(`${reward} XP (total) dividido em ${perHero} XP para cada um dos ${awarded.length} herói(s).`);
       setConfirmDistribute(false);
     } catch (err) {
       setError(err.message || "Falha ao distribuir XP.");
@@ -546,13 +547,15 @@ export default function AdminEncontrosPage() {
 
               <div>
                 <label className="block text-xs font-bold uppercase text-muted-foreground">
-                  XP de Recompensa
+                  XP Total do Encontro
                 </label>
                 <input
                   type="number"
                   min="0"
                   value={novoXp}
                   onChange={(e) => setNovoXp(Number(e.target.value))}
+                  title="Total do encontro: dividido igualmente entre os heróis da iniciativa"
+
                   className="mt-1 min-h-10 w-full rounded border border-border bg-input-background px-3 text-xs text-foreground outline-none focus:border-primary"
                 />
               </div>
@@ -877,7 +880,7 @@ export default function AdminEncontrosPage() {
       <ConfirmDialog
         isOpen={confirmDistribute}
         title={`Distribuir ${Math.max(0, Math.floor(Number(activeEncounter?.recursos?.xp) || 0))} XP para a party?`}
-        message={`Cada herói presente no encontro (${(activeEncounter?.dadosExtras?.iniciativa || []).filter((c) => c.type === "Herói").map((c) => c.name).join(", ") || "nenhum"}) receberá o XP imediatamente na ficha. Esta ação não pode ser desfeita automaticamente.`}
+        message={`Cada herói presente no encontro (${(activeEncounter?.dadosExtras?.iniciativa || []).filter((c) => c.type === "Herói").map((c) => c.name).join(", ") || "nenhum"}) receberá ${Math.floor((Number(activeEncounter?.recursos?.xp) || 0) / Math.max(1, (activeEncounter?.dadosExtras?.iniciativa || []).filter((c) => c.type === "Herói").length))} XP na ficha (total do encontro dividido). Esta ação não pode ser desfeita automaticamente.`}
         confirmText="Distribuir XP"
         cancelText="Cancelar"
         dangerLevel="warning"

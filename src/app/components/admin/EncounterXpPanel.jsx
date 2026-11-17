@@ -26,6 +26,8 @@ export function EncounterXpPanel({ encounter, heroes, onSaveXp, onDistribute, di
 
   const initiative = encounter?.dadosExtras?.iniciativa || [];
   const heroCombatants = initiative.filter((c) => c.type === "Herói");
+  const partySize = heroCombatants.length;
+  const perHero = partySize > 0 ? Math.floor(reward / partySize) : 0;
   const participants = heroCombatants.map((c) => {
     const charId = String(c.id).replace(/^pc-/, "");
     const hero = (heroes || []).find((h) => String(h.id) === charId) || null;
@@ -40,7 +42,7 @@ export function EncounterXpPanel({ encounter, heroes, onSaveXp, onDistribute, di
     <Card>
       <SectionHeader title="Recompensa de XP" icon={<Star size={16} />} />
       <p className="mt-1 text-xs text-muted-foreground">
-        Defina o XP que a party receberá e distribua com um clique — os jogadores veem o quanto falta para o próximo nível nas fichas.
+        Define o XP total do encontro — dividido igualmente entre os heróis presentes na iniciativa{perHero > 0 ? ` (${perHero} XP cada)` : ""}.
       </p>
 
       {/* Definir recompensa */}
@@ -52,7 +54,7 @@ export function EncounterXpPanel({ encounter, heroes, onSaveXp, onDistribute, di
         }}
       >
         <label htmlFor="encontro-xp-input" className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-          XP por herói
+          XP total do encontro
         </label>
         <input
           id="encontro-xp-input"
@@ -105,7 +107,7 @@ export function EncounterXpPanel({ encounter, heroes, onSaveXp, onDistribute, di
                 {p.nextLevelXP === null
                   ? "Nível máximo"
                   : `Faltam ${(p.nextLevelXP - p.currentXP).toLocaleString("pt-BR")} XP para o nível ${p.level + 1}`
-                  + (reward > 0 ? ` · +${reward} com esta vitória` : "")}
+                  + (perHero > 0 ? ` · +${perHero} com esta vitória` : "")}
               </p>
             </li>
           ))}
@@ -124,7 +126,9 @@ export function EncounterXpPanel({ encounter, heroes, onSaveXp, onDistribute, di
           ? "Distribuindo…"
           : distributedAt
             ? "XP distribuído — distribuir novamente"
-            : `Distribuir ${reward > 0 ? `${reward} XP` : "XP"} para a party`}
+            : perHero > 0
+              ? `Distribuir ${perHero} XP para cada herói (total ${reward})`
+              : "Distribuir XP para a party"}
       </button>
       {onFinalizeEncounter && encounter?.ativo !== false && (
         <button

@@ -76,8 +76,9 @@ export default function FinalizarEncounterModal({ isOpen, onClose, encounter, he
 }
 
 function FinalizeBody({ dialogRef, submittingRef, encounter, combatants, reward, onClose, onFinalize }) {
+  const perHero = combatants.length > 0 ? Math.floor(reward / combatants.length) : 0;
   const [rows, setRows] = useState(() =>
-    combatants.map((c) => ({ ...c, outcome: "vitoria", included: true, xp: reward }))
+    combatants.map((c) => ({ ...c, outcome: "vitoria", included: true, xp: perHero }))
   );
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
@@ -123,7 +124,7 @@ function FinalizeBody({ dialogRef, submittingRef, encounter, combatants, reward,
       current.map((row) => {
         if (row.id !== id) return row;
         if (outcome === "vitoria") {
-          return { ...row, outcome, included: true, xp: reward };
+          return { ...row, outcome, included: true, xp: perHero };
         }
         // Derrota/Fuga: sem XP por padrão — o mestre pode reativar ou editar abaixo
         return { ...row, outcome, included: false, xp: 0 };
@@ -136,7 +137,7 @@ function FinalizeBody({ dialogRef, submittingRef, encounter, combatants, reward,
       current.map((row) => {
         if (row.id !== id) return row;
         const included = !row.included;
-        return { ...row, included, xp: included ? (clampXp(row.xp) || reward) : 0 };
+        return { ...row, included, xp: included ? (clampXp(row.xp) || perHero) : 0 };
       })
     );
   };
@@ -154,7 +155,7 @@ function FinalizeBody({ dialogRef, submittingRef, encounter, combatants, reward,
     setRows((current) =>
       current.map((row) =>
         outcome === "vitoria"
-          ? { ...row, outcome, included: true, xp: reward }
+          ? { ...row, outcome, included: true, xp: perHero }
           : { ...row, outcome, included: false, xp: 0 }
       )
     );
@@ -228,7 +229,7 @@ function FinalizeBody({ dialogRef, submittingRef, encounter, combatants, reward,
       <div className="flex flex-wrap items-center gap-2 border-b border-border px-5 py-2.5 text-[10px] font-bold uppercase tracking-wider">
         <span className="text-muted-foreground">Todos:</span>
         <button type="button" onClick={() => setAll("vitoria")} className="rounded-md border border-emerald-500/40 bg-emerald-500/10 px-2 py-1 text-emerald-300 transition hover:bg-emerald-500/20">
-          Vitória +{reward}
+          Vitória +{perHero}
         </button>
         <button type="button" onClick={() => setAll("derrota")} className="rounded-md border border-rose-500/40 bg-rose-500/10 px-2 py-1 text-rose-300 transition hover:bg-rose-500/20">
           Derrota (0 XP)
@@ -313,7 +314,11 @@ function FinalizeBody({ dialogRef, submittingRef, encounter, combatants, reward,
 
       {/* Rodapé */}
       <div className="border-t border-border px-5 py-3.5">
-        <p className="text-center font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+        <p className="text-center text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
+          XP do encontro: {reward.toLocaleString("pt-BR")}
+          {combatants.length > 0 && <> ÷ {combatants.length} herói(s) = <strong className="text-amber-400">{perHero.toLocaleString("pt-BR")} XP cada</strong></>}
+        </p>
+        <p className="mt-0.5 text-center font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
           {includedCount} herói(s) recebem XP · total {totalXp.toLocaleString("pt-BR")} XP
         </p>
         {error && (
