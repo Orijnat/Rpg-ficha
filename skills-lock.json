@@ -132,6 +132,12 @@
       "sourceType": "github",
       "skillPath": "skills/fe-start/SKILL.md",
       "computedHash": "9d57ded960567c5dc27ccf30e3a654951f6d62e0f8ee42277cf7f74734845fb5"
+    },
+    "make-documentation": {
+      "source": "callicrate/skills",
+      "sourceType": "github",
+      "skillPath": "make-documentation/SKILL.md",
+      "computedHash": "70822edc9496247aa21a9bcbbfc43e3055737b2f7b768950d7269980817e8c85"
     }
   }
 }
