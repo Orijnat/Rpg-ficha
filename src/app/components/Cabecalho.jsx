@@ -2,11 +2,11 @@
 
 import React, { useState } from "react";
 import { usePathname } from "next/navigation";
-import { Crown, HeartPulse, Minus, Plus, ScrollText, Settings, Shield } from "lucide-react";
+import { Crown, HeartPulse, ScrollText, Settings, Shield } from "lucide-react";
 import { useCharacter } from "../context/CharacterContext";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
-import { EditableText, HPBar } from "./ui";
+import { EditableText } from "./ui";
 import SettingsModal from "./SettingsModal";
 import dynamic from "next/dynamic";
 const DanoCuraPainel = dynamic(() => import("./DanoCuraPainel"), { ssr: false });
@@ -70,53 +70,14 @@ export default function Cabecalho() {
                     </span>
                   </div>
 
-                  {/* Orbe / Barra de vida inline com controles de metal fundido */}
+                  {/* A vitalidade vive apenas no botão Dano/Cura (modal) — sem controles inline */}
                   <div className="mt-1.5 flex items-center gap-1.5 sm:justify-end">
-                    {/* Botão − */}
-                    <button
-                      type="button"
-                      aria-label="Reduzir 1 ponto de vida"
-                      title="Dano -1 PV"
-                      onClick={() => upd("hp", Math.max(0, (Number(data.hp) || 0) - 1))}
-                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-rose-500/50 bg-gradient-to-b from-rose-950/70 to-rose-900/40 font-mono text-sm font-black text-rose-300 shadow-[0_2px_6px_rgba(0,0,0,0.6)] transition-all hover:bg-rose-900/80 hover:border-rose-400 hover:shadow-[0_0_10px_rgba(244,63,94,0.4)] active:scale-95"
-                    >
-                      <Minus size={11} />
-                    </button>
-
-                    {/* Barra clicável (Frasco de Alquimia) */}
-                    <button
-                      type="button"
-                      onClick={() => setIsHpModalOpen(true)}
-                      className="group flex items-center gap-2 hover:opacity-95 transition"
-                      title="Clique para a gestão de Vitalidade"
-                      aria-label="Gestão de Vitalidade (dano & cura)"
-                    >
-                      <div className="w-24 sm:w-32 transition-transform group-hover:scale-[1.03]">
-                        <HPBar hp={data.hp} max={data.hpMax} />
-                      </div>
-                      <span className="font-mono text-xs font-bold text-foreground group-hover:text-primary transition-colors whitespace-nowrap drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
-                        {data.hp}/{data.hpMax} <span className="text-[10px] text-muted-foreground uppercase font-cinzel">PV</span>
-                      </span>
-                    </button>
-
-                    {/* Botão + */}
-                    <button
-                      type="button"
-                      aria-label="Recuperar 1 ponto de vida"
-                      title="Cura +1 PV"
-                      onClick={() => upd("hp", Math.min(Number(data.hpMax) || 1, (Number(data.hp) || 0) + 1))}
-                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-emerald-500/50 bg-gradient-to-b from-emerald-950/70 to-emerald-900/40 font-mono text-sm font-black text-emerald-300 shadow-[0_2px_6px_rgba(0,0,0,0.6)] transition-all hover:bg-emerald-900/80 hover:border-emerald-400 hover:shadow-[0_0_10px_rgba(16,185,129,0.4)] active:scale-95"
-                    >
-                      <Plus size={11} />
-                    </button>
-
-                    {/* Botão Dano/Cura completo */}
                     <button
                       type="button"
                       onClick={() => setIsHpModalOpen(true)}
                       className="btn-rpg !px-2.5 !py-1 !text-[10px] !normal-case"
-                      title="Abrir painel rápido de Dano & Cura"
-                      aria-label="Abrir gestão de Vitalidade"
+                      title="Abrir painel de Dano & Cura"
+                      aria-label="Abrir painel de Dano e Cura"
                     >
                       <HeartPulse size={12} className="text-rose-400" />
                       <span className="hidden sm:inline font-cinzel font-bold">Dano/Cura</span>
