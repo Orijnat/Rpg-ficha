@@ -1,8 +1,8 @@
-# ⚔️ Ficha de RPG Web — Rpg-ficha
+# ⚔️ Grimorium — Ficha de RPG Web (Rpg-ficha)
 
-Aplicação web moderna e interativa para gerenciamento da **Ficha de Personagem** de um sistema próprio de RPG de mesa baseado no d20 customizado com 7 atributos.
+Aplicação web para gerenciamento da **Ficha de Personagem** de um sistema próprio de RPG de mesa baseado em d20 com 7 atributos (FOR, DES, CON, SAB, ESP, CAR, INT).
 
-Desenvolvida com foco em alta performance, usabilidade em smartphones e desktop, rolagem virtual de dados com vantagem/desvantagem, temas visuais personalizáveis e persistência em nuvem via backend independente.
+Frontend em **Next.js 16 + React 19 + Tailwind CSS 4**, com persistência em nuvem via o backend independente [**Rpg-backend**](https://github.com/Orijnat/Rpg-backend) (Express + Sequelize + PostgreSQL), painel do mestre, mapa tático compartilhado e rolagem virtual de dados.
 
 ---
 
@@ -10,39 +10,25 @@ Desenvolvida com foco em alta performance, usabilidade em smartphones e desktop,
 
 | Tecnologia | Versão | Papel |
 |:---|:---|:---|
-| Next.js | 16.x | Framework React com App Router |
+| Next.js | 16.x | Framework React com App Router (Turbopack, React Compiler) |
 | React | 19.x | UI com Server e Client Components |
-| Tailwind CSS | 4.x | Estilização utilitária |
+| Tailwind CSS | 4.x | Estilização utilitária + CSS variables de tema |
 | Lucide React | 1.x | Ícones SVG temáticos |
-| Sequelize | 6.x | ORM para as Route Handlers internas |
-| PostgreSQL | 14+ | Banco de dados (via Rpg-backend) |
+| Rpg-backend | — | API REST + Sequelize + PostgreSQL ([repo](https://github.com/Orijnat/Rpg-backend)) |
+| Vercel / Render / Supabase | — | Hospedagem frontend / backend / banco em produção |
 
 ---
 
 ## ✨ Funcionalidades Principais
 
 - **7 Atributos Customizados**: FOR, DES, CON, SAB, ESP, CAR e INT com cálculo automático de modificadores e formatação com sinal (+/−).
-- **19 Perícias Integradas**: Vínculo direto aos atributos base com controle de treino (`trained`) e bônus customizado por perícia.
-- **Rolador de Dados Virtual Integrado**:
-  - Rolagem padrão d20 com modificador automático.
-  - Mecânica de **Vantagem** (`2d20kh1`) e **Desvantagem** (`2d20kl1`).
-  - Dados avulsos: `d4, d6, d8, d10, d12, d20, d100`.
-  - Histórico completo da sessão.
-- **5 Temas Visuais RPG** (selecionáveis nas Configurações):
-  - 🔥 **Âmbar Vulcânico** — ouro fundido e forjas ancestrais (padrão)
-  - 💀 **Cripta Abissal** — púrpura arcano e névoa espectral
-  - 🌿 **Floresta Ancestral** — esmeralda druídica e bioluminescência
-  - 🩸 **Sangue Carmesim** — vermelho carmesim e caçadas sob a lua
-  - ❄️ **Gelo Eterno** — ciano glacial e ermos congelados
-- **Módulos do Jogador**:
-  - **Personagem**: Atributos, HP, perícias e aparência.
-  - **Inventário**: Itens, quantidades e rolagem rápida de dano.
-  - **Banco / Cofre**: 80 slots protegidos por senha.
-  - **Contratos & Missões**: Acompanhamento de quests e recompensas.
-  - **Mundo**: Registro de NPCs e personagens do mundo.
-  - **Quarto**: Notas privadas do jogador.
-  - **Montaria**: Ficha com nome, HP e anotações.
-- **Persistência Dupla**: localStorage (offline) + sincronização automática com Rpg-backend (PostgreSQL).
+- **19 Perícias Integradas**: vínculo direto aos atributos base com controle de treino e bônus customizado por perícia.
+- **Raça e Classe de Progressão**: a raça soma seu bônus; a classe define o Dado de Vida e as habilidades de nível — escolha única (depois só o mestre altera).
+- **Rolador de Dados Virtual**: d20 com modificador automático, **Vantagem/Desvantagem** (`2d20kh1`/`2d20kl1`), dados avulsos (d4–d100) e histórico da sessão.
+- **5 Temas Visuais RPG** (Âmbar Vulcânico padrão, Cripta Abissal, Floresta Ancestral, Sangue Carmesim, Gelo Eterno), persistidos e aplicados sem recarregar.
+- **Módulos do Jogador**: Personagem · Inventário · Banco/Cofre (80 slots + senha) · Contratos & Missões · Mundo (NPCs) · Quarto (notas) · Montaria · Habilidades · Mapa Tático · Anotações.
+- **Painel do Mestre** (`/admin`): personagens, fichas de heróis, sessões de jogo, encontros táticos, distribuição de XP, catálogo de classes, mercado, mapa tático, NPCs, campanhas e auditoria.
+- **Persistência Local-First**: `localStorage` como espelho offline + **sincronização automática** com o backend (debounce, concorrência otimista com `updatedAt`, conflito 409 com escolha do jogador, **retentativa automática** em erros de rede/5xx — seus dados locais nunca são descartados).
 - **Backup Manual**: exportação/importação da ficha completa em JSON.
 
 ---
@@ -53,44 +39,23 @@ Desenvolvida com foco em alta performance, usabilidade em smartphones e desktop,
 Rpg-ficha/
 ├── src/
 │   ├── app/
-│   │   ├── context/
-│   │   │   ├── CharacterContext.js  # Estado global da ficha + sync com backend
-│   │   │   ├── DiceContext.jsx      # Estado do rolador de dados
-│   │   │   └── ThemeContext.jsx     # Tema visual ativo + persistência
-│   │   ├── components/
-│   │   │   ├── Cabecalho.jsx        # Header com HP, nome e botão de configurações
-│   │   │   ├── SettingsModal.jsx    # Modal de temas e backup
-│   │   │   ├── BackupModal.jsx      # Alias retrocompatível → SettingsModal
-│   │   │   ├── Pericia.jsx          # Lista de perícias com rolagem integrada
-│   │   │   ├── Aparencia.jsx        # Dados de aparência e biografia
-│   │   │   ├── Anotacoes.jsx        # Notas editáveis do personagem
-│   │   │   ├── BarrraHp.jsx         # Barra de HP interativa
-│   │   │   ├── ui.js                # Primitivos: Card, StatBox, EditableText…
-│   │   │   ├── banco/               # Componentes do cofre bancário
-│   │   │   └── dice/                # Modal e trigger flutuante de dados
-│   │   ├── personagem/page.js       # Rota /personagem
-│   │   ├── inventario/page.js       # Rota /inventario
-│   │   ├── contratos/page.js        # Rota /contratos
-│   │   ├── mundo/page.js            # Rota /mundo
-│   │   ├── quarto/page.js           # Rota /quarto
-│   │   ├── montaria/page.js         # Rota /montaria
-│   │   ├── banco/page.jsx           # Rota /banco
-│   │   ├── admin/                   # Painel administrativo de personagens
-│   │   ├── globals.css              # Variáveis CSS de tema + Tailwind
-│   │   └── layout.js               # Layout raiz com todos os Providers
-│   └── lib/
-│       ├── themes.js                # Definição dos 5 temas visuais
-│       ├── defaultCharacter.js      # Estado inicial da ficha
-│       ├── modifiers.js             # Cálculo de modificadores d20 e perícias
-│       ├── dice.js                  # Parser de fórmulas de dados
-│       ├── api.js                   # Integração com Rpg-backend
-│       └── __tests__/               # Testes unitários (Node test runner)
-├── docs/                            # Documentação técnica do projeto
-├── .agents/                         # Skills e memórias dos agentes AI
-├── .env.local                       # Suas variáveis locais (NÃO commitado)
-├── next.config.mjs
-├── tailwind.config.mjs (via postcss)
-└── package.json
+│   │   ├── context/            # CharacterContext (estado + sync) · AuthContext · DiceContext · ThemeContext
+│   │   ├── components/         # Cabeçalho, SettingsModal, perícias, aparência, barra de HP, banco, dados (d20)…
+│   │   ├── page.js             # Landing page (/)
+│   │   ├── layout.js           # Layout raiz com todos os Providers
+│   │   ├── personagem/         # Rota /personagem (a ficha)
+│   │   ├── inventario|banco|contratos|mundo|quarto|montaria|anotacoes|habilidades|mapa-tatico|perfil/
+│   │   ├── login|registro|convite/   # Autenticação e convites de campanha
+│   │   ├── admin/              # Painel do mestre (personagens, fichas, sessões, encontros, classes, mercado…)
+│   │   └── globals.css         # Tailwind 4 + variáveis de tema (data-theme)
+│   ├── layouts/AppShell.jsx    # Shell global: navegação, guarda de rotas, cabeçalho (HP/XP/sync)
+│   └── lib/                    # Regras puras: modifiers, dice, races, classes, abilities, items, leveling, api.js…
+│       └── __tests__/          # 162 testes (node test runner)
+├── docs/                       # Documentação técnica do projeto
+├── .agents/                    # Skills e memórias dos agentes IA
+├── .env.example                # NEXT_PUBLIC_API_URL=http://localhost:3333/api
+├── next.config.mjs             # React Compiler + security headers
+└── vercel.json                 # Framework Next.js (deploy na Vercel)
 ```
 
 ---
@@ -99,13 +64,11 @@ Rpg-ficha/
 
 ### Pré-requisitos
 
-- **Node.js 20+** — [download](https://nodejs.org/)
-- **Rpg-backend rodando** (necessário para sincronização) — veja [Rpg-backend/README.md](https://github.com/Orijnat/Rpg-backend)
-- PostgreSQL (opcional — o frontend funciona offline com localStorage sem o backend)
+- **Node.js 20+**
+- **Rpg-backend** rodando (porta 3333) para login e sincronização — [Rpg-backend/README.md](https://github.com/Orijnat/Rpg-backend)
+- PostgreSQL (o frontend funciona offline com `localStorage` sem o backend)
 
----
-
-### Passo a Passo Completo
+### Passo a Passo
 
 ```bash
 # 1. Clone o repositório
@@ -116,52 +79,20 @@ cd Rpg-ficha
 npm install
 
 # 3. Configure as variáveis de ambiente
-cp .env.example .env.local   # se .env.example existir, senão crie manualmente
-
-# Conteúdo mínimo do .env.local:
-# NEXT_PUBLIC_API_URL=http://localhost:3333
-# DATABASE_URL=postgres://rpg_user:rpg_senha_aqui@localhost:5432/rpg_ficha
+cp .env.example .env.local   # já contém NEXT_PUBLIC_API_URL=http://localhost:3333/api
 
 # 4. Inicie o servidor de desenvolvimento
 npm run dev
 ```
 
-Acesse [http://localhost:3000](http://localhost:3000) — a rota raiz redireciona para `/personagem`.
+Acesse [http://localhost:3000](http://localhost:3000) — landing page; após login, a ficha fica em [/personagem](http://localhost:3000/personagem).
 
----
+> O frontend funciona **mesmo sem o backend ativo** — a ficha fica no `localStorage` e sincroniza quando a conexão voltar (retentativa automática em background).
 
-### Para rodar com o backend completo
-
-Garanta que o **Rpg-backend** está ativo na porta `3333` antes de iniciar o frontend:
+### Build de produção
 
 ```bash
-# Em um terminal — backend:
-cd ../Rpg-backend
-docker compose up -d   # ou npm run dev se já tiver o postgres configurado
-npm run dev
-
-# Em outro terminal — frontend:
-cd ../Rpg-ficha
-npm run dev
-```
-
-> O frontend funciona **mesmo sem o backend ativo** — os dados ficam salvos no `localStorage` e são sincronizados assim que a conexão for restabelecida.
-
----
-
-## 🏗️ Build de Produção
-
-```bash
-# Gera o build otimizado
 npm run build
-
-# Visualiza a saída do build (rotas, tamanhos)
-# ✓ Compiled successfully
-# ○  / (Static)
-# ○  /personagem (Static)
-# ...
-
-# Inicia em modo produção
 npm start
 ```
 
@@ -169,20 +100,13 @@ npm start
 
 ## 🧪 Testes
 
-O projeto usa o **Node.js Test Runner** nativo (sem Jest ou Vitest):
+O projeto usa o **Node.js Test Runner** nativo (sem Jest/Vitest):
 
 ```bash
-# Roda todos os testes
-node --test src/lib/__tests__/*.test.mjs
+npm test        # equivale a node --test 'src/lib/__tests__/*.test.mjs'
 ```
 
-Suítes disponíveis:
-
-| Arquivo | O que testa |
-|:---|:---|
-| `backup.test.mjs` | Integridade do schema `defaultData`, serialização e importação JSON |
-| `rules-and-dice.test.mjs` | Modificadores d20, formatação de sinal, 19 perícias, rolagens com vantagem/desvantagem |
-| `themes.test.mjs` | Estrutura e conformidade dos 5 temas visuais |
+**162 testes em 18 arquivos**, cobrindo: modificadores d20 e formatação de sinal, 19 perícias, rolagem com vantagem/desvantagem, temas visuais, cálculo de nível/HP por Dado de Vida, raças e bônus, classes e habilidades, itens e consumíveis, encontros/XP, mercado, mapa tático, autenticação, API safety e backup/importação.
 
 ---
 
@@ -190,36 +114,40 @@ Suítes disponíveis:
 
 | Comando | Descrição |
 |:---|:---|
-| `npm run dev` | Servidor de desenvolvimento com hot-reload (Turbopack) |
+| `npm run dev` | Servidor de desenvolvimento (Turbopack) |
 | `npm run build` | Build otimizado para produção |
 | `npm start` | Inicia o build de produção |
+| `npm test` | Suite de testes (node test runner) |
 | `npm run lint` | Análise estática com ESLint |
 
 ---
 
-## 🎨 Temas Visuais
+## 🌐 Produção
 
-Os temas são selecionáveis em **Configurações** (ícone de engrenagem no cabeçalho), persistidos no `localStorage` e aplicados via atributo `data-theme` no `<html>`, sem recarregar a página.
+| Camada | Plataforma | Como sobe |
+|:---|:---|:---|
+| Frontend (este repo) | Vercel | **automático** a cada push na `main` |
+| Backend ([Rpg-backend](https://github.com/Orijnat/Rpg-backend)) | Render | **Manual Deploy** (não sobe sozinho no push) |
+| Banco | Supabase (PostgreSQL) | `npm run db:migrate` (idempotente) |
 
-| ID | Nome | Accent | Inspiração |
-|:---|:---|:---|:---|
-| `amber` | Âmbar Vulcânico | `#d69a3d` | Forjas e montanhas ancestrais |
-| `abyss` | Cripta Abissal | `#a855f7` | Necromancia e planos sombrios |
-| `forest` | Floresta Ancestral | `#10b981` | Druidas e alquimia silvestre |
-| `crimson` | Sangue Carmesim | `#ef4444` | Bruxeiros e caçadas sob a lua |
-| `frost` | Gelo Eterno | `#06b6d4` | Ermos glaciais e runas de geada |
+- **Backend em produção**: `https://rpg-backend-pmhk.onrender.com` — health check em `GET /api/health`
+- **`NEXT_PUBLIC_API_URL`** na Vercel deve terminar em `/api` (ex.: `https://rpg-backend-pmhk.onrender.com/api`)
+- Se o backend não subir, a ficha **não sincroniza** (a produção depende do Manual Deploy no Render) — os dados locais continuam seguros no navegador e o sync retenta sozinho.
+
+Checklist completo de deploy, incidentes e rotação de chaves: [`docs/RUNBOOK-PRODUCAO.md`](./docs/RUNBOOK-PRODUCAO.md).
 
 ---
 
 ## 📚 Documentação Técnica
 
-Consulte a pasta [`docs/`](./docs/) para detalhes aprofundados:
-
 | Documento | Conteúdo |
 |:---|:---|
-| [ARCHITECTURE.md](./docs/ARCHITECTURE.md) | Diagrama do sistema, fluxo de dados e decisões de design |
+| [ARCHITECTURE.md](./docs/ARCHITECTURE.md) | **Documentação completa do sistema**: front + back, fluxo de sync, auth/sessões, contrato da API, infra, armadilhas conhecidas |
 | [RPG_RULES.md](./docs/RPG_RULES.md) | Os 7 atributos, fórmulas d20, tabela de modificadores e 19 perícias |
-| [DATABASE_SCHEMA.md](./docs/DATABASE_SCHEMA.md) | Diagrama ER, tabelas, modelos Sequelize e tipos PostgreSQL |
+| [DATABASE_SCHEMA.md](./docs/DATABASE_SCHEMA.md) | Modelo relacional, modelos Sequelize e tipos PostgreSQL |
+| [RUNBOOK-PRODUCAO.md](./docs/RUNBOOK-PRODUCAO.md) | Deploy, monitoramento, incidentes, rotação de JWT/OAuth |
+| [SEGURANCA.md](./docs/SEGURANCA.md) | Políticas de segurança e controle de acesso |
+| [TROUBLESHOOTING.md](./docs/TROUBLESHOOTING.md) | Problemas comuns e soluções |
 | [AGENTS_AND_WORKFLOW.md](./docs/AGENTS_AND_WORKFLOW.md) | Equipe multiagente, memórias persistentes e workflow |
 
 ---
@@ -227,13 +155,16 @@ Consulte a pasta [`docs/`](./docs/) para detalhes aprofundados:
 ## ❗ Solução de Problemas
 
 **A ficha não sincroniza com o banco**
-→ Verifique se o Rpg-backend está rodando em `http://localhost:3333`. O frontend continua funcionando com os dados no localStorage.
+→ Verifique se o Rpg-backend está de pé (`GET /api/health`) e se `NEXT_PUBLIC_API_URL` inclui `/api`. O front tenta de novo sozinho; o botão manual "Tentar novamente" também está sempre disponível. Em produção, o backend sobe só com **Manual Deploy no Render**.
+
+**Erro 422 ao salvar**
+→ O servidor rejeitou um campo (o popover "N campo(s)" na ficha mostra `campo: mensagem`). Os dois 422 já resolvidos (ids slug não-UUID; `classe` como objeto) estão documentados em [ARCHITECTURE.md §10](./docs/ARCHITECTURE.md).
+
+**401 "Sessão revogada" em tudo**
+→ O banco foi restaurado/limpo e as sessões sumiram: faça logout e login de novo.
 
 **Erro de build: módulo não encontrado**
-→ Rode `npm install` para garantir que todas as dependências estão instaladas.
+→ Rode `npm install`.
 
-**Temas não aplicam ao recarregar**
-→ Verifique se o `localStorage` está habilitado no navegador. Modo anônimo pode bloquear.
-
-**Hot-reload não funciona**
-→ O Next.js 16 usa Turbopack por padrão. Tente `npm run dev -- --no-turbo` se houver instabilidade.
+**Hot-reload instável**
+→ O Next.js 16 usa Turbopack por padrão; tente `npm run dev -- --no-turbo`.
