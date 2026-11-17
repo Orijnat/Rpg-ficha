@@ -137,7 +137,27 @@ export async function loginUser({ login, password }) {
 }
 
 export async function registerUser(payload) {
-  const { username, email, password, characterName, characterJob, customClass, perfil, role, inviteCode, codigoConvite } = payload || {};
+  const {
+    username,
+    email,
+    password,
+    characterName,
+    characterJob,
+    customClass,
+    perfil,
+    role,
+    inviteCode,
+    codigoConvite,
+    race,
+    hitDie,
+    FOR,
+    DES,
+    CON,
+    SAB,
+    ESP,
+    CAR,
+    INT,
+  } = payload || {};
   const selectedPerfil = perfil || (role === "master" ? "mestre" : "jogador");
   const selectedRole = role || (selectedPerfil === "mestre" ? "master" : "player");
   const code = (inviteCode || codigoConvite || "").trim().toUpperCase();
@@ -155,6 +175,15 @@ export async function registerUser(payload) {
       perfil: selectedPerfil,
       role: selectedRole,
       inviteCode: code || undefined,
+      race,
+      hitDie,
+      FOR,
+      DES,
+      CON,
+      SAB,
+      ESP,
+      CAR,
+      INT,
     }),
   }, "Erro ao realizar cadastro.");
   storeAuth(data.token, data.user);
