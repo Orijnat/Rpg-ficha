@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Star, Sparkles, Check } from "lucide-react";
+import { Star, Sparkles, Check, Trophy } from "lucide-react";
 import { Card, SectionHeader } from "../ui";
 import { calculateLevelFromXP } from "../../../lib/modifiers";
 
@@ -11,7 +11,7 @@ import { calculateLevelFromXP } from "../../../lib/modifiers";
  * - Mostra o progresso de cada herói presente para o próximo nível.
  * - "Distribuir XP" aplica a recompensa no XP de cada herói no encontro.
  */
-export function EncounterXpPanel({ encounter, heroes, onSaveXp, onDistribute, distributing }) {
+export function EncounterXpPanel({ encounter, heroes, onSaveXp, onDistribute, distributing, onFinalizeEncounter }) {
   const reward = Math.max(0, Math.floor(Number(encounter?.recursos?.xp) || 0));
   const [xpInput, setXpInput] = useState(String(reward));
   const [prevRewardKey, setPrevRewardKey] = useState(`${encounter?.id}:${reward}`);
@@ -126,6 +126,17 @@ export function EncounterXpPanel({ encounter, heroes, onSaveXp, onDistribute, di
             ? "XP distribuído — distribuir novamente"
             : `Distribuir ${reward > 0 ? `${reward} XP` : "XP"} para a party`}
       </button>
+      {onFinalizeEncounter && encounter?.ativo !== false && (
+        <button
+          type="button"
+          onClick={onFinalizeEncounter}
+          className="mt-2 flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-border text-[10px] font-bold uppercase tracking-wider text-muted-foreground transition hover:border-amber-500/50 hover:text-amber-300 active:scale-95"
+          title="Abre o desfecho de cada herói (vitória/derrota/fuga), distribui XP e encerra o encontro"
+        >
+          <Trophy size={12} />
+          Finalizar Encontro (vitória / derrota / fuga)
+        </button>
+      )}
       {distributedAt && (
         <p className="mt-1.5 text-center text-[9px] uppercase tracking-wider text-emerald-400/80">
           XP distribuído em {new Date(distributedAt).toLocaleString("pt-BR")}

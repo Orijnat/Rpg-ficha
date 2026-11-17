@@ -15,6 +15,7 @@ import {
   Skull,
   Swords,
   Trash2,
+  Trophy,
   Users,
   X,
 } from "lucide-react";
@@ -36,6 +37,7 @@ import { normalizeLegacyBattleLogEntry } from "../../../lib/battleLog";
 import { CONDITIONS_LIST, advanceTurn, applyHealthChange } from "../../../lib/modifiers";
 import { rollDice } from "../../../lib/dice";
 import { EncounterXpPanel } from "../../components/admin/EncounterXpPanel";
+import FinalizarEncounterModal from "../../components/admin/FinalizarEncounterModal";
 import { useAuth } from "../../context/AuthContext";
 
 export default function AdminEncontrosPage() {
@@ -66,6 +68,7 @@ export default function AdminEncontrosPage() {
   const [openConditionPickerId, setOpenConditionPickerId] = useState(null);
   const [distributing, setDistributing] = useState(false);
   const [confirmDistribute, setConfirmDistribute] = useState(false);
+  const [finalizeOpen, setFinalizeOpen] = useState(false);
 
   // Log persistente da batalha: entradas marcadas pelo encontro a que pertencem,
   // para nunca renderizar eventos do encontro anterior enquanto a carga está em curso
@@ -355,6 +358,78 @@ export default function AdminEncontrosPage() {
     }
   };
 
+  const handleFinalizeEncounter = async (rows) => {
+    if (!activeEncounter) return { ok: false, message: "Nenhum encontro ativo." };
+    setError("");
+    try {
+      const fresh = (await listCharacters(token)) || [];
+      const vitoria = [];
+      const derrota = [];
+      const fuga = [];
+      const xpGained = new Map();
+      for (const row of rows) {
+        if (row.outcome === "derrota") derrota.push(row.name);
+        else if (row.outcome === "fuga") fuga.push(row.name);
+        else vitoria.push(row.name);
+        const amount = Math.max(0, Math.floor(Number(row.xp) || 0));
+        if (row.included && amount > 0) {
+          const hero = fresh.find((h) => String(h.id) === String(row.id));
+          if (hero) {
+            const currentXp = Number(hero.xp) || 0;
+            await updateCharacterOnBackend(hero.id, { xp: currentXp + amount }, token);
+            xpGained.set(hero.id, amount);
+          }
+        }
+      }
+      if (xpGained.size > 0) {
+        setHeroes(fresh.map((h) => (xpGained.has(h.id) ? { ...h, xp: (Number(h.xp) || 0) + xpGained.get(h.id) } : h)));
+      }
+      const summary = rows
+        .map((row) =>
+          row.outcome === "vitoria"
+            ? `${row.name} +${row.xp} XP`
+            : row.outcome === "derrota"
+              ? `${row.name} (derrota)`
+              : `${row.name} (fugiu)`
+        )
+        .join("; ");
+      const detalhes = [`Encontro "${activeEncounter.nome}" finalizado. ${summary}.`];
+      if (derrota.length > 0) detalhes.push(`Derrota: ${derrota.join(", ")}.`);
+      if (fuga.length > 0) detalhes.push(`Fugiram: ${fuga.join(", ")}.`);
+      const updated = await updateEncounter(
+        activeEncounter.id,
+        {
+          ativo: false,
+          dadosExtras: {
+            ...(activeEncounter.dadosExtras || {}),
+            ...(xpGained.size > 0 ? { xpDistribuidoEm: new Date().toISOString() } : {}),
+            finalizadoEm: new Date().toISOString(),
+            resultado: {
+              vitoria,
+              derrota,
+              fuga,
+              xpPorHeroi: Object.fromEntries(rows.map((row) => [row.name, row.included ? row.xp : 0])),
+            },
+          },
+          novoEventoLog: detalhes.join(" "),
+          tipoEventoLog: "recursos",
+        },
+        token
+      );
+      setActiveEncounter(updated);
+      setEncounters((prev) => prev.map((encounterItem) => (encounterItem.id === updated.id ? updated : encounterItem)));
+      fetchBattleLog(selectedCampaignId, updated.id, { silent: true });
+      setSuccessMsg(
+        xpGained.size > 0
+          ? `Encontro finalizado — ${xpGained.size} herói(s) receberam XP.`
+          : "Encontro finalizado sem distribuição de XP."
+      );
+      return { ok: true };
+    } catch (err) {
+      return { ok: false, message: err?.message || "Falha ao finalizar o encontro." };
+    }
+  };
+
   const handleDeleteEncounter = async () => {
     if (!encounterToDelete) return;
     try {
@@ -549,6 +624,20 @@ export default function AdminEncontrosPage() {
                   >
                     <Play size={13} /> Avançar Turno
                   </button>
+                  {activeEncounter.ativo !== false ? (
+                    <button
+                      type="button"
+                      onClick={() => setFinalizeOpen(true)}
+                      className="flex min-h-9 items-center gap-1.5 rounded-lg border border-amber-500/60 bg-amber-500/20 px-3 text-xs font-bold uppercase text-amber-200 transition hover:bg-amber-500/30 active:scale-95"
+                      title="Distribuir XP com o desfecho de cada herói (vitória/derrota/fuga) e encerrar o encontro"
+                    >
+                      <Trophy size={13} /> Finalizar
+                    </button>
+                  ) : (
+                    <span className="flex min-h-9 items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-3 text-[10px] font-bold uppercase tracking-wider text-emerald-300">
+                      <Trophy size={13} /> Finalizado
+                    </span>
+                  )}
                 </div>
               </div>
 
@@ -738,6 +827,7 @@ export default function AdminEncontrosPage() {
               onSaveXp={handleSaveEncounterXp}
               onDistribute={() => setConfirmDistribute(true)}
               distributing={distributing}
+              onFinalizeEncounter={() => setFinalizeOpen(true)}
             />
             <Card className="h-full max-h-[600px] flex flex-col justify-between">
               <div>
@@ -773,6 +863,15 @@ export default function AdminEncontrosPage() {
           </div>
         </div>
       ) : null}
+
+      {/* Modal de Finalização do Encontro */}
+      <FinalizarEncounterModal
+        isOpen={finalizeOpen}
+        onClose={() => setFinalizeOpen(false)}
+        encounter={activeEncounter}
+        heroes={heroes}
+        onFinalize={handleFinalizeEncounter}
+      />
 
       {/* Confirmação de Distribuição de XP */}
       <ConfirmDialog
