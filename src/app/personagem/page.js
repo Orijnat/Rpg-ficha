@@ -145,10 +145,11 @@ export default function Personagem() {
             </p>
           </div>
           <div className="flex flex-col gap-2.5 sm:items-end">
-            {syncIndicator && (
-              <span className={`flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider ${syncIndicator.className}`} role="status" aria-live="polite">
-                <syncIndicator.Icon size={13} className={syncStatus === "saving" ? "animate-spin" : ""} />
-                {syncIndicator.label}
+            <span className="flex min-h-8 items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider" role="status" aria-live="polite">
+              {syncIndicator ? (
+                <>
+                <syncIndicator.Icon size={13} className={`${syncIndicator.className} ${syncStatus === "saving" ? "animate-spin" : ""}`} />
+                <span className={syncIndicator.className}>{syncIndicator.label}</span>
                 {(syncStatus === "error" || syncStatus === "conflict") && (
                   <>
                     <button type="button" onClick={retrySync} className="ml-1 inline-flex min-h-8 items-center gap-1 rounded px-2 text-[10px] underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label="Tentar sincronizar novamente">
@@ -171,13 +172,16 @@ export default function Personagem() {
                     )}
                   </>
                 )}
-              </span>
-            )}
-            {syncStatus === "error" && syncError && (
-              <p className="max-w-[16rem] break-words text-right font-mono text-[9px] normal-case leading-snug text-rose-300/90 sm:max-w-[20rem]" role="alert">
-                {syncError.status ? `HTTP ${syncError.status} · ` : ""}{syncError.message || "Falha desconhecida"}
-              </p>
-            )}
+                </>
+                ) : (
+                  <span aria-hidden="true">&nbsp;</span>
+                )}
+            </span>
+            <p className="h-4 max-w-[16rem] break-words text-right font-mono text-[9px] normal-case leading-4 text-rose-300/90 sm:max-w-[20rem]" role="alert">
+              {syncStatus === "error" && syncError
+                ? `${syncError.status ? `HTTP ${syncError.status} · ` : ""}${syncError.message || "Falha desconhecida"}`
+                : "\u00A0"}
+            </p>
             <div className="grid grid-cols-2 gap-2.5 sm:min-w-56">
               <div className="medallion-plate rounded-xl p-3 text-center">
                 <span className="block font-cinzel text-[10px] uppercase tracking-wider text-muted-foreground/80">Nível</span>
