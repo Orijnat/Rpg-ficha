@@ -504,6 +504,9 @@ function RegisterForm() {
                       className={inputBase}
                       style={inputFont}
                     />
+                    <p className="mt-1.5 text-[10px] leading-snug text-[var(--theme-subtitle)]" style={{ fontFamily: "Crimson Text, serif" }}>
+                      Se a classe não existir no catálogo, ela é salva automaticamente e fica visível e editável na administração de classes do mestre.
+                    </p>
                   </FormField>
 
                 </div>

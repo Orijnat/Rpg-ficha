@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BookOpen, Check, LoaderCircle, Pencil, Plus, Shield, Sparkles, Trash2 } from "lucide-react";
+import { BookOpen, Check, LoaderCircle, Lock, Pencil, Plus, Shield, Sparkles, Trash2 } from "lucide-react";
 import { Card, SectionHeader } from "../../components/ui";
 import ClassFormModal from "../../components/admin/ClassFormModal";
 import ConfirmDialog from "../../components/admin/ConfirmDialog";
@@ -9,7 +9,8 @@ import { listClasses, createClassOnBackend, updateClassOnBackend, deleteClassOnB
 import { useAuth } from "../../context/AuthContext";
 
 export default function AdminClasses() {
-  const { token, isMaster, loading: authLoading } = useAuth();
+  const { token, isMaster, loading: authLoading, user } = useAuth();
+  const masterId = user?.id ?? null;
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -134,14 +135,26 @@ export default function AdminClasses() {
                     >
                       <Pencil size={16} />
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => setDeleteTarget(classe)}
-                      aria-label={`Remover ${classe.name}`}
-                      className="rounded-lg border border-zinc-800 p-2 text-zinc-500 transition hover:border-rose-500/50 hover:bg-rose-950/60 hover:text-rose-300"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    {classe.criadoPor && classe.criadoPor === masterId ? (
+                      <button
+                        type="button"
+                        onClick={() => setDeleteTarget(classe)}
+                        aria-label={`Remover ${classe.name}`}
+                        title="Remover classe (você foi quem a criou)"
+                        className="rounded-lg border border-zinc-800 p-2 text-zinc-500 transition hover:border-rose-500/50 hover:bg-rose-950/60 hover:text-rose-300"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    ) : (
+                      <span
+                        role="img"
+                        aria-label={classe.criadoPor ? `Somente o mestre que criou "${classe.name}" pode removê-la` : `"${classe.name}" é uma classe padrão do catálogo e não pode ser removida`}
+                        title={classe.criadoPor ? "Somente o mestre que criou esta classe pode removê-la" : "Classe padrão do catálogo — não pode ser removida"}
+                        className="rounded-lg border border-zinc-800/70 p-2 text-zinc-600"
+                      >
+                        <Lock size={16} />
+                      </span>
+                    )}
                   </div>
                 </div>
                 <div className="mt-auto flex items-center justify-between gap-2 border-t border-zinc-800/70 pt-2 text-[10px] text-zinc-500">
