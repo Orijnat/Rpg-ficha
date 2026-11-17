@@ -20,7 +20,7 @@ import { DEFAULT_ABILITIES, isHabilidadeDesbloqueada } from "../../lib/abilities
 export default function Personagem() {
   const { data, upd, syncStatus, syncError, retrySync, reloadFromCloud, overwriteCloud, updateDadosExtras, updateRace, updateClass, applyLevelUp } = useCharacter();
   const { requestRoll } = useDice();
-  const { isMaster } = useAuth();
+  const { isMaster, activeCharacter, loading: authLoading, logout } = useAuth();
   const [levelFeedback, setLevelFeedback] = useState(null);
   const feedbackTimer = useRef(null);
   const [racas, setRacas] = useState(DEFAULT_RACES);
@@ -87,6 +87,33 @@ export default function Personagem() {
   const activeTraining = abilities.find((h) => h.isTraining && (h.approvalStatus || "aprovada") === "aprovada");
   const unlockedCount = abilities.filter((h) => isHabilidadeDesbloqueada(h, characterLevel) && (h.approvalStatus || "aprovada") === "aprovada").length;
 
+  // Mestre logando sem ficha própria (ou conta sem ficha): nunca abrir a ficha de um herói
+  if (!authLoading && !activeCharacter) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-5 text-center">
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-primary/40 bg-primary/10 text-primary">
+          <Crown size={30} />
+        </div>
+        <div>
+          <h2 className="font-cinzel text-xl font-black text-foreground sm:text-2xl">
+            {isMaster ? "Modo Mestre — nenhuma ficha própria" : "Nenhuma ficha vinculada"}
+          </h2>
+          <p className="mt-2 max-w-md text-sm text-muted-foreground">
+            {isMaster
+              ? "Como mestre, você conduz a mesa. Para abrir a ficha completa de um herói em uma nova guia, use os botões «Acessar Ficha» no Painel do Mestre."
+              : "Nenhuma ficha foi encontrada para esta conta."}
+          </p>
+        </div>
+        <Link
+          href={isMaster ? "/admin" : "/perfil"}
+          className="flex min-h-11 items-center gap-2 rounded-xl border border-primary/50 bg-primary/15 px-5 text-xs font-bold uppercase tracking-wider text-primary transition hover:bg-primary/25"
+        >
+          {isMaster ? "Ir para o Painel do Mestre" : "Ir para o Perfil"}
+        </Link>
+      </div>
+    );
+  }
+
   const syncLabels = {
     idle: null,
     saving: { label: "Salvando...", Icon: LoaderCircle, className: "text-primary" },
@@ -127,6 +154,11 @@ export default function Personagem() {
                     <button type="button" onClick={retrySync} className="ml-1 inline-flex min-h-8 items-center gap-1 rounded px-2 text-[10px] underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label="Tentar sincronizar novamente">
                       <RefreshCw size={11} aria-hidden="true" /> Tentar novamente
                     </button>
+                    {(syncError?.status === 401 || syncError?.status === 403) && (
+                      <button type="button" onClick={() => { logout(); }} className="ml-1 inline-flex min-h-8 items-center gap-1 rounded border border-rose-500/50 bg-rose-500/15 px-2 text-[10px] font-bold text-rose-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label="Sair e entrar novamente">
+                        Sair e entrar de novo
+                      </button>
+                    )}
                     {syncStatus === "conflict" && (
                       <>
                         <button type="button" onClick={reloadFromCloud} className="ml-1 inline-flex min-h-8 items-center gap-1 rounded px-2 text-[10px] underline underline-offset-2 text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label="Descartar o rascunho local e manter a versão do servidor">
@@ -140,6 +172,11 @@ export default function Personagem() {
                   </>
                 )}
               </span>
+            )}
+            {syncStatus === "error" && syncError && (
+              <p className="max-w-[16rem] break-words text-right font-mono text-[9px] normal-case leading-snug text-rose-300/90 sm:max-w-[20rem]" role="alert">
+                {syncError.status ? `HTTP ${syncError.status} · ` : ""}{syncError.message || "Falha desconhecida"}
+              </p>
             )}
             <div className="grid grid-cols-2 gap-2.5 sm:min-w-56">
               <div className="medallion-plate rounded-xl p-3 text-center">
