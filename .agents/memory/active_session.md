@@ -65,6 +65,22 @@
 - `1d2d848` feat(dice) o dado em si rolando com todos os lados — 3D WebGL/Three.js (Dice3D.jsx; d10 bipirâmide pentagonal; números por face via CanvasTexture; d100 = par de dados; d2 removido) · `74f4fe4` docs(memory). Pushed: `6fbbdd8..74f4fe4`.
 - Verificado antes do commit: front 161/161, build OK, lint 0 erros. **Sem conferência no navegador** — revisar visual/enquadramento/luzes e o fallback estático.
 
+## 🔧 2026-11-17 — NPC: botão "Acessar Ficha" abrindo a ficha NO LAYOUT DO JOGADOR — NÃO commitado
+- Pedido: "para npc, poderia fazer um botao de acessar ficha, na qual o layout e igual ao dos players".
+- Novo fluxo `/personagem?inspect=<id>&type=npc`: `AuthContext` (initAuth) agora detecta `type=npc`, busca o NPC com `fetchNpcById` e injeta um **personagem sintético** no `characters` — `{ __npc: true, userId: "npc:<id>" (≠ user.id → modo inspeção), name/nome/job espelho, FOR..INT a partir de dadosExtras.attributes, xp:0, level:1, abilities/dadosExtras}` — o /personagem renderiza o monstro **idêntico** a um herói (Cabecalho, StatBox com rolagens, Perícias, RecursosCombate, XP 0 bloqueado, Aparencia vazia).
+- `CharacterContext`: fichas `__npc` são **CÓPIA de trabalho**: `isNpcSheet` troca o cache p/ `sessionStorage` (`rpg-npc-sheet:v1:<user>:<id>` — por aba, nunca compartilhado) e **desativa toda a sincronização** (`syncCharacterWithBackend` nunca é chamado; `reloadFromCloud`→false; `retrySync`→offline; status exibido "offline"). Original no catálogo INTOCADO; refresh mantém a cópia.
+- Diálogos/banners: AppShell — "Modo Mestre · Ficha do Monstro" + badge "Cópia desta guia" + texto de rodapé; "Trocar Herói" NÃO lista o sintético (filtrado `!c.__npc`); jogadores comuns não veem (só mestre inspeciona).
+- Botões "Acessar Ficha" (âncora `target=_blank` → `/personagem?inspect=<id>&type=npc`) adicionados: editor NPC (/admin/npcs/[id], ao lado de Editar/Duplicar), Ameaças & Heróis (cards de NPC), catálogo /admin/npcs (ao lado de "Editar"). Herois/jogadores inalterados (registro compartilhado, VS. NPC=local).
+- Verificado: 161/161 testes, build OK, lint 0 erros (44 warnings pré-existentes). NÃO commitado, NÃO conferido no navegador.
+
+## 🔧 2026-11-17 — NPC: cada guia abre uma CÓPIA de trabalho (original intacto) — NÃO commitado
+- Pedido: "as edições em fichas de herói e jogadores devem salvar e ser editada para ambos, mas as de NPC — caso forem abertas 3 fichas de esqueleto — eu gostaria que abrisse uma copia, e mantivesse a ficha original intacta". Decisão do usuário: **cópia temporária por aba** (sessionStorage).
+- Herois/jogadores: INALTERADO (Salva/EDITA o registro compartilhado via backend; jogador vê).
+- `/admin/npcs/[id]/page.js` — a guia sempre abre como **cópia de trabalho** (`draftKey = rpg-npc-draft:<id>` no sessionStorage da guia; restaura no mount; persiste a cada edição; refresh não perde). O catálogo NÃO muda por abrir/editar.
+- Fluxo: banner âmbar "Cópia de trabalho desta guia" (origem intacta) + ações: **Salvar como novo NPC** (primário — cria entrada no catálogo via POST /npcs e abre a guia nela), **Sobrepor o original…** (escape, confirmação solene digitando o nome — sobrescreve o catálogo via PUT), **Restaurar do original** (descarta a cópia e recarrega do servidor), **Descartar cópia** (limpa draft e volta ao catálogo), **Excluir** mantida (confirm. digitando o nome; limpa o draft). **Duplicar/Variante agora nasce da CÓPIA desta guia** (inclui as edições atuais; HP dimensionado pelo multiplicador; tags Variante/Elite mescladas).
+- `handleSave` (PUT direto) removido; Enter nos inputs não salva mais (form onSubmit preventDefault).
+- Verificado: 161/161 testes, build OK, lint 0 erros (44 warnings pré-existentes). NÃO commitado, NÃO conferido no navegador.
+
 ## 🔧 2026-11-17 — Sessão persistida no NAVEGADOR INTEIRO (localStorage) — NÃO commitado
 - Pedido: "desenvolva um token por sessão, que fica salvo no navegador inteiro, pois ao abrir a nova aba, ele me pede para fazer login e me tira da tela da qual deveria ver" (nova guia do mestre via ?inspect=caía no /login porque o JWT era sessionStorage = por guia).
 - `src/lib/api.js`: `rpg_auth_token` agora gravado/lido do **localStorage** (todo o navegador); migração automática (token legado de sessionStorage sobe uma vez). `clearAuth()` já limpava os dois — mantido. Comentários atualizados.

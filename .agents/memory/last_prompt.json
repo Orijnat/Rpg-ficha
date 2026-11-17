@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-17T21:10:00-03:00",
+  "timestamp": "2026-11-17T22:15:00-03:00",
   "agent": "opencode",
-  "prompt": "poderia desenvolver um token por sessao, que fica salvo no naveador inteiro, pois ao abrir a nova aba, ele me pede para fazer loin, e me tira da tela da qual deveria ver",
-  "action": "Token JWT agora persiste no localStorage (navegador inteiro) — nova guia do mestre restaura a sessao via /auth/me. Migracao automatica do sessionStorage legado. Listener 'storage' no AuthContext: logout em uma guia desconecta as demais. 161/161 testes, build OK, lint 0 erros. Nao commitado."
+  "prompt": "para npc, poderia fazer um botao de acessar fica, na qual o layout e iual ao dos players",
+  "action": "Botao 'Acessar Ficha' (3 lugares: editor NPC, Ameacas & Herois NPC, catalogo npcs) -> /personagem?inspect=<id>&type=npc. AuthContext injeta personagem sintetico __npc (attrs de dadosExtras.attributes, xp 0) na lista; CharacterContext trata __npc como trabalho local (sessionStorage por guia, sync DESATIVADO) — original intocado. AppShell mostra banner 'Ficha do Monstro · Copia desta guia'; switcher nao lista o sintetico. 161/161 testes, build OK, lint 0 erros. Nao commitado."
 }
