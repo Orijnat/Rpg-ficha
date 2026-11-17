@@ -1,5 +1,14 @@
 # 🧠 Sessão Ativa — Grimorium RPG
 
+## 🔥 2026-11-17 — "classe: Invalid input: expected string, received object" no 422 da ficha — CAUSA RAIZ ACHADA E CORRIGIDA (NÃO commitado)
+- Usuário colou o campo exato do 422 (o popover "N campo(s)" adicionado antes funcionou): `classe` chegou como **objeto**.
+- **Causa raiz**: o backend serializa a associação Sequelize da classe como OBJETO em `classe` (includeClasse `{id,slug,nome,dadoDeVida,…}`) e `publicCharacter` **não removia a chave** — vazava para o front em TODO payload (login/me/list/sync/register/inspect). No front viajava no estado da ficha (`{...activeChar}` em buildSheetFromActive) e no sync (`{...charData}` em normalizeCharacterForSync) → zod `classe: texto(80)` → 422 em todo save. (O `classGuardError` do backend também leria `String(objeto)`="[object Object]" se passasse do zod.)
+- **Fix (backend, `characterPublic.js`)**: `delete data.classe` após derivar `classId`/`classSlug`/`className`/`hitDie` (mesmo padrão do `delete data.bankPassword`). Novo `Rpg-backend/test/public_classe.test.js` → **back 111/111**.
+- **Fix (frontend, defesa em profundidade)**: `normalizeCharacterForSync` envia `classe` só via `asTextoCurto()` (objeto→slug/nome/name; string→trim+slice(80); recebe `dadosExtras.class ?? charData.classe` — o slug casa com o currentSlug do classGuardError, sem risco de 403 falso). `/admin/personagens/[id]/ficha` sanitiza `payload.classe` no save (PUT faz spread do character inteiro).
+- **Verificação**: back 111/111, front **162/162**, build OK, lint 0 erros (44 pré-existentes). **NÃO commitado.**
+- **Deploy**: backend precisa de **Manual Deploy no Render** para o `delete data.classe` valer em produção; até lá, o fix do front sozinho já impede o 422 do sync. Frontend sobe na Vercel no push.
+- **Nota**: `data.raca` continua vazando como objeto, mas NÃO está no zod (strip silencioso) e nada no front lê `.raca` — deixado como está por minimalismo.
+
 ## 🔥 2026-11-17 — "HTTP 422 Dados inválidos" ao salvar na ficha — CAUSA RAIZ ACHADA E CORRIGIDA (NÃO commitado)
 - Sintoma: TODO save da ficha falha com 422. O `validar(sincronizacaoSchema)` do backend (zod `fichaSchema`) rejeitava o payload.
 - **Causa raiz**: `lib/races.js` (DEFAULT_RACES) e `lib/classes.js` (DEFAULT_CLASSES) usam **ids slug não-uuid** ("humano", "bruxeiro"…). `updateRace`/`updateClass` gravam `raceId`/`classId` com esses ids (a ficha usa os defaults estáticos até `listRaces`/`listClasses` resolver — quem escolheu a raça antes da lista carregar fica com "humano" para sempre). O zod `raceId`/`classId`/`classeId` exige `z.string().uuid()` → **422 em TODA sincronização, para sempre**. O sync resolve o vínculo FK a partir do slug (`hasRaceInput`/`hasClassInput` + `resolveRaca`/`resolveClasse`) — basta OMITIR o raceId inválido.

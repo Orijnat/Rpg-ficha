@@ -592,3 +592,10 @@ Este arquivo é a fonte de memória persistente da liderança técnica do projet
 - `src/app/registro/page.jsx`: removidos o `<datalist id="grimorium-classes">` (sugestões de `DEFAULT_CLASSES`) e o atributo `list` do campo "Classe / Ocupação" (texto livre); import `DEFAULT_CLASSES` removido. Build OK, 159/159 testes, eslint 0 erros. NÃO commitado.
 Commitado e pushado: `d800e1e` (fix(registro): remover recomendação de classe no cadastro). Deploy automático da Vercel a partir do main; produção ainda não verificada ao vivo (CLI Vercel deslogada).
 - 2026-11-17: remoção TOTAL de envio/verificação de e-mail e reset de senha por e-mail (a pedido do usuário); migration `20261117030000-remove-email-mail.js` aplicada no Supabase (colunas dropadas); suíte back 72/72, front 159/159 + build OK; NÃO commitado; deploy Render pendente.
+
+## Entrega — 2026-11-17 (422 · campo `classe` como objeto)
+
+- Causa raiz: backend `publicCharacter` vazava a associação Sequelize `classe` como objeto (`{id,slug,nome,dadoDeVida}`) — zod `classe: texto(80)` rejeitava com "expected string, received object".
+- Fix backend: `delete data.classe` em `characterPublic.js` (após derivar classId/classSlug/className/hitDie) + novo teste `public_classe.test.js` → back **111/111**.
+- Fix frontend (defesa em profundidade): `asTextoCurto()` em `normalizeCharacterForSync` (classe só vai como slug/nome/string curta); `/admin/personagens/[id]/ficha` sanitiza `payload.classe` no PUT. **162/162**, build OK, lint 0 erros. NÃO commitado.
+- Deploy: backend precisa de Manual Deploy no Render (o fix do front já segura o 422 sem ele).
