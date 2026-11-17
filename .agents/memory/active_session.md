@@ -3,7 +3,7 @@
 **Última Atualização**: 2026-11-16T14:20:00-03:00  
 **Branch Atual**: `main`  
 **Status**: REGRESSÃO DE SCROLL CORRIGIDA — allowNestedScroll (commit 88e5372, no main publicado) matou a roda do mouse; revertido e aplicados data-lenis-prevent nos 15 containers internos. Corrigido e commitado (923f890) e pushed. Anterior: Log de Batalha implementado de ponta a ponta (2 repos) — tabela log_batalha, ACL por campanha, visão do jogador no mapa tático + visão do mestre na Sala de Guerra. Build OK, front 148/148, back 63/63. Commitado e pushed nos 2 repos (front: banco cofre, log de batalha, fix scroll, docs; back: log_batalha). CI workflows SEGREGADAS localmente (PAT sem scope workflow). migration log-batalha APLICADA no Supabase em 2026-11-16 (log_batalha + 3 índices criados e verificados; sequelize_meta registrado).
-**Anterior**: Removida a recomendação de classe no cadastro (`src/app/registro/page.jsx`): o `<datalist id="grimorium-classes">` (sugestões de `DEFAULT_CLASSES`) e o atributo `list` foram retirados do campo "Classe / Ocupação" (agora texto livre) e o import `DEFAULT_CLASSES` removido. Build OK, testes 159/159, eslint 0 erros (1 warning pré-existente). NÃO commitado.
+**Anterior**: Removida a recomendação de classe no cadastro (`src/app/registro/page.jsx`): o `<datalist id="grimorium-classes">` (sugestões de `DEFAULT_CLASSES`) e o atributo `list` foram retirados do campo "Classe / Ocupação" (agora texto livre) e o import `DEFAULT_CLASSES` removido. Build OK, testes 159/159, eslint 0 erros (1 warning pré-existente). Commitado e pushado (d800e1e) — deploy automático da Vercel a partir do main.
 **Anterior2**: Login em produção corrigido (trust proxy 04a2a5c + migrações prod). Mapa tático: bug da miniatura sumindo corrigido + ícones personalizáveis (e4b7eb9 back / 76243c7 front). Imagens do mapa: fix CORP (77cc96a). Fundo do mapa por sessão + URL externa commitado (c1c1365). Mandato autônomo "desenvolver até 17h": backend +26 testes (54/54: mapa_tatico ACL + security_auth), frontend +5 (145/145), refactor TOKEN_ICONS→lib/mapaTatico.js, skills `mapa-tatico` e `render-supabase-producao` (espelhadas), docs atualizados. Lote autônomo completo: 54/54 back, 145/145 front, build 31/31, lint 0 erros (42 warnings pré-existentes). text-[9px]→[10px] (54×); audit fix typescript-eslint; docs/COISAS/TROUBLESHOOTING/RUNBOOK atualizados; skills novas espelhadas. jwt.js hardening (timingSafeEqual, sem unsigned), sessão restaurada confia só em /auth/me, rpg_auth_user não persiste mais → 148/148. Tudo NÃO commitado (aguardar pedido de commit).
 
 ---
@@ -54,6 +54,13 @@
 - "Subir de Nível" agora usa o rolador de dados animado (`useDice().executeRoll`): modal/animação com o dado de vida (lados da raça) + modificador = bônus do dado + Mod(CON). O total já inclui o Mod(CON) e vira o HP ganho (mín. 1).
 - `CharacterContext.levelUp` virou `applyLevelUp(gain, details)` — aplica o ganho pré-rolado pela UI (gate por XP continua, 1 rolagem/nível); rolagem vai para o log como tipo `rolagem` (via DiceContext) e a ascensão como `recursos`.
 - `leveling.js` ganhou `levelUpGate(level, xp)` (compartilhado UI/contexto) — testes de gate cobertos (159/159). Build OK. NÃO commitado.
+
+## 🔧 Atualização 2026-11-17 (Skill email-api + fortalecimento do código de verificação)
+- **Skill `email-api`** criada e espelhada (`.agents/skills/email-api/SKILL.md` + `.github/skills/email-api/SKILL.md`): montagem de provedor (Resend/SMTP) do zero, fluxo do código de 6 dígitos, extensão para e-mails transacionais, checklist de segurança, verificação e troubleshooting de produção.
+- **Fortalecimento do fluxo** (Rpg-backend, NÃO commitado): hash do código de 6 dígitos trocado de SHA-256 puro para **HMAC-SHA256** (`hashCodigo`, chave `EMAIL_CODE_SECRET || JWT_SECRET`); comparação timing-safe (`hashesIguais`); **limite de 5 tentativas por conta** (`VERIFICATION_MAX_ATTEMPTS`) com invalidação do código — migration `20261117020000-verification-attempts.js` (`verification_attempts smallint default 0`); `REQUIRE_EMAIL_VERIFICATION` agora é **lido de fato** (padrão true; antes era documentado mas ignorado — bloqueio era incondicional); `.env.example` corrigido; `User.toJSON`/`usuarioParaResposta` apagam `verificationAttempts`; sucesso no link legado/reset também limpa tentativas.
+- **Testes**: novo `test/verification_code.test.js` (7 casos: HMAC≠SHA256, sucesso, lockout na 5ª tentativa + código certo deixa de valer, expiração, login com flag ausente→403 e flag=false→200). Suíte backend **81/81**.
+- ⚠ **Produção (Supabase)**: a coluna `verification_attempts` foi aplicada e registrada via `npm run db:migrate` (sequelize_meta OK) — o .env local aponta para o pooler do Supabase; o runner foi idempotente. **Os commits/deploy do backend no Render ainda NÃO foram feitos** (o código novo — HMAC + lockout — só vale em produção após deploy; códigos emitidos antes da troca de hash invalidam, pedir reenvio).
+- **Não commitado**: backend (mailer/authController/User/migration/testes) e a skill. Aguardar pedido do usuário para commitar/pushar.
 
 ## ✅ Push 2026-11-17 (3)
 - `142ed96` (subir de nível via rolador de dados animado) enviado ao origin/main.
@@ -257,3 +264,51 @@ Pedido do usuário: log de batalha que persiste TODAS as ações de jogadores e 
 
 ## ✅ Atualização 2026-11-16 (Relatório simples do sistema)
 - Pedido do usuário: "me faca um relatorio simples do sistema". Relatório apresentado no chat (stack, arquitetura, módulos, estado de produção/testes). Nenhum arquivo criado.
+
+---
+
+## 🔧 Atualização 2026-11-17 (Raças — vínculo por ID no cadastro e na ficha, tabela `racas`) — APLICADA EM PRODUÇÃO (2026-11-17)
+
+### Pedido
+Criar tabela de raças no banco; selects de raça passam a enviar o ID da raça; atribuir à ficha.
+
+### Backend (Rpg-backend) — NÃO commitado
+- Migration `database/migrations/20261117000000-racas.js`: tabela `racas` (PK uuid `gen_random_uuid()`, `slug` unique, `nome`, `dado_de_vida`, 7 atributos `smallint` CHECK 1-30, `traco`, `ordem`); seed idempotente das 8 raças; `personagens.raca_id uuid FK → racas(id) ON DELETE SET NULL` + índice; backfill por `dados_extras->>race`; RLS habilitada. `down()` remove coluna e tabela.
+- Validada em banco local `localhost:5432/rpg_ficha` (up 8 raças + backfill 3 fichas por slug; down limpo; re-up idempotente). Registro local no `sequelize_meta`. ATENÇÃO: Supabase de produção AINDA NÃO recebeu a migração.
+- Novo modelo `Race.js`; `models/index.js` registra associações (`Character belongsTo Race as "raca"`); `Character` ganhou `racaId` (field `raca_id`).
+- `services/racaService.js`: `resolveRaca()` aceita `raceId` (uuid) ou slug legado.
+- Rotas públicas `GET /api/racas` e `GET /api/racas/:id` (`racasRoutes.js`, `racasController.js`) — o cadastro é público e precisa da lista.
+- `authController.register`: resolve a raça no banco; grava `raca_id` e espelha `dados_extras.race/hitDie` (antes validava só a presença da string).
+- `characterController` (create/update/sync): mesma resolução; `racaExtras()` espelha slug/hitDie e grava FK; `normalizeCharacterPayload` aceita `raceId`; `includeRaca` nas consultas; `publicCharacter` expõe `raceId`/`race`/`raceName`/`hitDie` via FK (fallback dados_extras).
+- `registroSchema`/`fichaSchema`: campos `raceId`/`race` aceitos.
+- Testes: 72/72 PASS (mocks de `Race` adicionados em `login_sync_integration` e `invite_flow`).
+
+### Frontend (Rpg-ficha) — NÃO commitado
+- `lib/api.js`: `listRaces()` pública; `registerUser` envia `raceId`.
+- `registro/page.jsx`: lista raças via API com fallback `DEFAULT_RACES` (aviso não-bloqueante); select controlado enviando `raceId`/`race`; preview lê da lista carregada.
+- `perfil/page.js`: idem (quick-create).
+- `personagem/page.js`: select da ficha carrega raças da API; `updateRace()` no `CharacterContext` grava `raceId` top-level + `dadosExtras { race slug, hitDie }`; sync (debounce) propaga o FK ao backend.
+- Build OK (31/31), testes 159/159, lint 0 erros (warnings pré-existentes).
+
+### Próximos passos
+1. Commitar nos 2 repos quando o usuário pedir.
+2. ✅ Migração `20261117000000-racas.js` APLICADA no Supabase de produção em 2026-11-17 (`npm run db:migrate`: 8 raças seedadas, `personagens.raca_id` criada, backfill vinculou a ficha 'sas' → Humano; sequelize_meta registrado). Falta apenas o deploy do backend (Render) a partir do main `8992ce4` para expor `/api/racas` e aceitar `raceId`.
+3. Deploy frontend Vercel automático a partir do main após commit.
+
+## 🔧 Atualização 2026-11-17 (Raça movida para a ficha)
+- Pedido: "ao invés de escolher a raça no cadastro, faça um campo onde o jogador poderá selecionar a raça" + "vida base inicial = máximo do Dado de Vida".
+- Raça NÃO obrigatória no registro nem na criação rápida do perfil; o jogador escolhe/troca na ficha (`/personagem`, card "Raça & Ascensão"), onde grava `raca_id` (FK → `racas`) e espelha `dadosExtras.race`/`hitDie`.
+- HP inicial na criação passa a ser `hitDieMax(dadoDeVida)` quando há raça (ex.: Elfo→8, Orc→12); sem raça, 70. Backend (`4ca0914`) e perfil (`66f7a65`, `parseHitDie`).
+- Migração `20261117000000-racas.js` APLICADA no Supabase (2026-11-17): tabela `racas` seedada, `personagens.raca_id` criada, backfill `sas`→Humano; fichas criadas hoje (`sas`→Anão, `sas1`→Gnomo) já vinculadas.
+- ⚠ Deploy do backend (Render) PENDENTE: precisa subir `4ca0914` (inclui `8992ce4`: `/api/racas`, vínculo por FK). Sem esse deploy, o vínculo por FK não acontece e `/api/racas` não existe em produção.
+
+## 🔧 Atualização 2026-11-17 (Verificação de e-mail por CÓDIGO)
+- Pedido: implementar verificação de e-mail por código antes do 1º login (o registro não deve mais logar 1ª vez), senhas coincidem no cadastro, status base da raça na ficha e HP do dado de vida.
+- Backend (`5faaebf`): registro gera código de 6 dígitos (hash SHA-256, expira 15min), grava `verification_code_hash/expires_at` nos novos campos; e-mail enviado inclui o código e link alternativo; `POST /api/auth/verify-email-code` valida; `login` bloqueia com `403 EMAIL_NOT_VERIFIED` até verificar; `register` não emite JWT; senhas verificadas (confirmPassword) no schema; resposta pública de usuário sanitizada (sem hashes/tokens). Migration `20261117010000-verification-code.js` aplicada no Supabase.
+- Frontend (`11bfd95`): registro envia `confirmPassword` e nunca loga automaticamente; pós-cadastro redireciona para `/verificar-email?email=...` (aceita código + reenvio; mantém link legado); login mostrar link para página de código em `403 EMAIL_NOT_VERIFIED`; ficha aplica status base da raça na 1ª seleção (`updateRace`).
+- Testes: back 72/72, front 159/159, build 31/31, lint 0 erros.
+
+## 🔧 Atualização 2026-11-17 (Resend + fix sync sem raça)
+- Commits Rpg-backend: `3a35a2a` (Resend no mailer.js: EMAIL_PROVIDER=resend + RESEND_API_KEY, HTTP API; SMTP fallback; testes unitários; .env.example), `9107f3f` (fix do sync sem raça: hasRaceInput + nullable() em race; null/vazio = "sem raça", corrige "status param de salvar").
+- Falta deploy no Render (Manual Deploy) para as 3 camadas do backend subirem em produção: Resend, verificação de código, fix de sync.
+- O e-mail em produção só funcionará com EMAIL_PROVIDER=resend + RESEND_API_KEY + SMTP_FROM no Render e FRONTEND_URL apontando para o Vercel.

@@ -590,3 +590,4 @@ Este arquivo é a fonte de memória persistente da liderança técnica do projet
 ## Entrega — 2026-11-16 (Remover recomendação de classe no cadastro)
 
 - `src/app/registro/page.jsx`: removidos o `<datalist id="grimorium-classes">` (sugestões de `DEFAULT_CLASSES`) e o atributo `list` do campo "Classe / Ocupação" (texto livre); import `DEFAULT_CLASSES` removido. Build OK, 159/159 testes, eslint 0 erros. NÃO commitado.
+Commitado e pushado: `d800e1e` (fix(registro): remover recomendação de classe no cadastro). Deploy automático da Vercel a partir do main; produção ainda não verificada ao vivo (CLI Vercel deslogada).

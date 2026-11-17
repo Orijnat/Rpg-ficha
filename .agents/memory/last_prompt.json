@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-17T02:30:00-03:00",
+  "timestamp": "2026-11-17T03:10:00-03:00",
   "agent": "opencode",
-  "prompt": "commite e de pus",
-  "action": "Commit 142ed96 pushed em main."
+  "prompt": "poderia fazer uma skill voltada a montagem de api de email, ou que importe api de envio de email, e implemente para o código de verificação",
+  "action": "Skill email-api criada (.agents/skills + .github/skills). Fortalecido o fluxo de código de verificação no backend: HMAC-SHA256 no hash do código, comparação timing-safe, limite de 5 tentativas/conta com invalidação (migration verification_attempts aplicada e registrada no Supabase), REQUIRE_EMAIL_VERIFICATION agora lido de fato (padrão true), .env.example corrigido, 7 testes novos (suíte 81/81)."
 }
