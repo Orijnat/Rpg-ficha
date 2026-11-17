@@ -1,6 +1,46 @@
 # 🧠 Sessão Ativa — Grimorium RPG
 
-**Última Atualização**: 2026-11-16T14:20:00-03:00  
+## 🔧 Atualização 2026-11-17 (Raça = bônus 5e aditivo + Classe define Dado de Vida e Habilidades de Nível) — NÃO commitado
+
+### Pedidos
+1. "Os status base poderiam ser definidos pelo jogador, mas a raça escolhida já aplica o bônus que vem dela no status em questão — ao selecionar a raça só adicione o bônus nos status base. Considere o D&D mais atual."
+2. "As habilidades de nível poderiam ser atribuídas à classe — criei uma classe e as habilidades de nível são fixas para ela; outro usuário usando a mesma classe recebe a mesma progressão."
+
+### Decisões do usuário (via perguntas)
+- Bônus racial: **Clássico 5e** fixo, SOMADO na seleção (nunca sobrescreve).
+- Classes: mestre cria no admin + catálogo seed; **global** (todos os usuários); ficha **referencia dinamicamente** o catálogo (nada é copiado); **qualquer mestre edita tudo**; classe define o **Dado de Vida** (a raça não define mais); troca de classe travada igual raça (1×, só mestre troca); habilidades de classe **desbloqueiam ao upar** (sem aprovação); habilidades criadas pelo jogador passam pelo mestre e ficam só naquela ficha.
+- Status base: mantida a edição livre na ficha (StatBox); a raça só SOMA o bônus.
+
+### Backend `../Rpg-backend` (NÃO commitado)
+- Migration `20261117120000-classes.js`: tabelas `classes` (seed 8 classes; RLS) e `classe_habilidades` (nivel 1-20, nome/tipo/custo/atributo/formula/dano_tipo/alcance/descricao; RLS); `personagens.classe_id` FK SET NULL + índice; backfill determinístico por `job` exato (sem acento/caixa; estava quebrado por `p.job` inexistente — coluna real é `classe`).
+- Models `Class`/`ClassAbility`; associações (`Class.hasMany(ClassAbility)`, `Character.belongsTo(Class)`); `Character.classeId` (coluna `classe_id`).
+- `services/hitDie.js` (hitDieMax/isValidHitDie compartilhado), `services/classeService.js` (resolveClasse id/slug/nome sem acento, classeExtras → `{class, hitDie}`, slug único).
+- `classController` + `/api/classes` (GET lista/item públicos com abilities; POST/PUT/DELETE requireMaster, abilities replace-all em transação).
+- characterController: `classeGuardError` (mesmo contrato da raça → 403), `classId`/`classeId` aceitos (normalizeCharacterPayload), includeClasse, publicCharacter expõe `classId/classSlug/className/hitDie` (classe → extras.hitDie → "d8"); create/register com `classeId` opcional → HP = hitDieMax(dadoDaClasse); register response inclui `classe` (className não-nulo).
+- apiSchemas: `classeId`/`classId`/`classe` em camposFicha + registroSchema (bug: payload `classId` era removido pelo zod — corrigido); novos `classeSchema`/`classeUpdateSchema`/`classeAbilitySchema`.
+- Testes: novo `classe_lock.test.js` (7 casos); suíte **86/86**. Verificado AO VIVO em Postgres 16 descartável (container removido): migration do zero OK; register com classe → HP 6/8 conforme dado; pick do jogador 1×; troca/limpeza por jogador → 403; mestre da mesa troca/limpa → 200; segundo mestre edita classe alheia → 200; jogador criar classe → 403; dadoDeVida "1d7" → 422.
+
+### Frontend (NÃO commitado)
+- `lib/races.js` reescrito: `bonus` 5e clássico (Humano +1 tudo; Elfo +2DES/+1SAB; Anão +2CON/+1FOR; Halfling +2DES/+1CAR; Draconato +2FOR/+1CAR; Gnomo +2INT/+1CAR; Tiefling +2CAR/+1INT; Orc +2FOR/+1CON); `getRaceBonus/addRaceBonus/subtractRaceBonus/formatRaceBonus`; exports DEPRECATED removidos; fallback de bônus por slug p/ raças da API (sem `bonus`).
+- `lib/classes.js` reescrito: seed 8 classes + `getClassById/getHitDieForClass/isValidHitDie/getClassAbilities/getClassAbilitiesLocked/findSelectedClass` (presets de habilidades removidos).
+- `CharacterContext`: `updateRace` só SOMA o bônus (nível/HP intocados); novo `updateClass` (1ª escolha: grava classId+extras.class/hitDie e HP = hitDieMax da classe no nível 1); `normalizeCharacterForSync` envia `classId`/`class`.
+- `/personagem`: card "Raça & Classe & Ascensão" — 2 selects travados após 1ª escolha (opções mostram bônus/dado; Classe aplica HP na 1ª escolha nível 1).
+- `/habilidades`: nova `ClassProgression` (read-only, desbloqueio por nível, aviso "criadas pelo jogador passam pelo mestre e ficam na ficha"); Tipo 1 mostra "N da classe desbloqueadas · X de 20 slots próprios".
+- `/admin/classes` (novo, no AppShell MASTER_NAV como "Classes & Níveis"): CRUD do catálogo global — cards + `ClassFormModal` (nome, Dado de Vida, primário/secundário, descrição, ordem + editor de habilidades de nível 1-20 com detalhes expansíveis); remoção via ConfirmDialog.
+- `/admin/personagens/[id]/ficha`: card "Classe (somente o mestre altera)" (aplica hitDie; HP = máximo do dado no nível 1) + Raça agora ADITIVA (subtrai o bônus antigo, soma o novo).
+- api.js: `listClasses/createClassOnBackend/updateClassOnBackend/deleteClassOnBackend`; perfil (quick-create) e registro ajustados (status base 10; HP 70 até a classe ser escolhida); leveling.js comentário → dado de vida vem da CLASSE.
+- Verificação: front **160/160** testes (races-leveling/classes.test reescritos), build 30/30 OK (`/admin/classes` prerendered), lint 0 erros (44 warnings pré-existentes).
+- **Re-verificado em 2026-11-17 (sessão seguinte)**: back **86/86**, front **160/160**, build 30/30 (`/admin/classes` prerendered), lint front 0 erros; backend não tem script lint. Nada commitado ainda.
+
+### Pendências
+- **Deploy/migração**: `20261117120000-classes.js` AINDA NÃO aplicada no Supabase e o backend precisa de deploy no Render para `/api/classes` e o guard 403 valerem em produção. Aplicar só com o aval do usuário.
+- Raças: coluna `dado_de_vida` de `racas` ficou legada (não lida mais pelo app). Novos ajustes de balanceamento de bônus racial são feitos em `lib/races.js` (frontend) — tabela 5e clássica.
+- Nada commitado (2 repos); `.github/` permanece não rastreado.
+
+---
+
+
+**Última Atualização**: 2026-11-17T16:30:00-03:00  
 **Branch Atual**: `main`  
 **Status**: REGRESSÃO DE SCROLL CORRIGIDA — allowNestedScroll (commit 88e5372, no main publicado) matou a roda do mouse; revertido e aplicados data-lenis-prevent nos 15 containers internos. Corrigido e commitado (923f890) e pushed. Anterior: Log de Batalha implementado de ponta a ponta (2 repos) — tabela log_batalha, ACL por campanha, visão do jogador no mapa tático + visão do mestre na Sala de Guerra. Build OK, front 148/148, back 63/63. Commitado e pushed nos 2 repos (front: banco cofre, log de batalha, fix scroll, docs; back: log_batalha). CI workflows SEGREGADAS localmente (PAT sem scope workflow). migration log-batalha APLICADA no Supabase em 2026-11-16 (log_batalha + 3 índices criados e verificados; sequelize_meta registrado).
 **Anterior**: Removida a recomendação de classe no cadastro (`src/app/registro/page.jsx`): o `<datalist id="grimorium-classes">` (sugestões de `DEFAULT_CLASSES`) e o atributo `list` foram retirados do campo "Classe / Ocupação" (agora texto livre) e o import `DEFAULT_CLASSES` removido. Build OK, testes 159/159, eslint 0 erros (1 warning pré-existente). Commitado e pushado (d800e1e) — deploy automático da Vercel a partir do main.
