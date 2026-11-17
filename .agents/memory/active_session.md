@@ -1,5 +1,13 @@
 # 🧠 Sessão Ativa — Grimorium RPG
 
+## 🔓 2026-11-17 — "Liberar Ascensão": subir de nível exige XP + feito liberado pelo mestre
+- Tabela enviada pelo usuário (Nível/XP/Bônus de proficiência) **já era o critério** em produção: `XP_TABLE` idêntico em `modifiers.js` (0→355.000) e `calculateProficiencyBonusByLevel` (+2/+3/+4/+5/+6 por tiers) — usado em Pericia.jsx e RecursosCombate.jsx. Nada a alterar na tabela.
+- **Novidade**: subir de nível agora exige (1) XP no limite **E** (2) liberação do mestre via novo flag `dadosExtras.levelUpLiberado` (bool, zod dadosExtras é livre).
+- **/personagem** (só mestre; ficha própria ou `?inspect=`): novo botão "Liberar Ascensão" (cadeado Lock/LockOpen, `aria-pressed`); "Subir de Nível" só habilita com XP ok E liberado; hint exibe "XP no limite — aguardando o mestre liberar (feito)"; `handleLevelUp` barra com mensagem própria.
+- **CharacterContext.applyLevelUp**: consome a liberação (`levelUpLiberado: false` no commit) — próximo nível exige nova liberação.
+- **/admin/personagens**: cadeado por herói (liberar/revogar, PUT merge `dadosExtras:{levelUpLiberado}`); "+1 Nv." recusa e explica se não liberado; "Nível da Mesa" desabilitado sem liberados e só promove liberados (relata ignorados); promoção consome a liberação.
+- **Verificado**: 162/162, build OK, lint 0 erros. **NÃO commitado/pushado**.
+
 ## 📚 2026-11-17 — Documentação completa do sistema + README do repositório
 - Pedido do usuário: "documentação completa do sistema, para futuras manutenções, e um readme para o repositório".
 - **Fix colateral**: lint error do turno anterior ("Cannot access refs during render" — `retrySyncRef.current = retrySync` no corpo) → movido para `useEffect`; **lint 0 erros** (warnings ~45 pré-existentes).
@@ -705,3 +713,12 @@ Criar tabela de raças no banco; selects de raça passam a enviar o ID da raça;
 
 ## ✅ Push 2026-11-17 (4)
 - `60ad3da` (back: catálogo de classes + guard 403 + migration) e `77a10a1` (front: raça aditiva + classe como dado de vida) enviados ao origin/main; `36a812c` docs(memory). Migration aplicada no Supabase antes do push.
+
+## ✅ Atualização 2026-11-17 (3ª limpeza total do banco Supabase — PRODUÇÃO, com backup)
+- Pedido do usuário: "limpar o banco de vez" antes da 1ª sessão real (app apto para uso).
+- **Backup antes** (decisão do usuário): `/tmp/opencode/backup-pre-purge-2026-11-17.dump` (137 KB, 335 objetos, schema public, chmod 600). Dumps anteriores não existem mais.
+- Estado pré-limpeza: usuarios 3 · personagens 2 · atributos 2 · campanhas 1 · membros 2 · encontros 9 · log_batalha 47 · mapa_tatico 1 · rolagens 9 · auditoria 14 · sessoes_autenticacao 9. Referência: racas 8 · classes 10 · classe_habilidades 0.
+- Executado `TRUNCATE ... RESTART IDENTITY CASCADE` em todas as tabelas public **exceto** `racas`, `classes`, `classe_habilidades`, `sequelize_meta`, `SequelizeMeta` (decisão explícita do usuário: "limpe tudo, exceto as racas" + "Manter classes").
+- **Incidente resolvido**: o CASCADE arrastou `classes` e `classe_habilidades` (FK `criado_por` → `usuarios`, e o TRUNCATE não dispara ON DELETE SET NULL). Restauradas do backup: drop da FK `classes_criado_por_fkey`, `pg_restore --data-only --single-transaction --table=classes --table=classe_habilidades`, `criado_por` anulado (equivalente ao ON DELETE SET NULL), FK recriada e validada.
+- **Estado final verificado**: todas as tabelas de dados = 0; `racas`=8, `classes`=10, `classe_habilidades`=0, `sequelize_meta`=17, `SequelizeMeta`=1. auth.*/storage.* intocados. Uploads em disco (private_uploads) NÃO apagados (órfãos no disco).
+- Produção agora exige registro do zero; sessões server-side zeradas. Deploy do backend (Render) segue pendente.
