@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
@@ -87,6 +87,7 @@ function RegisterForm() {
   const [characterName, setCharacterName] = useState("");
   const [characterJob, setCharacterJob] = useState("");
   const [raceId, setRaceId] = useState("");
+  const raceSelectRef = useRef(null);
 
   // Código de Convite da Mesa
   const initialInvite = searchParams ? (searchParams.get("invite") || searchParams.get("convite") || searchParams.get("code") || "") : "";
@@ -173,17 +174,18 @@ function RegisterForm() {
           setLoading(false);
           return;
         }
-        if (!raceId) {
+        const selectedRace = raceSelectRef?.current?.value || raceId;
+        if (!selectedRace) {
           setError("Escolha a raça do seu herói.");
           setLoading(false);
           return;
         }
-        Object.assign(payload, getRaceBaseAttributes(raceId));
+        Object.assign(payload, getRaceBaseAttributes(selectedRace));
         payload.characterName = heroName;
         payload.characterJob = heroJob;
         payload.customClass = heroJob;
-        payload.race = raceId;
-        payload.hitDie = getRaceHitDie(raceId, "1d8");
+        payload.race = selectedRace;
+        payload.hitDie = getRaceHitDie(selectedRace, "1d8");
         if (inviteCode.trim()) {
           payload.inviteCode = inviteCode.trim().toUpperCase();
         }
@@ -518,6 +520,7 @@ function RegisterForm() {
                   <div className="space-y-1">
                     <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-[#b59a6e]" style={{ fontFamily: "Cinzel, serif" }}>Raça</label>
                     <select
+                      ref={raceSelectRef}
                       name="race"
                       defaultValue=""
                       value={raceId}

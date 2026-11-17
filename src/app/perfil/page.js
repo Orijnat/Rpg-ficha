@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -45,6 +45,7 @@ export default function PerfilPage() {
   const [newCharName, setNewCharName] = useState("");
   const [newCharJob, setNewCharJob] = useState("");
   const [newCharRace, setNewCharRace] = useState("");
+  const newCharRaceRef = useRef(null);
   const [isCreating, setIsCreating] = useState(false);
   const [createMsg, setCreateMsg] = useState("");
   const [profileForm, setProfileForm] = useState({ username: "", email: "", perfil: "jogador" });
@@ -123,7 +124,8 @@ export default function PerfilPage() {
       setCreateMsg("Informe o nome e a classe do personagem.");
       return;
     }
-    if (!newCharRace) {
+    const selectedRace = newCharRaceRef?.current?.value || newCharRace;
+    if (!selectedRace) {
       setCreateMsg("Informe a raça do personagem.");
       return;
     }
@@ -137,10 +139,10 @@ export default function PerfilPage() {
         hp: 70,
         hpMax: 70,
         level: 1,
-        ...getRaceBaseAttributes(newCharRace),
+        ...getRaceBaseAttributes(selectedRace),
         dadosExtras: {
-          race: newCharRace,
-          hitDie: getRaceHitDie(newCharRace, "1d8"),
+          race: selectedRace,
+          hitDie: getRaceHitDie(selectedRace, "1d8"),
           customClass: newCharJob.trim(),
         },
       });
@@ -390,6 +392,7 @@ export default function PerfilPage() {
               <div className="space-y-1">
                 <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-[#b59a6e]" style={{ fontFamily: "Cinzel, serif" }}>Raça</label>
                 <select
+                  ref={newCharRaceRef}
                   name="race"
                   defaultValue=""
                   value={newCharRace}
