@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-17T19:00:00-03:00",
+  "timestamp": "2026-11-17T22:50:00-03:00",
   "agent": "opencode",
-  "prompt": "faltou apenas o xp dinamico, de puxar o xp que sera dividido entre os envolvidos, ser o msm que o do cadastro do encontro",
-  "action": "Causa-raiz: backend guarda recursos dentro de dadosExtras.recursos (encontros nao tem coluna top-level) e o frontend lia encounter.recursos?.xp (sempre undefined → 0). Corrigido com src/lib/encounter.js getEncounterXpReward() (lê dadosExtras.recursos.xp, tolera legado, clamp>=0/floor/NaN→0); migrados FinalizarEncounterModal, EncounterXpPanel e encontros/page.js (handleDistributeXp + ConfirmDialog). Novo teste encounter.test.mjs → 162/162, build OK, lint 0 erros. NAO commitado."
+  "prompt": "Falha ao sincronizar Tentar novamente",
+  "action": "Confirmado: syncStatus=error (rose), nao conflict. Backend de PROD (rpg-backend-pmhk.onrender.com) saudavel: /api/health 200, /api/racas 200, sync sem token 401. Causa mais provavel: banco de PROD foi TRUNCADO hoje incl. sessoes_autenticacao -> verificarSessao() retorna null -> 401 'Sessao revogada ou expirada' em toda rota autenticada; isAuthenticated do front so le JWT -> usuario preso no /personagem com todo save falhando. Fix: /personagem agora exibe a mensagem real do servidor (HTTP status + msg) e botao 'Sair e entrar de novo' para 401/403. Logout+login deve resolver. 162/162, build OK, lint 0 erros. NAO commitado."
 }

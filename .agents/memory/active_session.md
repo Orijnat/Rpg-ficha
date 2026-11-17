@@ -1,5 +1,22 @@
 # 🧠 Sessão Ativa — Grimorium RPG
 
+## 🔧 Pedido 2026-11-17 — "está ocorrendo falha ao sincronizar, não salvando os dados da ficha" — DIAGNÓSTICO + MELHORIA (NÃO commitado)
+- Sintoma do usuário: indicador da ficha = rose **"Falha ao sincronizar"** + botão **"Tentar novamente"** (ou seja: syncStatus "error", NÃO "conflict" — conflict seria âmbar "Conflito: revisão necessária").
+- Backend de PRODUÇÃO está SAUDÁVEL e alcançável: `https://rpg-backend-pmhk.onrender.com/api/health` → 200 ok; `/api/racas` → 200; `/api/characters/sync` sem token → 401 correto. Local (.env → localhost:3333) não está rodando aqui, mas produção funciona.
+- **Hipótese mais forte**: o banco de PRODUÇÃO foi TRUNCADO hoje (2026-11-17, 3ª limpeza) incluindo `sessoes_autenticacao`. `verificarSessao()` (sessionAuth.js) faz `findOne` por tokenHash — token pré-purge → `null` → **401 "Sessão revogada ou expirada"** em TODA rota autenticada. O `isAuthenticated` do front só lê o JWT (expiração) → o usuário fica preso no /personagem com o ficha local, mas TODO save falha, e "Tentar novamente" nunca resolve (401 determinístico). Mesma coisa se o teste for local sem o backend rodando (mas aí /personagem nem chega — AppShell redireciona p/ /login).
+- **Fix aplicado**: /personagem agora mostra a mensagem REAL do servidor sob o indicador (`HTTP {status} · {mensagem}`) e, quando `status ∈ {401,403}`, exibe o botão rose **"Sair e entrar de novo"** (logout → /login). 409 mantém o fluxo conflict com Manter da nuvem/Manter meus dados.
+- **Cuidado**: o usuário precisa de **logout + login** se estiver em sessão pré-purge (a sessão some do banco para sempre). Após re-login, tudo funciona (o teste do usuário hoje depende disso).
+- Verificação: 162/162, build OK, lint 0 erros. NÃO commitado.
+
+## 🔧 Pedido 2026-11-17 — "o mestre ao logar está acessando a ficha de um jogador" — CORRIGIDO (NÃO commitado)
+- **Causa**: `AuthContext` mesclava as fichas das campanhas do mestre na lista e selecionava `allChars[0]` como ativa (ou restaurava `rpg_current_char_id` apontando para herói de terceiro) — o mestre logava DENTRO da ficha compartilhada do jogador (podia editar/zerar XP etc.). Mesma seleção cega no login (`allChars[0]`).
+- **Fix**: initAuth/login/register selecionam APENAS do que é do próprio usuário (`data.characters` = retorno do fetchMe/login). Mestre sem ficha própria → `activeCharacterId = null` + remove `rpg_current_char_id`. `?inspect=<id>` continua funcionando (inspectFound explícito, inclusive em nova guia).
+- **/personagem**: estado vazio "Modo Mestre — nenhuma ficha própria" (Crown, link → /admin) quando não há activeCharacter e a conta carregou; nunca mais uma ficha em branco/de terceiro.
+- **Cabecalho (navbar)**: sem activeCharacter, o cluster nome/PV/XP + botão Dano/Cura vira bloco âmbar "Nenhuma ficha própria / Abra a ficha de um herói pelo Painel do Mestre" (isMaster-aware).
+- **CharacterContext**: guard `!activeCharacter && !isNpcSheet` no efeito de sync e no retrySync → o cache anônimo (":default") NUNCA é enviado para a nuvem (nem com id velho no cache).
+- Verificação: 162/162 testes, build OK, lint 0 erros (44 warnings pré-existentes). NÃO commitado.
+- **Relacionado (mesma sessão)**: o usuário também reportou "está ocorrendo falha ao sincronizar, não salvando os dados da ficha" — NÃO diagnosticado ainda. Hipóteses: (a) 409 CONFLICT (o PUT do mestre bump `updated_at` → sync do jogador com versão stale → 409 → "Conflito: revisão necessária"; cada "Tentar novamente" repete 409; única saída é "Manter da nuvem"/"Manter meus dados" ou auto-resolver); (b) erro rose genuíno (500/403/rede — a label é só "Falha ao sincronizar" sem mensagem do servidor). Perguntar ao usuário o texto exato/screenshot e o caminho de reprodução.
+
 ## ✅ Pedido 2026-11-17 — "instalar Make Documentation" — FEITO (NÃO commitado)
 - Escolha do usuário: **skill de agente** (`make-documentation`, callicrate/skills) instalada como skill do projeto.
 - Clone raso em /tmp/opencode/callicrate-skills (repo: github.com/callicrate/skills, skill na raiz `make-documentation/`). Varredura de segurança: SKILL.md limpo (prompt de documentação, sem instruções externas), `scripts/audit_documentation.py` é stdlib puro (argparse/json/re/pathlib, read-only, sem rede/subprocess/env), references mencionam apenas "não expor secrets" (política, sem vazamento). Nada executado.
