@@ -213,7 +213,7 @@
   --card-foreground: #450a0a;
   --popover: #fff8f6;
   --popover-foreground: #450a0a;
-  --primary: #dc2626;
+  --primary: #c91f1f;
   --primary-foreground: #ffffff;
   --secondary: #f3ddd6;
   --secondary-foreground: #450a0a;
@@ -223,7 +223,7 @@
   --accent-foreground: #ffffff;
   --border: rgba(185, 28, 28, 0.28);
   --input-background: #f3ddd6;
-  --ring: #dc2626;
+  --ring: #c91f1f;
 }
 
 /* 8. Safira Real (Tema Claro) */
@@ -247,7 +247,7 @@
   --card-foreground: #0f1e3d;
   --popover: #ffffff;
   --popover-foreground: #0f1e3d;
-  --primary: #2563eb;
+  --primary: #1f4fce;
   --primary-foreground: #ffffff;
   --secondary: #e2e7f0;
   --secondary-foreground: #0f1e3d;
@@ -257,10 +257,40 @@
   --accent-foreground: #ffffff;
   --border: rgba(29, 78, 216, 0.28);
   --input-background: #e2e7f0;
-  --ring: #2563eb;
+  --ring: #1f4fce;
 }
 
 /* Adaptações Específicas para Temas Claros */
+
+/* Temas claros: botões amarelos do mestre, de curar/dano e de ações gerais com tinta suficiente */
+[data-theme="aurora"] .text-amber-200,
+[data-theme="sapphire"] .text-amber-200 {
+  color: #92400e !important;
+}
+[data-theme="aurora"] .text-amber-300,
+[data-theme="sapphire"] .text-amber-300 {
+  color: #b45309 !important;
+}
+[data-theme="aurora"] .text-amber-400,
+[data-theme="sapphire"] .text-amber-400 {
+  color: #92400e !important;
+}
+[data-theme="aurora"] .text-rose-300,
+[data-theme="sapphire"] .text-rose-300 {
+  color: #be123d !important;
+}
+[data-theme="aurora"] .text-rose-400,
+[data-theme="sapphire"] .text-rose-400 {
+  color: #9f123d !important;
+}
+[data-theme="aurora"] .text-emerald-300,
+[data-theme="sapphire"] .text-emerald-300 {
+  color: #065f46 !important;
+}
+[data-theme="aurora"] .text-emerald-400,
+[data-theme="sapphire"] .text-emerald-400 {
+  color: #047857 !important;
+}
 
 /* StatBox neutral (botão de dado d20) preserva a cor antiga nos temas claros */
 [data-theme="aurora"] .from-primary\/15.to-primary\/5 {
