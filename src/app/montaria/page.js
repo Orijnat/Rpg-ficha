@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Footprints, Heart, Plus, Skull, Sparkles, Trash2 } from "lucide-react";
 import { useCharacter } from "../context/CharacterContext";
 import { Card, EditableNumber, EditableText, HPBar, SectionHeader } from "../components/ui";
+import { AddMountModal } from "../components/montaria/AddMountModal";
 import { applyHealthChange } from "../../lib/modifiers";
 
 function uid() {
@@ -39,6 +40,7 @@ export default function MontariaPage() {
   const mounts = hasStored ? storedMounts : (legacy ? [legacy] : []);
 
   const [selectedId, setSelectedId] = useState(null);
+  const [isAddOpen, setIsAddOpen] = useState(false);
   const aliveMounts = mounts.filter((m) => m.alive);
 
   // Seleciona a primeira montaria viva por padrão
@@ -53,15 +55,15 @@ export default function MontariaPage() {
 
   const writeMounts = (next) => updExtra("mounts", next);
 
-  const addMount = () => {
+  const handleAddMount = (draft) => {
     const mount = {
       id: uid(),
-      name: "Nova montaria",
-      species: "",
-      hp: 20,
-      hpMax: 20,
-      notes: "",
-      alive: true,
+      name: draft.name,
+      species: draft.species,
+      hp: draft.hp,
+      hpMax: draft.hpMax,
+      notes: draft.notes,
+      alive: draft.hp > 0,
     };
     writeMounts([...(hasStored ? storedMounts : (legacy ? [legacy] : [])), mount]);
     setSelectedId(mount.id);
@@ -107,7 +109,7 @@ export default function MontariaPage() {
           />
           <button
             type="button"
-            onClick={addMount}
+            onClick={() => setIsAddOpen(true)}
             className="flex min-h-9 items-center gap-1.5 rounded-xl border border-primary/40 bg-primary/10 px-3 py-1.5 font-cinzel text-xs font-bold text-primary transition-all hover:bg-primary/20 hover:text-foreground active:scale-95"
           >
             <Plus size={13} />
@@ -124,7 +126,7 @@ export default function MontariaPage() {
             </p>
             <button
               type="button"
-              onClick={addMount}
+              onClick={() => setIsAddOpen(true)}
               className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-xl border border-primary bg-primary px-5 font-cinzel text-xs font-bold uppercase tracking-wider text-primary-foreground transition hover:brightness-110 active:scale-95"
             >
               <Plus size={14} /> Adotar primeira montaria
@@ -293,6 +295,7 @@ export default function MontariaPage() {
           </>
         )}
       </Card>
+      <AddMountModal open={isAddOpen} onClose={() => setIsAddOpen(false)} onAdd={handleAddMount} />
     </div>
   );
 }
