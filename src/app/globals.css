@@ -190,51 +190,7 @@
   --border: rgba(56, 189, 248, 0.3);
 }
 
-/* 5. Jade de Avalon */
-[data-theme="jade"] {
-  --theme-id: "jade";
-  --theme-bg: #040f0e;
-  --theme-bg-elevated: #08201d;
-  --theme-title: #ecfdf9;
-  --theme-subtitle: #5eead4;
-  --theme-body: #ccfbef;
-  --theme-accent: #2dd4bf;
-  --theme-accent-hover: #5eead4;
-  --theme-accent-contrast: #04211d;
-  --theme-accent-glow: rgba(45, 212, 191, 0.4);
-  --theme-glow-1: rgba(45, 212, 191, 0.22);
-  --theme-glow-2: rgba(250, 204, 21, 0.08);
-  --theme-glow-3: rgba(13, 148, 136, 0.18);
-  --background: #040f0e;
-  --foreground: #ccfbef;
-  --card: #08201d;
-  --primary: #2dd4bf;
-  --primary-foreground: #04211d;
-  --border: rgba(45, 212, 191, 0.3);
-}
 
-/* 6. Fogo Fátuo */
-[data-theme="felflame"] {
-  --theme-id: "felflame";
-  --theme-bg: #070d04;
-  --theme-bg-elevated: #101c07;
-  --theme-title: #f5fbe0;
-  --theme-subtitle: #bef264;
-  --theme-body: #e3f7c8;
-  --theme-accent: #a3e635;
-  --theme-accent-hover: #bef264;
-  --theme-accent-contrast: #131a04;
-  --theme-accent-glow: rgba(163, 230, 53, 0.4);
-  --theme-glow-1: rgba(163, 230, 53, 0.22);
-  --theme-glow-2: rgba(101, 163, 13, 0.14);
-  --theme-glow-3: rgba(234, 179, 8, 0.10);
-  --background: #070d04;
-  --foreground: #e3f7c8;
-  --card: #0e1808;
-  --primary: #a3e635;
-  --primary-foreground: #131a04;
-  --border: rgba(163, 230, 53, 0.3);
-}
 
 /* 7. Aurora Rubra (Tema Claro) */
 [data-theme="aurora"] {
@@ -257,7 +213,7 @@
   --card-foreground: #450a0a;
   --popover: #fff8f6;
   --popover-foreground: #450a0a;
-  --primary: #b91c1c;
+  --primary: #dc2626;
   --primary-foreground: #ffffff;
   --secondary: #f3ddd6;
   --secondary-foreground: #450a0a;
@@ -267,7 +223,7 @@
   --accent-foreground: #ffffff;
   --border: rgba(185, 28, 28, 0.28);
   --input-background: #f3ddd6;
-  --ring: #b91c1c;
+  --ring: #dc2626;
 }
 
 /* 8. Safira Real (Tema Claro) */
@@ -291,7 +247,7 @@
   --card-foreground: #0f1e3d;
   --popover: #ffffff;
   --popover-foreground: #0f1e3d;
-  --primary: #1d4ed8;
+  --primary: #2563eb;
   --primary-foreground: #ffffff;
   --secondary: #e2e7f0;
   --secondary-foreground: #0f1e3d;
@@ -301,10 +257,20 @@
   --accent-foreground: #ffffff;
   --border: rgba(29, 78, 216, 0.28);
   --input-background: #e2e7f0;
-  --ring: #1d4ed8;
+  --ring: #2563eb;
 }
 
 /* Adaptações Específicas para Temas Claros */
+
+/* StatBox neutral (botão de dado d20) preserva a cor antiga nos temas claros */
+[data-theme="aurora"] .from-primary\/15.to-primary\/5 {
+  background-image: linear-gradient(to bottom, rgba(185, 28, 28, 0.15), rgba(185, 28, 28, 0.05));
+  border-color: rgba(185, 28, 28, 0.3);
+}
+[data-theme="sapphire"] .from-primary\/15.to-primary\/5 {
+  background-image: linear-gradient(to bottom, rgba(29, 78, 216, 0.15), rgba(29, 78, 216, 0.05));
+  border-color: rgba(29, 78, 216, 0.3);
+}
 [data-theme="aurora"] .grimoire-card,
 [data-theme="sapphire"] .grimoire-card {
   box-shadow:

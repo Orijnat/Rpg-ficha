@@ -6,11 +6,9 @@
  *   2. abyss (Cripta Abissal)  -> Análoga Fria (Púrpura Místico + Azul Noturno + Ciano Rúnico)
  *   3. bloodmoon (Lua de Sangue) -> Complementar Quente (Brasa Rubra + Âmbar Torrado)
  *   4. frostfall (Gelo Eterno) -> Análoga Fria (Ciano Gelo + Azul Noturno)
- *   5. jade (Jade de Avalon)   -> Análoga Aquática (Teal das Profundezas + Jade Pálido)
- *   6. felflame (Fogo Fátuo)   -> Triádica Elétrica (Lima Ácida + Carvão Verde)
- * - 2 Temas Claros:
- *   7. aurora (Aurora Rubra)   -> Complementar Quente (Tijolo de Sangue + Marfim Rosado)
- *   8. sapphire (Safira Real)  -> Complementar Régia (Azul de Luva + Marfim Prateado)
+ * - 2 Temas Claros (botões de ação em tons mais claros do mesmo matiz):
+ *   5. aurora (Aurora Rubra)   -> Complementar Quente (Tijolo de Sangue + Marfim Rosado)
+ *   6. sapphire (Safira Real)  -> Complementar Régia (Azul de Luva + Marfim Prateado)
  *
  * Todos os temas atendem aos padrões de contraste WCAG AA/AAA.
  */
@@ -18,10 +16,10 @@
 export const LEGACY_THEME_MAP = {
   crimson: "amber",
   frost: "frostfall",
-  forest: "jade",
+  forest: "amber",
   parchment: "aurora",
   sunlight: "sapphire",
-  mist: "jade",
+  mist: "sapphire",
 };
 
 export const THEMES = [
@@ -93,40 +91,6 @@ export const THEMES = [
     contrastRatio: "18.6:1 (WCAG AAA)",
     previewColors: ["#050b13", "#38bdf8", "#f0faff"],
     iconName: "Snowflake",
-  },
-  {
-    id: "jade",
-    name: "Jade de Avalon",
-    subtitle: "Profundezas & Ruínas",
-    description: "Águas profundas de teal, jade polido e o silêncio das ruínas submersas.",
-    accent: "#2dd4bf",
-    bg: "#040f0e",
-    titleColor: "#ecfdf9",
-    subtitleColor: "#5eead4",
-    tag: "Escuro",
-    type: "dark",
-    harmony: "Análoga Aquática",
-    harmonyFamily: "Adobe Color: Analogous Deep Aquatic Jade",
-    contrastRatio: "18.5:1 (WCAG AAA)",
-    previewColors: ["#040f0e", "#2dd4bf", "#ecfdf9"],
-    iconName: "Droplets",
-  },
-  {
-    id: "felflame",
-    name: "Fogo Fátuo",
-    subtitle: "Feitiço & Sabugueiro",
-    description: "Chamas verdes-limão dos pântanos, breu verdejante e encantamentos selvagens.",
-    accent: "#a3e635",
-    bg: "#070d04",
-    titleColor: "#f5fbe0",
-    subtitleColor: "#bef264",
-    tag: "Escuro",
-    type: "dark",
-    harmony: "Triádica Elétrica",
-    harmonyFamily: "Adobe Color: Triadic Will-o'-the-Wisp",
-    contrastRatio: "18.5:1 (WCAG AAA)",
-    previewColors: ["#070d04", "#a3e635", "#f5fbe0"],
-    iconName: "Zap",
   },
 
   // ── TEMAS CLAROS ──

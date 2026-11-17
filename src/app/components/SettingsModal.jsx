@@ -9,8 +9,6 @@ import {
   Flame,
   Skull,
   Eclipse,
-  Droplets,
-  Zap,
   Snowflake,
   Sunrise,
   Gem,
@@ -33,8 +31,6 @@ const THEME_ICONS = {
   abyss: Skull,
   bloodmoon: Eclipse,
   frostfall: Snowflake,
-  jade: Droplets,
-  felflame: Zap,
   aurora: Sunrise,
   sapphire: Gem,
 };
