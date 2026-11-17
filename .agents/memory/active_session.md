@@ -65,6 +65,14 @@
 - `1d2d848` feat(dice) o dado em si rolando com todos os lados — 3D WebGL/Three.js (Dice3D.jsx; d10 bipirâmide pentagonal; números por face via CanvasTexture; d100 = par de dados; d2 removido) · `74f4fe4` docs(memory). Pushed: `6fbbdd8..74f4fe4`.
 - Verificado antes do commit: front 161/161, build OK, lint 0 erros. **Sem conferência no navegador** — revisar visual/enquadramento/luzes e o fallback estático.
 
+## 🔧 2026-11-17 — Ficha aberta como mestre abre NOVA GUIA do navegador — NÃO commitado
+- Pedido: "quando eu abrir uma ficha como mestre, abre uma nova guia no navegador com a ficha para ficar mais organizado... talvez precise abrir 3 fichas de esqueleto".
+- `/personagem?inspect=<id>` — `AuthContext` (init) agora prioriza o parâmetro `inspect` (lido via `window.location.search`, sem useSearchParams → sem problema de SSG/Suspense): a guia abre já mostrando a ficha completa do herói da URL; refresh re-aplica (URL é a fonte da verdade da guia). Jogadores não são afetados (param só casa com a própria lista).
+- `/admin/personagens` (Ameaças & Heróis): botão "Acessar Ficha Completa" agora faz `window.open(`/personagem?inspect=${id}`, _blank)` em vez de `inspectCharacter` (mesma sessão) — abas independentes por guia. "Visão Rápida" já era target=_blank ✓.
+- Links de "Editar Ficha" (NPC no Ameaças & Heróis) e "Editar" (catálogo /admin/npcs) agora `target="_blank" rel="noreferrer"` — monstros em abas próprias (3 esqueletos = 3 abas `/admin/npcs/<id>`).
+- `inspectCharacter` permanece no contexto (não removido; sem uso externo restante no Ameaças & Heróis).
+- Verificado: 161/161 testes, build OK, lint 0 erros (44 warnings pré-existentes). NÃO conferido no navegador. NÃO commitado.
+
 ## ✅ 2026-11-17 (2) — Animação 3D WebGL do dado (rola com todos os lados) + d2 removido — commitado/pushado (Push 2026-11-17 (7))
 - Pedido: "poderia fazer uma animação do dado em si rolando com todos os seus lados, e remover o d2". Depois: "de pus" (= commit e push). Estilo escolhido pelo usuário: **ado 3D real com Three.js**.
 - **Removido d2**: DICE_TYPES=[4,6,8,10,12,20,100] (bandeja + dado físico), face SVG d2 (CARA/COROA), `.dice-coin`/`dice-coin-flip`/tumble CSS, JSDoc lib/dice.js.
