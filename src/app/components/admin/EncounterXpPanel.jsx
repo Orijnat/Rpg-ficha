@@ -10,7 +10,7 @@ import { calculateLevelFromXP } from "../../../lib/modifiers";
  * - Mostra o progresso de cada herói presente para o próximo nível.
  * - "Distribuir XP" aplica a recompensa no XP de cada herói no encontro.
  */
-export function EncounterXpPanel({ encounter, heroes, onDistribute, distributing, onFinalizeEncounter }) {
+export function EncounterXpPanel({ encounter, heroes, onDistribute, distributing, onFinalizeEncounter, onManualFinalize }) {
   const reward = Math.max(0, Math.floor(Number(encounter?.recursos?.xp) || 0));
   const distributedAt = encounter?.dadosExtras?.xpDistribuidoEm || null;
 
@@ -112,15 +112,27 @@ export function EncounterXpPanel({ encounter, heroes, onDistribute, distributing
               : "Distribuir XP para a party"}
       </button>
       {onFinalizeEncounter && encounter?.ativo !== false && (
-        <button
-          type="button"
-          onClick={onFinalizeEncounter}
-          className="mt-2 flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-border text-[10px] font-bold uppercase tracking-wider text-muted-foreground transition hover:border-amber-500/50 hover:text-amber-300 active:scale-95"
-          title="Abre o desfecho de cada herói (vitória/derrota/fuga), distribui XP e encerra o encontro"
-        >
-          <Trophy size={12} />
-          Finalizar Encontro (vitória / derrota / fuga)
-        </button>
+        <>
+          <button
+            type="button"
+            onClick={onFinalizeEncounter}
+            className="mt-2 flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-emerald-500/50 bg-emerald-500/10 text-[10px] font-bold uppercase tracking-wider text-emerald-300 transition hover:bg-emerald-500/20 active:scale-95"
+            title="Encerra o encontro distribuindo automaticamente o XP Total (÷ heróis na iniciativa)"
+          >
+            <Trophy size={12} />
+            Encerrar Encontro (XP automático)
+          </button>
+          {onManualFinalize && (
+            <button
+              type="button"
+              onClick={onManualFinalize}
+              className="mt-1.5 w-full text-center text-[9px] uppercase tracking-[0.2em] text-muted-foreground/80 underline-offset-2 transition hover:text-amber-300 hover:underline"
+              title="Abrir desfecho manual: vitoria/derrota/fuga por herói"
+            >
+              Desfecho manual por herói (vitória / derrota / fuga)
+            </button>
+          )}
+        </>
       )}
       {distributedAt && (
         <p className="mt-1.5 text-center text-[9px] uppercase tracking-wider text-emerald-400/80">
