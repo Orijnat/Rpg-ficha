@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-17T23:59:59-03:00",
+  "timestamp": "2026-11-17T23:59:30-03:00",
   "agent": "opencode",
-  "prompt": "remova este campoGestão de Vitalidade da fica e deixe apenas no botao de dano/cura / poderia deixar um vermelo mais escuro no tema dark que usa vermelo",
-  "action": "Tema Lua de Sangue (bloodmoon) com vermelho mais escuro (#d53c25). Navbar sem o cluster de vitalidade inline (barra de PV, −1/+1 PV, leitura) — resta apenas o botao Dano/Cura que abre o modal 'Gestao de Vitalidade'. XPBar e nome/nivel mantidos. 161/161 testes, build OK, lint 0 erros. Nao commitado."
+  "prompt": "coloque lvl/ xp atual/ pro prox nivel Nível 1 0 / 300 (0%)XP ✎ / sim o jogador não pode alterar o nível e nem o xp dele mesmo / ao criar um encontro, o xp que sera distribuido par aos jooaroes, sera o total do xp informado na cracao do encontro, dividido pela quantidade de pessoas no encontro",
+  "action": "XP do encontro é TOTAL: criação 'XP Total do Encontro', distribuicao divide igualmente entre os heróis na iniciativa; FinalizarEncounterModal e EncounterXpPanel atualizados (defaults, hints, botoes); confirm modal cita divisao. Jogadores não alteram XP/nível: backend sync descarta experiencia/level/xp p/ não-mestres (silencioso; preserva extras.xp); XPBar read-only p/ jogadores; 'Subir de Nível' oculto p/ não-mestres. Navbar: barra PV read-only restaurada ao lado do Dano/Cura. Back 109/109, front 161/161, build OK, lint 0 erros."
 }
