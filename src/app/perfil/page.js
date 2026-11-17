@@ -387,20 +387,24 @@ export default function PerfilPage() {
                   className="min-h-10 rounded-lg border border-border bg-input-background px-3 text-xs text-foreground outline-none focus:border-primary"
                 />
               </div>
-              <select
-                name="race"
-                value={newCharRace}
-                onChange={(e) => setNewCharRace(e.target.value)}
-                className="w-full min-h-10 rounded-lg border border-border bg-input-background px-3 text-xs text-foreground outline-none focus:border-primary"
-                aria-label="Raça do personagem"
-              >
-                <option value="">Escolha a raça…</option>
-                {DEFAULT_RACES.map((race) => (
-                  <option key={race.id} value={race.id}>
-                    {race.name}
-                  </option>
-                ))}
-              </select>
+              <div className="space-y-1">
+                <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-[#b59a6e]" style={{ fontFamily: "Cinzel, serif" }}>Raça</label>
+                <select
+                  name="race"
+                  defaultValue=""
+                  value={newCharRace}
+                  onChange={(e) => setNewCharRace(e.target.value)}
+                  className="w-full min-h-10 rounded-lg border border-border bg-input-background px-3 text-xs text-foreground outline-none focus:border-primary"
+                  aria-label="Raça do personagem"
+                >
+                  <option value="">Escolha a raça…</option>
+                  {DEFAULT_RACES.map((race) => (
+                    <option key={race.id} value={race.id}>
+                      {race.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <button
                 type="submit"
                 disabled={isCreating}

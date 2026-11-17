@@ -515,9 +515,11 @@ function RegisterForm() {
                     />
                   </FormField>
 
-                  <FormField label="Raça" icon={Scroll}>
+                  <div className="space-y-1">
+                    <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-[#b59a6e]" style={{ fontFamily: "Cinzel, serif" }}>Raça</label>
                     <select
                       name="race"
+                      defaultValue=""
                       value={raceId}
                       onChange={(e) => setRaceId(e.target.value)}
                       className={inputBase}
@@ -531,7 +533,7 @@ function RegisterForm() {
                         </option>
                       ))}
                     </select>
-                  </FormField>
+                  </div>
 
                   {raceId && (
                     <div className="rounded-lg border border-[#4a3d2a]/60 bg-[#0f0d0a]/60 px-3 py-2">
