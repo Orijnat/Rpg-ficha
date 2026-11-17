@@ -63,10 +63,17 @@ export function AuthProvider({ children }) {
           }
           setCharacters(allChars);
 
+          // O mestre pode abrir a ficha completa de um herói em uma NOVA GUIA
+          // (/personagem?inspect=<characterId>) — nesse caso a guia mostra esse herói.
+          const inspectParam = window.location?.search
+            ? new URLSearchParams(window.location.search).get("inspect")
+            : null;
+          const inspectFound = inspectParam ? allChars.find((c) => c.id === inspectParam) : null;
+
           // Recupera o personagem ativo salvo ou pega o primeiro da lista
           const savedCharId = window.sessionStorage.getItem("rpg_current_char_id")
             || window.localStorage.getItem("rpg_current_char_id");
-          const found = allChars.find((c) => c.id === savedCharId);
+          const found = inspectFound ?? allChars.find((c) => c.id === savedCharId);
           if (found) {
             setActiveCharacterId(found.id);
           } else if (allChars.length > 0) {

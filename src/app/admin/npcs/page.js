@@ -459,7 +459,10 @@ export default function NpcCataloguePage() {
 
                   <Link
                     href={`/admin/npcs/${npc.id}`}
+                    target="_blank"
+                    rel="noreferrer noopener"
                     className="inline-flex items-center gap-1 rounded-md bg-secondary px-2.5 py-1 text-xs font-semibold text-foreground transition hover:bg-primary hover:text-primary-foreground"
+                    title="Abre a ficha do monstro em uma nova guia"
                   >
                     <span>Editar</span>
                     <ExternalLink size={12} />

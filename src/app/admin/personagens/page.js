@@ -35,7 +35,7 @@ import { parseHitDie, hpGainFromRoll } from "../../../lib/leveling";
 import { calculateModifier } from "../../../lib/modifiers";
 
 export default function PersonagensAdmin() {
-  const { token, isMaster, inspectCharacter } = useAuth();
+  const { token, isMaster } = useAuth();
 
   const [heroes, setHeroes] = useState([]);
   const [npcs, setNpcs] = useState([]);
@@ -527,7 +527,10 @@ export default function PersonagensAdmin() {
                           <>
                             <Link
                               href={`/admin/npcs/${item.id}`}
+                              target="_blank"
+                              rel="noreferrer"
                               className="rounded-lg border border-primary/40 bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary transition hover:bg-primary/20"
+                              title="Abre a ficha do monstro em uma nova guia"
                             >
                               Editar Ficha
                             </Link>
@@ -548,7 +551,8 @@ export default function PersonagensAdmin() {
                           <>
                             <button
                               type="button"
-                              onClick={() => inspectCharacter(item.id)}
+                              onClick={() => window.open(`/personagem?inspect=${item.id}`, "_blank", "noopener,noreferrer")}
+                              title="Abre a ficha completa do herói em uma nova guia"
                               className="flex items-center gap-1.5 rounded-lg border border-primary/50 bg-primary px-3 py-1.5 text-xs font-bold text-primary-foreground shadow-md shadow-primary/20 hover:brightness-110 active:scale-95 transition"
                             >
                               <ScrollText size={13} />
