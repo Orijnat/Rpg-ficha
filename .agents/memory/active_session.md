@@ -43,6 +43,54 @@
 
 ---
 
+## 🔧 Atualização 2026-11-17 (Botões "Finalizar Encontro" + desfecho vitória/derrota/fuga) — NÃO commitado
+- Pedido: "adicione botões de finalizar encontro, que abre um modal para selecionar quais heróis receberam xp, a quantidade se algum perderam ou fugiram".
+- Novo `components/admin/FinalizarEncounterModal.jsx`: lista os heróis do encontro (iniciativa, type Herói) com XP/Nv atual; checkbox "Recebe XP" (desmarcado → XP 0), seletor de desfecho por herói (Vitória ✓ verde / Derrota / Fugiu) — Derrota/Fuga zera o XP por padrão (mestre pode sobrescrever); input de XP individual (clamp 0..1M); ações rápidas "Todos: Vitória/Derrota/Fugiu"; contadores no rodapé (N heróis · total XP); Escape/backdrop/Cancelar fecham (bloqueados durante o envio); role=dialog + foco/trap como nos outros modais; Enter nos inputs confirma via botão.
+- `admin/encontros/page.js`: novo `handleFinalizeEncounter(rows)` — re-busca fichas (listCharacters), soma XP por herói (updateCharacterOnBackend), grava no encontro `ativo:false`, `dadosExtras { finalizadoEm, xpDistribuidoEm, resultado { vitoria[], derrota[], fuga[], xpPorHeroi } }`, registra no log (tipo `recursos`) e marca sucesso. 2 botões ("botões" do pedido): (A) no cabeçalho do card do encontro ativo (Trophy "Finalizar", some quando já finalizado → badge "Finalizado"); (B) dentro do `EncounterXpPanel` (novo prop `onFinalizeEncounter`) abaixo do botão Distribuir. Página aparece embutida no mapa-tatico (Sala de Guerra) → botões funcionam nos dois lugares.
+- Verificado: build 30/30, lint 0 erros (warnings pré-existentes; nenhum nos arquivos novos), testes 161/161. NÃO commitado. UX do modal ainda não conferida no navegador.
+
+---
+
+## 🔧 Atualização 2026-11-17 (Cadastro: Classe / Ocupação vira catálogo global de Classes) — NÃO commitado
+- Pedido: "a classe que o jogador novo cadastrar será salva e mostrada no campo de administração da classe no menu do mestre".
+- **Backend**: novo `findOrCreateClasseByNome(nome, criadoPorId)` em `classeService.js` — match sem acento/caixa no catálogo (slug ou nome); se não existir, CRIA entrada global (1d8 padrão, ordem 100, slug único via uniqueSlug, `criado_por` = novo usuário; nome capitalizado por palavra). Corrida única de cadastros com mesmo nome → catch de UniqueConstraintError → re-resolve (resolveClasse) e reutiliza. Job só símbolos → null (sem catálogo). Nunca bloqueia o cadastro (try/catch com log).
+- `authController.register`: após criar o usuário e se ainda não há classe vinculada, job do herói ("Classe / Ocupação") é resolvido/criado no catálogo — ficha fica vinculada (classeId, extras.class/hitDie, HP = hitDieMax; classe nova → 8 PV), e a classe aparece automaticamente em `/api/classes` → `/admin/classes` (Classes & Níveis), editável por qualquer mestre (calibra dado de vida/atributos/habilidades).
+- **Testes**: novo `classe_catalogo_cadastro.test.js` (4 casos: cria nova; reutiliza catalogada sem criar; job "!!!" não cria; corrida unique→reutiliza). `login_sync_integration` e `invite_flow` agora mockam Class (findAll/create). Suíte **90/90**.
+- **Frontend**: dica no registro abaixo do campo Classe / Ocupação (classes novas entram no catálogo do mestre). Build OK, lint 0 erros.
+- NÃO verificado ao vivo (o `.env` do backend aponta para o Supabase de PRODUÇÃO — sem teste de escrita lá); comportamento coberto pelos mocks. Nada commitado.
+
+---
+
+## ✅ Push 2026-11-17 (6) — Comits separados: dados refeitos + skills + encontros + classes (2 repos)
+- Pedido: "commite e ous" (= commit e push). Escopo validado pelo usuário: commits separados por assunto + push, excluindo `.github/workflows/` (PAT sem scope).
+- **Frontend** (`main`): `02c243f` feat(dice) animação de rolagem refeita (DiceFace SVG por tipo + moeda d2) · `5cf9b11` chore(skills) audit-suite Orbit 1.1.0 + fe-rail sh5623 1.20.0 vendorizadas (.agents/skills + .github/skills + skills-lock.json, 165 arquivos) · `5d4eac3` feat(encontros) botões Finalizar Encontro (FinalizarEncounterModal: XP por herói, desfecho vitória/derrota/fuga, ações em lote; painel + header) · `01cc79f` feat(classes) hint no registro (classe criada entra no catálogo do mestre) + cadeado de remoção no /admin/classes (espelha guard 403).
+- **Backend** `../Rpg-backend` (`main`): `22d5f26` feat(classes) findOrCreateClasseByNome — cadastro resolve/cria classe no catálogo global (testes 95/95) · `0a35fcb` feat(classes) remoção restrita ao criador (403 p/ seed/casas criadas via jogador) + criadoPor no payload.
+- Verificado antes de commitar: front 161/161 + build OK + lint 0 erros; back 95/95.
+- **Ainda pendente (operador)**: Manual Deploy do backend no Render (features de classe/catálogo valem em produção só após o deploy); UX do chooser/animação no navegador não conferida; `.github/workflows/` segue não rastreado (front e back).
+
+## ✅ 2026-11-17 — Animação de rolagem de dados REFEITA (dados por tipo + moeda d2) — COMMITADA (02c243f)
+- Pedido: "refaca a animacao de rolagem de dados"; direção escolhida pelo usuário: **vários dados, uma moeda para o d2**, mais d4, d6, d8, d10, d12, d20 e d100.
+- **Causa-raiz encontrada**: o CSS antigo (`@layer components` em globals.css pré-rewrite) foi deletado em `231b39e` (out/26) — `.dice-roll-stage/.dice-cube/…` referenciados no DiceModal não existiam mais (animação invisível).
+- Novo `src/app/components/dice/DiceFace.jsx`: SVG por tipo (viewBox 100×100, sem IDs de gradiente — flat + facetas `rgba(255,255,255,.x)`/`rgba(0,0,0,.x)` sobre `var(--theme-accent)`): d2 **moeda** (anel tracejado + CARA/COROA conforme face 1/2), d4 triângulo facetado, d6 **pips** 1-6 (fallback numeral), d8 losango, d10 e d100 kite (d100 fonte menor), d12 pentágono (externo+interno), d20 hexágono com wireframe (triângulos alternados). Texto em Cinzel, cor `--theme-accent-contrast`.
+- `DiceModal.jsx`: `DiceRollAnimation` reescrito (stage novo, `data-crit="success|failure"` → glow esmeralda/rosa; die descartado em vantagem/desvantagem esmaecido; stagger `index*110ms`; tamanho do dado adaptativo para 4+/5+ dados; moeda usa `.dice-coin` (coin flip), demais `.dice-roll-die` + `dice-tumble-alt` ímpares; legenda "Moeda" para d2). `DICE_TYPES = [2,4,6,8,10,12,20,100]` (abas bandeja/físico, grids `sm:grid-cols-8`). JSDoc de `lib/dice.js` atualizado (lados inclui 2).
+- `globals.css`: bloco novo `.dice-roll-*` + keyframes `dice-tumble`, `dice-tumble-alt`, `dice-coin-flip`, `dice-shadow-pulse` (aura pulsa no impacto); crítico reextra via drop-shadow no die e aura; `prefers-reduced-motion` respeitado.
+- Verificado: testes **161/161**, build OK (30/30, CSS compilado), lint **0 erros** (44 warnings pré-existentes). UX no navegador AINDA não conferida (dev server parado) — abrir /personagem → rolar perícia e conferir todos os tipos.
+- Commitado (`02c243f`) e incluído no push 2026-11-17 (6).
+
+## ✅ 2026-11-17 — Plugins instalados como skills do projeto: audit-suite (Orbit v1.1.0) + fe-rail (sh5623 v1.20.0) — NÃO commitado
+- Pedido: "instale este plugin audit-suite e este fe-rail". Escolha do usuário: **como skills do projeto** (não como plugins Claude Code — opencode não lê `.claude-plugin`; sem `claude` no PATH).
+- Clone raso em /tmp: `Recusive/Orbit-plugin` (audit-suite 1.1.0, MIT — skills-only, zero deps) e `sh5623/fe-rail` (1.20.0, MIT). Varredura de segurança nos SKILL.md/scripts: **nenhuma** ocorrência de curl|sh, exfiltração ou leitura de segredos (gate-commands.mjs só LÊ package.json e imprime comandos — não executa).
+- Vendorizadas **16 skills** do audit-suite (10 lentes `audit-as-*`, orquestrador `full-audit`, 5 referências: emil-design-engineering, vercel-react-best-practices, web-animation-design, web-design-guidelines, make-interfaces-feel-better) e **5 skills** do fe-rail (fe-spec, fe-build, fe-review, fe-start, fe-doc-sync — inclui `fe-start/scripts/gate-commands.mjs`, nunca executado nesta instalação).
+- Copiadas para `.agents/skills/` **e espelhadas em `.github/skills/`** (convenção do projeto). `skills-lock.json` atualizado com as 21 entradas (source github, skillPath `skills/<nome>/SKILL.md`, computedHash = sha256 do SKILL.md vendorizado) — lock agora com 22 entries no total.
+- **NÃO instalados (fora de escopo, por decisão do usuário)**: hooks shell e agentes Claude-Code-only do fe-rail (`hooks/*.sh` — guard, write-guard, config-protection, quality-gate, lint-fix, etc. — bloqueiam ações em sessões Claude Code); namespace de comandos `/fe-rail:*` não existe no opencode (skills invocáveis por nome: `fe-spec`, `fe-build`…). audit-suite não tem hooks.
+- Ressalvas: skills em coreano no fe-rail; `vercel-react-best-practices` e `web-design-guidelines` duplicam (versões distintas) as que já existem em `~/.agents/skills/` (global); Orbit já aparece como reference skill do próprio full-audit — cópias locais do projeto garantem autocontenção.
+- Limpeza: clones em /tmp/opencode/{orbit-plugin,fe-rail} podem ser removidos. Nada executado. Skills commitadas (`5cf9b11`) e incluídas no push 2026-11-17 (6).
+
+## ✅ Re-verificação 2026-11-17 (sessão seguinte) — Dado físico: checklist já concluído e pushado
+- Usuário reenviou o checklist do dado físico (item 1 [•], demais [ ]). Verificado: TODO o escopo (lib/dice.js manualRollResult + manual-roll.test.mjs; DiceContext requestRoll→Promise/resolveVirtualRoll/resolveManualRoll/executeManualRoll/cancelRollRequest, executeRoll/promptRoll/pendingTarget removidos; DiceModal RollChooser + aba "Dado Físico" + selo "Físico" + Cancelar; call sites migrados) já está no `main` pushado (`4bd15a8` feat(dice) + `fcd50d6`/`86636ff` docs) — `main...origin/main` sem ahead/behind.
+- Re-verificado agora: testes **161/161** (18 suites), `npm run build` OK (páginas prerendered), `npm run lint` **0 erros** (44 warnings pré-existentes). Nenhum código alterado nesta sessão.
+- Pendências do dado físico inalteradas: UX do chooser ainda não conferida no navegador (dev server parado).
+
 ## ✅ Push 2026-11-17 (5) — Dado físico (NÃO verificado no navegador)
 - Pedido: "para cada rolamento, poderia colocar a opção de adicionar o valor manualmente, pois em alguns casos será usado o dado físico".
 - **lib/dice.js**: novo `manualRollResult()` puro (valida faces 1..sides, vantagem/desvantagem kh1/kl1, críticos d20, fórmula idêntica à do virtual, `manual: true`); novo teste `manual-roll.test.mjs` (28 asserts) → suite 161.

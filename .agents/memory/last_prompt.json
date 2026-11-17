@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-17T14:21:24-03:00",
+  "timestamp": "2026-11-17T18:05:00-03:00",
   "agent": "opencode",
-  "prompt": "para cada rolamento, poderia colocar a opcao de adicionar o valor manualmente, pois em aluns casos ser ausado o dado fisico",
-  "action": "Dado físico em todo rolamento: lib/dice.js manualRollResult() + manual-roll.test.mjs (161/161), DiceContext.requestRoll() com Promise (chooser Normal/Vantagem/Desvantagem ou valores físicos), DiceModal com RollChooser pré-rolagem + aba permanente Dado Físico, todos os call sites migrados (levelUp, cura/iniciativa, perícias, habilidades, itens, StatBox). Build 30/30, lint 0 erros. NÃO commitado."
+  "prompt": "refaca a animacao de rolaem de dados",
+  "action": "Animacao de rolagem refeita: causa-raiz = CSS .dice-* deletado em 231b39e (JSX com classes fantasma). Novo DiceFace.jsx (SVG por tipo: d2 moeda CARA/COROA, d4, d6 pips, d8, d10/d100, d12, d20); DiceRollAnimation reescrita (tumble CSS 3D + coin flip, crits com glow, stagger por dado); globals.css com bloco .dice-roll-* novo (tokens theme); DICE_TYPES ganhou d2; JSDoc lib/dice.js atualizado. Verificado: 161/161 testes, build OK, lint 0 erros. Nada commitado. UX no navegador pendente."
 }
