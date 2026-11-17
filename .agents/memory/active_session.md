@@ -13,7 +13,7 @@
 - **Defesa-em-profundidade (front)**: os 3 fluxos de distribuição (handleDistributeXp, handleFinalizeEncounter em encontros/page.js; confirmXpDistribution em sessoes/page.js) agora fazem `fetchCharacterFromBackend` de TODOS os heróis ANTES de qualquer PUT e abortam tudo se algum fetch falhar (nunca sobrescreve XP com baseline velho); XP novo = fresh.xp + delta; setHeroes usa o valor absoluto.
 - Verificação: back 110/110; front **162/162**, build OK, lint 0 erros (44 warnings pré-existentes).
 - **Backend precisa de Manual Deploy no Render** ou o fix de serialização não vale em produção (até lá, a ficha aberta mostra XP stale e o mestre pode zerar XP ao editar a ficha de heróis — os fluxos de distribuição em si estão protegidos pelo fresh-fetch).
-- Commitado e pushado: back `… (ver git log)` + front `…` (2026-11-17).
+- Commitado e pushado (2026-11-17): back `740d69b` fix(personagens) → `721ca1a..740d69b`; front `69a52c0` fix(xp) + `c6b8c75` chore(skills) make-documentation + `fa7f524` docs(memory) → `976646b..fa7f524`. `.github/workflows/` (front) e `.github/` (back, não rastreado) inalterados.
 
 ## 🔧 Pedido 2026-11-17 — "faltou o xp dinâmico do cadastro do encontro" — CORRIGIDO (NÃO commitado)
 - Causa-raiz: backend (`encontroController.criar`) guarda `recursos` DENTRO de `dadosExtras.recursos` ({ xp, tesouro }); a tabela `encontros` NÃO tem coluna top-level `recursos` e a API retorna o row cru — o frontend lia `encounter.recursos?.xp` → sempre undefined → 0 XP em todo lugar (painel, modal, rateio, confirmação de distribuição).
