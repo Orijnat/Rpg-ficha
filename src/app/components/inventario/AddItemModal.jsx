@@ -8,7 +8,7 @@ import { CATEGORIAS_ITEM, MOEDAS, RARIDADES } from "../../../lib/market";
 const inputClass =
   "h-9 w-full rounded-lg border border-[#4a3d2a]/60 bg-[#0f0d0a]/60 px-3 text-xs text-[#f1e7d2] outline-none placeholder:text-[#6b5a3e]/60 focus:border-[var(--theme-accent)]/60";
 const labelClass =
-  "flex flex-col gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--theme-subtitle)]";
+  "flex flex-col gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-[#cbb288]";
 
 /**
  * Modal de cadastro completo de item para o inventário.
@@ -117,17 +117,17 @@ function AddItemDialog({ onClose, onAdd }) {
               <Package size={16} />
             </span>
             <div>
-              <h3 id="add-item-modal-title" className="text-sm font-semibold tracking-wide text-[var(--theme-title)]">
+              <h3 id="add-item-modal-title" className="text-sm font-semibold tracking-wide text-[#f5efdf]">
                 Cadastrar Item
               </h3>
-              <p className="text-[11px] text-[var(--theme-subtitle)]">Mochila &amp; equipamentos</p>
+              <p className="text-[11px] text-[#cbb288]">Mochila &amp; equipamentos</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Fechar"
-            className="rounded-lg p-1.5 text-[var(--theme-subtitle)] transition-colors hover:bg-white/10 hover:text-[var(--theme-title)]"
+            className="rounded-lg p-1.5 text-[#cbb288] transition-colors hover:bg-white/10 hover:text-[#f5efdf]"
           >
             <X size={18} />
           </button>

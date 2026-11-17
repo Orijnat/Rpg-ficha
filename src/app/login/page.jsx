@@ -145,14 +145,14 @@ function LoginForm() {
               Crônicas do Destino
             </p>
             <h2
-              className="mt-1.5 text-center text-2xl font-bold tracking-wide text-[var(--theme-title)] sm:text-3xl"
+              className="mt-1.5 text-center text-2xl font-bold tracking-wide text-[#f5efdf] sm:text-3xl"
               style={{ fontFamily: "Cinzel, serif" }}
             >
               Acesso ao Reino
             </h2>
             <div className="mt-2 flex items-center gap-2">
               <div className="h-px w-12 bg-gradient-to-r from-transparent to-[var(--theme-accent)]/40" />
-              <span className="text-[10px] text-[var(--theme-subtitle)]" style={{ fontFamily: "Crimson Text, serif" }}>
+              <span className="text-[10px] text-[#cbb288]" style={{ fontFamily: "Crimson Text, serif" }}>
                 Entre para continuar sua jornada
               </span>
               <div className="h-px w-12 bg-gradient-to-l from-transparent to-[var(--theme-accent)]/40" />
@@ -252,7 +252,7 @@ function LoginForm() {
           {/* Link para Registro + Esqueci a senha */}
           <div className="text-center">
             <p
-              className="text-xs text-[var(--theme-subtitle)]"
+              className="text-xs text-[#cbb288]"
               style={{ fontFamily: "Crimson Text, serif" }}
             >
               É sua primeira vez nestas terras?
@@ -271,7 +271,7 @@ function LoginForm() {
           <div className="mt-6 border-t border-[#4a3d2a]/30 pt-4 text-center">
             <Link
               href="/personagem"
-              className="text-[11px] text-[#6b5a3e]/70 transition hover:text-[var(--theme-subtitle)]"
+              className="text-[11px] text-[#6b5a3e]/70 transition hover:text-[#cbb288]"
               style={{ fontFamily: "Crimson Text, serif" }}
             >
               Continuar sem login (modo convidado offline) →

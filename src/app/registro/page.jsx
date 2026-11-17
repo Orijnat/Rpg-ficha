@@ -289,14 +289,14 @@ function RegisterForm() {
               Grimorium
             </p>
             <h2
-              className="mt-1.5 text-center text-2xl font-bold tracking-wide text-[var(--theme-title)] sm:text-3xl"
+              className="mt-1.5 text-center text-2xl font-bold tracking-wide text-[#f5efdf] sm:text-3xl"
               style={{ fontFamily: "Cinzel, serif" }}
             >
               Crie sua Conta
             </h2>
             <div className="mt-2 flex items-center gap-2">
               <div className="h-px w-10 bg-gradient-to-r from-transparent to-[var(--theme-accent)]/40" />
-              <span className="text-[10px] text-[var(--theme-subtitle)]" style={{ fontFamily: "Crimson Text, serif" }}>
+              <span className="text-[10px] text-[#cbb288]" style={{ fontFamily: "Crimson Text, serif" }}>
                 Cadastre-se e forje sua lenda
               </span>
               <div className="h-px w-10 bg-gradient-to-l from-transparent to-[var(--theme-accent)]/40" />
@@ -381,7 +381,7 @@ function RegisterForm() {
               <SectionTitle icon={Crown} number="II" title="Seu Papel na Mesa" />
 
               <p
-                className="mt-3 mb-4 text-xs text-[var(--theme-subtitle)]"
+                className="mt-3 mb-4 text-xs text-[#cbb288]"
                 style={{ fontFamily: "Crimson Text, serif" }}
               >
                 Escolha como deseja participar. Mestres gerenciam campanhas e NPC; jogadores possuem uma ficha de personagem.
@@ -412,7 +412,7 @@ function RegisterForm() {
                   </div>
                   <div>
                     <p
-                      className={`text-xs font-bold uppercase tracking-wider ${!isMaster ? "text-[#f0d9a0]" : "text-[var(--theme-subtitle)]"}`}
+                      className={`text-xs font-bold uppercase tracking-wider ${!isMaster ? "text-[#f0d9a0]" : "text-[#cbb288]"}`}
                       style={{ fontFamily: "Cinzel, serif" }}
                     >
                       Jogador
@@ -456,7 +456,7 @@ function RegisterForm() {
                   </div>
                   <div>
                     <p
-                      className={`text-xs font-bold uppercase tracking-wider ${isMaster ? "text-[#f0d9a0]" : "text-[var(--theme-subtitle)]"}`}
+                      className={`text-xs font-bold uppercase tracking-wider ${isMaster ? "text-[#f0d9a0]" : "text-[#cbb288]"}`}
                       style={{ fontFamily: "Cinzel, serif" }}
                     >
                       Mestre
@@ -504,7 +504,7 @@ function RegisterForm() {
                       className={inputBase}
                       style={inputFont}
                     />
-                    <p className="mt-1.5 text-[10px] leading-snug text-[var(--theme-subtitle)]" style={{ fontFamily: "Crimson Text, serif" }}>
+                    <p className="mt-1.5 text-[10px] leading-snug text-[#cbb288]" style={{ fontFamily: "Crimson Text, serif" }}>
                       Se a classe não existir no catálogo, ela é salva automaticamente e fica visível e editável na administração de classes do mestre.
                     </p>
                   </FormField>
@@ -519,7 +519,7 @@ function RegisterForm() {
                 <SectionTitle icon={Link2} number="IV" title="Mesa de RPG & Convite (Opcional)" />
 
                 <p
-                  className="mt-2.5 mb-3 text-xs text-[var(--theme-subtitle)]"
+                  className="mt-2.5 mb-3 text-xs text-[#cbb288]"
                   style={{ fontFamily: "Crimson Text, serif" }}
                 >
                   Se o seu Mestre lhe forneceu um código ou link de convite, insira abaixo para vincular sua conta e sua ficha diretamente à mesa dele.
@@ -598,7 +598,7 @@ function RegisterForm() {
           {/* Link para Login */}
           <div className="mt-6 border-t border-[#4a3d2a]/30 pt-4 text-center">
             <p
-              className="text-xs text-[var(--theme-subtitle)]"
+              className="text-xs text-[#cbb288]"
               style={{ fontFamily: "Crimson Text, serif" }}
             >
               Já possui uma conta registrada?{" "}

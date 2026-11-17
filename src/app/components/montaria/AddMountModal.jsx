@@ -6,7 +6,7 @@ import { Footprints, X } from "lucide-react";
 const inputClass =
   "h-9 w-full rounded-lg border border-[#4a3d2a]/60 bg-[#0f0d0a]/60 px-3 text-xs text-[#f1e7d2] outline-none placeholder:text-[#6b5a3e]/60 focus:border-[var(--theme-accent)]/60";
 const labelClass =
-  "flex flex-col gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--theme-subtitle)]";
+  "flex flex-col gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-[#cbb288]";
 
 const ESPECIE_SUGESTOES = [
   "Corcel de estribo",
@@ -97,17 +97,17 @@ function AddMountDialog({ onClose, onAdd }) {
               <Footprints size={16} />
             </span>
             <div>
-              <h3 id="add-mount-modal-title" className="text-sm font-semibold tracking-wide text-[var(--theme-title)]">
+              <h3 id="add-mount-modal-title" className="text-sm font-semibold tracking-wide text-[#f5efdf]">
                 Adotar Montaria
               </h3>
-              <p className="text-[11px] text-[var(--theme-subtitle)]">Companheiro de viagem &amp; combate</p>
+              <p className="text-[11px] text-[#cbb288]">Companheiro de viagem &amp; combate</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Fechar"
-            className="rounded-lg p-1.5 text-[var(--theme-subtitle)] transition-colors hover:bg-white/10 hover:text-[var(--theme-title)]"
+            className="rounded-lg p-1.5 text-[#cbb288] transition-colors hover:bg-white/10 hover:text-[#f5efdf]"
           >
             <X size={18} />
           </button>
@@ -193,7 +193,7 @@ function AddMountDialog({ onClose, onAdd }) {
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-white/10 px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-[var(--theme-subtitle)] transition hover:bg-white/5 hover:text-[#e8d5b0]"
+              className="rounded-xl border border-white/10 px-4 py-2 text-[11px] font-bold uppercase tracking-wider text-[#cbb288] transition hover:bg-white/5 hover:text-[#e8d5b0]"
             >
               Cancelar
             </button>

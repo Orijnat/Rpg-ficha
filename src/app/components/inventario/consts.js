@@ -16,7 +16,7 @@ const COIN_STYLES = {
 const INVENTORY_STYLES = {
   itemContainer: "group flex items-center gap-2 border-b border-[rgba(201,134,42,0.08)] py-1.5 last:border-0",
   itemName: "text-sm text-[#e8d5b0]",
-  quantityButton: "flex h-5 w-5 items-center justify-center rounded bg-[#241c13] text-xs text-[var(--theme-subtitle)] hover:text-[var(--theme-accent)]",
+  quantityButton: "flex h-5 w-5 items-center justify-center rounded bg-[#241c13] text-xs text-[#cbb288] hover:text-[var(--theme-accent)]",
   quantityInput: "w-8 text-center font-mono text-xs text-[var(--theme-accent)]",
   deleteButton: "text-[#8b1a1a] opacity-0 transition-all group-hover:opacity-100 hover:text-[#c02020]",
 };

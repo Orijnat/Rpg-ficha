@@ -49,10 +49,10 @@ function DepositDialog({ item, freeSlots, onClose, onConfirm }) {
               <Archive size={16} />
             </span>
             <div>
-              <h3 id="deposit-bank-modal-title" className="text-sm font-semibold tracking-wide text-[var(--theme-title)]">
+              <h3 id="deposit-bank-modal-title" className="text-sm font-semibold tracking-wide text-[#f5efdf]">
                 Guardar no Banco
               </h3>
-              <p className="text-[11px] text-[var(--theme-subtitle)]">
+              <p className="text-[11px] text-[#cbb288]">
                 {hasSpace ? `${freeSlots} espaço${freeSlots === 1 ? "" : "s"} livre${freeSlots === 1 ? "" : "s"} no cofre` : "Cofre cheio"}
               </p>
             </div>
@@ -61,19 +61,19 @@ function DepositDialog({ item, freeSlots, onClose, onConfirm }) {
             type="button"
             onClick={onClose}
             aria-label="Fechar"
-            className="rounded-lg p-1.5 text-[var(--theme-subtitle)] transition-colors hover:bg-white/10 hover:text-[var(--theme-title)]"
+            className="rounded-lg p-1.5 text-[#cbb288] transition-colors hover:bg-white/10 hover:text-[#f5efdf]"
           >
             <X size={18} />
           </button>
         </div>
 
         <div className="px-5 py-4">
-          <p className="truncate text-sm font-semibold text-[var(--theme-title)]">{item.name}</p>
-          <p className="mt-0.5 text-[11px] text-[var(--theme-subtitle)]">
+          <p className="truncate text-sm font-semibold text-[#f5efdf]">{item.name}</p>
+          <p className="mt-0.5 text-[11px] text-[#cbb288]">
             {maxQty}× na mochila{Number(item.weight) > 0 ? ` · ${Number(item.weight)} kg cada` : ""}
           </p>
 
-          <label className="mt-4 flex flex-col gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--theme-subtitle)]">
+          <label className="mt-4 flex flex-col gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-[#cbb288]">
             Quantidade que deseja deixar no banco
             <input
               type="number"
@@ -86,7 +86,7 @@ function DepositDialog({ item, freeSlots, onClose, onConfirm }) {
               aria-label="Quantidade que deseja deixar no banco"
               className="h-11 w-full rounded-lg border border-[#4a3d2a]/60 bg-[#0f0d0a]/60 px-3 text-center font-mono text-sm text-[#f1e7d2] outline-none focus:border-[var(--theme-accent)]/60"
             />
-            <span className="text-[9px] font-normal normal-case text-[var(--theme-subtitle)]">
+            <span className="text-[9px] font-normal normal-case text-[#cbb288]">
               Máximo: {maxQty} {maxQty === 1 ? "unidade" : "unidades"}
             </span>
           </label>

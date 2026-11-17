@@ -121,13 +121,13 @@ export default function ConvitePage({ params }) {
               Convocação Oficial de Mesa
             </span>
             <h1
-              className="mt-1 text-2xl font-black uppercase tracking-wider text-[var(--theme-title)] sm:text-3xl"
+              className="mt-1 text-2xl font-black uppercase tracking-wider text-[#f5efdf] sm:text-3xl"
               style={{ fontFamily: "Cinzel, serif" }}
             >
               {loading ? "Decifrando Convite..." : campaign?.nome || "Mesa de RPG"}
             </h1>
             {code && (
-              <span className="mt-1 font-mono text-xs text-[var(--theme-subtitle)] border border-[#4a3d2a]/50 rounded px-2 py-0.5 bg-[#0f0d0a]/60">
+              <span className="mt-1 font-mono text-xs text-[#cbb288] border border-[#4a3d2a]/50 rounded px-2 py-0.5 bg-[#0f0d0a]/60">
                 Código: {code}
               </span>
             )}
@@ -135,7 +135,7 @@ export default function ConvitePage({ params }) {
 
           {/* Estado de Carregamento */}
           {loading && (
-            <div className="py-8 text-center text-xs text-[var(--theme-subtitle)] flex flex-col items-center gap-3">
+            <div className="py-8 text-center text-xs text-[#cbb288] flex flex-col items-center gap-3">
               <Loader2 size={24} className="animate-spin text-[var(--theme-accent)]" />
               <span style={{ fontFamily: "Crimson Text, serif", fontSize: "16px" }}>
                 Consultando o Grimório do Reino...
@@ -182,9 +182,9 @@ export default function ConvitePage({ params }) {
             <div className="space-y-5">
               <div className="rounded-xl border border-[#4a3d2a]/50 bg-[#0f0d0a]/40 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#4a3d2a]/30 pb-2.5">
-                  <span className="text-xs text-[var(--theme-subtitle)] flex items-center gap-1.5 font-medium">
+                  <span className="text-xs text-[#cbb288] flex items-center gap-1.5 font-medium">
                     <Users size={14} className="text-[var(--theme-accent)]" />
-                    Mestre da Mesa: <strong className="text-[var(--theme-title)]">{campaign.mestre}</strong>
+                    Mestre da Mesa: <strong className="text-[#f5efdf]">{campaign.mestre}</strong>
                   </span>
                   <span className="rounded bg-[var(--theme-accent)]/20 px-2 py-0.5 text-[10px] font-bold uppercase text-[#f0d9a0] border border-[var(--theme-accent)]/30">
                     {campaign.estado}
@@ -222,7 +222,7 @@ export default function ConvitePage({ params }) {
                   </Link>
 
                   <div className="text-center pt-2">
-                    <p className="text-xs text-[var(--theme-subtitle)]" style={{ fontFamily: "Crimson Text, serif" }}>
+                    <p className="text-xs text-[#cbb288]" style={{ fontFamily: "Crimson Text, serif" }}>
                       Já possui uma conta de herói cadastrada?
                     </p>
                     <Link

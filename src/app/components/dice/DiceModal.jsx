@@ -26,7 +26,7 @@ function FaceInputs({ count, sides, values, onChange, onEnter }) {
     <div className="flex flex-wrap items-end justify-center gap-2">
       {Array.from({ length: count }, (_, i) => (
         <label key={i} className="flex flex-col items-center gap-1">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--theme-subtitle)]">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[#cbb288]">
             Dado {i + 1}
           </span>
           <input
@@ -43,7 +43,7 @@ function FaceInputs({ count, sides, values, onChange, onEnter }) {
                 onEnter();
               }
             }}
-            className="h-14 w-14 rounded-xl border border-white/15 bg-white/5 text-center font-mono text-xl font-bold text-[var(--theme-title)] outline-none transition focus:border-[var(--theme-accent)] focus:ring-1 focus:ring-[var(--theme-accent)]/50"
+            className="h-14 w-14 rounded-xl border border-white/15 bg-white/5 text-center font-mono text-xl font-bold text-[#f5efdf] outline-none transition focus:border-[var(--theme-accent)] focus:ring-1 focus:ring-[var(--theme-accent)]/50"
             aria-label={`Valor do dado físico ${i + 1} (1 a ${sides})`}
           />
         </label>
@@ -91,7 +91,7 @@ function RollChooser({ request, onVirtual, onManual, onCancel }) {
       className={`flex-1 rounded-lg border px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider transition active:scale-95 ${
         physMode === mode
           ? activeClass
-          : "border-white/10 bg-white/[0.03] text-[var(--theme-subtitle)] hover:text-[#e8d5b0]"
+          : "border-white/10 bg-white/[0.03] text-[#cbb288] hover:text-[#e8d5b0]"
       }`}
     >
       <Icon size={12} className="mx-auto mb-0.5" />
@@ -102,10 +102,10 @@ function RollChooser({ request, onVirtual, onManual, onCancel }) {
   return (
     <div className="space-y-4 text-center">
       <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
-        <span className="text-xs uppercase tracking-widest text-[var(--theme-subtitle)]">
+        <span className="text-xs uppercase tracking-widest text-[#cbb288]">
           Escolha como rolar
         </span>
-        <h2 className="mt-1 text-2xl font-bold text-[var(--theme-title)]">
+        <h2 className="mt-1 text-2xl font-bold text-[#f5efdf]">
           {request.label}
         </h2>
         <span className="font-mono text-sm font-semibold text-[var(--theme-accent)]">
@@ -120,7 +120,7 @@ function RollChooser({ request, onVirtual, onManual, onCancel }) {
         >
           <Dices className="text-[var(--theme-accent)]" size={24} />
           <span className="text-xs font-semibold uppercase tracking-wider">Normal</span>
-          <span className="font-mono text-[11px] text-[var(--theme-subtitle)]">
+          <span className="font-mono text-[11px] text-[#cbb288]">
             {request.count}d{request.sides} {formatModifier(request.modifier)}
           </span>
         </button>
@@ -131,7 +131,7 @@ function RollChooser({ request, onVirtual, onManual, onCancel }) {
         >
           <Zap className="text-emerald-400" size={24} />
           <span className="text-xs font-semibold uppercase tracking-wider text-emerald-400">Vantagem</span>
-          <span className="font-mono text-[11px] text-[var(--theme-subtitle)]">
+          <span className="font-mono text-[11px] text-[#cbb288]">
             2d{request.sides}kh1 {formatModifier(request.modifier)}
           </span>
         </button>
@@ -142,7 +142,7 @@ function RollChooser({ request, onVirtual, onManual, onCancel }) {
         >
           <ShieldAlert className="text-rose-400" size={24} />
           <span className="text-xs font-semibold uppercase tracking-wider text-rose-400">Desvantagem</span>
-          <span className="font-mono text-[11px] text-[var(--theme-subtitle)]">
+          <span className="font-mono text-[11px] text-[#cbb288]">
             2d{request.sides}kl1 {formatModifier(request.modifier)}
           </span>
         </button>
@@ -177,7 +177,7 @@ function RollChooser({ request, onVirtual, onManual, onCancel }) {
               }}
               onEnter={handleRegister}
             />
-            <p className="font-mono text-[10px] uppercase tracking-wider text-[var(--theme-subtitle)]">
+            <p className="font-mono text-[10px] uppercase tracking-wider text-[#cbb288]">
               Fórmula: <span className="text-amber-300">{physFormula}</span>
             </p>
             {error && (
@@ -199,7 +199,7 @@ function RollChooser({ request, onVirtual, onManual, onCancel }) {
       <button
         type="button"
         onClick={onCancel}
-        className="text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-subtitle)] underline-offset-2 transition hover:text-[#e8d5b0] hover:underline"
+        className="text-[11px] font-semibold uppercase tracking-wider text-[#cbb288] underline-offset-2 transition hover:text-[#e8d5b0] hover:underline"
       >
         Cancelar
       </button>
@@ -276,13 +276,13 @@ function ManualTray({ onDone }) {
         <p className="text-xs font-bold uppercase tracking-widest text-amber-300">
           Registrar dado físico
         </p>
-        <p className="mt-1 text-[11px] text-[var(--theme-subtitle)]">
+        <p className="mt-1 text-[11px] text-[#cbb288]">
           Role no mundo real e digite aqui os valores. O resultado entra no histórico, no log da batalha e (se houver) no servidor.
         </p>
       </div>
 
       <div>
-        <span className="text-xs uppercase tracking-wider text-[var(--theme-subtitle)]">Tipo de dado</span>
+        <span className="text-xs uppercase tracking-wider text-[#cbb288]">Tipo de dado</span>
         <div className="mt-2 grid grid-cols-4 gap-2 sm:grid-cols-7">
           {DICE_TYPES.map((s) => (
             <button
@@ -303,7 +303,7 @@ function ManualTray({ onDone }) {
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="text-xs text-[var(--theme-subtitle)]" htmlFor="manual-count">Quantidade</label>
+          <label className="text-xs text-[#cbb288]" htmlFor="manual-count">Quantidade</label>
           <input
             id="manual-count"
             type="number"
@@ -312,35 +312,35 @@ function ManualTray({ onDone }) {
             disabled={isContest}
             value={faceCount}
             onChange={(e) => setCount(Math.max(1, parseInt(e.target.value, 10) || 1))}
-            className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-center font-mono text-[var(--theme-title)] outline-none focus:border-amber-500 disabled:opacity-50"
+            className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-center font-mono text-[#f5efdf] outline-none focus:border-amber-500 disabled:opacity-50"
           />
         </div>
         <div>
-          <label className="text-xs text-[var(--theme-subtitle)]" htmlFor="manual-mod">Modificador (+/-)</label>
+          <label className="text-xs text-[#cbb288]" htmlFor="manual-mod">Modificador (+/-)</label>
           <input
             id="manual-mod"
             type="number"
             value={modifier}
             onChange={(e) => setModifier(parseInt(e.target.value, 10) || 0)}
-            className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-center font-mono text-[var(--theme-title)] outline-none focus:border-amber-500"
+            className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-center font-mono text-[#f5efdf] outline-none focus:border-amber-500"
           />
         </div>
       </div>
 
       <div>
-        <label className="text-xs text-[var(--theme-subtitle)]" htmlFor="manual-label">Descrição da rolagem</label>
+        <label className="text-xs text-[#cbb288]" htmlFor="manual-label">Descrição da rolagem</label>
         <input
           id="manual-label"
           type="text"
           value={label}
           onChange={(e) => setLabel(e.target.value)}
-          className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-[var(--theme-title)] outline-none focus:border-amber-500"
+          className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-[#f5efdf] outline-none focus:border-amber-500"
           placeholder="Ex.: Ataque com espada"
         />
       </div>
 
       <div>
-        <span className="text-xs uppercase tracking-wider text-[var(--theme-subtitle)]">Modo</span>
+        <span className="text-xs uppercase tracking-wider text-[#cbb288]">Modo</span>
         <div className="mt-2 flex gap-1.5">
           {[
             { id: "normal", label: "Normal" },
@@ -355,7 +355,7 @@ function ManualTray({ onDone }) {
               className={`flex-1 rounded-lg border px-2 py-2 text-[10px] font-bold uppercase tracking-wider transition active:scale-95 ${
                 mode === id
                   ? "border-amber-500/60 bg-amber-500/20 text-amber-300"
-                  : "border-white/10 bg-white/[0.03] text-[var(--theme-subtitle)] hover:text-[#e8d5b0]"
+                  : "border-white/10 bg-white/[0.03] text-[#cbb288] hover:text-[#e8d5b0]"
               }`}
             >
               {modeLabel}
@@ -451,10 +451,10 @@ export default function DiceModal() {
               <Dices size={18} />
             </span>
             <div>
-              <h3 id="dice-modal-title" className="text-sm font-semibold tracking-wide text-[var(--theme-title)]">
+              <h3 id="dice-modal-title" className="text-sm font-semibold tracking-wide text-[#f5efdf]">
                 Rolador de Dados Virtual
               </h3>
-              <p className="text-[11px] text-[var(--theme-subtitle)]">
+              <p className="text-[11px] text-[#cbb288]">
                 {rollRequest
                   ? `Teste: ${rollRequest.label} (${formatModifier(rollRequest.modifier)})`
                   : lastRoll
@@ -467,7 +467,7 @@ export default function DiceModal() {
           <button
             onClick={closeModal}
             aria-label="Fechar rolador de dados"
-            className="rounded-lg p-1.5 text-[var(--theme-subtitle)] transition-colors hover:bg-white/10 hover:text-[var(--theme-title)]"
+            className="rounded-lg p-1.5 text-[#cbb288] transition-colors hover:bg-white/10 hover:text-[#f5efdf]"
           >
             <X size={18} />
           </button>
@@ -480,8 +480,8 @@ export default function DiceModal() {
               onClick={() => setActiveTab("result")}
               className={`flex-1 py-2.5 font-medium transition-colors ${
                 activeTab === "result"
-                  ? "border-b-2 border-[var(--theme-accent)] text-[var(--theme-title)]"
-                  : "text-[var(--theme-subtitle)] hover:text-[#e8d5b0]"
+                  ? "border-b-2 border-[var(--theme-accent)] text-[#f5efdf]"
+                  : "text-[#cbb288] hover:text-[#e8d5b0]"
               }`}
             >
               Resultado
@@ -490,8 +490,8 @@ export default function DiceModal() {
               onClick={() => setActiveTab("tray")}
               className={`flex items-center justify-center gap-1.5 flex-1 py-2.5 font-medium transition-colors ${
                 activeTab === "tray"
-                  ? "border-b-2 border-[var(--theme-accent)] text-[var(--theme-title)]"
-                  : "text-[var(--theme-subtitle)] hover:text-[#e8d5b0]"
+                  ? "border-b-2 border-[var(--theme-accent)] text-[#f5efdf]"
+                  : "text-[#cbb288] hover:text-[#e8d5b0]"
               }`}
             >
               <SlidersHorizontal size={13} />
@@ -501,8 +501,8 @@ export default function DiceModal() {
               onClick={() => setActiveTab("manual")}
               className={`flex items-center justify-center gap-1.5 flex-1 py-2.5 font-medium transition-colors ${
                 activeTab === "manual"
-                  ? "border-b-2 border-amber-500 text-[var(--theme-title)]"
-                  : "text-[var(--theme-subtitle)] hover:text-[#e8d5b0]"
+                  ? "border-b-2 border-amber-500 text-[#f5efdf]"
+                  : "text-[#cbb288] hover:text-[#e8d5b0]"
               }`}
             >
               <PenLine size={13} />
@@ -512,8 +512,8 @@ export default function DiceModal() {
               onClick={() => setActiveTab("history")}
               className={`flex items-center justify-center gap-1.5 flex-1 py-2.5 font-medium transition-colors ${
                 activeTab === "history"
-                  ? "border-b-2 border-[var(--theme-accent)] text-[var(--theme-title)]"
-                  : "text-[var(--theme-subtitle)] hover:text-[#e8d5b0]"
+                  ? "border-b-2 border-[var(--theme-accent)] text-[#f5efdf]"
+                  : "text-[#cbb288] hover:text-[#e8d5b0]"
               }`}
             >
               <History size={13} />
@@ -554,7 +554,7 @@ export default function DiceModal() {
               {/* Número Gigante do Total */}
               <DiceRollAnimation roll={lastRoll} />
               <div className="relative mx-auto flex h-32 w-32 items-center justify-center rounded-3xl border-2 border-[var(--theme-accent)]/50 bg-gradient-to-b from-[#241c13] to-[#120e09] shadow-[0_0_35px_rgba(214,154,61,0.25)]">
-                <span className="font-mono text-5xl font-black text-[var(--theme-title)]">
+                <span className="font-mono text-5xl font-black text-[#f5efdf]">
                   {lastRoll.total}
                 </span>
                 <span className="absolute bottom-2 font-mono text-[10px] text-[var(--theme-accent)]/80 uppercase tracking-widest">
@@ -564,14 +564,14 @@ export default function DiceModal() {
 
               {/* Detalhes do Cálculo */}
               <div className="rounded-xl border border-white/5 bg-white/[0.02] p-3 text-xs">
-                <div className="flex items-center justify-between border-b border-white/5 pb-2 text-[var(--theme-subtitle)]">
+                <div className="flex items-center justify-between border-b border-white/5 pb-2 text-[#cbb288]">
                   <span>Fórmula:</span>
                   <span className="font-mono font-medium text-[#e8d5b0]">
                     {lastRoll.formula}
                   </span>
                 </div>
 
-                <div className="mt-2 flex items-center justify-between text-[var(--theme-subtitle)]">
+                <div className="mt-2 flex items-center justify-between text-[#cbb288]">
                   <span>Dados Rolados:</span>
                   <div className="flex items-center gap-2">
                     {lastRoll.mode === "advantage" || lastRoll.mode === "disadvantage" ? (
@@ -592,7 +592,7 @@ export default function DiceModal() {
                 </div>
 
                 {lastRoll.modifier !== 0 && (
-                  <div className="mt-2 flex items-center justify-between text-[var(--theme-subtitle)]">
+                  <div className="mt-2 flex items-center justify-between text-[#cbb288]">
                     <span>Modificador:</span>
                     <span className="font-mono text-[var(--theme-accent)]">
                       {formatModifier(lastRoll.modifier)}
@@ -602,7 +602,7 @@ export default function DiceModal() {
               </div>
 
               {/* Origem do resultado */}
-              <p className="pt-1 font-mono text-[10px] uppercase tracking-[0.28em] text-[var(--theme-subtitle)]">
+              <p className="pt-1 font-mono text-[10px] uppercase tracking-[0.28em] text-[#cbb288]">
                 {lastRoll.manual ? "Valores informados do dado físico" : "Rolagem virtual"}
               </p>
 
@@ -628,7 +628,7 @@ export default function DiceModal() {
             /* Seletor Customizado de Dados Avulsos */
             <div className="space-y-4">
               <div>
-                <span className="text-xs uppercase tracking-wider text-[var(--theme-subtitle)]">
+                <span className="text-xs uppercase tracking-wider text-[#cbb288]">
                   Escolha o Tipo de Dado
                 </span>
                 <div className="mt-2 grid grid-cols-4 gap-2 sm:grid-cols-7">
@@ -650,23 +650,23 @@ export default function DiceModal() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs text-[var(--theme-subtitle)]">Quantidade</label>
+                  <label className="text-xs text-[#cbb288]">Quantidade</label>
                   <input
                     type="number"
                     min={1}
                     max={20}
                     value={customCount}
                     onChange={(e) => setCustomCount(Math.max(1, parseInt(e.target.value) || 1))}
-                    className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-center font-mono text-[var(--theme-title)] outline-none focus:border-[var(--theme-accent)]"
+                    className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-center font-mono text-[#f5efdf] outline-none focus:border-[var(--theme-accent)]"
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-[var(--theme-subtitle)]">Modificador (+/-)</label>
+                  <label className="text-xs text-[#cbb288]">Modificador (+/-)</label>
                   <input
                     type="number"
                     value={customModifier}
                     onChange={(e) => setCustomModifier(parseInt(e.target.value) || 0)}
-                    className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-center font-mono text-[var(--theme-title)] outline-none focus:border-[var(--theme-accent)]"
+                    className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-center font-mono text-[#f5efdf] outline-none focus:border-[var(--theme-accent)]"
                   />
                 </div>
               </div>
@@ -690,7 +690,7 @@ export default function DiceModal() {
           ) : (
             /* Histórico da Sessão */
             <div className="space-y-3">
-              <div className="flex items-center justify-between text-xs text-[var(--theme-subtitle)]">
+              <div className="flex items-center justify-between text-xs text-[#cbb288]">
                 <span>Últimas rolagens desta sessão</span>
                 {history.length > 0 && (
                   <button
@@ -704,7 +704,7 @@ export default function DiceModal() {
 
               <div data-lenis-prevent className="custom-scroll max-h-60 space-y-2 overflow-y-auto pr-1">
                 {history.length === 0 ? (
-                  <p className="py-8 text-center text-xs italic text-[var(--theme-subtitle)]">
+                  <p className="py-8 text-center text-xs italic text-[#cbb288]">
                     Nenhuma rolagem realizada ainda.
                   </p>
                 ) : (
@@ -714,7 +714,7 @@ export default function DiceModal() {
                       className="flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.02] p-2.5 text-xs"
                     >
                       <div>
-                        <span className="font-semibold text-[var(--theme-title)]">
+                        <span className="font-semibold text-[#f5efdf]">
                           {h.label || "Rolagem"}
                         </span>
                         {h.manual && (
@@ -722,7 +722,7 @@ export default function DiceModal() {
                             Físico
                           </span>
                         )}
-                        <div className="font-mono text-[11px] text-[var(--theme-subtitle)]">
+                        <div className="font-mono text-[11px] text-[#cbb288]">
                           {h.formula}
                         </div>
                       </div>
