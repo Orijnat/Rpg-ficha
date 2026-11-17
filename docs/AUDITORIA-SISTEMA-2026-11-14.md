@@ -121,8 +121,8 @@ Todos os achados S1 e S2, grande parte dos S3/S4 e os itens de conta/mestres/fic
 - **F-03 (S1)**: `encontroSchema` completo — combate salva.
 - **F-04…F-10 (S2)**: sessões aceitam date-only/ISO; nota privada persiste; enums zod↔PG unificados; `/characters?campanhaId=` exige posse; `/campanhas/:id` sanitizado; `players↔jogadores`; logout/Mercado preservado; `upsertCharacter` sem troca forçada; **409 real com `updatedAt` + force**; migration `npc-campanha-nullable`; **uma** fonte de verdade de schema + `database/migrate.js` idempotente.
 - **S3/S4**: `requireMaster` em rotas mestre; legado `/campanha` com allowlist; logout e reset de senha **revogam JWTs** (`passwordChangedAt`); numeração de sessão com retry; `publicCharacter` com alias `updatedAt`; contrato de sync coberto por `test/sync_conflict.test.js`.
-- **Conta**: verificação por e-mail e redefinição de senha completas (token sha256, single-use, banner reenviável, SMTP via env, `devPreviewUrl` em dev).
+- **Conta**: ~~verificação por e-mail e redefinição de senha~~ — **implementadas em 2026-11-14/17 e REMOVIDAS em 2026-11-17** a pedido do usuário (ver `docs/REQUISITOS-ITENS-A-FAZER.md` 1.2/1.3).
 - **Ficha**: BP por nível nas perícias; CA absorve dano automaticamente; Dado de Vida soma ao PV máx com confirmação; PE máx editável; montarias (criar/matar/reviver).
 - **Mestre**: subida de nível individual/em lote; iniciativa de fichas mesclada na Sala de Guerra (merge aditivo, HP/condições locais preservados).
 - **UI**: vitalidade na navbar do Cabeçalho; temas claros em AA/AAA + `[data-theme="mist"]` ausente foi adicionado; acentos alinhados THEMES↔CSS; 270 hex canônicos → tokens `var(--theme-*)`.
-- **Pendentes honestas**: A-12 (páginas gigantes, GSAP eager) e A-13 (sweep `<img>`/`text-[9px]`) seguem parciais; registry formal de sessões (refresh token) segue pendente; SMTP real e deploy são do operador.
+- **Pendentes honestas**: A-12 (páginas gigantes, GSAP eager) e A-13 (sweep `<img>`/`text-[9px]`) seguem parciais; registry formal de sessões (refresh token) segue pendente; Deploy do backend no Render é do operador.

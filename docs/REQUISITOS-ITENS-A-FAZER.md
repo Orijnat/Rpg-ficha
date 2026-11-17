@@ -17,12 +17,11 @@ Legenda de estado: `[ ]` pendente · `[x]` implementado · `[~]` parcial · `[!]
 - Frontend: campo "Senha do cofre" com ação "Definir/Alterar senha personalizada" e info "sem senha personalizada, usa a senha do login"; remover fallback local `bankInput === data.bankPassword` vazio.
 - Aceite: personalizada → abre; sem personalizada → abre com a senha do login; `dadosExtras` não expõe o hash.
 
-### 1.2 Verificação por e-mail `[!]` — bloqueado (falta provedor de e-mail)
-- Requisitos: provedor SMTP/API (Resend, SES ou SMTP), link com token de uso único (24h), tabela/campo `users.email_verified_at`, página de confirmação, flag em `/auth/me`.
-- Decisão necessária do usuário: qual provedor (segredo fica em `Rpg-backend/.env`).
+### 1.2 Verificação por e-mail — REMOVIDA (2026-11-17)
+- O usuário pediu para remover todo o envio/verificação por e-mail. Código de 6 dígitos, links, `/verificar-email`, bloqueio `EMAIL_NOT_VERIFIED` e provedor (Resend/SMTP) não existem mais.
 
-### 1.3 Pedir alteração de senha da conta via e-mail `[!]` — bloqueado (mesma razão)
-- Requisitos: fluxo "esqueci a senha" com token de uso único + e-mail de redefinição (página `/redefinir-senha?token=`), rate limit, invalidação das sessões/tokens antigos (`sessoes_autenticacao` existe mas está morta — precisa ser adotada ou trocar modelo de JWT).
+### 1.3 Pedir alteração de senha da conta via e-mail — REMOVIDA (2026-11-17)
+- Removido junto com 1.2 (`/esqueci-senha`, `/redefinir-senha`, `forgot-password`/`reset-password`). Hoje a recuperação de senha exige um administrador.
 
 ## 2. Painel do Mestre
 

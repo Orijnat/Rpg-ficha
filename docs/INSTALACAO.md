@@ -22,12 +22,6 @@ JWT_SECRET=<gere com: openssl rand -hex 32>
 NODE_ENV=development
 ```
 
-E-mail (verificação e reset de senha) — sem SMTP, o link vai no log do servidor:
-
-```bash
-SMTP_HOST=...  SMTP_PORT=587  SMTP_SECURE=false
-SMTP_USER=...  SMTP_PASS=...  SMTP_FROM=Grimorium <no-reply@example.com>
-```
 
 Uploads:
 

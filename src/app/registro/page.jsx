@@ -181,10 +181,6 @@ function RegisterForm() {
       }
 
       const data = await register(payload);
-      if (data?.nextStep === "verify-email") {
-        router.push(`/verificar-email?email=${encodeURIComponent(payload.email)}`);
-        return;
-      }
       router.push(
         isMaster || data.user?.role === "master" || data.user?.perfil === "mestre"
           ? "/admin"

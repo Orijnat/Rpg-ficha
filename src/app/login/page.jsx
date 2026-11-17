@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
 import AuthScaffold from "../../components/auth/AuthScaffold";
-import { Lock, User, Eye, EyeOff, LogIn, Sparkles, AlertCircle, Link2, MailCheck } from "lucide-react";
+import { Lock, User, Eye, EyeOff, LogIn, Sparkles, AlertCircle, Link2 } from "lucide-react";
 
 function LoginForm() {
   const searchParams = useSearchParams();
@@ -15,7 +15,6 @@ function LoginForm() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const [notVerifiedEmail, setNotVerifiedEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
@@ -41,7 +40,6 @@ function LoginForm() {
       }
     } catch (err) {
       setError(err?.message || "Erro ao conectar. Verifique suas credenciais.");
-      setNotVerifiedEmail(err?.code === "EMAIL_NOT_VERIFIED" ? err?.email || identifier : "");
     } finally {
       setLoading(false);
     }
@@ -168,18 +166,6 @@ function LoginForm() {
               <span style={{ fontFamily: "Crimson Text, serif" }}>{error}</span>
             </div>
           )}
-          {notVerifiedEmail && (
-            <div className="mb-5 rounded-lg border border-amber-600/40 bg-amber-950/20 px-3.5 py-3 text-xs text-amber-200">
-              <p className="font-semibold">Sua conta ainda não foi verificada.</p>
-              <p className="mt-1">Informe o código de 6 dígitos enviado para <strong>{notVerifiedEmail}</strong>:</p>
-              <Link
-                href={`/verificar-email?email=${encodeURIComponent(notVerifiedEmail.trim().toLowerCase())}`}
-                className="mt-2.5 inline-flex min-h-10 items-center gap-2 rounded-lg border border-amber-500/50 bg-amber-500/10 px-4 text-[#f0d9a0] transition hover:bg-amber-500/20"
-              >
-                <MailCheck size={14} /> Informar o código de verificação
-              </Link>
-            </div>
-          )}
 
           {/* Formulário */}
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -279,15 +265,6 @@ function LoginForm() {
               <Sparkles size={14} />
               Forjar Nova Conta
             </Link>
-            <div className="mt-2">
-              <Link
-                href="/esqueci-senha"
-                className="text-[11px] text-[var(--theme-subtitle)] transition hover:text-[var(--theme-accent)]"
-                style={{ fontFamily: "Crimson Text, serif" }}
-              >
-                Esqueceu a senha? Peça uma nova chave por e-mail →
-              </Link>
-            </div>
           </div>
 
           {/* Atalho convidado */}

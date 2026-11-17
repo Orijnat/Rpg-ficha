@@ -12,7 +12,7 @@
 
 - HTTPS obrigatório para frontend, backend e callback OAuth (HSTS no proxy).
 - `JWT_SECRET` ≥ 32 bytes aleatórios; segredos em variáveis de ambiente, nunca em código/logs.
-- Senhas: bcrypt (cost ≥ 10) via hook Sequelize; hashes de token de e-mail/reset: SHA-256 (uso único).
+- Senhas: bcrypt (cost ≥ 10) via hook Sequelize.
 - Tokens de sessão: hash SHA-256 em `sessoes_autenticacao` (revogação server-side real).
 
 ## Cabeçalhos e XSS/CSP

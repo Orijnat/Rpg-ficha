@@ -7,8 +7,8 @@
 
 ## Conta e segurança
 - [x] Arrumar o banco: a senha da ficha é a do login do dono (bcrypt, comparada no servidor) ou uma senha personalizada por ficha (hash em `dadosExtras.bankPasswordHash`, definida via `PUT /characters/:id/bank/password`); nunca armazenada em texto puro nem retornada pela API — verificado ao vivo (2026-11-14)
-- [x] Adicionar verificação por e-mail — fluxo completo: registro gera token (sha256, single-use, 24h) e envia link `/verificar-email`; reenvio idempotente; banner de verificação reenviável no `AppShell`; SMTP via `SMTP_*` (sem SMTP: link fica no log e `devPreviewUrl` na resposta fora de produção); migration `20261114140000-auth-tokens-email.js`; verificado ao vivo (2026-11-14)
-- [x] Permitir pedir alteração de senha da conta via e-mail — `/esqueci-senha` → `forgot-password` (anti-enumeração, 1h) → `/redefinir-senha`; reset invalida a senha antiga e **revoga todos os JWTs anteriores** (`passwordChangedAt`); verificado ao vivo (2026-11-14)
+- [x] ~~Adicionar verificação por e-mail~~ — **implementado em 2026-11-14/17 e REMOVIDO em 2026-11-17** a pedido do usuário (código de 6 dígitos + link; HMAC; lockout de 5 tentativas). Colunas `email_verified`/`verification_*`/`reset_token_*` dropadas no Supabase via migration `20261117030000-remove-email-mail.js`; rotas `verify-email(-code)/resend-verification/forgot-password/reset-password` removidas; registro voltou a logar direto; páginas `/verificar-email`, `/esqueci-senha`, `/redefinir-senha` removidas; skill `email-api` deletada; `nodemailer` desinstalado; provedor de e-mail (Resend/SMTP) não é mais necessário
+- [x] ~~Permitir pedir alteração de senha da conta via e-mail~~ — idem acima: **REMOVIDO em 2026-11-17** (`/esqueci-senha`, `/redefinir-senha`, `forgot-password`, `reset-password`). `password_changed_at` e a revogação de sessões no reset foram removidos junto; quem esquece a senha hoje precisa de um administrador
 
 ## Painel do Mestre
 - [x] Mestre poder subir o nível de cada ficha individualmente, ou de todas as fichas da campanha (admin/personagens: ação única e em lote com confirmação)

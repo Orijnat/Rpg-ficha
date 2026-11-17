@@ -16,10 +16,12 @@ O Render (e qualquer proxy) injeta `X-Forwarded-For`; o `express-rate-limit` exi
 `app.set("trust proxy", 1)` no `server.js` (commit `04a2a5c`). Sem isso o limiter
 recusa toda a requisição e o login retorna 500.
 
-## `SequelizeDatabaseError: column "email_verified" does not exist` (ou 42703 em geral)
-O código novo subiu, mas o banco de produção ficou para trás nas migrations. Rode
-`node database/migrate.js` com o `DATABASE_URL` do Supabase (idempotente). Confira
-também se o `.env` usado no comando é o de produção.
+## `SequelizeDatabaseError: column ... does not exist` (42703 em geral)
+O código novo subiu, mas o banco de produção ficou para trás nas migrations (ou o
+contrário: migration removeu coluna que o código ainda usa). Rode `node database/migrate.js`
+com o `DATABASE_URL` do Supabase (idempotente). Confira também se o `.env` usado no comando
+é o de produção. Nota: as colunas de e-mail/verificação (`email_verified`, `verification_*`,
+`reset_token_*`) foram **dropadas** em 2026-11-17 — código antigo que as referencie sempre falhará.
 
 ## Imagens quebram no mapa/anotações (só em produção)
 `helmet()` define por padrão `Cross-Origin-Resource-Policy: same-origin`, que bloqueia
@@ -60,11 +62,6 @@ Se o conflito for recorrente no autosave, recarregue a aba (ficha estagnada).
 ## 500 em `/api/characters/sync`
 Verifique `updatedAt` no payload (o frontend envia). Se o deploy misturou versões
 do aplicativo, o campo pode faltar — o backend tolera ausência (legado).
-
-## E-mail de verificação/reset não chega
-Sem `SMTP_*` configurado: o link é logado no servidor (`[MAIL:dev]`) e devolvido
-como `devPreviewUrl` fora de produção. Com SMTP, confira spam e o `SMTP_FROM`;
-provedores exigem domínio autenticado (SPF/DKIM) para não cair no spam.
 
 ## Logs
 Backend loga em stdout (sem senhas/tokens por política). Erros de auditoria

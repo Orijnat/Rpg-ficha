@@ -55,6 +55,16 @@
 - `CharacterContext.levelUp` virou `applyLevelUp(gain, details)` — aplica o ganho pré-rolado pela UI (gate por XP continua, 1 rolagem/nível); rolagem vai para o log como tipo `rolagem` (via DiceContext) e a ascensão como `recursos`.
 - `leveling.js` ganhou `levelUpGate(level, xp)` (compartilhado UI/contexto) — testes de gate cobertos (159/159). Build OK. NÃO commitado.
 
+## 🔧 Atualização 2026-11-17 (Remoção TOTAL do envio/verificação de e-mail) — NÃO commitado
+- Pedido do usuário: "retire tudo sobre envio de código e verificação por email" (incluiu reset de senha por e-mail, a skill email-api e drop de colunas no Supabase).
+- **Backend** (`../Rpg-backend`, working tree): `src/services/mailer.js` DELETADO; controller `authController` sem register-com-verificação (registro voltou a emitir JWT/sessão e logar direto), sem bloqueio `EMAIL_NOT_VERIFIED` no login (flag `REQUIRE_EMAIL_VERIFICATION` extinta), endpoints `verify-email`, `verify-email-code`, `resend-verification`, `forgot-password`, `reset-password` REMOVIDOS (rotas + schemas zod correspondentes removidos); `User` sem `emailVerified/verification*/resetToken*`; `User.toJSON` simplificado; `revogarTodasSessoes` não é mais importado; `.env.example` sem seção de e-mail; `nodemailer` desinstalado; `password_changed_at` PRESERVADO.
+- **Migration `20261117030000-remove-email-mail.js`** aplicada no Supabase via `npm run db:migrate` (idempotente): drop de `email_verified`, `verification_token_hash`, `verification_expires_at`, `verification_code_hash`, `verification_code_expires_at`, `verification_attempts`, `reset_token_hash`, `reset_token_expires_at`. Verificado: colunas sumiram de `usuarios`; sequelize_meta registra a migration.
+- **Testes backend**: `test/mailer.test.js` e `test/verification_code.test.js` DELETADOS; `login_sync_integration` e `invite_flow` agora esperam `token` no register; `security_auth` sem `emailVerified`. Suíte **72/72**.
+- **Frontend** (working tree): páginas `/verificar-email`, `/esqueci-senha`, `/redefinir-senha` DELETADAS; `api.js` sem `verifyEmailCodeOnBackend/verifyEmailOnBackend/resendVerificationOnBackend/forgotPasswordOnBackend/resetPasswordOnBackend`; `register` no AuthContext sem ramo `verify-email`; registro redireciona direto; login sem banner EMAIL_NOT_VERIFIED nem link "Esqueceu a senha?"; `AppShell` sem banner de verificação reenviável e sem `isEmailFlowRoute`; skill `email-api` (`.agents/skills/email-api` + `.github/skills/email-api`) DELETADA.
+- **Docs**: INSTALACAO (bloco SMTP removido), AUDITORIA (marca reversão), SEGURANCA, RUNBOOK-PRODUCAO, TROUBLESHOOTING, REQUISITOS-ITENS-A-FAZER (1.2/1.3 REMOVIDAS), itens-a-fazer.md — atualizados.
+- **Verificação**: front 159/159 testes, build 28/28 páginas, eslint 0 erros; back 72/72.
+- **Não commitado** (2 repos). Deploy do backend no Render PENDENTE para a remoção valer em produção — até lá, produção (main) ainda tem o código de verificação (5aa7b65) enquanto o banco JÁ NÃO TEM as colunas → login/registro quebrariam se o deploy não subir. **Subir o backend no Render (Manual Deploy) o quanto antes.**
+
 ## 🔧 Atualização 2026-11-17 (Skill email-api + fortalecimento do código de verificação)
 - **Skill `email-api`** criada e espelhada (`.agents/skills/email-api/SKILL.md` + `.github/skills/email-api/SKILL.md`): montagem de provedor (Resend/SMTP) do zero, fluxo do código de 6 dígitos, extensão para e-mails transacionais, checklist de segurança, verificação e troubleshooting de produção.
 - **Fortalecimento do fluxo** (Rpg-backend, NÃO commitado): hash do código de 6 dígitos trocado de SHA-256 puro para **HMAC-SHA256** (`hashCodigo`, chave `EMAIL_CODE_SECRET || JWT_SECRET`); comparação timing-safe (`hashesIguais`); **limite de 5 tentativas por conta** (`VERIFICATION_MAX_ATTEMPTS`) com invalidação do código — migration `20261117020000-verification-attempts.js` (`verification_attempts smallint default 0`); `REQUIRE_EMAIL_VERIFICATION` agora é **lido de fato** (padrão true; antes era documentado mas ignorado — bloqueio era incondicional); `.env.example` corrigido; `User.toJSON`/`usuarioParaResposta` apagam `verificationAttempts`; sucesso no link legado/reset também limpa tentativas.
@@ -138,7 +148,7 @@
 - [x] Interface: vitalidade na navbar, temas claros AA/AAA + tema mist, 270 hex→tokens
 - [x] COISAS-A-FAZER lote 1/2: docs completas, exports CSV, rolagens, uploads seguros, sessões server-side (logout/reset revogam), migrações novas (rolagens/arquivos/índices/cenario), backup+restore testados, CI nos 2 repos
 - [ ] COISAS-A-FAZER lote 2: Google API real (bloqueado por credenciais do operador), E2E/a11y/mobile (sem browser), cookies HTTP-only, A-12/A-13 parciais
-- [ ] SMTP real, deploy e limpeza dos dados demo do Supabase (operador)
+- [ ] Deploy do backend no Render (operador); limpeza dos dados demo (decisão pendente)
 - [ ] Revisar visual no navegador; nada foi commitado ainda
 
 ## Próximo passo recomendado

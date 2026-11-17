@@ -194,46 +194,6 @@ export async function registerUser(payload) {
   return data;
 }
 
-export async function verifyEmailCodeOnBackend({ email, code }) {
-  return safeFetchJson(`${API_BASE_URL}/auth/verify-email-code`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, code }),
-  }, "Não foi possível verificar o código.");
-}
-
-export async function verifyEmailOnBackend(token) {
-  return safeFetchJson(`${API_BASE_URL}/auth/verify-email`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ token }),
-  }, "Não foi possível verificar o e-mail.");
-}
-
-export async function resendVerificationOnBackend(email) {
-  return safeFetchJson(`${API_BASE_URL}/auth/resend-verification`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email }),
-  }, "Não foi possível reenviar o e-mail de verificação.");
-}
-
-export async function forgotPasswordOnBackend(email) {
-  return safeFetchJson(`${API_BASE_URL}/auth/forgot-password`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email }),
-  }, "Não foi possível processar o pedido de redefinição.");
-}
-
-export async function resetPasswordOnBackend(token, password) {
-  return safeFetchJson(`${API_BASE_URL}/auth/reset-password`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ token, password }),
-  }, "Não foi possível redefinir a senha.");
-}
-
 export async function postRollToBackend(roll, token = getStoredToken()) {
   const data = await safeFetchJson(`${API_BASE_URL}/rolagens`, {
     method: "POST",
