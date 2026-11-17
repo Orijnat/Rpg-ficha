@@ -109,6 +109,101 @@ function createRollId() {
 }
 
 /**
+ * Interpreta os valores de um dado físico (digitados pelo jogador) e monta
+ * o mesmo objeto de resultado que rollDice() — crítico, vantagem/desvantagem,
+ * fórmula e histórico funcionam igual.
+ *
+ * @param {Object} options
+ * @param {number} [options.sides=20] Lados do dado físico.
+ * @param {number} [options.count=1] Quantidade de dados no modo normal.
+ * @param {'normal'|'advantage'|'disadvantage'} [options.mode='normal'] Modo do teste.
+ * @param {number} [options.modifier=0] Modificador somado ao total.
+ * @param {string} [options.label=''] Nome do teste.
+ * @param {number[]} options.faces Valores digitados (1 por dado; 2 no modo vantagem/desvantagem).
+ * @returns {Object} Resultado detalhado da rolagem com `manual: true`.
+ * @throws {RangeError} Quando algum valor está fora de [1, sides] ou a quantidade não bate.
+ */
+export function manualRollResult({
+  sides = 20,
+  count = 1,
+  mode = "normal",
+  modifier = 0,
+  label = "",
+  faces,
+} = {}) {
+  const validSides = Number.isFinite(Number(sides)) && Number(sides) >= 1
+    ? Math.floor(Number(sides))
+    : 20;
+  const numModifier = Number(modifier) || 0;
+  const modSign = numModifier >= 0 ? `+ ${numModifier}` : `- ${Math.abs(numModifier)}`;
+  const modString = numModifier !== 0 ? ` ${modSign}` : "";
+  const isContest = mode === "advantage" || mode === "disadvantage";
+  const expectedFaces = isContest
+    ? 2
+    : Math.max(1, Number.isFinite(Number(count)) ? Math.floor(Number(count)) : 1);
+
+  const rawFaces = Array.isArray(faces) ? faces : [];
+  const parseFace = (value) => {
+    const n = Number(value);
+    if (!Number.isFinite(n)) return null;
+    const i = Math.floor(n);
+    return i >= 1 && i <= validSides ? i : null;
+  };
+  const parsed = rawFaces.slice(0, expectedFaces).map(parseFace);
+  if (parsed.length < expectedFaces || parsed.some((v) => v === null)) {
+    throw new RangeError(`Informe os ${expectedFaces} valor(es) do dado físico (1 a ${validSides}).`);
+  }
+
+  if (isContest) {
+    const [d1, d2] = parsed;
+    const isAdv = mode === "advantage";
+    const kept = isAdv ? Math.max(d1, d2) : Math.min(d1, d2);
+    const discarded = isAdv ? Math.min(d1, d2) : Math.max(d1, d2);
+    const formula = isAdv
+      ? `2d${validSides}kh1${modString}`
+      : `2d${validSides}kl1${modString}`;
+
+    return {
+      id: createRollId(),
+      label,
+      formula,
+      mode,
+      sides: validSides,
+      rolls: [d1, d2],
+      kept,
+      discarded,
+      modifier: numModifier,
+      total: kept + numModifier,
+      isCriticalSuccess: validSides === 20 && kept === 20,
+      isCriticalFailure: validSides === 20 && kept === 1,
+      timestamp: new Date().toISOString(),
+      manual: true,
+    };
+  }
+
+  const rolls = parsed;
+  const sum = rolls.reduce((acc, v) => acc + v, 0);
+  const formula = `${expectedFaces}d${validSides}${modString}`;
+
+  return {
+    id: createRollId(),
+    label,
+    formula,
+    mode: "normal",
+    sides: validSides,
+    rolls,
+    kept: rolls.length === 1 ? rolls[0] : sum,
+    discarded: null,
+    modifier: numModifier,
+    total: sum + numModifier,
+    isCriticalSuccess: validSides === 20 && expectedFaces === 1 && rolls[0] === 20,
+    isCriticalFailure: validSides === 20 && expectedFaces === 1 && rolls[0] === 1,
+    timestamp: new Date().toISOString(),
+    manual: true,
+  };
+}
+
+/**
  * Atalho para rolar um teste d20 de Perícia ou Atributo.
  * @param {string} label Nome da perícia ou atributo (ex: "Furtividade", "FOR")
  * @param {number} modifier Bônus/modificador total do teste

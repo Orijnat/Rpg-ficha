@@ -28,7 +28,7 @@ import { HPBar } from "./ui";
  */
 export default function DanoCuraPainel({ compact = false, onClose = null }) {
   const { data, upd, updExtra } = useCharacter();
-  const { executeRoll } = useDice();
+  const { requestRoll } = useDice();
   const { token } = useAuth();
 
   // Espelha dano/cura no log da batalha ativa (silencioso fora de combate)
@@ -127,14 +127,14 @@ export default function DanoCuraPainel({ compact = false, onClose = null }) {
   };
 
   // Rolar dado de vida e aplicar diretamente como cura
-  const handleRollHitDieHeal = () => {
+  const handleRollHitDieHeal = async () => {
     const hitDie = data.dadosExtras?.hitDie || "1d10";
     const match = hitDie.match(/(\d+)?d(\d+)([+-]\d+)?/i);
     const count = match && match[1] ? parseInt(match[1], 10) : 1;
     const sides = match && match[2] ? parseInt(match[2], 10) : 10;
     const conMod = calculateModifier(data.CON ?? 10);
 
-    const roll = executeRoll({
+    const roll = await requestRoll({
       sides,
       count,
       modifier: conMod,

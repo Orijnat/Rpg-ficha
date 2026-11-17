@@ -47,7 +47,7 @@ export function LevelProgressionGrid({
   onEditAbility,
   onTrain,
 }) {
-  const { executeRoll, promptRoll } = useDice();
+  const { requestRoll } = useDice();
   const { data } = useCharacter();
 
   const [filterMode, setFilterMode] = useState("todos"); // "todos" | "desbloqueados" | "vazios"
@@ -133,7 +133,7 @@ export function LevelProgressionGrid({
         const count = parseInt(match[1], 10);
         const sides = parseInt(match[2], 10);
         const mod = match[3] ? parseInt(match[3], 10) : 0;
-        executeRoll({
+        requestRoll({
           sides,
           count,
           modifier: mod,
@@ -146,7 +146,11 @@ export function LevelProgressionGrid({
     const attrKey = ability.attr || "ESP";
     const attrVal = data[attrKey] ?? 10;
     const attrMod = Math.floor((attrVal - 10) / 2);
-    promptRoll(`${ability.name} (Teste de ${attrKey})`, attrMod);
+    requestRoll({
+      sides: 20,
+      modifier: attrMod,
+      label: `${ability.name} (Teste de ${attrKey})`,
+    });
   };
 
   return (

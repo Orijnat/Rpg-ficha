@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { rollDice } from "../../lib/dice";
+import { rollDice, manualRollResult } from "../../lib/dice";
 import { postRollToBackend, postBattleLogEvent } from "../../lib/api";
 import { useCharacter } from "./CharacterContext";
 import { useAuth } from "./AuthContext";
@@ -13,8 +13,9 @@ export function DiceProvider({ children }) {
   const [lastRoll, setLastRoll] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isRolling, setIsRolling] = useState(false);
-  const [pendingTarget, setPendingTarget] = useState(null); // { label, modifier }
+  const [rollRequest, setRollRequest] = useState(null); // { sides, count, modifier, label } quando aguardando escolha (virtual ou físico)
   const rollingTimer = useRef(null);
+  const rollResolverRef = useRef(null);
   const { data } = useCharacter();
   const { token } = useAuth();
 
@@ -22,6 +23,7 @@ export function DiceProvider({ children }) {
   // (autorização no servidor: dono/mestre; ninguém de fora lê as rolagens).
   const persistRoll = (result) => {
     try {
+      const manualSuffix = result.manual ? " (dado físico)" : "";
       if (!token || !data?.id || !data?.campanhaId) return;
       postRollToBackend({
         formula: result.formula,
@@ -46,7 +48,7 @@ export function DiceProvider({ children }) {
         : "";
       postBattleLogEvent(data.campanhaId, {
         tipo: "rolagem",
-        mensagem: `${result.label}: ${result.total}${critSuffix}`,
+        mensagem: `${result.label}: ${result.total}${critSuffix}${manualSuffix}`,
         dados: {
           formula: result.formula,
           resultados: result.rolls,
@@ -57,6 +59,7 @@ export function DiceProvider({ children }) {
           critico: Boolean(result.isCriticalSuccess),
           falhaCritica: Boolean(result.isCriticalFailure),
           personagemId: data.id,
+          manual: Boolean(result.manual),
         },
       }, token).catch(() => {
         // Sem encontro ativo (ou mesa indisponível): a rolagem nunca pode falhar por causa disso
@@ -66,36 +69,102 @@ export function DiceProvider({ children }) {
     }
   };
 
-  // Executa uma rolagem e registra no histórico
-  const executeRoll = ({ sides = 20, count = 1, mode = "normal", modifier = 0, label = "Rolagem" }) => {
-    const result = rollDice({ sides, count, mode, modifier, label });
+  const recordRoll = (result) => {
     persistRoll(result);
     setLastRoll(result);
     setHistory((prev) => [result, ...prev].slice(0, 30)); // Mantém últimas 30
-    setPendingTarget(null);
-    setIsRolling(true);
-    setIsModalOpen(true);
+  };
+
+  const finishRoll = (result, { animate = true } = {}) => {
+    recordRoll(result);
+    const resolve = rollResolverRef.current;
+    rollResolverRef.current = null;
+    setRollRequest(null);
+    setIsModalOpen(true); // mostra a aba Resultado
     window.clearTimeout(rollingTimer.current);
-    const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    rollingTimer.current = window.setTimeout(() => setIsRolling(false), reducedMotion ? 0 : 1400);
-    return result;
+    if (animate) {
+      setIsRolling(true);
+      const reducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+      rollingTimer.current = window.setTimeout(() => setIsRolling(false), reducedMotion ? 0 : 1400);
+    } else {
+      setIsRolling(false);
+    }
+    resolve?.(result);
   };
 
-  // Abre o diálogo para escolher modo (normal, vantagem, desvantagem) antes de rolar
-  const promptRoll = (label, modifier = 0) => {
-    setPendingTarget({ label, modifier });
-    setIsModalOpen(true);
+  // Pede uma rolagem ao jogador: abre o modal com a escolha entre rolar no
+  // virtual (Normal/Vantagem/Desvantagem) ou registrar os valores do DADO FÍSICO.
+  // Resolve com o resultado, ou `null` se o jogador cancelar.
+  const requestRoll = (config = {}) => {
+    const sides = Math.floor(Number(config.sides));
+    const count = Math.floor(Number(config.count));
+    const normalized = {
+      sides: Number.isFinite(sides) && sides >= 1 ? sides : 20,
+      count: Number.isFinite(count) && count >= 1 ? count : 1,
+      modifier: Number(config.modifier) || 0,
+      label: config.label || "Rolagem",
+    };
+    // Um novo pedido cancela (null) qualquer pedido anterior ainda pendente.
+    rollResolverRef.current?.(null);
+    return new Promise((resolve) => {
+      rollResolverRef.current = resolve;
+      setRollRequest(normalized);
+      setIsModalOpen(true);
+    });
   };
 
-  // Rola diretamente um teste (ex: a partir de um clique rápido)
-  const quickCheck = (label, modifier = 0, mode = "normal") => {
-    return executeRoll({ sides: 20, mode, modifier, label });
+  // Chamada pelo modal quando o jogador escolhe o modo virtual no chooser.
+  // As funções são recriadas a cada render do provider, então veem o rollRequest atual.
+  const resolveVirtualRoll = (mode = "normal") => {
+    if (!rollRequest) return;
+    const result = rollDice({ ...rollRequest, mode, label: rollRequest.label });
+    finishRoll(result, { animate: true });
+  };
+
+  // Chamada pelo modal com os valores digitados do dado físico.
+  // Retorna { ok: true } em sucesso ou { ok: false, message } com o erro de validação.
+  const resolveManualRoll = (faces, mode = "normal") => {
+    if (!rollRequest) return { ok: false, message: "Nenhum pedido de rolagem ativo." };
+    let result;
+    try {
+      result = manualRollResult({ ...rollRequest, mode, faces, label: rollRequest.label });
+    } catch (error) {
+      return { ok: false, message: error.message };
+    }
+    finishRoll(result, { animate: false });
+    return { ok: true };
+  };
+
+  // Registro direto de dado físico (aba "Dado Físico" da bandeja), sem chooser.
+  const executeManualRoll = ({ sides = 20, count = 1, mode = "normal", modifier = 0, label = "Rolagem física", faces } = {}) => {
+    try {
+      const result = manualRollResult({ sides, count, mode, modifier, label, faces });
+      recordRoll(result);
+      setIsModalOpen(true);
+      setIsRolling(false);
+      return { ok: true, result };
+    } catch (error) {
+      return { ok: false, message: error.message };
+    }
+  };
+
+  // Registra a rolagem física pendente via chooser sem fechar com erro.
+  const cancelRollRequest = () => {
+    const resolve = rollResolverRef.current;
+    rollResolverRef.current = null;
+    setRollRequest(null);
+    setIsRolling(false);
+    setIsModalOpen(false);
+    resolve?.(null);
   };
 
   const closeModal = () => {
+    const resolve = rollResolverRef.current;
+    rollResolverRef.current = null;
+    setRollRequest(null);
     setIsModalOpen(false);
     setIsRolling(false);
-    setPendingTarget(null);
+    resolve?.(null);
   };
 
   useEffect(() => () => window.clearTimeout(rollingTimer.current), []);
@@ -111,10 +180,12 @@ export function DiceProvider({ children }) {
         lastRoll,
         isModalOpen,
         isRolling,
-        pendingTarget,
-        executeRoll,
-        promptRoll,
-        quickCheck,
+        rollRequest,
+        requestRoll,
+        resolveVirtualRoll,
+        resolveManualRoll,
+        executeManualRoll,
+        cancelRollRequest,
         closeModal,
         openModal: () => setIsModalOpen(true),
         clearHistory,

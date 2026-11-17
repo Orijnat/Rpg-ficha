@@ -274,7 +274,7 @@ export function Card({ children, className = "", variant = "grimoire" }) {
 }
 
 export function StatBox({ label, value, onChange }) {
-  const { promptRoll } = useDice();
+  const { requestRoll } = useDice();
   const numValue = Math.max(1, Math.min(30, Number(value) || 10));
   const mod = calculateModifier(numValue);
   const formattedMod = formatModifier(mod);
@@ -335,7 +335,13 @@ export function StatBox({ label, value, onChange }) {
       {/* 3. BÔNUS / MODIFICADOR VISÍVEL (Selo de Rolagem do d20) */}
       <button
         type="button"
-        onClick={() => promptRoll(`Teste de ${label}`, mod)}
+        onClick={() =>
+          requestRoll({
+            sides: 20,
+            modifier: mod,
+            label: `Teste de ${label}`,
+          })
+        }
         className={`w-full mt-0.5 flex items-center justify-center gap-1 rounded-lg border py-1 px-1.5 transition-all group/btn active:scale-95 shadow-sm cursor-pointer ${
           isPositive
             ? "border-emerald-500/40 bg-gradient-to-b from-emerald-950/60 to-emerald-900/30 text-emerald-300 hover:border-emerald-400 hover:shadow-[0_0_12px_rgba(16,185,129,0.4)]"

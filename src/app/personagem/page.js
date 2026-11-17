@@ -18,7 +18,7 @@ import { DEFAULT_ABILITIES, isHabilidadeDesbloqueada } from "../../lib/abilities
 
 export default function Personagem() {
   const { data, upd, syncStatus, syncError, retrySync, reloadFromCloud, overwriteCloud, updateDadosExtras, updateRace, updateClass, applyLevelUp } = useCharacter();
-  const { executeRoll } = useDice();
+  const { requestRoll } = useDice();
   const [levelFeedback, setLevelFeedback] = useState(null);
   const feedbackTimer = useRef(null);
   const [racas, setRacas] = useState(DEFAULT_RACES);
@@ -53,21 +53,24 @@ export default function Personagem() {
     };
   }, []);
 
-  const handleLevelUp = () => {
+  const handleLevelUp = async () => {
     const gate = levelUpGate(characterLevel, data.xp ?? data.dadosExtras?.xp ?? 0);
     if (!gate.ok) {
       setLevelFeedback({ ok: false, message: gate.message });
       return;
     }
     const { count, sides, modifier } = parseHitDie(hitDie, { count: 1, sides: 8, modifier: 0 });
-    // Rola no rolador de dados com animação/modal; o total já inclui o Mod(CON).
-    const roll = executeRoll({
+    // Pede a rolagem (virtual ou dado físico); o total já inclui o Mod(CON).
+    const roll = await requestRoll({
       sides,
       count,
-      mode: "normal",
       modifier: modifier + conMod,
       label: `Dado de Vida · Nível ${characterLevel + 1}`,
     });
+    if (!roll) {
+      setLevelFeedback({ ok: false, message: "Subida de nível cancelada — nada foi aplicado." });
+      return;
+    }
     const gain = hpGainFromRoll(roll.total, 0); // total já inclui Mod(CON)
     const applied = applyLevelUp(gain, { hitDie, roll: roll.total, conMod });
     setLevelFeedback(

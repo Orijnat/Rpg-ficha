@@ -53,7 +53,7 @@ export default function HabilidadesPage() {
   } = useCharacter();
 
   const { isMaster } = useAuth();
-  const { executeRoll } = useDice();
+  const { requestRoll } = useDice();
 
   const [mainCategory, setMainCategory] = useState("nivel"); // "nivel" | "criada"
   const [activeTab, setActiveTab] = useState("todas"); // "todas" | "pendentes" | "aprovadas" | "rejeitadas" | "treino" | "magias" | "ativas" | "passivas"
@@ -202,7 +202,7 @@ export default function HabilidadesPage() {
   }, [abilities, characterLevel, searchTerm]);
 
   // Rolar teste de treino (teste d20 de atributo que concede horas bônus de treino)
-  const handleRollTrainingSession = () => {
+  const handleRollTrainingSession = async () => {
     if (!activeTrainingAbility || (activeTrainingAbility.approvalStatus || "aprovada") !== "aprovada") {
       alert("Apenas habilidades aprovadas pelo Mestre podem ser treinadas.");
       return;
@@ -212,17 +212,17 @@ export default function HabilidadesPage() {
     const attrVal = data[attrKey] ?? 10;
     const attrMod = Math.floor((attrVal - 10) / 2);
 
-    const roll = executeRoll({
+    const roll = await requestRoll({
       sides: 20,
-      mode: "normal",
       modifier: attrMod,
       label: `Sessão de Treino: ${activeTrainingAbility.name} (Teste de ${attrKey})`,
     });
+    if (!roll) return; // cancelado no rolador
 
     // Horas ganhas baseadas no resultado do teste
     // Crítico 20: 5h, 15+: 3h, 10+: 2h, <10: 1h
     let horasGanhas = 1;
-    if (roll.naturalRoll === 20 || roll.total >= 20) {
+    if ((roll.kept ?? roll.total) === 20 || roll.total >= 20) {
       horasGanhas = 5;
     } else if (roll.total >= 15) {
       horasGanhas = 3;

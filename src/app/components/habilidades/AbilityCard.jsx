@@ -48,7 +48,7 @@ export function AbilityCard({
   const [rejectPromptOpen, setRejectPromptOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
 
-  const { executeRoll, promptRoll } = useDice();
+  const { requestRoll } = useDice();
   const { data } = useCharacter();
 
   const isUnlocked = isHabilidadeDesbloqueada(ability, characterLevel);
@@ -92,7 +92,7 @@ export function AbilityCard({
         const count = parseInt(match[1], 10);
         const sides = parseInt(match[2], 10);
         const mod = match[3] ? parseInt(match[3], 10) : 0;
-        executeRoll({
+        requestRoll({
           sides,
           count,
           modifier: mod,
@@ -105,7 +105,11 @@ export function AbilityCard({
     const attrKey = ability.attr || "ESP";
     const attrVal = data[attrKey] ?? 10;
     const attrMod = Math.floor((attrVal - 10) / 2);
-    promptRoll(`${ability.name} (Teste de ${attrKey})`, attrMod);
+    requestRoll({
+      sides: 20,
+      modifier: attrMod,
+      label: `${ability.name} (Teste de ${attrKey})`,
+    });
   };
 
   const handleConfirmReject = () => {

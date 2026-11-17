@@ -12,10 +12,199 @@ import {
   Zap,
   ShieldAlert,
   SlidersHorizontal,
+  PenLine,
+  ChevronDown,
 } from "lucide-react";
 import { formatModifier } from "../../../lib/modifiers";
 
 const DICE_TYPES = [4, 6, 8, 10, 12, 20, 100];
+
+
+function FaceInputs({ count, sides, values, onChange, onEnter }) {
+  return (
+    <div className="flex flex-wrap items-end justify-center gap-2">
+      {Array.from({ length: count }, (_, i) => (
+        <label key={i} className="flex flex-col items-center gap-1">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--theme-subtitle)]">
+            Dado {i + 1}
+          </span>
+          <input
+            type="number"
+            inputMode="numeric"
+            min={1}
+            max={sides}
+            autoFocus={i === 0}
+            value={values[i] ?? ""}
+            onChange={(e) => onChange(i, e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && onEnter) {
+                e.preventDefault();
+                onEnter();
+              }
+            }}
+            className="h-14 w-14 rounded-xl border border-white/15 bg-white/5 text-center font-mono text-xl font-bold text-[var(--theme-title)] outline-none transition focus:border-[var(--theme-accent)] focus:ring-1 focus:ring-[var(--theme-accent)]/50"
+            aria-label={`Valor do dado físico ${i + 1} (1 a ${sides})`}
+          />
+        </label>
+      ))}
+    </div>
+  );
+}
+
+function RollChooser({ request, onVirtual, onManual, onCancel }) {
+  const [physOpen, setPhysOpen] = useState(false);
+  const [physMode, setPhysMode] = useState("normal");
+  const [faces, setFaces] = useState(() => Array(Math.max(1, request.count)).fill(""));
+  const [error, setError] = useState(null);
+
+  const isContest = physMode !== "normal";
+  const faceCount = isContest ? 2 : Math.max(1, request.count);
+  const [prevFaceCount, setPrevFaceCount] = useState(faceCount);
+  if (prevFaceCount !== faceCount) {
+    setPrevFaceCount(faceCount);
+    setFaces((current) => {
+      const next = Array(faceCount).fill("");
+      for (let i = 0; i < faceCount; i += 1) next[i] = current[i] ?? "";
+      return next;
+    });
+    setError(null);
+  }
+
+  const modText = request.modifier === 0 ? "" : ` ${formatModifier(request.modifier)}`;
+  const physFormula = isContest
+    ? `2d${request.sides}${physMode === "advantage" ? "kh1" : "kl1"}${modText}`
+    : `${faceCount}d${request.sides}${modText}`;
+
+  const handleRegister = () => {
+    const result = onManual(faces.map((v) => String(v).trim()), physMode);
+    if (result && !result.ok) {
+      setError(result.message || "Valores inválidos.");
+    }
+  };
+
+  const modeButton = (mode, label, Icon, activeClass) => (
+    <button
+      type="button"
+      onClick={() => setPhysMode(mode)}
+      aria-pressed={physMode === mode}
+      className={`flex-1 rounded-lg border px-2 py-1.5 text-[10px] font-bold uppercase tracking-wider transition active:scale-95 ${
+        physMode === mode
+          ? activeClass
+          : "border-white/10 bg-white/[0.03] text-[var(--theme-subtitle)] hover:text-[#e8d5b0]"
+      }`}
+    >
+      <Icon size={12} className="mx-auto mb-0.5" />
+      {label}
+    </button>
+  );
+
+  return (
+    <div className="space-y-4 text-center">
+      <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
+        <span className="text-xs uppercase tracking-widest text-[var(--theme-subtitle)]">
+          Escolha como rolar
+        </span>
+        <h2 className="mt-1 text-2xl font-bold text-[var(--theme-title)]">
+          {request.label}
+        </h2>
+        <span className="font-mono text-sm font-semibold text-[var(--theme-accent)]">
+          Modificador: {formatModifier(request.modifier)}
+        </span>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <button
+          onClick={() => onVirtual("normal")}
+          className="flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-all hover:border-[var(--theme-accent)] hover:bg-[var(--theme-accent)]/10 active:scale-95"
+        >
+          <Dices className="text-[var(--theme-accent)]" size={24} />
+          <span className="text-xs font-semibold uppercase tracking-wider">Normal</span>
+          <span className="font-mono text-[11px] text-[var(--theme-subtitle)]">
+            {request.count}d{request.sides} {formatModifier(request.modifier)}
+          </span>
+        </button>
+
+        <button
+          onClick={() => onVirtual("advantage")}
+          className="flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-all hover:border-emerald-500 hover:bg-emerald-500/10 active:scale-95"
+        >
+          <Zap className="text-emerald-400" size={24} />
+          <span className="text-xs font-semibold uppercase tracking-wider text-emerald-400">Vantagem</span>
+          <span className="font-mono text-[11px] text-[var(--theme-subtitle)]">
+            2d{request.sides}kh1 {formatModifier(request.modifier)}
+          </span>
+        </button>
+
+        <button
+          onClick={() => onVirtual("disadvantage")}
+          className="flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-all hover:border-rose-500 hover:bg-rose-500/10 active:scale-95"
+        >
+          <ShieldAlert className="text-rose-400" size={24} />
+          <span className="text-xs font-semibold uppercase tracking-wider text-rose-400">Desvantagem</span>
+          <span className="font-mono text-[11px] text-[var(--theme-subtitle)]">
+            2d{request.sides}kl1 {formatModifier(request.modifier)}
+          </span>
+        </button>
+      </div>
+
+      {/* Dado físico */}
+      <div className="rounded-xl border border-amber-500/25 bg-amber-950/10">
+        <button
+          type="button"
+          onClick={() => setPhysOpen((open) => !open)}
+          aria-expanded={physOpen}
+          className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/10"
+        >
+          <PenLine size={13} />
+          Usou o dado físico? Informar valores
+          <ChevronDown size={13} className={`transition-transform ${physOpen ? "rotate-180" : ""}`} />
+        </button>
+        {physOpen && (
+          <div className="space-y-3 border-t border-amber-500/20 p-4">
+            <div className="flex gap-1.5">
+              {modeButton("normal", "Normal", Dices, "border-amber-500/60 bg-amber-500/20 text-amber-300")}
+              {modeButton("advantage", "Vantagem", Zap, "border-emerald-500/60 bg-emerald-500/20 text-emerald-300")}
+              {modeButton("disadvantage", "Desvant.", ShieldAlert, "border-rose-500/60 bg-rose-500/20 text-rose-300")}
+            </div>
+            <FaceInputs
+              count={faceCount}
+              sides={request.sides}
+              values={faces}
+              onChange={(index, value) => {
+                setFaces((current) => current.map((v, i) => (i === index ? value : v)));
+                setError(null);
+              }}
+              onEnter={handleRegister}
+            />
+            <p className="font-mono text-[10px] uppercase tracking-wider text-[var(--theme-subtitle)]">
+              Fórmula: <span className="text-amber-300">{physFormula}</span>
+            </p>
+            {error && (
+              <p role="alert" className="rounded-lg border border-rose-500/40 bg-rose-950/30 px-3 py-1.5 text-[11px] text-rose-300">
+                {error}
+              </p>
+            )}
+            <button
+              type="button"
+              onClick={handleRegister}
+              className="w-full rounded-xl border border-amber-500/60 bg-amber-500/20 py-2.5 text-xs font-bold uppercase tracking-widest text-amber-200 transition hover:bg-amber-500/30 active:scale-95"
+            >
+              Registrar rolagem física
+            </button>
+          </div>
+        )}
+      </div>
+
+      <button
+        type="button"
+        onClick={onCancel}
+        className="text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-subtitle)] underline-offset-2 transition hover:text-[#e8d5b0] hover:underline"
+      >
+        Cancelar
+      </button>
+    </div>
+  );
+}
 
 function DiceRollAnimation({ roll }) {
   const values = roll.mode === "normal" && roll.rolls.length > 1
@@ -52,19 +241,185 @@ function DiceRollAnimation({ roll }) {
   );
 }
 
+
+function ManualTray({ onDone }) {
+  const { executeManualRoll } = useDice();
+  const [sides, setSides] = useState(20);
+  const [count, setCount] = useState(1);
+  const [modifier, setModifier] = useState(0);
+  const [label, setLabel] = useState("Rolagem física");
+  const [mode, setMode] = useState("normal");
+  const [faces, setFaces] = useState([""]);
+  const [error, setError] = useState(null);
+
+  const isContest = mode !== "normal";
+  const faceCount = isContest ? 2 : Math.max(1, Math.floor(Number(count) || 1));
+  const [prevFaceCount, setPrevFaceCount] = useState(faceCount);
+  if (prevFaceCount !== faceCount) {
+    setPrevFaceCount(faceCount);
+    setFaces((current) => {
+      const next = Array(faceCount).fill("");
+      for (let i = 0; i < faceCount; i += 1) next[i] = current[i] ?? "";
+      return next;
+    });
+    setError(null);
+  }
+
+  const handleRegister = () => {
+    const result = executeManualRoll({
+      sides,
+      count: faceCount,
+      mode,
+      modifier,
+      label: label.trim() || "Rolagem física",
+      faces: faces.map((v) => String(v).trim()),
+    });
+    if (result.ok) {
+      onDone();
+    } else {
+      setError(result.message || "Valores inválidos.");
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="rounded-xl border border-amber-500/25 bg-amber-950/10 p-3 text-center">
+        <p className="text-xs font-bold uppercase tracking-widest text-amber-300">
+          Registrar dado físico
+        </p>
+        <p className="mt-1 text-[11px] text-[var(--theme-subtitle)]">
+          Role no mundo real e digite aqui os valores. O resultado entra no histórico, no log da batalha e (se houver) no servidor.
+        </p>
+      </div>
+
+      <div>
+        <span className="text-xs uppercase tracking-wider text-[var(--theme-subtitle)]">Tipo de dado</span>
+        <div className="mt-2 grid grid-cols-4 gap-2 sm:grid-cols-7">
+          {DICE_TYPES.map((s) => (
+            <button
+              key={s}
+              onClick={() => setSides(s)}
+              aria-pressed={sides === s}
+              className={`flex flex-col items-center justify-center rounded-xl border py-2.5 transition-all ${
+                sides === s
+                  ? "border-amber-500 bg-amber-500 font-bold text-[#17140f] shadow-md"
+                  : "border-white/10 bg-white/[0.02] text-[#e8d5b0] hover:bg-white/5"
+              }`}
+            >
+              <span className="font-mono text-xs">d{s}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="text-xs text-[var(--theme-subtitle)]" htmlFor="manual-count">Quantidade</label>
+          <input
+            id="manual-count"
+            type="number"
+            min={1}
+            max={20}
+            disabled={isContest}
+            value={faceCount}
+            onChange={(e) => setCount(Math.max(1, parseInt(e.target.value, 10) || 1))}
+            className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-center font-mono text-[var(--theme-title)] outline-none focus:border-amber-500 disabled:opacity-50"
+          />
+        </div>
+        <div>
+          <label className="text-xs text-[var(--theme-subtitle)]" htmlFor="manual-mod">Modificador (+/-)</label>
+          <input
+            id="manual-mod"
+            type="number"
+            value={modifier}
+            onChange={(e) => setModifier(parseInt(e.target.value, 10) || 0)}
+            className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-center font-mono text-[var(--theme-title)] outline-none focus:border-amber-500"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="text-xs text-[var(--theme-subtitle)]" htmlFor="manual-label">Descrição da rolagem</label>
+        <input
+          id="manual-label"
+          type="text"
+          value={label}
+          onChange={(e) => setLabel(e.target.value)}
+          className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-[var(--theme-title)] outline-none focus:border-amber-500"
+          placeholder="Ex.: Ataque com espada"
+        />
+      </div>
+
+      <div>
+        <span className="text-xs uppercase tracking-wider text-[var(--theme-subtitle)]">Modo</span>
+        <div className="mt-2 flex gap-1.5">
+          {[
+            { id: "normal", label: "Normal" },
+            { id: "advantage", label: "Vantagem" },
+            { id: "disadvantage", label: "Desvantagem" },
+          ].map(({ id, label: modeLabel }) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => setMode(id)}
+              aria-pressed={mode === id}
+              className={`flex-1 rounded-lg border px-2 py-2 text-[10px] font-bold uppercase tracking-wider transition active:scale-95 ${
+                mode === id
+                  ? "border-amber-500/60 bg-amber-500/20 text-amber-300"
+                  : "border-white/10 bg-white/[0.03] text-[var(--theme-subtitle)] hover:text-[#e8d5b0]"
+              }`}
+            >
+              {modeLabel}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <FaceInputs
+        count={faceCount}
+        sides={sides}
+        values={faces}
+        onChange={(index, value) => {
+          setFaces((current) => current.map((v, i) => (i === index ? value : v)));
+          setError(null);
+        }}
+        onEnter={handleRegister}
+      />
+
+      {error && (
+        <p role="alert" className="rounded-lg border border-rose-500/40 bg-rose-950/30 px-3 py-1.5 text-[11px] text-rose-300">
+          {error}
+        </p>
+      )}
+
+      <button
+        type="button"
+        onClick={handleRegister}
+        className="w-full rounded-xl border border-amber-500/70 bg-gradient-to-r from-amber-500/80 to-amber-600/80 py-3 text-xs font-bold uppercase tracking-widest text-[#17140f] shadow-lg transition active:scale-95"
+      >
+        Registrar {faceCount}d{sides} {formatModifier(modifier)}
+      </button>
+    </div>
+  );
+}
+
 export default function DiceModal() {
   const {
     isModalOpen,
     isRolling,
     closeModal,
     lastRoll,
-    pendingTarget,
-    executeRoll,
+    rollRequest,
+    resolveVirtualRoll,
+    resolveManualRoll,
+    cancelRollRequest,
+    executeManualRoll,
+    requestRoll,
     history,
     clearHistory,
   } = useDice();
 
-  const [activeTab, setActiveTab] = useState("result"); // "result" | "tray" | "history"
+  const [activeTab, setActiveTab] = useState("result"); // "result" | "tray" | "manual" | "history"
   const [customSides, setCustomSides] = useState(20);
   const [customCount, setCustomCount] = useState(1);
   const [customModifier, setCustomModifier] = useState(0);
@@ -111,8 +466,8 @@ export default function DiceModal() {
                 Rolador de Dados Virtual
               </h3>
               <p className="text-[11px] text-[var(--theme-subtitle)]">
-                {pendingTarget
-                  ? `Teste: ${pendingTarget.label} (${formatModifier(pendingTarget.modifier)})`
+                {rollRequest
+                  ? `Teste: ${rollRequest.label} (${formatModifier(rollRequest.modifier)})`
                   : lastRoll
                   ? lastRoll.label || "Última Rolagem"
                   : "Mesa de Rolagem"}
@@ -130,7 +485,7 @@ export default function DiceModal() {
         </div>
 
         {/* Abas de Navegação */}
-        {!pendingTarget && (
+        {!rollRequest && (
           <div className="flex border-b border-white/10 bg-black/20 text-xs">
             <button
               onClick={() => setActiveTab("result")}
@@ -154,6 +509,17 @@ export default function DiceModal() {
               Dados Avulsos
             </button>
             <button
+              onClick={() => setActiveTab("manual")}
+              className={`flex items-center justify-center gap-1.5 flex-1 py-2.5 font-medium transition-colors ${
+                activeTab === "manual"
+                  ? "border-b-2 border-amber-500 text-[var(--theme-title)]"
+                  : "text-[var(--theme-subtitle)] hover:text-[#e8d5b0]"
+              }`}
+            >
+              <PenLine size={13} />
+              Dado Físico
+            </button>
+            <button
               onClick={() => setActiveTab("history")}
               className={`flex items-center justify-center gap-1.5 flex-1 py-2.5 font-medium transition-colors ${
                 activeTab === "history"
@@ -170,82 +536,13 @@ export default function DiceModal() {
         {/* Conteúdo */}
         <div className="p-6">
           {/* Se estiver aguardando escolha de modo para um teste específico */}
-          {pendingTarget ? (
-            <div className="space-y-4 text-center">
-              <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4">
-                <span className="text-xs uppercase tracking-widest text-[var(--theme-subtitle)]">
-                  Escolha o Modo de Rolagem
-                </span>
-                <h2 className="mt-1 text-2xl font-bold text-[var(--theme-title)]">
-                  {pendingTarget.label}
-                </h2>
-                <span className="font-mono text-sm font-semibold text-[var(--theme-accent)]">
-                  Modificador: {formatModifier(pendingTarget.modifier)}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                <button
-                  onClick={() =>
-                    executeRoll({
-                      sides: 20,
-                      mode: "normal",
-                      modifier: pendingTarget.modifier,
-                      label: pendingTarget.label,
-                    })
-                  }
-                  className="flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-all hover:border-[var(--theme-accent)] hover:bg-[var(--theme-accent)]/10 active:scale-95"
-                >
-                  <Dices className="text-[var(--theme-accent)]" size={24} />
-                  <span className="text-xs font-semibold uppercase tracking-wider">
-                    Normal
-                  </span>
-                  <span className="font-mono text-[11px] text-[var(--theme-subtitle)]">
-                    1d20 {formatModifier(pendingTarget.modifier)}
-                  </span>
-                </button>
-
-                <button
-                  onClick={() =>
-                    executeRoll({
-                      sides: 20,
-                      mode: "advantage",
-                      modifier: pendingTarget.modifier,
-                      label: pendingTarget.label,
-                    })
-                  }
-                  className="flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-all hover:border-emerald-500 hover:bg-emerald-500/10 active:scale-95"
-                >
-                  <Zap className="text-emerald-400" size={24} />
-                  <span className="text-xs font-semibold uppercase tracking-wider text-emerald-400">
-                    Vantagem
-                  </span>
-                  <span className="font-mono text-[11px] text-[var(--theme-subtitle)]">
-                    2d20kh1 {formatModifier(pendingTarget.modifier)}
-                  </span>
-                </button>
-
-                <button
-                  onClick={() =>
-                    executeRoll({
-                      sides: 20,
-                      mode: "disadvantage",
-                      modifier: pendingTarget.modifier,
-                      label: pendingTarget.label,
-                    })
-                  }
-                  className="flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-all hover:border-rose-500 hover:bg-rose-500/10 active:scale-95"
-                >
-                  <ShieldAlert className="text-rose-400" size={24} />
-                  <span className="text-xs font-semibold uppercase tracking-wider text-rose-400">
-                    Desvantagem
-                  </span>
-                  <span className="font-mono text-[11px] text-[var(--theme-subtitle)]">
-                    2d20kl1 {formatModifier(pendingTarget.modifier)}
-                  </span>
-                </button>
-              </div>
-            </div>
+          {rollRequest ? (
+            <RollChooser
+              request={rollRequest}
+              onVirtual={resolveVirtualRoll}
+              onManual={resolveManualRoll}
+              onCancel={cancelRollRequest}
+            />
           ) : (activeTab === "result" || isRolling) && lastRoll ? (
             <div className="space-y-5 text-center">
               {isRolling && (
@@ -315,13 +612,18 @@ export default function DiceModal() {
                 )}
               </div>
 
-              {/* Ações Rápidas de Re-rolagem */}
+              {/* Origem do resultado */}
+              <p className="pt-1 font-mono text-[10px] uppercase tracking-[0.28em] text-[var(--theme-subtitle)]">
+                {lastRoll.manual ? "Valores informados do dado físico" : "Rolagem virtual"}
+              </p>
+
+              {/* Ações Rápidas de Re-rolagem (abre a escolha virtual/físico novamente) */}
               <div className="flex items-center justify-center gap-2 pt-2">
                 <button
                   onClick={() =>
-                    executeRoll({
+                    requestRoll({
                       sides: lastRoll.sides,
-                      mode: lastRoll.mode,
+                      count: lastRoll.mode === "normal" ? lastRoll.rolls.length : 1,
                       modifier: lastRoll.modifier,
                       label: lastRoll.label,
                     })
@@ -331,37 +633,6 @@ export default function DiceModal() {
                   <RotateCcw size={14} />
                   Rolar Novamente
                 </button>
-
-                {lastRoll.sides === 20 && (
-                  <>
-                    <button
-                      onClick={() =>
-                        executeRoll({
-                          sides: 20,
-                          mode: "advantage",
-                          modifier: lastRoll.modifier,
-                          label: `${lastRoll.label} (Vantagem)`,
-                        })
-                      }
-                      className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs font-medium text-emerald-400 hover:bg-emerald-500/20 active:scale-95"
-                    >
-                      + Vantagem
-                    </button>
-                    <button
-                      onClick={() =>
-                        executeRoll({
-                          sides: 20,
-                          mode: "disadvantage",
-                          modifier: lastRoll.modifier,
-                          label: `${lastRoll.label} (Desvantagem)`,
-                        })
-                      }
-                      className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-xs font-medium text-rose-400 hover:bg-rose-500/20 active:scale-95"
-                    >
-                      + Desvantagem
-                    </button>
-                  </>
-                )}
               </div>
             </div>
           ) : activeTab === "tray" ? (
@@ -413,20 +684,20 @@ export default function DiceModal() {
 
               <button
                 onClick={() => {
-                  executeRoll({
+                  requestRoll({
                     sides: customSides,
                     count: customCount,
-                    mode: "normal",
                     modifier: customModifier,
                     label: `Rolagem Customizada (${customCount}d${customSides})`,
                   });
-                  setActiveTab("result");
                 }}
                 className="w-full rounded-xl border border-[var(--theme-accent)] bg-gradient-to-r from-[var(--theme-accent)] to-[var(--theme-accent)] py-3 text-xs font-bold uppercase tracking-widest text-[#17140f] shadow-lg shadow-[var(--theme-accent)]/20 transition active:scale-95"
               >
                 Rolar {customCount}d{customSides} {formatModifier(customModifier)}
               </button>
             </div>
+          ) : activeTab === "manual" ? (
+            <ManualTray onDone={() => setActiveTab("result")} />
           ) : (
             /* Histórico da Sessão */
             <div className="space-y-3">
@@ -457,6 +728,11 @@ export default function DiceModal() {
                         <span className="font-semibold text-[var(--theme-title)]">
                           {h.label || "Rolagem"}
                         </span>
+                        {h.manual && (
+                          <span className="ml-1.5 rounded bg-amber-500/20 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-300">
+                            Físico
+                          </span>
+                        )}
                         <div className="font-mono text-[11px] text-[var(--theme-subtitle)]">
                           {h.formula}
                         </div>

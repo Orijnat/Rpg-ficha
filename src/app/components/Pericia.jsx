@@ -81,7 +81,7 @@ const ATTR_BADGES = {
 
 export default function Pericia() {
   const { data, updSkill, toggleSkillTrained, setSkills } = useCharacter();
-  const { promptRoll } = useDice();
+  const { requestRoll } = useDice();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedAttr, setSelectedAttr] = useState("TODOS");
@@ -213,7 +213,13 @@ export default function Pericia() {
               {/* Gatilho de Rolagem com Bônus Dinâmico */}
               <button
                 type="button"
-                onClick={() => promptRoll(skill.name, skillInfo.total)}
+                onClick={() =>
+                  requestRoll({
+                    sides: 20,
+                    modifier: skillInfo.total,
+                    label: skill.name,
+                  })
+                }
                 className="flex items-center gap-1.5 rounded-md border border-white/5 bg-white/[0.02] px-2 py-0.5 font-mono text-xs font-bold text-[var(--theme-accent)] transition-all hover:border-[var(--theme-accent)]/50 hover:bg-[var(--theme-accent)]/15 hover:text-[var(--theme-title)] active:scale-95"
                 title={`Rolar teste de ${skill.name} (${skillInfo.formatted})`}
               >

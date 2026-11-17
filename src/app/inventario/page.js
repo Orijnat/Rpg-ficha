@@ -49,7 +49,7 @@ export default function InventarioPage() {
     advanceRoundEffects,
     removeActiveEffect,
   } = useCharacter();
-  const { executeRoll } = useDice();
+  const { requestRoll } = useDice();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("default"); // "default" | "name" | "qty-desc" | "qty-asc"
   const [filterType, setFilterType] = useState("all"); // "all" | "weapons" | "consumables" | "others"
@@ -119,7 +119,7 @@ export default function InventarioPage() {
       showUseFeedback(res);
       if (!res.ok) return; // bloqueado (sem munição/cargas/quebrada): não rola
       if (isAttack || formula) {
-        executeRoll({
+        requestRoll({
           sides: 20,
           mode: "normal",
           label: `Dano/Efeito: ${item.name}`,
@@ -127,7 +127,7 @@ export default function InventarioPage() {
       }
       return;
     }
-    executeRoll({
+    requestRoll({
       sides: 20,
       mode: "normal",
       label: `Dano/Efeito: ${item.name}`,

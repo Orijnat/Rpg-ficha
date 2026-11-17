@@ -21,7 +21,7 @@ import { sendInitiativeFromSheet } from "../../lib/api";
 
 export default function RecursosCombate() {
   const { data, upd, updExtra } = useCharacter();
-  const { executeRoll, promptRoll } = useDice();
+  const { requestRoll } = useDice();
   const { token, isMaster } = useAuth();
 
   const [sendingInit, setSendingInit] = useState(false);
@@ -53,7 +53,7 @@ export default function RecursosCombate() {
 
   // Rolar Iniciativa (d20 + modificador de iniciativa)
   const handleRollInitiative = () => {
-    executeRoll({
+    requestRoll({
       sides: 20,
       modifier: initiativeData.total,
       label: `Iniciativa (${initiativeData.formatted})`,
@@ -66,11 +66,12 @@ export default function RecursosCombate() {
     setSentSuccess(false);
     setInitError(null);
     try {
-      const roll = executeRoll({
+      const roll = await requestRoll({
         sides: 20,
         modifier: initiativeData.total,
         label: `Iniciativa enviada à mesa (${initiativeData.formatted})`,
       });
+      if (!roll) return; // cancelado no rolador
 
       await sendInitiativeFromSheet(
         data.campanhaId || "ativa",
@@ -95,18 +96,19 @@ export default function RecursosCombate() {
   };
 
   // Rolar Dado de Vida — abre modal de confirmação antes de somar ao HP máximo
-  const handleRollHitDie = () => {
+  const handleRollHitDie = async () => {
     const match = hitDie.match(/(\d+)?d(\d+)([+-]\d+)?/i);
     const count = match && match[1] ? parseInt(match[1], 10) : 1;
     const sides = match && match[2] ? parseInt(match[2], 10) : 10;
     const conMod = calculateModifier(data.CON ?? 10);
 
-    const roll = executeRoll({
+    const roll = await requestRoll({
       sides,
       count,
       modifier: conMod,
       label: `Dado de Vida (${hitDie} + CON ${conMod >= 0 ? "+" + conMod : conMod})`,
     });
+    if (!roll) return; // cancelado no rolador
 
     if (roll && typeof roll.total === "number") {
       setHitDieModal({ result: Math.max(1, roll.total) });
