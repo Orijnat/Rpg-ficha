@@ -68,6 +68,11 @@
 - **Migration `20261117210000-montaria-a-partir-de-json.js` APLICADA no Supabase de produção** (via `npm run db:migrate`; todas as incrementos re-aplicados com sucesso/idempotência). `montarias` passou de 0 → **1** linha ("sas", 20/20 PV, dono "wqw") — exatamente o que havia em dados_extras.mounts. `sequelize_meta` registra a migration. **Backend AINDA NÃO DEPLOYADO no Render** → os endpoints `/api/characters/:id/mounts` não existem em produção até o Manual Deploy (até lá, a página /montaria mostrará o erro + retry).
 - **Estado do mapeamento**: achado principal = schema drift (tabelas relacionais nunca usadas: pericias_personagem, itens_inventario, contratos, cofres, imagens — candidatas a drop após decisão do operador; montarias agora É utilizada).
 
+## 🔧 2026-11-17 — Tema Lua de Sangue: vermelho mais escuro + ficha sem controles de vitalidade na navbar — NÃO commitado
+- Pedido 1: "poderia deixar um vermelho mais escuro no tema dark que usa vermelo" — **bloodmoon** (Lua de Sangue) com accent muito mais escuro: `#e8503a` → **`#d53c25`** (on-bg 4.29); globals.css (–theme-accent/hover/glow/card border/primary), themes.js (accent + previewColors), themes.test.mjs. Contraste on-accent (texto #1f0a06) ainda 4.08 ✓.
+- Pedido 2: "remova este campoGestão de Vitalidade da fica e deixe apenas no botao de dano/cura" — o cluster inline de vitalidade na navbar foi removido: HP bar clicável, leitura "Nv/PV", botões −1/+1 PV. Resta **somente o botão "Dano/Cura"** (abre o modal com o painel "Gestão de Vitalidade" do DanoCuraPainel, já compact). XPBar e nome/nível mantidos. `HPBar`/`Minus`/`Plus` não são mais usados no Cabecalho.
+- Verificado: 161/161 testes, build OK, lint 0 erros (44 warnings pré-existentes). NÃO commitado, NÃO conferido no navegador.
+
 ## 🔧 2026-11-17 — Temas claros: botões do mestre/dano·cura/ações com mais tinta + vitalidade fora da ficha (modal na navbar) — NÃO commitado
 - **Escurecimento nos temas claros** (após feedback "está difícil de ver"): 
   - `--primary`/`--ring`: aurora #dc2626 → **#c91f1f** (5.08:1), sapphire #2563eb → **#1f4fce** (6.05:1).
