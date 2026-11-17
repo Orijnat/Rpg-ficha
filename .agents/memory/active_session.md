@@ -30,10 +30,14 @@
 - `/admin/personagens/[id]/ficha`: card "Classe (somente o mestre altera)" (aplica hitDie; HP = máximo do dado no nível 1) + Raça agora ADITIVA (subtrai o bônus antigo, soma o novo).
 - api.js: `listClasses/createClassOnBackend/updateClassOnBackend/deleteClassOnBackend`; perfil (quick-create) e registro ajustados (status base 10; HP 70 até a classe ser escolhida); leveling.js comentário → dado de vida vem da CLASSE.
 - Verificação: front **160/160** testes (races-leveling/classes.test reescritos), build 30/30 OK (`/admin/classes` prerendered), lint 0 erros (44 warnings pré-existentes).
-- **Re-verificado em 2026-11-17 (sessão seguinte)**: back **86/86**, front **160/160**, build 30/30 (`/admin/classes` prerendered), lint front 0 erros; backend não tem script lint. Nada commitado ainda.
+- **Re-verificado em 2026-11-17 (sessão seguinte)**: back **86/86**, front **160/160**, build 30/30 (`/admin/classes` prerendered), lint front 0 erros; backend não tem script lint.
+
+### ✅ CONCLUÍDO 2026-11-17 (sessão seguinte)
+- Migration `20261117120000-classes.js` APLICADA no Supabase de produção (`npm run db:migrate`): 8 classes seedadas (bruxeiro 1d10 … bardo 1d8), `personagens.classe_id` criada com índice, RLS habilitada em `classes`/`classe_habilidades`, sequelize_meta registrado. `classe_habilidades` vazia (o mestre preenche em /admin/classes).
+- Commitado e pushed (2 repos): back `60ad3da` feat(classes)!; front `77a10a1` feat(classes)! + `36a812c` docs(memory). Vercel sobe automático; backend ainda precisa de Manual Deploy no Render para `/api/classes` e o guard 403 valerem em produção.
 
 ### Pendências
-- **Deploy/migração**: `20261117120000-classes.js` AINDA NÃO aplicada no Supabase e o backend precisa de deploy no Render para `/api/classes` e o guard 403 valerem em produção. Aplicar só com o aval do usuário.
+- ~~Deploy/migração~~ — migration APLICADA no Supabase em 2026-11-17. **Falta apenas o deploy do backend no Render** (Manual Deploy) para `/api/classes` e o guard 403 valerem em produção.
 - Raças: coluna `dado_de_vida` de `racas` ficou legada (não lida mais pelo app). Novos ajustes de balanceamento de bônus racial são feitos em `lib/races.js` (frontend) — tabela 5e clássica.
 - Nada commitado (2 repos); `.github/` permanece não rastreado.
 
@@ -395,3 +399,6 @@ Criar tabela de raças no banco; selects de raça passam a enviar o ID da raça;
 - Commits Rpg-backend: `3a35a2a` (Resend no mailer.js: EMAIL_PROVIDER=resend + RESEND_API_KEY, HTTP API; SMTP fallback; testes unitários; .env.example), `9107f3f` (fix do sync sem raça: hasRaceInput + nullable() em race; null/vazio = "sem raça", corrige "status param de salvar").
 - Falta deploy no Render (Manual Deploy) para as 3 camadas do backend subirem em produção: Resend, verificação de código, fix de sync.
 - O e-mail em produção só funcionará com EMAIL_PROVIDER=resend + RESEND_API_KEY + SMTP_FROM no Render e FRONTEND_URL apontando para o Vercel.
+
+## ✅ Push 2026-11-17 (4)
+- `60ad3da` (back: catálogo de classes + guard 403 + migration) e `77a10a1` (front: raça aditiva + classe como dado de vida) enviados ao origin/main; `36a812c` docs(memory). Migration aplicada no Supabase antes do push.
