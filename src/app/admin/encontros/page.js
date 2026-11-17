@@ -25,6 +25,7 @@ import { BattleLogEntryRow } from "../../components/batalha/BattleLogPanel";
 import {
   createEncounter,
   deleteEncounter,
+  fetchCharacterFromBackend,
   listBattleLog,
   listCampaigns,
   listCharacters,
@@ -321,19 +322,31 @@ export default function AdminEncontrosPage() {
     setDistributing(true);
     setError("");
     try {
-      const fresh = (await listCharacters(token)) || [];
-      const awarded = [];
-      for (const combatant of combatants) {
-        const charId = String(combatant.id).replace(/^pc-/, "");
-        const hero = fresh.find((h) => String(h.id) === charId);
-        if (!hero) continue;
-        const currentXp = Number(hero.xp) || 0;
-        await updateCharacterOnBackend(charId, { xp: currentXp + perHero }, token);
-        awarded.push(hero);
+      const heroIds = combatants.map((combatant) => String(combatant.id).replace(/^pc-/, ""));
+      const freshes = await Promise.all(
+        heroIds.map((heroId) => fetchCharacterFromBackend(heroId, token).catch(() => null))
+      );
+      const missingIndex = freshes.findIndex((hero) => !hero);
+      if (missingIndex !== -1) {
+        setError(`Não foi possível ler o XP atual de ${combatants[missingIndex]?.name || "um herói"}. Nada foi alterado.`);
+        setConfirmDistribute(false);
+        return;
       }
-      if (awarded.length > 0) {
-        const awardedIds = new Set(awarded.map((h) => String(h.id)));
-        setHeroes(fresh.map((h) => (awardedIds.has(String(h.id)) ? { ...h, xp: (Number(h.xp) || 0) + perHero } : h)));
+      const awarded = [];
+      const awardedNewXp = new Map();
+      for (const [index, combatant] of combatants.entries()) {
+        const charId = heroIds[index];
+        const freshHero = freshes[index];
+        const currentXp = Number(freshHero.xp ?? freshHero.experiencia) || 0;
+        const newXp = currentXp + perHero;
+        await updateCharacterOnBackend(charId, { xp: newXp }, token);
+        awarded.push({ id: charId, name: freshHero.name || combatant.name });
+        awardedNewXp.set(String(charId), newXp);
+      }
+      if (awardedNewXp.size > 0) {
+        setHeroes((prev) =>
+          prev.map((h) => (awardedNewXp.has(String(h.id)) ? { ...h, xp: awardedNewXp.get(String(h.id)) } : h))
+        );
       }
       const names = awarded.map((h) => h.name).join(", ") || "nenhum herói encontrado";
       await syncEncounterUpdate(
@@ -355,7 +368,18 @@ export default function AdminEncontrosPage() {
     if (!activeEncounter) return { ok: false, message: "Nenhum encontro ativo." };
     setError("");
     try {
-      const fresh = (await listCharacters(token)) || [];
+      const xpRows = rows.filter((row) => row.included && Math.max(0, Math.floor(Number(row.xp) || 0)) > 0);
+      const freshes = await Promise.all(
+        xpRows.map((row) => fetchCharacterFromBackend(row.id, token).catch(() => null))
+      );
+      const missingIndex = freshes.findIndex((hero) => !hero);
+      if (missingIndex !== -1) {
+        return {
+          ok: false,
+          message: `Não foi possível ler o XP atual de ${xpRows[missingIndex]?.name || "um herói"}. Nada foi alterado.`,
+        };
+      }
+      const freshById = new Map(xpRows.map((row, index) => [String(row.id), freshes[index]]));
       const vitoria = [];
       const derrota = [];
       const fuga = [];
@@ -365,17 +389,16 @@ export default function AdminEncontrosPage() {
         else if (row.outcome === "fuga") fuga.push(row.name);
         else vitoria.push(row.name);
         const amount = Math.max(0, Math.floor(Number(row.xp) || 0));
-        if (row.included && amount > 0) {
-          const hero = fresh.find((h) => String(h.id) === String(row.id));
-          if (hero) {
-            const currentXp = Number(hero.xp) || 0;
-            await updateCharacterOnBackend(hero.id, { xp: currentXp + amount }, token);
-            xpGained.set(hero.id, amount);
-          }
+        const hero = freshById.get(String(row.id));
+        if (hero && row.included && amount > 0) {
+          const currentXp = Number(hero.xp ?? hero.experiencia) || 0;
+          const newXp = currentXp + amount;
+          await updateCharacterOnBackend(hero.id, { xp: newXp }, token);
+          xpGained.set(String(hero.id), newXp);
         }
       }
       if (xpGained.size > 0) {
-        setHeroes(fresh.map((h) => (xpGained.has(h.id) ? { ...h, xp: (Number(h.xp) || 0) + xpGained.get(h.id) } : h)));
+        setHeroes((prev) => prev.map((h) => (xpGained.has(String(h.id)) ? { ...h, xp: xpGained.get(String(h.id)) } : h)));
       }
       const summary = rows
         .map((row) =>

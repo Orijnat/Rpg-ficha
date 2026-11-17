@@ -23,8 +23,11 @@ import ConfirmDialog from "../../components/admin/ConfirmDialog";
 import {
   createGameSession,
   deleteGameSession,
+  fetchCharacterFromBackend,
   listCampaigns,
+  listCharacters,
   listGameSessions,
+  updateCharacterOnBackend,
   updateGameSession,
 } from "../../../lib/api";
 import { useAuth } from "../../context/AuthContext";
@@ -233,8 +236,17 @@ export default function AdminSessoesPage() {
     setDistributingXpId(sessao.id);
     setError("");
     try {
-      for (const hero of heroes) {
-        const currentXp = Number(hero.xp) || 0;
+      const freshes = await Promise.all(
+        heroes.map((hero) => fetchCharacterFromBackend(hero.id, token).catch(() => null))
+      );
+      const missingIndex = freshes.findIndex((hero) => !hero);
+      if (missingIndex !== -1) {
+        setError(`Não foi possível ler o XP atual de ${heroes[missingIndex]?.name || "um herói"}. Nada foi alterado.`);
+        setDistributingXpId(null);
+        return;
+      }
+      for (const [index, hero] of heroes.entries()) {
+        const currentXp = Number(freshes[index].xp ?? freshes[index].experiencia) || 0;
         await updateCharacterOnBackend(hero.id, { xp: currentXp + perHero }, token);
       }
       const recompensas = {
