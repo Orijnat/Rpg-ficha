@@ -1,6 +1,6 @@
 {
   "timestamp": "2026-11-17T23:59:59-03:00",
   "agent": "opencode",
-  "prompt": "botoes por exemplo o do dano/cura que estao muito escuros, poderia colocar a fonte das letras em branco ali",
-  "action": ".btn-rpg agora com texto branco; substituicao theme-title/subtitle por cores fixas claras nas superficies fixas-escuras (DiceModal, AddItemModal, AddMountModal, DepositToBankModal, consts inventario, login/registro/convite, inputs admin personagens). 161/161 testes, build OK, lint 0 erros. Nao commitado ate 'pus'."
+  "prompt": "e nos temas claros, onde as cores estao muito claras poderia escurecelas, pois esta dificil de ver",
+  "action": "Temas claros escurecidos (primary/ring aurora #c91f1f, sapphire #1f4fce) + overrides de text-amber/rose/emerald para tons escuros (botoes do mestre, curar/dano). Tambem: painel de vitalidade REMOVIDO da ficha — agora so abre pelo botao Dano/Cura na navbar. 161/161 testes, build OK, lint 0 erros. Nao commitado."
 }

@@ -68,6 +68,19 @@
 - **Migration `20261117210000-montaria-a-partir-de-json.js` APLICADA no Supabase de produção** (via `npm run db:migrate`; todas as incrementos re-aplicados com sucesso/idempotência). `montarias` passou de 0 → **1** linha ("sas", 20/20 PV, dono "wqw") — exatamente o que havia em dados_extras.mounts. `sequelize_meta` registra a migration. **Backend AINDA NÃO DEPLOYADO no Render** → os endpoints `/api/characters/:id/mounts` não existem em produção até o Manual Deploy (até lá, a página /montaria mostrará o erro + retry).
 - **Estado do mapeamento**: achado principal = schema drift (tabelas relacionais nunca usadas: pericias_personagem, itens_inventario, contratos, cofres, imagens — candidatas a drop após decisão do operador; montarias agora É utilizada).
 
+## 🔧 2026-11-17 — Temas claros: botões do mestre/dano·cura/ações com mais tinta + vitalidade fora da ficha (modal na navbar) — NÃO commitado
+- **Escurecimento nos temas claros** (após feedback "está difícil de ver"): 
+  - `--primary`/`--ring`: aurora #dc2626 → **#c91f1f** (5.08:1), sapphire #2563eb → **#1f4fce** (6.05:1).
+  - Overrides de texto por tema nos claros (`!important`): `.text-amber-200/300/400` → #92400e/#b45309/#92400e (botões amarelos do mestre), `.text-rose-300/400` → #be123d/#9f123d, `.text-emerald-300/400` → #065f46/#047857 (botões curar/tomar dano) — antes eram -300/-400 sobre fundo claro (quase ilegíveis).
+- **Vitalidade fora da ficha**: removido `<DanoCuraPainel />` (e o import) de `RecursosCombate.jsx` — o painel de Dano/Cura agora só vive no modal do botão "Dano/Cura" na navbar (Cabecalho, que já o renderizava em `isHpModalOpen`). A ficha (/personagem) NÃO tem mais o painel embutido.
+- Verificado: 161/161 testes, build OK, lint 0 erros (44 warnings pré-existentes). NÃO commitado, NÃO conferido no navegador.
+
+## 🔧 2026-11-17 — Rolagem de Dado de Vida: apenas Normal — NÃO commitado
+- Pedido: "para a rolaem de dado de vida, poderia deixar rolar apenas normal".
+- `requestRoll` aceita `allowContest: false` — o `RollChooser` do DiceModal então exibe **apenas o botão Normal** (a seção "Usou o dado físico?" permanece, mas sem o seletor Normal/Vantagem/Desvantagem; `effectivePhysMode` trava em "normal" — Valores físicos ainda podem ser registrados, só no modo Normal).
+- Aplicado em todos os 3 call sites de Dado de Vida via rolador: `handleLevelUp` (/personagem, "Dado de Vida · Nível X"), `handleRollHitDie` (RecursosCombate — descanso), `handleRollHitDieHeal` (DanoCuraPainel — cura com dado de vida). Promoção no admin já era virtual-normal via `rollDice` direto (sem modal) — inalterada.
+- Verificado: 161/161 testes, build OK, lint 0 erros (44 warnings pré-existentes). NÃO commitado, NÃO conferido no navegador.
+
 ## 🔧 2026-11-17 — Contraste em superfícies fixas-escuras + botão Dano/Cura com texto branco — NÃO commitado
 - Pedido: "botoes por exemplo o do dano/cura que estao muito escuros, poderia colocar a fonte das letras em branco ali".
 - `.btn-rpg` (botão glossy escuro usado no Dano/Cura do Cabeçalho e na ficha): texto agora **branco** (antes `var(--theme-title)` — ilegível nos temas claros, onde title é #450a0a sobre quase-preto).
