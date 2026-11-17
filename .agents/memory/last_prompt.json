@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-17T18:05:00-03:00",
+  "timestamp": "2026-11-17T18:40:00-03:00",
   "agent": "opencode",
-  "prompt": "refaca a animacao de rolaem de dados",
-  "action": "Animacao de rolagem refeita: causa-raiz = CSS .dice-* deletado em 231b39e (JSX com classes fantasma). Novo DiceFace.jsx (SVG por tipo: d2 moeda CARA/COROA, d4, d6 pips, d8, d10/d100, d12, d20); DiceRollAnimation reescrita (tumble CSS 3D + coin flip, crits com glow, stagger por dado); globals.css com bloco .dice-roll-* novo (tokens theme); DICE_TYPES ganhou d2; JSDoc lib/dice.js atualizado. Verificado: 161/161 testes, build OK, lint 0 erros. Nada commitado. UX no navegador pendente."
+  "prompt": "commite e ous",
+  "action": "Interpretado como commit e push. Commits separados por assunto: frontend 02c243f feat(dice) animação de rolagem, 5cf9b11 chore(skills) audit-suite/fe-rail, 5d4eac3 feat(encontros) FinalizarEncounterModal, 01cc79f feat(classes) hint registro + cadeado de remoção, f24d401 docs(memory). Backend ../Rpg-backend: 22d5f26 feat(classes) catálogo via cadastro, 0a35fcb feat(classes) remoção só do criador. Push nos 2 repos OK (main: 86636ff..f24d401 / 60ad3da..0a35fcb). .github/workflows/ permanece não rastreado."
 }
