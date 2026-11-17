@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-17T20:05:00-03:00",
+  "timestamp": "2026-11-17T20:30:00-03:00",
   "agent": "opencode",
-  "prompt": "eu preciso que apartir de aora, quando eu abrir uma fica como mestre, abre uma nova uia no naveador com a fica para ficar mais oranziadp, pois na questao do monstro, por exemplo , eu talvez precise abrir 3 ficas d esuqeleto por ter 3 inimios poderia fazer isso",
-  "action": "Ficha como mestre abre nova guia: (1) /personagem?inspect=<id> — AuthContext prioriza o param inspect no init (ficha completa do heroi na propria aba; refresh re-aplica; jogadores nao afetados); (2) botao 'Acessar Ficha Completa' no Ameacas & Herois agora window.open _blank; (3) 'Editar Ficha' (NPC no Ameacas & Herois) e 'Editar' (catalogo /admin/npcs) agora target=_blank. 161/161 testes, build OK, lint 0 erros. NAO commitado, nao conferido no navegador."
+  "prompt": "ao abrir a fica ele ainda esta mudadno a tela e nao abrindo uma nova janela",
+  "action": "Trocado window.open por <Link target=_blank rel=noreferrer noopener> no 'Acessar Ficha Completa' (ancora nunca sofre bloqueio de popup). Provável causa em producao: bundle antigo da Vercel (hard refresh apos deploy). 161/161 testes, build OK, lint 0 erros. Nao commitado (aguardando pedido)."
 }
