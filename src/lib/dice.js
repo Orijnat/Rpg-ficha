@@ -7,7 +7,7 @@
  * Executa uma rolagem de dados virtuais determinística e estruturada.
  *
  * @param {Object} options
- * @param {number} [options.sides=20] Número de lados do dado (2, 4, 6, 8, 10, 12, 20, 100).
+ * @param {number} [options.sides=20] Número de lados do dado (4, 6, 8, 10, 12, 20, 100).
  * @param {number} [options.count=1] Quantidade de dados a rolar no modo normal.
  * @param {'normal'|'advantage'|'disadvantage'} [options.mode='normal'] Modo da rolagem.
  * @param {number} [options.modifier=0] Modificador somado ao total.

@@ -15,10 +15,10 @@ import {
   PenLine,
   ChevronDown,
 } from "lucide-react";
-import DiceFace from "./DiceFace";
+import DiceRoll3D from "./Dice3D";
 import { formatModifier } from "../../../lib/modifiers";
 
-const DICE_TYPES = [2, 4, 6, 8, 10, 12, 20, 100];
+const DICE_TYPES = [4, 6, 8, 10, 12, 20, 100];
 
 
 function FaceInputs({ count, sides, values, onChange, onEnter }) {
@@ -209,9 +209,7 @@ function RollChooser({ request, onVirtual, onManual, onCancel }) {
 
 function DiceRollAnimation({ roll }) {
   const isContest = roll.mode === "advantage" || roll.mode === "disadvantage";
-  const values = isContest ? roll.rolls.slice(0, 2) : roll.rolls;
-  const isCoin = roll.sides === 2;
-  const dieSize = values.length >= 5 ? "3.25rem" : values.length === 4 ? "3.9rem" : "5rem";
+  const isPercentile = roll.sides === 100;
   const crit = roll.isCriticalSuccess ? "success" : roll.isCriticalFailure ? "failure" : undefined;
 
   return (
@@ -224,27 +222,9 @@ function DiceRollAnimation({ roll }) {
       data-crit={crit}
     >
       <div className="dice-roll-aura" />
-      <div className="dice-roll-dice">
-        {values.map((value, index) => {
-          const discarded = isContest && value === roll.discarded && values.indexOf(value) === index;
-          const animationClass = isCoin
-            ? "dice-roll-die dice-coin"
-            : index % 2 === 1
-            ? "dice-roll-die dice-tumble-alt"
-            : "dice-roll-die";
-          return (
-            <div
-              className={`${animationClass}${discarded ? " dice-roll-die-discarded" : ""}`}
-              style={{ "--die-size": dieSize, animationDelay: `${index * 110}ms` }}
-              key={`${roll.id}-${index}`}
-            >
-              <DiceFace sides={roll.sides} value={value} />
-            </div>
-          );
-        })}
-      </div>
+      <DiceRoll3D roll={roll} />
       <span className="dice-roll-caption">
-        {isContest ? (roll.mode === "advantage" ? "Vantagem" : "Desvantagem") : isCoin ? "Moeda" : `d${roll.sides}`}
+        {isContest ? (roll.mode === "advantage" ? "Vantagem" : "Desvantagem") : isPercentile ? "d100 · Percentil" : `d${roll.sides}`}
       </span>
     </div>
   );
@@ -303,7 +283,7 @@ function ManualTray({ onDone }) {
 
       <div>
         <span className="text-xs uppercase tracking-wider text-[var(--theme-subtitle)]">Tipo de dado</span>
-        <div className="mt-2 grid grid-cols-4 gap-2 sm:grid-cols-8">
+        <div className="mt-2 grid grid-cols-4 gap-2 sm:grid-cols-7">
           {DICE_TYPES.map((s) => (
             <button
               key={s}
@@ -651,7 +631,7 @@ export default function DiceModal() {
                 <span className="text-xs uppercase tracking-wider text-[var(--theme-subtitle)]">
                   Escolha o Tipo de Dado
                 </span>
-                <div className="mt-2 grid grid-cols-4 gap-2 sm:grid-cols-8">
+                <div className="mt-2 grid grid-cols-4 gap-2 sm:grid-cols-7">
                   {DICE_TYPES.map((sides) => (
                     <button
                       key={sides}

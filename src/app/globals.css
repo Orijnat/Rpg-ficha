@@ -857,12 +857,12 @@
   .animate-kenburns { animation: none; }
 }
 
-/* ═══════════ Rolagem de dados — dados facetados por tipo (d2 moeda … d100) ═══════════ */
+/* ═══════════ Rolagem de dados — palco do dado 3D WebGL (DiceRoll3D) ═══════════ */
 .dice-roll-stage {
   position: relative;
   display: grid;
   place-items: center;
-  min-height: 158px;
+  min-height: 172px;
   overflow: hidden;
   border-radius: 1rem;
   border: 1px solid color-mix(in srgb, var(--theme-accent) 30%, transparent);
@@ -870,18 +870,23 @@
     radial-gradient(circle at 50% 64%, color-mix(in srgb, var(--theme-accent) 17%, transparent), transparent 56%),
     linear-gradient(160deg, color-mix(in srgb, var(--theme-bg-elevated) 85%, black), var(--theme-bg));
   box-shadow: inset 0 0 36px color-mix(in srgb, var(--theme-accent) 9%, transparent);
-  perspective: 780px;
 }
 
 .dice-roll-aura {
   position: absolute;
-  bottom: 26px;
+  bottom: 24px;
   width: 190px;
   height: 38px;
   border-radius: 50%;
   background: var(--theme-accent-glow);
   filter: blur(18px);
   animation: dice-shadow-pulse 1500ms ease-out both;
+}
+
+.dice-3d-mount {
+  position: relative;
+  z-index: 1;
+  width: 100%;
 }
 
 .dice-roll-dice {
@@ -891,57 +896,37 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  padding: 1.15rem 0 1.9rem;
-  transform-style: preserve-3d;
+  gap: 0.75rem;
+  padding: 1.15rem 0.5rem 1.75rem;
 }
 
-.dice-roll-die {
-  width: var(--die-size, 5rem);
-  height: var(--die-size, 5rem);
-  filter: drop-shadow(0 14px 12px rgba(0, 0, 0, 0.5));
-  animation: dice-tumble 1250ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
-  transform-style: preserve-3d;
-  will-change: transform, opacity;
-}
-
-.dice-tumble-alt {
-  animation-name: dice-tumble-alt;
-}
-
-.dice-coin {
-  border-radius: 50%;
-  clip-path: circle(50% at 50% 50%);
-  animation-name: dice-coin-flip;
+.dice-static-die {
+  width: 4rem;
+  height: 4rem;
+  filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.45));
 }
 
 .dice-roll-die-discarded {
   opacity: 0.4;
-  filter: saturate(0.45) brightness(0.85) drop-shadow(0 8px 8px rgba(0, 0, 0, 0.4));
-}
-
-.dice-roll-stage[data-crit="success"] .dice-roll-die {
-  filter: drop-shadow(0 0 16px rgba(52, 211, 153, 0.55)) drop-shadow(0 14px 12px rgba(0, 0, 0, 0.5));
-}
-
-.dice-roll-stage[data-crit="failure"] .dice-roll-die {
-  filter: drop-shadow(0 0 16px rgba(251, 113, 133, 0.55)) drop-shadow(0 14px 12px rgba(0, 0, 0, 0.5));
+  filter: saturate(0.45) brightness(0.85);
 }
 
 .dice-roll-stage[data-crit="success"] .dice-roll-aura {
-  background: rgba(52, 211, 153, 0.4);
+  background: rgba(52, 211, 153, 0.42);
 }
 
 .dice-roll-stage[data-crit="failure"] .dice-roll-aura {
-  background: rgba(251, 113, 133, 0.4);
+  background: rgba(251, 113, 133, 0.42);
 }
 
 .dice-roll-caption {
   position: absolute;
-  bottom: 0.6rem;
+  bottom: 0.45rem;
   left: 0;
   right: 0;
+  z-index: 2;
   text-align: center;
+  pointer-events: none;
   color: var(--theme-subtitle);
   font-family: var(--font-cinzel), Georgia, serif;
   font-size: 0.66rem;
@@ -950,43 +935,8 @@
   text-transform: uppercase;
 }
 
-@keyframes dice-tumble {
-  0% { opacity: 0; transform: translate3d(-46px, -96px, 90px) rotateX(-520deg) rotateY(430deg) rotateZ(-140deg) scale(0.5); }
-  55% { opacity: 1; transform: translate3d(10px, 10px, 24px) rotateX(285deg) rotateY(620deg) rotateZ(30deg) scale(1.14); }
-  74% { transform: translate3d(0, -10px, 0) rotateX(385deg) rotateY(715deg) rotateZ(0deg) scale(0.96); }
-  100% { opacity: 1; transform: translate3d(0, 0, 0) rotateX(360deg) rotateY(720deg) rotateZ(0deg) scale(1); }
-}
-
-@keyframes dice-tumble-alt {
-  0% { opacity: 0; transform: translate3d(46px, -104px, 70px) rotateX(500deg) rotateY(-425deg) rotateZ(145deg) scale(0.5); }
-  55% { opacity: 1; transform: translate3d(-10px, 12px, 18px) rotateX(-280deg) rotateY(-615deg) rotateZ(-28deg) scale(1.14); }
-  74% { transform: translate3d(0, -10px, 0) rotateX(-378deg) rotateY(-712deg) rotateZ(0deg) scale(0.96); }
-  100% { opacity: 1; transform: translate3d(0, 0, 0) rotateX(-360deg) rotateY(-720deg) rotateZ(0deg) scale(1); }
-}
-
-@keyframes dice-coin-flip {
-  0% { opacity: 0; transform: translateY(-120px) rotateY(0deg) rotateZ(-12deg) scale(0.6); }
-  30% { opacity: 1; }
-  55% { transform: translateY(8px) rotateY(900deg) rotateZ(4deg) scale(1.1); }
-  74% { transform: translateY(-12px) rotateY(1170deg) rotateZ(-2deg) scale(0.97); }
-  100% { opacity: 1; transform: translateY(0) rotateY(1440deg) rotateZ(0deg) scale(1); }
-}
-
 @keyframes dice-shadow-pulse {
   0% { opacity: 0; transform: scale(0.4); }
   55% { opacity: 0.85; transform: scale(1.25); }
   100% { opacity: 0.45; transform: scale(1); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .dice-roll-die,
-  .dice-roll-aura {
-    animation-duration: 1ms !important;
-    animation-delay: 0ms !important;
-    animation-iteration-count: 1 !important;
-  }
-  .dice-roll-die {
-    transform: none !important;
-    will-change: auto;
-  }
 }

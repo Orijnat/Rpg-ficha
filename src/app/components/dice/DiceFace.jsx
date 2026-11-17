@@ -38,20 +38,6 @@ function faceTextStyle(value, base) {
 export default function DiceFace({ sides, value }) {
   const text = String(value);
 
-  if (sides === 2) {
-    const label = value === 1 || value === "1" ? "CARA" : "COROA";
-    return (
-      <svg viewBox="0 0 100 100" className="h-full w-full" aria-hidden="true">
-        <circle cx="50" cy="50" r="44" fill="var(--theme-accent)" stroke="rgba(0,0,0,0.35)" strokeWidth="2" />
-        <path d="M 13 27 A 44 44 0 0 1 87 27" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="4" strokeLinecap="round" />
-        <circle cx="50" cy="50" r="33.5" fill="none" stroke="rgba(0,0,0,0.35)" strokeWidth="2" strokeDasharray="4 6" />
-        <text x="50" y="55" textAnchor="middle" style={{ fontFamily: "var(--font-cinzel), Georgia, serif", fontWeight: 800, fill: "var(--theme-accent-contrast)", fontSize: 15, letterSpacing: 2 }}>
-          {label}
-        </text>
-      </svg>
-    );
-  }
-
   if (sides === 4) {
     return (
       <svg viewBox="0 0 100 100" className="h-full w-full" aria-hidden="true">
