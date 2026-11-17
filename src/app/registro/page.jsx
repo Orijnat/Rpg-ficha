@@ -574,12 +574,6 @@ function RegisterForm() {
                 color: "#f0d9a0",
               }}
             >
-              <div className="mb-3 flex items-start gap-2 rounded-lg border border-[#4a3d2a]/40 bg-[#0f0d0a]/40 px-3 py-2.5 text-[11px] text-[#b59a6e]">
-                <Mail size={14} className="mt-0.5 shrink-0 text-[var(--theme-accent)]" />
-                <span>
-                  Após concluir o cadastro, enviaremos um <strong>código de 6 dígitos</strong> para o e-mail informado. A conta só pode ser usada depois de informar o código.
-                </span>
-              </div>
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--theme-accent)]/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
               {loading ? (
                 <span className="relative flex items-center gap-2">
