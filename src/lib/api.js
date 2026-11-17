@@ -338,6 +338,55 @@ export async function listCharacters(token = getStoredToken()) {
   return safeFetchJson(`${API_BASE_URL}/characters`, { headers }, "Erro ao carregar personagens.");
 }
 
+export async function listMounts(characterId, token = getStoredToken()) {
+  try {
+    return await safeFetchJson(
+      `${API_BASE_URL}/characters/${encodeURIComponent(characterId)}/mounts`,
+      { headers: authHeaders(token) },
+      "Erro ao carregar montarias."
+    );
+  } catch (error) {
+    // Fichas sem registro de montarias (ex.: guia de monstro do mestre) caem em lista vazia.
+    if (error?.status === 404) return [];
+    throw error;
+  }
+}
+
+export async function createMount(characterId, mountData, token = getStoredToken()) {
+  return safeFetchJson(
+    `${API_BASE_URL}/characters/${encodeURIComponent(characterId)}/mounts`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...authHeaders(token) },
+      body: JSON.stringify(mountData),
+    },
+    "Erro ao criar montaria."
+  );
+}
+
+export async function updateMount(characterId, mountId, patch, token = getStoredToken()) {
+  return safeFetchJson(
+    `${API_BASE_URL}/characters/${encodeURIComponent(characterId)}/mounts/${encodeURIComponent(mountId)}`,
+    {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", ...authHeaders(token) },
+      body: JSON.stringify(patch),
+    },
+    "Erro ao atualizar montaria."
+  );
+}
+
+export async function deleteMount(characterId, mountId, token = getStoredToken()) {
+  return safeFetchJson(
+    `${API_BASE_URL}/characters/${encodeURIComponent(characterId)}/mounts/${encodeURIComponent(mountId)}`,
+    {
+      method: "DELETE",
+      headers: authHeaders(token),
+    },
+    "Erro ao remover montaria."
+  );
+}
+
 export async function updateCharacterOnBackend(characterId, characterData, token = getStoredToken()) {
   const headers = { "Content-Type": "application/json", ...authHeaders(token) };
   return safeFetchJson(`${API_BASE_URL}/characters/${characterId}`, {

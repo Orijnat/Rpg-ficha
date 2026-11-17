@@ -1,57 +1,80 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Footprints, Heart, Plus, Skull, Sparkles, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Footprints, Heart, Plus, Skull, Sparkles, Trash2, RefreshCw } from "lucide-react";
 import { useCharacter } from "../context/CharacterContext";
 import { Card, EditableNumber, EditableText, HPBar, SectionHeader, StatBox } from "../components/ui";
 import { AddMountModal } from "../components/montaria/AddMountModal";
+import { listMounts, createMount, updateMount, deleteMount } from "../../lib/api";
 import { applyHealthChange } from "../../lib/modifiers";
-
-function uid() {
-  const cryptoObj = typeof globalThis !== "undefined" ? globalThis.crypto : undefined;
-  if (cryptoObj?.getRandomValues) {
-    const bytes = new Uint8Array(8);
-    cryptoObj.getRandomValues(bytes);
-    return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
-  }
-  return `${Date.now().toString(36)}${Math.random().toString(36).slice(2)}`;
-}
 
 const ATTRS = ["FOR", "DES", "CON", "SAB", "ESP", "CAR", "INT"];
 
-function mountAttributes(mount) {
+const mountAttributes = (mount) => ({
+  ...Object.fromEntries(ATTRS.map((attr) => [attr, 10])),
+  ...(mount?.attributes ?? {}),
+});
+
+// Vínculo API <-> tela
+function fromApi(mount) {
+  const extras = mount?.dadosExtras ?? {};
   return {
-    ...Object.fromEntries(ATTRS.map((attr) => [attr, 10])),
-    ...(mount?.attributes ?? {}),
+    id: mount.id,
+    name: mount.nome,
+    species: mount.especie ?? "",
+    notes: extras.notes ?? mount.descricao ?? "",
+    descricao: mount.descricao ?? "",
+    alive: extras.alive !== false && (mount.hp ?? 0) > 0,
+    hp: mount.hp,
+    hpMax: mount.hpMax,
+    attributes: extras.attributes ?? {},
   };
 }
 
-function fromLegacy(data) {
-  if (!data?.mountName) return null;
-  return {
-    id: "legacy-mount",
-    name: data.mountName,
-    species: "",
-    hp: Number(data.mountHP ?? 20),
-    hpMax: Number(data.mountHPMax ?? 20),
-    notes: data.mountNotes ?? "",
-    alive: (Number(data.mountHP ?? 20) > 0),
-    attributes: mountAttributes(null),
-  };
+function toApiPatch(patch) {
+  const out = {};
+  if (patch.name !== undefined) out.nome = patch.name;
+  if (patch.species !== undefined) out.especie = patch.species;
+  if (patch.descricao !== undefined) out.descricao = patch.descricao;
+  if (patch.hp !== undefined) out.hp = patch.hp;
+  if (patch.hpMax !== undefined) out.hpMax = patch.hpMax;
+  if (patch.notes !== undefined) out.notes = patch.notes;
+  if (patch.alive !== undefined) out.alive = patch.alive;
+  if (patch.attributes !== undefined) out.atributos = patch.attributes;
+  return out;
 }
 
 export default function MontariaPage() {
-  const { data, updExtra } = useCharacter();
+  const { data } = useCharacter();
+  const characterId = data?.id ?? null;
 
-  // Lista canônica de montarias vive em dadosExtras.mounts (pode não existir)
-  const storedMounts = data?.dadosExtras?.mounts;
-  const hasStored = Array.isArray(storedMounts);
-  const legacy = useMemo(() => fromLegacy(data), [data]);
-  const mounts = hasStored ? storedMounts : (legacy ? [legacy] : []);
-
+  // Montarias agora são linhas no banco (tabela montarias, via /api/characters/:id/mounts).
+  const [mounts, setMounts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [selectedId, setSelectedId] = useState(null);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const aliveMounts = mounts.filter((m) => m.alive);
+
+  const loadMounts = async () => {
+    if (!characterId) return;
+    setLoading(true);
+    setLoadError("");
+    try {
+      const rows = await listMounts(characterId);
+      setMounts(Array.isArray(rows) ? rows.map(fromApi) : []);
+    } catch (err) {
+      setLoadError(err.message || "Não foi possível carregar as montarias.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => loadMounts());
+    return () => window.cancelAnimationFrame(frame);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [characterId]);
 
   // Seleciona a primeira montaria viva por padrão
   useEffect(() => {
@@ -59,36 +82,54 @@ export default function MontariaPage() {
     const first = aliveMounts[0] || mounts[0];
     setSelectedId(first?.id ?? null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mounts.length, data?.dadosExtras?.mounts]);
+  }, [mounts.length]);
 
   const selected = mounts.find((m) => m.id === selectedId) || null;
 
-  const writeMounts = (next) => updExtra("mounts", next);
-
-  const handleAddMount = (draft) => {
-    const mount = {
-      id: uid(),
-      name: draft.name,
-      species: draft.species,
-      hp: draft.hp,
-      hpMax: draft.hpMax,
-      notes: draft.notes,
-      alive: draft.hp > 0,
-      attributes: mountAttributes(null),
-    };
-    writeMounts([...(hasStored ? storedMounts : (legacy ? [legacy] : [])), mount]);
-    setSelectedId(mount.id);
+  // Optimista com rollback em falha
+  const mutate = async (id, patch) => {
+    const snapshot = mounts;
+    setMounts((current) => current.map((m) => (m.id === id ? { ...m, ...patch } : m)));
+    try {
+      const saved = await updateMount(characterId, id, toApiPatch(patch));
+      setMounts((current) => current.map((m) => (m.id === id ? fromApi(saved) : m)));
+    } catch (err) {
+      setMounts(snapshot);
+      setLoadError(err.message || "Não foi possível salvar a montaria.");
+    }
   };
 
-  const removeMount = (id) => {
-    const base = hasStored ? storedMounts : (legacy ? [legacy] : []);
-    writeMounts(base.filter((m) => m.id !== id));
+  const handleAddMount = async (draft) => {
+    if (!characterId) return;
+    try {
+      const created = await createMount(characterId, {
+        nome: draft.name,
+        especie: draft.species,
+        hp: draft.hp,
+        hpMax: draft.hpMax,
+        notes: draft.notes,
+        atributos: mountAttributes(null),
+      });
+      setMounts((current) => [...current, fromApi(created)]);
+      setSelectedId(created.id);
+    } catch (err) {
+      setLoadError(err.message || "Não foi possível criar a montaria.");
+    }
   };
 
-  const patchMount = (id, patch) => {
-    const base = hasStored ? storedMounts : (legacy ? [legacy] : []);
-    writeMounts(base.map((m) => (m.id === id ? { ...m, ...patch } : m)));
+  const removeMount = async (id) => {
+    if (!characterId) return;
+    const snapshot = mounts;
+    setMounts((current) => current.filter((m) => m.id !== id));
+    try {
+      await deleteMount(characterId, id);
+    } catch (err) {
+      setMounts(snapshot);
+      setLoadError(err.message || "Não foi possível remover a montaria.");
+    }
   };
+
+  const patchMount = (id, patch) => mutate(id, patch);
 
   const patchMountAttribute = (attr, value) => {
     if (!selected) return;
@@ -135,8 +176,25 @@ export default function MontariaPage() {
           </button>
         </div>
 
+        {loadError && (
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-rose-500/40 bg-rose-950/20 px-4 py-2.5 text-xs text-rose-300">
+            <span>{loadError}</span>
+            <button
+              type="button"
+              onClick={loadMounts}
+              className="flex items-center gap-1.5 rounded-lg border border-rose-500/40 px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-rose-300 transition hover:bg-rose-900/30"
+            >
+              <RefreshCw size={11} /> Tentar de novo
+            </button>
+          </div>
+        )}
+
         {/* Seletor de montarias */}
-        {mounts.length === 0 ? (
+        {loading ? (
+          <p className="p-8 text-center font-journal text-sm italic text-muted-foreground">
+            Despertando as montarias...
+          </p>
+        ) : mounts.length === 0 ? (
           <div className="rounded-xl border border-dashed border-primary/20 p-8 text-center">
             <Footprints size={28} className="mx-auto text-primary/40" />
             <p className="mt-3 font-journal text-sm italic text-muted-foreground">
