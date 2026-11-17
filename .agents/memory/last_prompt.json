@@ -1,6 +1,6 @@
 {
   "timestamp": "2026-11-17T23:59:59-03:00",
   "agent": "opencode",
-  "prompt": "o XP Total do Encontro deverá ser definido ali, e este valor será dividido pela quantidade de jogadores no encontro",
-  "action": "XP do encontro travado na criação: painel Recompensa de XP virou read-only (badge com total + rateio '÷ N = perHero cada'); handleSaveEncounterXp/onSaveXp removidos; campo joso fica 'XP Total do Encontro' no formulario de criacao. Distribuicao inalterada. 161/161 testes, build OK, lint 0 erros. Nao commitado."
+  "prompt": "o xp informado aq devera ser dividido pela quantia de joadores envolvidos",
+  "action": "XP da sessao é TOTAL: campo 'Recompensa de XP Total da Sessao'; novo botao 'Distribuir XP da sessao' por card — busca herois da campanha (listCharacters(token, campanhaId)), floor(total/N), ConfirmDialog com conta exata, aplica XP em cada heroi (updateCharacterOnBackend), marca recompensas.xpDistribuidoEm (badge). 161/161 testes, build OK, lint 0 erros."
 }
