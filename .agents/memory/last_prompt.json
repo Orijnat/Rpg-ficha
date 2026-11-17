@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-17T23:05:00-03:00",
+  "timestamp": "2026-11-17T23:30:00-03:00",
   "agent": "opencode",
-  "prompt": "poderia adicionar apenas status para ela? similar a dos joadores",
-  "action": "Card 'Status Fundamentais' na ficha da montaria: 7 StatBox identicos aos dos herois (rolls d20, +/-). mount.attributes {FOR..INT} default 10, clamp 1-30, legado ok. Persiste em dadosExtras.mounts. 161/161 testes, build OK, lint 0 erros. Nao commitado."
+  "prompt": "faca um mapeamento eral do sistema e use a skill de banco de dados e reformule oque jular necessario para adicionar no bacno de dados",
+  "action": "Mapeamento geral + reform: achado schema drift — tabelas relacionais (montarias, pericias_personagem, itens_inventario, contratos, cofres, imagens) criadas mas nunca usadas; app vive em dados_extras JSONB. Aplicado: MONTARIAS agora persistidas na tabela montarias (Mount.js, mountController + ACL, /api/characters/:id/mounts, migration de backfill idempotente testada ao vivo em Postgres 16 descartável). Frontend /montaria reescrito p/ API com rollback otimista. Back 106/106, front 161/161, build OK, lint 0 erros. NÃO commitado. Prod: db:migrate + Render pendentes."
 }
