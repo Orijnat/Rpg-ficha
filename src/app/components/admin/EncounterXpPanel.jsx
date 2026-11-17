@@ -117,7 +117,7 @@ export function EncounterXpPanel({ encounter, heroes, onDistribute, distributing
             type="button"
             onClick={onFinalizeEncounter}
             className="mt-2 flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-amber-500/50 bg-amber-500/15 text-[10px] font-bold uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/25 active:scale-95"
-            title="Abre o seletor de quem recebe o XP e encerra o encontro"
+            title="Abre o desfecho completo: quem recebe XP, quanto e vitória/derrota/fuga de cada herói"
           >
             <Trophy size={12} />
             Finalizar Encontro
