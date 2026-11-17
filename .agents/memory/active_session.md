@@ -61,7 +61,11 @@
 
 ---
 
-## ✅ 2026-11-17 (2) — Animação 3D WebGL do dado (rola com todos os lados) + d2 removido — commitado/pushado junto ao push (7)
+## ✅ Push 2026-11-17 (7) — Animação 3D do dado + remoção do d2 (frontend)
+- `1d2d848` feat(dice) o dado em si rolando com todos os lados — 3D WebGL/Three.js (Dice3D.jsx; d10 bipirâmide pentagonal; números por face via CanvasTexture; d100 = par de dados; d2 removido) · `74f4fe4` docs(memory). Pushed: `6fbbdd8..74f4fe4`.
+- Verificado antes do commit: front 161/161, build OK, lint 0 erros. **Sem conferência no navegador** — revisar visual/enquadramento/luzes e o fallback estático.
+
+## ✅ 2026-11-17 (2) — Animação 3D WebGL do dado (rola com todos os lados) + d2 removido — commitado/pushado (Push 2026-11-17 (7))
 - Pedido: "poderia fazer uma animação do dado em si rolando com todos os seus lados, e remover o d2". Depois: "de pus" (= commit e push). Estilo escolhido pelo usuário: **ado 3D real com Three.js**.
 - **Removido d2**: DICE_TYPES=[4,6,8,10,12,20,100] (bandeja + dado físico), face SVG d2 (CARA/COROA), `.dice-coin`/`dice-coin-flip`/tumble CSS, JSDoc lib/dice.js.
 - Novo `src/app/components/dice/Dice3D.jsx` (three 0.187, dependência adicionada): poliedros de verdade — d4 tetra / d6 cubo / d8 octa / d12 dodeca / d20 icosa (built-ins); **d10 = bipirâmide pentagonal** (a 1ª tentativa — trapezoedro com kites — NÃO era coplanar (desvio 0.39); corrigida por bipirâmide convexa, 10 faces isósceles); d12 lido como 3 tris/face com dedupe de vértices p/ centróide/normais/área. Números em cada face via `CanvasTexture` (Georgia 900, fill escuro + sombra clara — efeito gravado); corpo `MeshStandardMaterial` âmbar `--theme-accent` flatShading + `EdgesGeometry`. Queda com quique (`easeOutBounce`) + giro de ~2+ voltas desfeito por `slerp` (`easeInOutCubic`, 1.3s) até a face sorteada ficar virada p/ câmera (câmera 40° fov, fit por nº de dados, escala p/ 3+ dados). **d100 = par de bipirâmides** (dezenas 00–90 + unidades 0–9; 100 = "00"+"00"). Dados descartados (vantagem/desvantagem) = corpo cinza. `prefers-reduced-motion`/sem WebGL → fallback estático com `DiceFace` SVG.
