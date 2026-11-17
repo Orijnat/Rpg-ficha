@@ -14,11 +14,13 @@ import { DEFAULT_CLASSES, findSelectedClass } from "../../lib/classes";
 import { listRaces, listClasses } from "../../lib/api";
 import { parseHitDie, hpGainFromRoll, levelUpGate } from "../../lib/leveling";
 import { useDice } from "../context/DiceContext";
+import { useAuth } from "../context/AuthContext";
 import { DEFAULT_ABILITIES, isHabilidadeDesbloqueada } from "../../lib/abilities";
 
 export default function Personagem() {
   const { data, upd, syncStatus, syncError, retrySync, reloadFromCloud, overwriteCloud, updateDadosExtras, updateRace, updateClass, applyLevelUp } = useCharacter();
   const { requestRoll } = useDice();
+  const { isMaster } = useAuth();
   const [levelFeedback, setLevelFeedback] = useState(null);
   const feedbackTimer = useRef(null);
   const [racas, setRacas] = useState(DEFAULT_RACES);
@@ -276,6 +278,11 @@ export default function Personagem() {
             </p>
           </div>
           <div className="flex shrink-0 flex-col items-stretch gap-1.5 sm:items-end">
+            {!isMaster ? (
+              <span className="max-w-[180px] rounded-lg border border-primary/30 bg-primary/10 px-3 py-2 text-center font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                Apenas o mestre promove o herói de nível
+              </span>
+            ) : (
             <button
               type="button"
               onClick={handleLevelUp}
@@ -292,6 +299,7 @@ export default function Personagem() {
               <ChevronsUp size={15} />
               Subir de Nível
             </button>
+            )}
             <span className="text-center font-mono text-[10px] text-muted-foreground sm:text-right">
               {characterLevel >= 20
                 ? "Nível máximo (20)"

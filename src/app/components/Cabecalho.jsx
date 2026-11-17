@@ -6,7 +6,7 @@ import { Crown, HeartPulse, ScrollText, Settings, Shield } from "lucide-react";
 import { useCharacter } from "../context/CharacterContext";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
-import { EditableText } from "./ui";
+import { EditableText, HPBar } from "./ui";
 import SettingsModal from "./SettingsModal";
 import dynamic from "next/dynamic";
 const DanoCuraPainel = dynamic(() => import("./DanoCuraPainel"), { ssr: false });
@@ -70,8 +70,22 @@ export default function Cabecalho() {
                     </span>
                   </div>
 
-                  {/* A vitalidade vive apenas no botão Dano/Cura (modal) — sem controles inline */}
-                  <div className="mt-1.5 flex items-center gap-1.5 sm:justify-end">
+                  {/* Barra de PV somente leitura + botão Dano/Cura (abre a gestão de vitalidade) */}
+                  <div className="mt-1.5 flex items-center gap-2 sm:justify-end">
+                    <button
+                      type="button"
+                      onClick={() => setIsHpModalOpen(true)}
+                      className="group flex items-center gap-2 hover:opacity-95 transition"
+                      title="Gestão de Vitalidade (dano & cura)"
+                      aria-label="Gestão de Vitalidade (dano e cura)"
+                    >
+                      <div className="w-24 sm:w-32 transition-transform group-hover:scale-[1.03]">
+                        <HPBar hp={data.hp} max={data.hpMax} />
+                      </div>
+                      <span className="font-mono text-xs font-bold text-foreground group-hover:text-primary transition-colors whitespace-nowrap drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+                        {data.hp}/{data.hpMax} <span className="text-[10px] text-muted-foreground uppercase font-cinzel">PV</span>
+                      </span>
+                    </button>
                     <button
                       type="button"
                       onClick={() => setIsHpModalOpen(true)}

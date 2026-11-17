@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Star } from "lucide-react";
 import { useCharacter } from "../context/CharacterContext";
+import { useAuth } from "../context/AuthContext";
 import { calculateLevelFromXP } from "../../lib/modifiers";
 
 /**
@@ -12,6 +13,8 @@ import { calculateLevelFromXP } from "../../lib/modifiers";
  */
 export default function XPBar() {
   const { data, upd } = useCharacter();
+  const { isMaster } = useAuth();
+  const canEdit = Boolean(isMaster);
 
   // Lê XP de data.xp com fallback para dadosExtras.xp
   const rawXP = data.xp ?? data.dadosExtras?.xp ?? 0;
@@ -31,6 +34,7 @@ export default function XPBar() {
   }, [editing]);
 
   const startEdit = () => {
+    if (!canEdit) return;
     setInputVal(String(currentXP));
     setEditing(true);
   };
@@ -62,7 +66,7 @@ export default function XPBar() {
         </span>
 
         {/* Clique para editar XP */}
-        {editing ? (
+        {editing && canEdit ? (
           <div className="flex items-center gap-1">
             <input
               ref={inputRef}
@@ -83,11 +87,27 @@ export default function XPBar() {
               OK
             </button>
           </div>
+        ) : !canEdit ? (
+          <span className="font-mono text-[10px] text-amber-300/70">
+            <span className="text-amber-400 font-bold">
+              {currentXP.toLocaleString("pt-BR")}
+            </span>
+            {!isMaxLevel && (
+              <span className="text-muted-foreground">
+                {" "}
+                / {nextLevelXP.toLocaleString("pt-BR")}{" "}
+                <span className="text-amber-500/60">({progress}%)</span>
+              </span>
+            )}
+            <span className="ml-1 font-cinzel text-amber-500/40 text-[8px] uppercase">
+              XP
+            </span>
+          </span>
         ) : (
           <button
             type="button"
             onClick={startEdit}
-            title="Clique para editar XP"
+            title="Clique para editar XP (mestre)"
             className="group font-mono text-[10px] text-amber-300/70 hover:text-amber-200 transition-colors cursor-pointer"
             aria-label="Editar XP atual"
           >
