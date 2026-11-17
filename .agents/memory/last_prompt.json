@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-17T22:50:00-03:00",
+  "timestamp": "2026-11-17T23:10:00-03:00",
   "agent": "opencode",
-  "prompt": "Falha ao sincronizar Tentar novamente",
-  "action": "Confirmado: syncStatus=error (rose), nao conflict. Backend de PROD (rpg-backend-pmhk.onrender.com) saudavel: /api/health 200, /api/racas 200, sync sem token 401. Causa mais provavel: banco de PROD foi TRUNCADO hoje incl. sessoes_autenticacao -> verificarSessao() retorna null -> 401 'Sessao revogada ou expirada' em toda rota autenticada; isAuthenticated do front so le JWT -> usuario preso no /personagem com todo save falhando. Fix: /personagem agora exibe a mensagem real do servidor (HTTP status + msg) e botao 'Sair e entrar de novo' para 401/403. Logout+login deve resolver. 162/162, build OK, lint 0 erros. NAO commitado."
+  "prompt": "a tela esta dando uma leve levantada ao add ais um de status, poderia corriir?",
+  "action": "Interpretado como: ao clicar +1 num atributo da ficha, o layout salta. Causa: o cluster de sync (indicador + linha de erro) mudava de altura a cada edicao (loop de 422 do sync). Fix: /personagem com altura constante no cluster (min-h-8 sempre renderizado com placeholder, linha de erro com h-4 fixo). 162/162, build OK, lint 0 erros. NAO commitado. Pendente: identificar o campo exato do 422 (front ja tem error.details capturado; pedir ao usuario ou expor na ficha)."
 }

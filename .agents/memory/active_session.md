@@ -1,5 +1,11 @@
 # 🧠 Sessão Ativa — Grimorium RPG
 
+## 🔧 Pedido 2026-11-17 — "a tela dá uma leve levantada ao add +1 de status" — CORRIGIDO (NÃO commitado)
+- Causa provável: a linha de erro de sync que eu adicionei (e o indicador) aparecia/desaparecia a cada edição (o usuário está em loop de 422 por edição → cada clique em +/− de atributo dispara um sync → estado "error" alterna → 16-20px de salto do layout a cada clique).
+- Fix: /personagem — o cluster de sync agora tem altura CONSTANTE (indicador sempre renderizado com `min-h-8`; placeholder `&nbsp;`/altura fixa `h-4` para o erro; conteúdo só muda internamente). Nada mais se move verticalmente na ficha ao editar.
+- IMPORTANTE: a causa-raiz da trepidação recorrente é o **HTTP 422** — o payload do usuário falha no `validar(sincronizacaoSchema)` de PROD e o front esconde `errors[]` (já capturado em `syncError.details`!). O usuário precisa me dizer o(s) campo(s) exato(s) — ou eu passo a exibir `error.details` na ficha (pendente de pedido do usuário).
+- Verificação: 162/162, build OK, lint 0 erros. NÃO commitado.
+
 ## 🔧 Pedido 2026-11-17 — "está ocorrendo falha ao sincronizar, não salvando os dados da ficha" — DIAGNÓSTICO + MELHORIA (NÃO commitado)
 - Sintoma do usuário: indicador da ficha = rose **"Falha ao sincronizar"** + botão **"Tentar novamente"** (ou seja: syncStatus "error", NÃO "conflict" — conflict seria âmbar "Conflito: revisão necessária").
 - Backend de PRODUÇÃO está SAUDÁVEL e alcançável: `https://rpg-backend-pmhk.onrender.com/api/health` → 200 ok; `/api/racas` → 200; `/api/characters/sync` sem token → 401 correto. Local (.env → localhost:3333) não está rodando aqui, mas produção funciona.
