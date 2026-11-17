@@ -81,6 +81,12 @@
 - `/admin/sessoes`: o campo vira "Recompensa de XP **Total da Sessão**"; novo botão por sessão **"Distribuir XP da sessão"** (só aparece se recompensas.xp > 0) — busca os heróis da campanha (`listCharacters(token, campanhaId)` — helper ganhou o parâmetro `campanhaId`, query string `?campanhaId=` no /characters do backend), calcula `floor(total ÷ N heróis)`, abre `ConfirmDialog` com o cálculo exato, aplica XP a UMA POR SÓ VEZ (updateCharacterOnBackend), grava `recompensas.xpDistribuidoEm` (badge "distribuída em…" / "XP ainda não distribuído") e re-carrega.
 - Verificação: 161/161 testes, build OK, lint 0 erros. NÃO commitado, NÃO conferido no navegador.
 
+## 🔧 2026-11-17 — Finalizar/Encerrar o encontro agora distribui o XP TOTAL automaticamente — commitado (lote de pus)
+- Pedido: "este valor será o valor que os jogadores irão receber eu gostaria que ele fosse importado automaticamente para lá" (opção: ao encerrar, XP aplicado automaticamente).
+- `handleAutoFinalizeEncounter` em `/admin/encontros`: constrói as rows (todos heróis da iniciativa, todos "vitoria", XP = floor(TOTAL ÷ N)) e chama o mesmo `handleFinalizeEncounter` do modal (que já distribui e fecha o encontro, grava `dadosExtras.resultado`, fecha com `ativo:false` e loga). Header "Finalizar" e o painel agora fazem isso em 1 clique.
+- Continua existindo o desfecho detalhado por herói: painel ganhou prop `onManualFinalize` → link sutil "Desfecho manual por herói (vitória / derrota / fuga)" que abre a modal FinalizarEncounterModal; o painel agora tem o botão primário verde "Encerrar Encontro (XP automático)".
+- Verificação: 161/161 testes, build OK, lint 0 erros (44 warnings pré-existentes). NÃO conferido no navegador.
+
 ## 🔧 2026-11-17 — XP do Encontro travado na CRIAÇÃO — NÃO commitado
 - Pedido: "o XP Total do Encontro deverá ser definido ali" (opção: só na criação travar depois).
 - O campo agora existe APENAS no formulário de criação do encontro ("XP Total do Encontro"). O painel "Recompensa de XP" da Sala de Guerra virou **somente leitura**: badge âmbar "XP total do encontro" com totais e rateio ("R XP ÷ N herói(s) = perHero XP cada"); `handleSaveEncounterXp`/`onSaveXp` removidos; distribuição (Distribuir / Finalizar) inalterada (floor(total ÷ N heróis)).

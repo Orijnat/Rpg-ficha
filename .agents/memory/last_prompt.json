@@ -1,6 +1,6 @@
 {
   "timestamp": "2026-11-17T23:59:59-03:00",
   "agent": "opencode",
-  "prompt": "o xp informado aq devera ser dividido pela quantia de joadores envolvidos",
-  "action": "XP da sessao é TOTAL: campo 'Recompensa de XP Total da Sessao'; novo botao 'Distribuir XP da sessao' por card — busca herois da campanha (listCharacters(token, campanhaId)), floor(total/N), ConfirmDialog com conta exata, aplica XP em cada heroi (updateCharacterOnBackend), marca recompensas.xpDistribuidoEm (badge). 161/161 testes, build OK, lint 0 erros."
+  "prompt": "sabe o valor que informado ao criar o encontro, entao este valor, sera o valor que os joadores iram receber eu ostaria que ele fosse importado automaticamente para la, para isto fica rmais automatizado",
+  "action": "Finalizar/Encerrar encontro agora distribui o XP TOTAL automaticamente: handleAutoFinalizeEncounter monta vitoria+perHero para cada heroi da iniciativa e aplica via o mesmo finalize core (distribui, fecha, loga). Header e painel 'Encerrar Encontro (XP automatico)' em 1 clique; desfecho manual por heroi continua acessivel ('Desfecho manual por heroi'). 161/161 testes, build OK, lint 0 erros."
 }
