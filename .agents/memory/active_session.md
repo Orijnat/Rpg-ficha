@@ -1,5 +1,20 @@
 # 🧠 Sessão Ativa — Grimorium RPG
 
+## ✅ Pedido 2026-11-17 — "instalar Make Documentation" — FEITO (NÃO commitado)
+- Escolha do usuário: **skill de agente** (`make-documentation`, callicrate/skills) instalada como skill do projeto.
+- Clone raso em /tmp/opencode/callicrate-skills (repo: github.com/callicrate/skills, skill na raiz `make-documentation/`). Varredura de segurança: SKILL.md limpo (prompt de documentação, sem instruções externas), `scripts/audit_documentation.py` é stdlib puro (argparse/json/re/pathlib, read-only, sem rede/subprocess/env), references mencionam apenas "não expor secrets" (política, sem vazamento). Nada executado.
+- Vendorizada para `.agents/skills/make-documentation/` **e espelhada em `.github/skills/make-documentation/`** (mesmo padrão do audit-suite/fe-rail). `skills-lock.json` ganhou a entrada (source callicrate/skills, skillPath `make-documentation/SKILL.md`, computedHash sha256 do SKILL.md) → 23 skills.
+- Trigger: README/arquitetura/changelog/runbooks/release notes; NÃO cobre API docs nem AGENTS.md.
+- NÃO commitado — aguardar pedido de commit/push.
+
+## 🔧 Pedido 2026-11-17 — "o xp nao chegou na fica" — RESOLVIDO (commitado/pushado)
+- **Bug 1 (backend, raiz)**: `characterController.list` selecionava atributos SEM `experiencia` → `publicCharacter` mapeava `xp = extras.xp ?? 0` → qualquer herói aparecia com XP 0 (e o PUT do mestre sobrescrevia o XP acumulado com só o delta — perda de dado). Fix: `experiencia` adicionada aos attributes (characterController.js ~377) + novo teste `test/xp_list.test.js` (captura findAll e exige experiencia) → suíte backend **110/110**.
+- **Bug 2 (frontend)**: `/admin/sessoes` usava `listCharacters`/`updateCharacterOnBackend` SEM importá-los → ReferenceError em runtime; a distribuição de XP da sessão nunca rodava e caía no catch genérico.
+- **Defesa-em-profundidade (front)**: os 3 fluxos de distribuição (handleDistributeXp, handleFinalizeEncounter em encontros/page.js; confirmXpDistribution em sessoes/page.js) agora fazem `fetchCharacterFromBackend` de TODOS os heróis ANTES de qualquer PUT e abortam tudo se algum fetch falhar (nunca sobrescreve XP com baseline velho); XP novo = fresh.xp + delta; setHeroes usa o valor absoluto.
+- Verificação: back 110/110; front **162/162**, build OK, lint 0 erros (44 warnings pré-existentes).
+- **Backend precisa de Manual Deploy no Render** ou o fix de serialização não vale em produção (até lá, a ficha aberta mostra XP stale e o mestre pode zerar XP ao editar a ficha de heróis — os fluxos de distribuição em si estão protegidos pelo fresh-fetch).
+- Commitado e pushado: back `… (ver git log)` + front `…` (2026-11-17).
+
 ## 🔧 Pedido 2026-11-17 — "faltou o xp dinâmico do cadastro do encontro" — CORRIGIDO (NÃO commitado)
 - Causa-raiz: backend (`encontroController.criar`) guarda `recursos` DENTRO de `dadosExtras.recursos` ({ xp, tesouro }); a tabela `encontros` NÃO tem coluna top-level `recursos` e a API retorna o row cru — o frontend lia `encounter.recursos?.xp` → sempre undefined → 0 XP em todo lugar (painel, modal, rateio, confirmação de distribuição).
 - Fix: novo `src/lib/encounter.js` → `getEncounterXpReward(encounter)` (lê `dadosExtras.recursos.xp`, tolera legado top-level, clamp ≥ 0, floor, NaN/Infinity → 0). Consumidores migrados: FinalizarEncounterModal, EncounterXpPanel, encontros/page.js (distribuição + ConfirmDialog de XP). Novo teste `encounter.test.mjs` → **162/162**, build OK, lint 0 erros.
