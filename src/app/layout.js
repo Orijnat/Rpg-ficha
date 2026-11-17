@@ -28,6 +28,10 @@ export const metadata = {
   title: "Grimorium — Grimório Digital & Sala de Guerra",
   description:
     "Ficha de RPG d20 customizada e tática em tempo real: códice vivo para aventureiros e sala de guerra para mestres. 7 atributos, 19 perícias, combate tático, iniciativa ao vivo.",
+  icons: {
+    icon: [{ url: "/ambar-vulcanico.svg", type: "image/svg+xml" }],
+    shortcut: [{ url: "/ambar-vulcanico.svg", type: "image/svg+xml" }],
+  },
   openGraph: {
     title: "Grimorium — Grimório Digital & Sala de Guerra",
     description: "A ficha de RPG d20 definitiva para mesas dark fantasy.",

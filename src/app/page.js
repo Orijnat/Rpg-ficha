@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -95,9 +96,7 @@ export default function Home() {
       {/* Topo / Header Público */}
       <header className="relative z-20 mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8 lg:px-12 border-b border-primary/20 backdrop-blur-md">
         <Link href="/" className="flex items-center gap-3" aria-label="Grimorium, início">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-primary/50 bg-primary/10 text-primary shadow-[0_0_20px_color-mix(in_srgb,var(--primary)_30%,transparent)]">
-            <ScrollText size={22} />
-          </div>
+          <Image src="/ambar-vulcanico.svg" alt="Grimorium" width={44} height={44} priority className="h-11 w-11 rounded-xl shadow-[0_0_20px_color-mix(in_srgb,var(--primary)_30%,transparent)]" />
           <div>
             <span className="block font-cinzel text-base font-bold tracking-[0.16em] text-foreground">
               Grimorium
@@ -684,7 +683,7 @@ export default function Home() {
       <footer className="relative z-10 border-t border-primary/20 py-8 px-5 sm:px-8 text-center bg-black/60">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-journal text-muted-foreground italic">
           <div className="flex items-center gap-2 font-cinzel not-italic text-foreground font-bold">
-            <ScrollText size={16} className="text-primary" />
+            <Image src="/ambar-vulcanico.svg" alt="" width={16} height={16} className="h-4 w-4 rounded-sm" />
             <span>Grimorium</span>
           </div>
           <span>“Toda grande campanha começa com uma página em branco.”</span>

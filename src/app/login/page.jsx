@@ -3,6 +3,7 @@
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { useAuth } from "../context/AuthContext";
 import AuthScaffold from "../../components/auth/AuthScaffold";
 import { Lock, User, Eye, EyeOff, LogIn, Sparkles, AlertCircle, Link2 } from "lucide-react";
@@ -131,9 +132,7 @@ function LoginForm() {
                   </defs>
                 </svg>
                 {/* Ícone central */}
-                <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-xl border border-[var(--theme-accent)]/40 bg-gradient-to-br from-[#2a2018] to-[#1a1510] shadow-[inset_0_1px_4px_rgba(214,154,61,0.15)]">
-                  <span className="text-2xl" style={{ fontFamily: "Cinzel Decorative" }}>⚔</span>
-                </div>
+                <Image src="/ambar-vulcanico.svg" alt="Grimorium" width={48} height={48} priority className="relative z-10 h-12 w-12 rounded-xl shadow-[0_0_18px_rgba(214,154,61,0.35)]" />
               </div>
             </div>
 

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="45%" r="65%">
+      <stop offset="0%" stop-color="#2a1a08"/>
+      <stop offset="100%" stop-color="#090b0e"/>
+    </radialGradient>
+    <linearGradient id="p" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffd27a"/>
+      <stop offset="100%" stop-color="#e0801a"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+  <!-- capa -->
+  <path d="M6 20 L6 51 C15 47.5 25 47.5 32 53 C39 47.5 49 47.5 58 51 L58 20 Z" fill="#8a4d0e"/>
+  <!-- páginas -->
+  <path d="M32 19 C25 14.5 16 14.5 9 17.5 L9 46.5 C16 43.5 25 43.5 32 48 Z" fill="url(#p)"/>
+  <path d="M32 19 C39 14.5 48 14.5 55 17.5 L55 46.5 C48 43.5 39 43.5 32 48 Z" fill="url(#p)"/>
+  <!-- lombada -->
+  <path d="M32 19 L32 48" stroke="#090b0e" stroke-opacity="0.55" stroke-width="2" stroke-linecap="round"/>
+  <!-- linhas de escrita -->
+  <g stroke="#090b0e" stroke-opacity="0.4" stroke-width="1.8" stroke-linecap="round" fill="none">
+    <path d="M14 24 C18 22.5 22 22.5 27 24.5"/>
+    <path d="M14 30 C18 28.5 22 28.5 27 30.5"/>
+    <path d="M14 36 C18 34.5 22 34.5 27 36.5"/>
+    <path d="M37 24.5 C42 22.5 46 22.5 50 24"/>
+    <path d="M37 30.5 C42 28.5 46 28.5 50 30"/>
+    <path d="M37 36.5 C42 34.5 46 34.5 50 36"/>
+  </g>
+</svg>

@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Crown, HeartPulse, ScrollText, Settings, Shield } from "lucide-react";
+import { Crown, HeartPulse, Settings, Shield } from "lucide-react";
 import { useCharacter } from "../context/CharacterContext";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
@@ -29,15 +30,13 @@ export default function Cabecalho() {
           <div className="grimoire-card bracket-corners flex flex-col gap-3 rounded-2xl border border-primary/35 bg-card/95 px-4 py-3 sm:px-6 sm:py-3.5 shadow-[0_16px_50px_rgba(0,0,0,0.6)] sm:flex-row sm:items-center sm:justify-between">
             {/* Lado Esquerdo: Identidade do Contexto (Mestre vs. Jogador) */}
             <div className="flex items-center gap-3">
-              <div
-                className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border shadow-md ${
-                  isMasterView
-                    ? "border-amber-400/70 bg-gradient-to-b from-amber-500/25 to-amber-500/10 text-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.35)]"
-                    : "border-primary/60 bg-gradient-to-b from-primary/30 to-primary/10 text-primary shadow-[0_0_20px_color-mix(in_srgb,var(--primary)_35%,transparent)]"
-                }`}
-              >
-                {isMasterView ? <Crown size={22} className="drop-shadow-[0_0_8px_#f59e0b]" /> : <ScrollText size={22} className="drop-shadow-[0_0_8px_var(--primary)]" />}
-              </div>
+              {isMasterView ? (
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-amber-400/70 bg-gradient-to-b from-amber-500/25 to-amber-500/10 text-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.35)]">
+                  <Crown size={22} className="drop-shadow-[0_0_8px_#f59e0b]" />
+                </div>
+              ) : (
+                <Image src="/ambar-vulcanico.svg" alt="Grimorium" width={44} height={44} priority className="h-11 w-11 shrink-0 rounded-xl shadow-[0_0_20px_color-mix(in_srgb,var(--primary)_35%,transparent)]" />
+              )}
               <div>
                 <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.28em] text-primary">
                   <span>✦</span>

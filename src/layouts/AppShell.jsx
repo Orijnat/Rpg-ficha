@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import {
@@ -138,9 +139,7 @@ export default function AppShell({ children }) {
         >
           {/* Topo exclusivo da sidebar no desktop com estética Dark Fantasy */}
           <div className="mb-5 hidden items-center gap-3 border-b border-primary/25 px-2 pb-5 lg:flex">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-primary/60 bg-gradient-to-b from-primary/30 to-primary/10 text-primary shadow-[0_0_22px_color-mix(in_srgb,var(--primary)_40%,transparent)]">
-              <ScrollText size={22} className="text-primary drop-shadow-[0_0_8px_var(--primary)]" />
-            </div>
+            <Image src="/ambar-vulcanico.svg" alt="Grimorium" width={44} height={44} priority className="h-11 w-11 rounded-xl shadow-[0_0_22px_color-mix(in_srgb,var(--primary)_40%,transparent)]" />
             <div>
               <h2 className="font-decorative text-lg font-black tracking-wider gold-gradient-text">Grimorium</h2>
               <p className="font-journal text-xs italic text-amber-100/70">Códice &amp; Sala de Guerra</p>
