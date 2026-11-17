@@ -517,11 +517,11 @@ function RegisterForm() {
 
                   <FormField label="Raça" icon={Scroll}>
                     <select
+                      name="race"
                       value={raceId}
                       onChange={(e) => setRaceId(e.target.value)}
                       className={inputBase}
                       style={inputFont}
-                      required={!isMaster}
                       aria-label="Raça do herói"
                     >
                       <option value="">Escolha a raça…</option>

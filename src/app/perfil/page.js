@@ -388,11 +388,11 @@ export default function PerfilPage() {
                 />
               </div>
               <select
+                name="race"
                 value={newCharRace}
                 onChange={(e) => setNewCharRace(e.target.value)}
                 className="w-full min-h-10 rounded-lg border border-border bg-input-background px-3 text-xs text-foreground outline-none focus:border-primary"
                 aria-label="Raça do personagem"
-                required
               >
                 <option value="">Escolha a raça…</option>
                 {DEFAULT_RACES.map((race) => (
