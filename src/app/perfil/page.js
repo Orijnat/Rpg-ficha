@@ -149,6 +149,7 @@ export default function PerfilPage() {
       setNewCharName("");
       setNewCharJob("");
       setNewCharRace("");
+      if (newCharRaceRef.current) newCharRaceRef.current.value = "";
       setCreateMsg("Novo personagem criado com sucesso!");
       setTimeout(() => setCreateMsg(""), 3000);
     } catch (err) {
@@ -395,7 +396,6 @@ export default function PerfilPage() {
                   ref={newCharRaceRef}
                   name="race"
                   defaultValue=""
-                  value={newCharRace}
                   onChange={(e) => setNewCharRace(e.target.value)}
                   className="w-full min-h-10 rounded-lg border border-border bg-input-background px-3 text-xs text-foreground outline-none focus:border-primary"
                   aria-label="Raça do personagem"

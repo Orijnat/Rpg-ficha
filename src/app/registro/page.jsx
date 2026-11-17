@@ -523,7 +523,6 @@ function RegisterForm() {
                       ref={raceSelectRef}
                       name="race"
                       defaultValue=""
-                      value={raceId}
                       onChange={(e) => setRaceId(e.target.value)}
                       className={inputBase}
                       style={inputFont}
