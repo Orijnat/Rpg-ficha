@@ -7,6 +7,7 @@
 - **Fix (frontend, defesa em profundidade)**: `normalizeCharacterForSync` envia `classe` só via `asTextoCurto()` (objeto→slug/nome/name; string→trim+slice(80); recebe `dadosExtras.class ?? charData.classe` — o slug casa com o currentSlug do classGuardError, sem risco de 403 falso). `/admin/personagens/[id]/ficha` sanitiza `payload.classe` no save (PUT faz spread do character inteiro).
 - **Verificação**: back 111/111, front **162/162**, build OK, lint 0 erros (44 pré-existentes). **NÃO commitado.**
 - **Deploy**: backend precisa de **Manual Deploy no Render** para o `delete data.classe` valer em produção; até lá, o fix do front sozinho já impede o 422 do sync. Frontend sobe na Vercel no push.
+- **Push (2026-11-17)**: back `b831003` fix(personagens) → `740d69b..b831003` (Rpg-backend); front `14e25af` fix(sync) + `233072f` docs(memory) → `ae86573..233072f`. `.github/workflows/` (front) e `.github/` (back) inalterados.
 - **Nota**: `data.raca` continua vazando como objeto, mas NÃO está no zod (strip silencioso) e nada no front lê `.raca` — deixado como está por minimalismo.
 
 ## 🔥 2026-11-17 — "HTTP 422 Dados inválidos" ao salvar na ficha — CAUSA RAIZ ACHADA E CORRIGIDA (NÃO commitado)
