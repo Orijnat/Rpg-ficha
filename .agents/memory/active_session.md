@@ -1,5 +1,16 @@
 # 🧠 Sessão Ativa — Grimorium RPG
 
+## 🔧 Pedido 2026-11-17 — "eu prefiro o modal antigo" → modal COMPLETO restaurado (NÃO commitado)
+- Usuário escolheu "Finalizar completo (desfecho)": restaurado `FinalizarEncounterModal.jsx` para a versão pré-simplificação (via `git show dad47b3:`): desfecho por herói (Vitória/Derrota/Fugiu), XP individual (clamp 0..1M), checkbox "Recebe XP", ações rápidas Todos: Vitória/Derrota/Fugiu, rateio R÷N=perHero no rodapé, confirm "Finalizar Encontro" (handleFinalizeEncounter inalterado — já trata outcome).
+- Header/painel continuam abrindo a modal (comportamento do e30f20f mantido). Títulos dos botões atualizados para citar o desfecho. `handleAutoFinalizeEncounter` NÃO foi recriado (continua não existindo).
+- Verificação: 161/161 testes, build OK, lint 0 erros (44 warnings pré-existentes). Nada commitado — aguardar pedido de commit/push.
+
+## ✅ Re-verificação 2026-11-17 — "finalizar "auto" voltar a ser modal"
+- Pedido reenviado (idêntico ao já executado): "eu nao quero que ele finalize automatico, eu quero que ele abra um modal, como o antigo mas apenas para selecionar quem ganha ou nao o xp".
+- **Nada a alterar**: o código em HEAD já abre a modal. `e30f20f` (feat(encontros): finalizar volta a ser modal) + `8e367fe` (docs) estão commitados E pushados (`main...origin/main` sem ahead/behind).
+- Verificado: não existe mais `handleAutoFinalizeEncounter` nem qualquer caminho automático; header "Finalizar" (encontros/page.js:624) e botão do painel (EncounterXpPanel.jsx:114-126, via prop `onFinalizeEncounter` → setFinalizeOpen(true), encontros/page.js:823) abrem a modal. `FinalizarEncounterModal.jsx` = só checkboxes "Recebe XP" (todos marcados), ações Todos/Nenhum, rateio R÷N=perHero, confirm "Encerrar Encontro".
+- Se produção ainda parecer automática = build antigo/cache (Aguardar Vercel + Ctrl+Shift+R). Única dúvida aberta: flows "Distribuir" do encontro (aplica XP sem fechar) e "Distribuir XP da sessão" (/admin/sessoes, ConfirmDialog) seguem automáticos — sem seleção de heróis; se o usuário quiser o mesmo seletor neles, é pedir.
+
 ## 🔧 Atualização 2026-11-17 (Raça = bônus 5e aditivo + Classe define Dado de Vida e Habilidades de Nível) — NÃO commitado
 
 ### Pedidos
