@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Calendar,
   Check,
@@ -57,6 +57,19 @@ function SessionNotesField({ session, onSave }) {
     }
   };
 
+  const saveRef = useRef(handleSave);
+  useEffect(() => {
+    saveRef.current = handleSave;
+  });
+
+  useEffect(() => {
+    if (!dirty) return;
+    const timer = setTimeout(() => {
+      saveRef.current();
+    }, 900);
+    return () => clearTimeout(timer);
+  }, [texto, dirty]);
+
   return (
     <div className="rounded-xl border border-primary/25 bg-background/40 p-3">
       <div className="mb-2 flex items-center justify-between gap-2">
@@ -101,15 +114,46 @@ export default function AdminSessoesPage() {
   const [sessionTitle, setSessionTitle] = useState("");
   const [sessionDate, setSessionDate] = useState("");
   const [cenas, setCenas] = useState([
-    { id: "c-1", titulo: "Cena 1: A Chegada à Estalagem", descricao: "O grupo chega fustigado pela chuva fria." },
+    { id: "c-1", titulo: "", descricao: "", concluido: false },
   ]);
   const [objetivos, setObjetivos] = useState([
-    { id: "o-1", texto: "Encontrar o mensageiro da coroa", concluido: false },
-    { id: "o-2", texto: "Decifrar o selo da carta lacrada", concluido: false },
+    { id: "o-1", texto: "", concluido: false, tipo: "principal" },
   ]);
   const [recompensaXp, setRecompensaXp] = useState(250);
   const [recompensaTesouro, setRecompensaTesouro] = useState("50 peças de prata e uma poção de cura");
   const [resumoPosJogo, setResumoPosJogo] = useState("");
+
+  const criarCenaVazia = () => ({
+    id: `c-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    titulo: "",
+    descricao: "",
+    concluido: false,
+  });
+
+  const criarObjetivoVazio = () => ({
+    id: `o-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    texto: "",
+    concluido: false,
+    tipo: "principal",
+  });
+
+  const adicionarCena = () => setCenas((prev) => [...prev, criarCenaVazia()]);
+
+  const atualizarCena = (id, patch) =>
+    setCenas((prev) => prev.map((cena) => (cena.id === id ? { ...cena, ...patch } : cena)));
+
+  const removerCena = (id) => setCenas((prev) => prev.filter((cena) => cena.id !== id));
+
+  const adicionarObjetivo = () =>
+    setObjetivos((prev) => [...prev, criarObjetivoVazio()]);
+
+  const atualizarObjetivo = (id, patch) =>
+    setObjetivos((prev) =>
+      prev.map((objetivo) => (objetivo.id === id ? { ...objetivo, ...patch } : objetivo))
+    );
+
+  const removerObjetivo = (id) =>
+    setObjetivos((prev) => prev.filter((objetivo) => objetivo.id !== id));
 
   // Exclusão
   const [sessionToDeleteIndex, setSessionToDeleteIndex] = useState(null);
@@ -149,6 +193,7 @@ export default function AdminSessoesPage() {
     try {
       const data = await listGameSessions(campId, token);
       const normalized = (Array.isArray(data) ? data : []).map(normalizeSession);
+      normalized.sort((a, b) => (Number(a.numero) || 0) - (Number(b.numero) || 0));
       setSessoes(normalized);
       setSessionNum(normalized.length + 1);
     } catch (err) {
@@ -166,40 +211,48 @@ export default function AdminSessoesPage() {
     e.preventDefault();
     if (!sessionTitle.trim()) return;
 
-    const novaSessao = {
-      id: `session-${Date.now()}`,
-      numero: Number(sessionNum),
-      titulo: sessionTitle.trim(),
-      data: sessionDate || new Date().toISOString().split("T")[0],
-      cenas,
-      objetivos,
-      recompensas: {
-        xp: Number(recompensaXp),
-        tesouro: recompensaTesouro.trim(),
-      },
-      resumo: resumoPosJogo,
-      estado: "planejada",
-    };
+    const cenasPayload = cenas
+      .map((cena, i) => ({
+        titulo: (cena.titulo || "").trim(),
+        descricao: (cena.descricao || "").trim(),
+        ordem: i + 1,
+        concluido: Boolean(cena.concluido),
+      }))
+      .filter((cena) => cena.titulo || cena.descricao);
+
+    const objetivosPayload = objetivos
+      .map((objetivo) => ({
+        descricao: (objetivo.texto || "").trim(),
+        concluido: Boolean(objetivo.concluido),
+        tipo: objetivo.tipo || "principal",
+      }))
+      .filter((objetivo) => objetivo.descricao);
 
     try {
       await createGameSession(
         selectedCampaignId,
         {
-          titulo: novaSessao.titulo,
-          numero: novaSessao.numero,
-          dataAgendada: novaSessao.data,
-          estado: novaSessao.estado,
-          resumo: novaSessao.resumo,
-          cenas: novaSessao.cenas,
-          objetivos: novaSessao.objetivos.map(({ id, texto, ...objetivo }) => ({
-            ...objetivo,
-            descricao: texto,
-          })),
-          recompensas: novaSessao.recompensas,
+          titulo: sessionTitle.trim(),
+          numero: Number(sessionNum),
+          dataAgendada: sessionDate || new Date().toISOString().split("T")[0],
+          estado: "planejada",
+          resumo: resumoPosJogo,
+          cenas: cenasPayload,
+          objetivos: objetivosPayload,
+          recompensas: {
+            xp: Number(recompensaXp),
+            tesouro: recompensaTesouro.trim(),
+          },
         },
         token
       );
       setSessionTitle("");
+      setSessionDate("");
+      setResumoPosJogo("");
+      setRecompensaXp(250);
+      setRecompensaTesouro("50 peças de prata e uma poção de cura");
+      setCenas([{ id: "c-1", titulo: "", descricao: "", concluido: false }]);
+      setObjetivos([{ id: "o-1", texto: "", concluido: false, tipo: "principal" }]);
       setIsCreating(false);
       setSuccessMsg("Sessão planejada com sucesso.");
       await loadCampaign(selectedCampaignId);
@@ -500,6 +553,92 @@ export default function AdminSessoesPage() {
                   placeholder="Moedas, pergaminhos ou relíquias..."
                   className="mt-1 min-h-10 w-full rounded border border-border bg-input-background px-3 text-xs text-foreground outline-none focus:border-primary"
                 />
+              </div>
+            </div>
+
+            {/* Cenas Planejadas */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between gap-2">
+                <h4 className="flex items-center gap-1.5 font-serif text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  <FileText size={13} className="text-primary" /> Cenas Planejadas
+                </h4>
+                <button
+                  type="button"
+                  onClick={adicionarCena}
+                  className="flex min-h-9 items-center gap-1 rounded-lg border border-primary/40 bg-primary/10 px-2.5 text-[10px] font-bold uppercase tracking-wider text-primary transition hover:bg-primary/20"
+                >
+                  <Plus size={12} /> Adicionar Cena
+                </button>
+              </div>
+              <div className="space-y-2">
+                {cenas.map((cena, cenaIdx) => (
+                  <div key={cena.id} className="space-y-2 rounded-lg border border-border bg-secondary/40 p-2.5">
+                    <div className="flex items-center gap-2">
+                      <span className="shrink-0 font-mono text-[10px] font-bold uppercase text-muted-foreground">
+                        Cena {cenaIdx + 1}
+                      </span>
+                      <input
+                        type="text"
+                        value={cena.titulo}
+                        onChange={(e) => atualizarCena(cena.id, { titulo: e.target.value })}
+                        placeholder="Ex.: A Chegada à Estalagem"
+                        className="min-h-9 w-full rounded-lg border border-border bg-input-background px-3 text-xs text-foreground outline-none placeholder:text-muted-foreground/60 focus:border-primary"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removerCena(cena.id)}
+                        className="rounded-lg p-2 text-muted-foreground transition hover:text-destructive"
+                        title="Remover cena"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                    <textarea
+                      value={cena.descricao}
+                      onChange={(e) => atualizarCena(cena.id, { descricao: e.target.value })}
+                      rows={2}
+                      placeholder="O que acontece nesta cena, o que os heróis enfrentam, o que descobre..."
+                      className="w-full resize-none rounded-lg border border-border bg-input-background px-3 py-2 text-xs text-foreground outline-none placeholder:text-muted-foreground/60 focus:border-primary"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Objetivos da Mesa */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between gap-2">
+                <h4 className="flex items-center gap-1.5 font-serif text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  <ListTodo size={13} className="text-primary" /> Objetivos da Mesa
+                </h4>
+                <button
+                  type="button"
+                  onClick={adicionarObjetivo}
+                  className="flex min-h-9 items-center gap-1 rounded-lg border border-primary/40 bg-primary/10 px-2.5 text-[10px] font-bold uppercase tracking-wider text-primary transition hover:bg-primary/20"
+                >
+                  <Plus size={12} /> Adicionar Objetivo
+                </button>
+              </div>
+              <div className="space-y-2">
+                {objetivos.map((objetivo) => (
+                  <div key={objetivo.id} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={objetivo.texto}
+                      onChange={(e) => atualizarObjetivo(objetivo.id, { texto: e.target.value })}
+                      placeholder="Ex.: Encontrar o mensageiro da coroa"
+                      className="min-h-9 w-full rounded-lg border border-border bg-input-background px-3 text-xs text-foreground outline-none placeholder:text-muted-foreground/60 focus:border-primary"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removerObjetivo(objetivo.id)}
+                      className="shrink-0 rounded-lg p-2 text-muted-foreground transition hover:text-destructive"
+                      title="Remover objetivo"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ))}
               </div>
             </div>
 
