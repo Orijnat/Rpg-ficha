@@ -1,5 +1,13 @@
 # Memória do Agente Orquestrador (@orchestrator)
 
+## Entrega — 2026-11-20 (Backend das Anotações — CRUD + Privacidade com Testes)
+
+- **Especialistas Acionados**: `backend-database`, `audit-and-security`, `qa-tester`.
+- **Demanda do Usuário**: "faca o backend sobre as anotacoes".
+- **Diagnóstico**: Backend de anotações **já implementado** (notaController CRUD, model Note, rotas `/campanhas/:id/notas` + `/notas/:id`, notaSchema, filtro server-side de privacidade, ownership mestre/autor). Frontend já consumia os endpoints.
+- **Completude entregue**: criação da suíte backend `test/notas.test.js` (12 testes: listar mestre/jogador-sem-acesso/filtro privacidade; criar validação+normalização; atualizar 404/403/sucesso; remover 404/403/sucesso) → backend **123/123 passando**.
+- **Validação**: backend 123/123 testes OK.
+
 ## Entrega — 2026-11-20 (Organização e Preparação de Sessões + Método de Escrita — /admin/sessoes)
 
 - **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `qa-tester`.

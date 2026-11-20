@@ -1,5 +1,11 @@
 # 🧠 Sessão Ativa — Grimorium RPG
 
+## 🔧 Atualização 2026-11-20 (Backend das Anotações — CRUD + privacidade com testes) — NÃO commitado
+- Pedido: "faca o backend sobre as anotacoes".
+- **Diagnóstico**: backend de anotações JÁ implementado e montado: `notaController` (listar/criar/atualizar/remover), model `Note` (tabela `anotacoes`), rotas `GET/POST /campanhas/:campanhaId/notas` (campanhaRoutes) + `PUT/DELETE /notas/:id` (mestreRecursosRoutes, mounted em /api), `notaSchema` (tipo diario/anotacao/handout + privada/is_private/isPrivate) e filtro server-side de privacidade no listar. Frontend (`/admin/notas` + `src/lib/api.js`) consumia esses endpoints — nada faltava na camada backend.
+- **Completude**: faltava a suíte de testes backend → criado `test/notas.test.js` (12 casos: listar mestre/jogador-sem-acesso/filtro de privacidade; criar validação/normalização; atualizar 404/403/sucesso; remover 404/403/sucesso) → backend **123/123 passando**.
+- **NÃO commitado**; próximo passo: commit/push + deploy backend se desejado.
+
 ## 🔧 Atualização 2026-11-20 (Organização + preparação de Sessões + método de escrita no /admin/sessoes) — NÃO commitado
 - Pedido: "poderia melhorar a organizacao e porecar as sessoes, pois esta muito ruim o metodo de escrever".
 - **Diagnóstico**: o backend (`sessaoController.criar/atualizar` + `Session.dadosExtras` JSONB) JÁ suportava cenas/objetivos/recompensas via API — o gargalo era o FRONTEND: o form de "Planejar Sessão" mantinha `cenas`/`objetivos` com **defaults fixos** (Cena 1: A Chegada… / objetivos genéricos) e os salvava sem nenhum input editável.
