@@ -1,5 +1,18 @@
 # Memória do Agente Orquestrador (@orchestrator)
 
+## Entrega — 2026-11-20 (Organização e Preparação de Sessões + Método de Escrita — /admin/sessoes)
+
+- **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `qa-tester`.
+- **Demanda do Usuário**: "poderia melhorar a organizacao e porecar as sessoes, pois esta muito ruim o metodo de escrever".
+- **Diagnóstico**: Backend já suportava `cenas`/`objetivos`/`recompensas` via `dadosExtras` JSONB — o FRONTEND não tinha UI de escrita (form mantinha defaults fixos e salvava sem input).
+- **Implementações Entregues** (front `src/app/admin/sessoes/page.js`):
+  * Form "Planejar Próxima Sessão" → editor real: cenas (título+descrição, adicionar/remover, "Cena N"), objetivos (texto, adicionar/remover), recompensa XP+tesouro, data prevista.
+  * `handleSaveNewSession` monta payload (`cenas`→`{titulo,descricao,ordem,concluido}`, `objetivos`→`{descricao,concluido,tipo}`, filtra vazios) e envia ao backend.
+  * Form resetado após salvar; `loadCampaign` ordena por `numero` ASC.
+  * `SessionNotesField` → auto-save debounce 900ms (manual mantido).
+- **Validação**: ESLint 0 erros (2 warnings pré-existentes no arquivo); testes **162/162**; `next build` OK (rota /admin/sessoes gerada).
+- **Pendências**: conferência visual no navegador; nada commitado.
+
 ## Entrega — 2026-11-10 (Blindagem Canônica da Tela Inicial & Temas Claros de RPG)
 
 - **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder` e `frontend-design`), `qa-tester`.

@@ -1,5 +1,17 @@
 # 🧠 Sessão Ativa — Grimorium RPG
 
+## 🔧 Atualização 2026-11-20 (Organização + preparação de Sessões + método de escrita no /admin/sessoes) — NÃO commitado
+- Pedido: "poderia melhorar a organizacao e porecar as sessoes, pois esta muito ruim o metodo de escrever".
+- **Diagnóstico**: o backend (`sessaoController.criar/atualizar` + `Session.dadosExtras` JSONB) JÁ suportava cenas/objetivos/recompensas via API — o gargalo era o FRONTEND: o form de "Planejar Sessão" mantinha `cenas`/`objetivos` com **defaults fixos** (Cena 1: A Chegada… / objetivos genéricos) e os salvava sem nenhum input editável.
+- **Front** (`src/app/admin/sessoes/page.js`):
+  - Form "Planejar Próxima Sessão" virou **editor de planejamento**: cenas editáveis (título + descrição, adicionar/remover, numeração "Cena N"), objetivos editáveis (texto, adicionar/remover), recompensa de XP + tesouro, data prevista.
+  - `handleSaveNewSession` monta o payload (`cenas` → `{titulo, descricao, ordem, concluido}`, `objetivos` → `{descricao, concluido, tipo}`, filtrando entradas vazias) e envia ao backend.
+  - Form resetado após salvar (título/data/resumo/recompensa/cenas/objetivos).
+  - `loadCampaign` ordena sessões por `numero` ASC (defensivo).
+  - `SessionNotesField`: **auto-save** via debounce (900ms) quando dirty + botão manual "Salvar registro" mantido.
+- **Verificação**: front **162/162**, build OK, lint 0 erros (2 warnings pré-existentes no arquivo — setState-in-effect + exhaustive-deps). Backend sem alteração (contrato já suportava).
+- **NÃO commitado**; próximo passo: conferência visual no navegador (/admin/sessoes) + deploy se desejado.
+
 ## 🖼️ 2026-11-17 — Logo/favicon "Âmbar Vulcânico" (do Downloads do Windows)
 - Arquivo: `/mnt/c/Users/cledi/Downloads/ambar-vulcanico.svg` (SVG 64×64, livro âmbar, 1.4 KB, sem scripts/refs externas) → copiado para `public/ambar-vulcanico.svg`.
 - **Favicon**: `src/app/favicon.ico` removido (`git rm`); `metadata.icons` em `layout.js` (icon + shortcut → `/ambar-vulcanico.svg`). Verificado no HTML do build: `<link rel="icon" href="/ambar-vulcanico.svg" type="image/svg+xml"/>`.
