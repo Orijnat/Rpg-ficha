@@ -26,7 +26,7 @@ export default function Personagem() {
   const feedbackTimer = useRef(null);
   const [racas, setRacas] = useState(DEFAULT_RACES);
   const [classes, setClasses] = useState(DEFAULT_CLASSES);
-  const [acoes, setAcoes] = useState([]);
+  const acoes = Array.isArray(data.dadosExtras?.acoes) ? data.dadosExtras.acoes : [];
   const capacity = calculateCapacity(data);
   const abilities = Array.isArray(data.abilities) ? data.abilities : [];
   const characterLevel = Math.max(1, Number(data.level) || 1);
@@ -42,10 +42,11 @@ export default function Personagem() {
   const canLevelUp = xpReady && liberado;
   const xpMissing = Math.max(0, (xpInfo.nextLevelXP ?? 0) - Number(data.xp || 0));
 
-  const addAcao = () => setAcoes([...acoes, { nome: "", tipo: "Ataque", dano: "", bonus: "" }]);
+  const addAcao = () => updateDadosExtras({ acoes: [...acoes, { nome: "", tipo: "Ataque", dano: "", bonus: "" }] });
   const updateAcao = (index, patch) =>
-    setAcoes(acoes.map((acao, i) => (i === index ? { ...acao, ...patch } : acao)));
-  const removeAcao = (index) => setAcoes(acoes.filter((_, i) => i !== index));
+    updateDadosExtras({ acoes: acoes.map((acao, i) => (i === index ? { ...acao, ...patch } : acao)) });
+  const removeAcao = (index) =>
+    updateDadosExtras({ acoes: acoes.filter((_, i) => i !== index) });
 
   useEffect(() => () => window.clearTimeout(feedbackTimer.current), []);
 
@@ -309,7 +310,7 @@ export default function Personagem() {
           <button
             type="button"
             onClick={addAcao}
-            className="flex min-h-9 items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-3 text-xs font-bold text-primary hover:bg-primary/20"
+            className="flex min-h-11 items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-3 text-xs font-bold text-primary hover:bg-primary/20"
           >
             <Plus size={14} /> Adicionar Ação / Ataque
           </button>
@@ -350,7 +351,7 @@ export default function Personagem() {
                 <button
                   type="button"
                   onClick={() => removeAcao(index)}
-                  className="rounded p-1.5 text-muted-foreground hover:bg-destructive/15 hover:text-destructive"
+                  className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-destructive/15 hover:text-destructive"
                   title="Remover ação"
                 >
                   <Trash2 size={15} />

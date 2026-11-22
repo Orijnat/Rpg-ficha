@@ -419,7 +419,7 @@ export default function NewNpcPage() {
           <button
             type="button"
             onClick={addPericia}
-            className="flex min-h-9 items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-3 text-xs font-bold text-primary hover:bg-primary/20"
+            className="flex min-h-11 items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-3 text-xs font-bold text-primary hover:bg-primary/20"
           >
             <Plus size={14} /> Adicionar Perícia
           </button>
@@ -453,7 +453,7 @@ export default function NewNpcPage() {
                 <button
                   type="button"
                   onClick={() => removePericia(index)}
-                  className="rounded p-1.5 text-muted-foreground hover:bg-destructive/15 hover:text-destructive"
+                  className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-destructive/15 hover:text-destructive"
                   title="Remover perícia"
                 >
                   <Trash2 size={15} />

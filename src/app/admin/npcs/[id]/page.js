@@ -22,6 +22,7 @@ import ConfirmDialog from "../../../components/admin/ConfirmDialog";
 import { deleteNpc, createNpc, fetchNpcById, updateNpc } from "../../../../lib/api";
 import { useAuth } from "../../../context/AuthContext";
 import { NpcAttributesCard, NpcAbilitiesCard, NPC_ATTR_DEFAULTS } from "../../../components/admin/NpcSheetBlocks";
+import { ensureCanonicalSkills } from "../../../lib/modifiers";
 
 const PRESET_TAGS = [
   "Chefe",
@@ -155,19 +156,19 @@ export default function EditNpcPage() {
   };
 
   const addPericia = () => {
-    const current = npc.dadosExtras?.pericias || [];
-    updateExtras({ pericias: [...current, { nome: "", atributo: "FOR" }] });
+    const current = ensureCanonicalSkills(npc.dadosExtras?.pericias || []);
+    updateExtras({ pericias: [...current, { name: "", attr: "FOR", trained: false, bonus: null }] });
   };
 
   const updatePericia = (index, patch) => {
-    const current = npc.dadosExtras?.pericias || [];
+    const current = ensureCanonicalSkills(npc.dadosExtras?.pericias || []);
     updateExtras({
       pericias: current.map((item, i) => (i === index ? { ...item, ...patch } : item)),
     });
   };
 
   const removePericia = (index) => {
-    const current = npc.dadosExtras?.pericias || [];
+    const current = ensureCanonicalSkills(npc.dadosExtras?.pericias || []);
     updateExtras({ pericias: current.filter((_, i) => i !== index) });
   };
 
@@ -187,7 +188,7 @@ export default function EditNpcPage() {
     sharedWithPlayers: Boolean(npc.dadosExtras?.sharedWithPlayers),
     acoes: npc.dadosExtras?.acoes || [],
     notasMestre: npc.dadosExtras?.notasMestre || "",
-    pericias: npc.dadosExtras?.pericias || [],
+    pericias: ensureCanonicalSkills(npc.dadosExtras?.pericias || []),
     atributos: atributosAtuais,
     abilities: abilitiesAtuais,
   });
@@ -709,7 +710,7 @@ export default function EditNpcPage() {
           <button
             type="button"
             onClick={addPericia}
-            className="flex min-h-9 items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-3 text-xs font-bold text-primary hover:bg-primary/20"
+            className="flex min-h-11 items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-3 text-xs font-bold text-primary hover:bg-primary/20"
           >
             <Plus size={14} /> Adicionar Perícia
           </button>
@@ -720,14 +721,14 @@ export default function EditNpcPage() {
             <div key={index} className="grid gap-2 rounded-xl border border-border bg-secondary/40 p-3 sm:grid-cols-[1fr_140px_36px]">
               <input
                 type="text"
-                value={pericia.nome || ""}
-                onChange={(e) => updatePericia(index, { nome: e.target.value })}
+                value={pericia.name || ""}
+                onChange={(e) => updatePericia(index, { name: e.target.value })}
                 placeholder="Nome da perícia"
                 className="w-full rounded border border-border bg-input-background px-2 py-1 text-xs font-bold text-foreground outline-none focus:border-primary"
               />
               <select
-                value={pericia.atributo || "FOR"}
-                onChange={(e) => updatePericia(index, { atributo: e.target.value })}
+                value={pericia.attr || "FOR"}
+                onChange={(e) => updatePericia(index, { attr: e.target.value })}
                 className="rounded border border-border bg-input-background px-2 py-1 text-xs text-foreground outline-none focus:border-primary"
                 aria-label="Atributo da perícia"
               >
@@ -743,7 +744,7 @@ export default function EditNpcPage() {
                 <button
                   type="button"
                   onClick={() => removePericia(index)}
-                  className="rounded p-1.5 text-muted-foreground hover:bg-destructive/15 hover:text-destructive"
+                  className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-destructive/15 hover:text-destructive"
                   title="Remover perícia"
                 >
                   <Trash2 size={15} />
