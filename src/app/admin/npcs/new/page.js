@@ -21,6 +21,7 @@ import { Card, SectionHeader } from "../../../components/ui";
 import { createNpc } from "../../../../lib/api";
 import { useAuth } from "../../../context/AuthContext";
 import { NpcAttributesCard, NpcAbilitiesCard, NPC_ATTR_DEFAULTS } from "../../../components/admin/NpcSheetBlocks";
+import { DEFAULT_SKILLS } from "../../../lib/modifiers";
 
 const PRESET_TAGS = [
   "Chefe",
@@ -64,7 +65,9 @@ export default function NewNpcPage() {
   ]);
   const [atributos, setAtributos] = useState({ ...NPC_ATTR_DEFAULTS });
   const [abilities, setAbilities] = useState([]);
-  const [pericias, setPericias] = useState([]);
+  const [pericias, setPericias] = useState(() =>
+    DEFAULT_SKILLS.map((skill) => ({ name: skill.name, attr: skill.attr, trained: false, bonus: null }))
+  );
   const [notasMestre, setNotasMestre] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -103,7 +106,7 @@ export default function NewNpcPage() {
   };
 
   const addPericia = () => {
-    setPericias([...pericias, { nome: "", atributo: "FOR" }]);
+    setPericias([...pericias, { name: "", attr: "FOR", trained: false, bonus: null }]);
   };
 
   const updatePericia = (index, patch) => {
@@ -427,14 +430,14 @@ export default function NewNpcPage() {
             <div key={index} className="grid gap-2 rounded-xl border border-border bg-secondary/40 p-3 sm:grid-cols-[1fr_140px_36px]">
               <input
                 type="text"
-                value={pericia.nome}
-                onChange={(e) => updatePericia(index, { nome: e.target.value })}
+                value={pericia.name}
+                onChange={(e) => updatePericia(index, { name: e.target.value })}
                 placeholder="Nome da perícia"
                 className="w-full rounded border border-border bg-input-background px-2 py-1 text-xs font-bold text-foreground outline-none focus:border-primary"
               />
               <select
-                value={pericia.atributo}
-                onChange={(e) => updatePericia(index, { atributo: e.target.value })}
+                value={pericia.attr}
+                onChange={(e) => updatePericia(index, { attr: e.target.value })}
                 className="rounded border border-border bg-input-background px-2 py-1 text-xs text-foreground outline-none focus:border-primary"
                 aria-label="Atributo da perícia"
               >
