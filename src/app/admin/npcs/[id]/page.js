@@ -154,6 +154,23 @@ export default function EditNpcPage() {
     updateExtras({ acoes: current.filter((_, i) => i !== index) });
   };
 
+  const addPericia = () => {
+    const current = npc.dadosExtras?.pericias || [];
+    updateExtras({ pericias: [...current, { nome: "", atributo: "FOR" }] });
+  };
+
+  const updatePericia = (index, patch) => {
+    const current = npc.dadosExtras?.pericias || [];
+    updateExtras({
+      pericias: current.map((item, i) => (i === index ? { ...item, ...patch } : item)),
+    });
+  };
+
+  const removePericia = (index) => {
+    const current = npc.dadosExtras?.pericias || [];
+    updateExtras({ pericias: current.filter((_, i) => i !== index) });
+  };
+
   const buildPayload = () => ({
     nome: npc.nome,
     papel: npc.papel,
@@ -170,6 +187,7 @@ export default function EditNpcPage() {
     sharedWithPlayers: Boolean(npc.dadosExtras?.sharedWithPlayers),
     acoes: npc.dadosExtras?.acoes || [],
     notasMestre: npc.dadosExtras?.notasMestre || "",
+    pericias: npc.dadosExtras?.pericias || [],
     atributos: atributosAtuais,
     abilities: abilitiesAtuais,
   });
@@ -676,6 +694,57 @@ export default function EditNpcPage() {
                   type="button"
                   onClick={() => removeAction(index)}
                   className="rounded p-1.5 text-muted-foreground hover:bg-destructive/15 hover:text-destructive"
+                >
+                  <Trash2 size={15} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      <Card>
+        <div className="flex items-center justify-between border-b border-border pb-3">
+          <SectionHeader title="Perícias" subtitle="Habilidades e treinamentos do NPC" icon={<Sparkles size={16} />} />
+          <button
+            type="button"
+            onClick={addPericia}
+            className="flex min-h-9 items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-3 text-xs font-bold text-primary hover:bg-primary/20"
+          >
+            <Plus size={14} /> Adicionar Perícia
+          </button>
+        </div>
+
+        <div className="mt-4 space-y-3">
+          {(npc.dadosExtras?.pericias || []).map((pericia, index) => (
+            <div key={index} className="grid gap-2 rounded-xl border border-border bg-secondary/40 p-3 sm:grid-cols-[1fr_140px_36px]">
+              <input
+                type="text"
+                value={pericia.nome || ""}
+                onChange={(e) => updatePericia(index, { nome: e.target.value })}
+                placeholder="Nome da perícia"
+                className="w-full rounded border border-border bg-input-background px-2 py-1 text-xs font-bold text-foreground outline-none focus:border-primary"
+              />
+              <select
+                value={pericia.atributo || "FOR"}
+                onChange={(e) => updatePericia(index, { atributo: e.target.value })}
+                className="rounded border border-border bg-input-background px-2 py-1 text-xs text-foreground outline-none focus:border-primary"
+                aria-label="Atributo da perícia"
+              >
+                <option value="FOR">FOR</option>
+                <option value="DES">DES</option>
+                <option value="CON">CON</option>
+                <option value="SAB">SAB</option>
+                <option value="ESP">ESP</option>
+                <option value="CAR">CAR</option>
+                <option value="INT">INT</option>
+              </select>
+              <div className="flex items-end justify-center">
+                <button
+                  type="button"
+                  onClick={() => removePericia(index)}
+                  className="rounded p-1.5 text-muted-foreground hover:bg-destructive/15 hover:text-destructive"
+                  title="Remover perícia"
                 >
                   <Trash2 size={15} />
                 </button>
