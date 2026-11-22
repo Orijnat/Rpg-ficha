@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X, Sparkles, Flame, Shield, Zap, Sword, Save, Send, AlertCircle, Crown, CheckCircle2 } from "lucide-react";
 import { TIPOS_HABILIDADE, STATUS_APROVACAO, getGrauTreinamento } from "../../../lib/abilities";
 
@@ -86,7 +87,7 @@ export function AbilityFormModal({
     onClose();
   };
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in duration-200">
       <div
         data-lenis-prevent className="w-full max-w-lg max-h-[90vh] overflow-y-auto custom-scroll rounded-2xl border border-primary/40 bg-zinc-950 p-6 shadow-2xl space-y-4"
@@ -391,6 +392,7 @@ export function AbilityFormModal({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
