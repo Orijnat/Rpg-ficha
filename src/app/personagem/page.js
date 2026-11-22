@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Check, CloudOff, Crown, LoaderCircle, RefreshCw, Sparkles, Sword, TriangleAlert, Package, ChevronsUp, Dna, Lock, LockOpen } from "lucide-react";
+import { Check, CloudOff, Crown, LoaderCircle, RefreshCw, Sparkles, Sword, TriangleAlert, Package, ChevronsUp, Dna, Lock, LockOpen, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useCharacter } from "../context/CharacterContext";
 import { Card, EditableText, SectionHeader, StatBox } from "../components/ui";
@@ -26,6 +26,7 @@ export default function Personagem() {
   const feedbackTimer = useRef(null);
   const [racas, setRacas] = useState(DEFAULT_RACES);
   const [classes, setClasses] = useState(DEFAULT_CLASSES);
+  const [acoes, setAcoes] = useState([]);
   const capacity = calculateCapacity(data);
   const abilities = Array.isArray(data.abilities) ? data.abilities : [];
   const characterLevel = Math.max(1, Number(data.level) || 1);
@@ -40,6 +41,11 @@ export default function Personagem() {
   const liberado = Boolean(data.dadosExtras?.levelUpLiberado);
   const canLevelUp = xpReady && liberado;
   const xpMissing = Math.max(0, (xpInfo.nextLevelXP ?? 0) - Number(data.xp || 0));
+
+  const addAcao = () => setAcoes([...acoes, { nome: "", tipo: "Ataque", dano: "", bonus: "" }]);
+  const updateAcao = (index, patch) =>
+    setAcoes(acoes.map((acao, i) => (i === index ? { ...acao, ...patch } : acao)));
+  const removeAcao = (index) => setAcoes(acoes.filter((_, i) => i !== index));
 
   useEffect(() => () => window.clearTimeout(feedbackTimer.current), []);
 
@@ -289,6 +295,69 @@ export default function Personagem() {
           >
             Ver Grimório Completo →
           </Link>
+        </div>
+      </Card>
+
+      {/* Ações & Ataques */}
+      <Card>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <SectionHeader
+            title="Ações & Ataques"
+            subtitle="Golpes, técnicas e combates diretos do herói"
+            icon={<Sword size={15} />}
+          />
+          <button
+            type="button"
+            onClick={addAcao}
+            className="flex min-h-9 items-center gap-1.5 rounded-lg border border-primary/40 bg-primary/10 px-3 text-xs font-bold text-primary hover:bg-primary/20"
+          >
+            <Plus size={14} /> Adicionar Ação / Ataque
+          </button>
+        </div>
+
+        <div className="mt-3 space-y-2">
+          {acoes.map((acao, index) => (
+            <div key={index} className="grid gap-2 rounded-xl border border-border bg-secondary/40 p-3 sm:grid-cols-[1fr_140px_140px_120px_36px]">
+              <input
+                type="text"
+                value={acao.nome || ""}
+                onChange={(e) => updateAcao(index, { nome: e.target.value })}
+                placeholder="Nome da ação / ataque"
+                className="w-full rounded border border-border bg-input-background px-2 py-1 text-xs font-bold text-foreground outline-none focus:border-primary"
+              />
+              <input
+                type="text"
+                value={acao.tipo || ""}
+                onChange={(e) => updateAcao(index, { tipo: e.target.value })}
+                placeholder="Tipo (Ataque, Magia...)"
+                className="rounded border border-border bg-input-background px-2 py-1 text-xs text-foreground outline-none focus:border-primary"
+              />
+              <input
+                type="text"
+                value={acao.dano || ""}
+                onChange={(e) => updateAcao(index, { dano: e.target.value })}
+                placeholder="Dano / Efeito"
+                className="rounded border border-border bg-input-background px-2 py-1 text-xs text-foreground outline-none focus:border-primary"
+              />
+              <input
+                type="text"
+                value={acao.bonus || ""}
+                onChange={(e) => updateAcao(index, { bonus: e.target.value })}
+                placeholder="Bônus / Alvo"
+                className="rounded border border-border bg-input-background px-2 py-1 text-xs text-foreground outline-none focus:border-primary"
+              />
+              <div className="flex items-end justify-center">
+                <button
+                  type="button"
+                  onClick={() => removeAcao(index)}
+                  className="rounded p-1.5 text-muted-foreground hover:bg-destructive/15 hover:text-destructive"
+                  title="Remover ação"
+                >
+                  <Trash2 size={15} />
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </Card>
 
