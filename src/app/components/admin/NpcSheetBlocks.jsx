@@ -3,11 +3,13 @@
 import { useState } from "react";
 import {
   CheckCircle2,
+  Clock,
   Pencil,
   Plus,
   Shield,
   Sparkles,
   Trash2,
+  XCircle,
 } from "lucide-react";
 import { Card, SectionHeader } from "../ui";
 import { AbilityFormModal } from "../habilidades/AbilityFormModal";
@@ -116,6 +118,8 @@ export function NpcAbilitiesCard({ abilities, onChange }) {
         {list.map((ability) => {
           const tipo = TIPOS_HABILIDADE[ability.type] || TIPOS_HABILIDADE.ativa;
           const progresso = calcularProgressoTreino(ability.trainingHours || 0);
+          const approvalStatus = ability.approvalStatus || "aprovada";
+          const isApproved = approvalStatus === "aprovada";
           return (
             <div key={ability.id} className="rounded-xl border border-border bg-secondary/40 p-3">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -125,9 +129,19 @@ export function NpcAbilitiesCard({ abilities, onChange }) {
                       {tipo.nome}
                     </span>
                     <h4 className="font-serif text-sm font-bold text-foreground">{ability.name}</h4>
-                    <span className="inline-flex items-center gap-1 rounded-md border border-emerald-500/40 bg-emerald-950/50 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-emerald-300">
-                      <CheckCircle2 size={10} /> Aprovada
-                    </span>
+                    {isApproved ? (
+                      <span className="inline-flex items-center gap-1 rounded-md border border-emerald-500/40 bg-emerald-950/50 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-emerald-300">
+                        <CheckCircle2 size={10} /> Aprovada
+                      </span>
+                    ) : approvalStatus === "pendente" ? (
+                      <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/40 bg-amber-950/50 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-amber-300">
+                        <Clock size={10} /> Pendente
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 rounded-md border border-rose-500/40 bg-rose-950/50 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-rose-300">
+                        <XCircle size={10} /> Rejeitada
+                      </span>
+                    )}
                   </div>
                   <p className="mt-1 line-clamp-2 text-[11px] text-muted-foreground">{ability.description || "Sem descrição."}</p>
                   <div className="mt-1.5 flex flex-wrap items-center gap-2 font-mono text-[10px] text-zinc-500">

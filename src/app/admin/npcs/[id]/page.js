@@ -199,6 +199,24 @@ export default function EditNpcPage() {
     }
   };
 
+  // Persiste as alterações da cópia de trabalho no catálogo (mesmo NPC, dados sobrescritos).
+  const handleSave = async () => {
+    setSaving(true);
+    setError("");
+    setSuccessMsg("");
+
+    try {
+      const saved = await updateNpc(id, buildPayload(), token);
+      setNpc(saved);
+      clearDraft();
+      setSuccessMsg("Alterações salvas no NPC.");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   // Escapa explícito: sobrescreve o NPC original no catálogo.
   const handleOverwriteOriginal = async () => {
     setSaving(true);
@@ -342,6 +360,15 @@ export default function EditNpcPage() {
           >
             <Save size={15} />
             {saving ? "Salvando..." : "Salvar como novo NPC"}
+          </button>
+          <button
+            type="button"
+            disabled={saving}
+            onClick={handleSave}
+            className="flex min-h-11 items-center gap-2 rounded-lg border border-primary/50 bg-primary/10 px-5 font-serif text-xs font-bold uppercase tracking-wider text-primary hover:bg-primary/20 active:scale-95 disabled:opacity-50"
+          >
+            <Save size={15} />
+            {saving ? "Salvando..." : "Salvar"}
           </button>
         </div>
       </div>

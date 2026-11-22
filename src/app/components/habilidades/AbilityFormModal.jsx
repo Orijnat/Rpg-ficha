@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { X, Sparkles, Flame, Shield, Zap, Sword, Save, Send, AlertCircle, Crown, CheckCircle2 } from "lucide-react";
-import { TIPOS_HABILIDADE, STATUS_APROVACAO } from "../../../lib/abilities";
+import { TIPOS_HABILIDADE, STATUS_APROVACAO, getGrauTreinamento } from "../../../lib/abilities";
 
 export function AbilityFormModal({
   isOpen,
@@ -79,6 +79,7 @@ export function AbilityFormModal({
       ...formData,
       reqLevel: Math.max(1, parseInt(formData.reqLevel, 10) || 1),
       trainingHours: Math.max(0, parseInt(formData.trainingHours, 10) || 0),
+      masteryLevel: getGrauTreinamento(Math.max(0, parseInt(formData.trainingHours, 10) || 0)).id,
       resubmit: !isMaster, // sinaliza re-submissão para aprovação se for jogador
       ...(assignToLevel ? { assignToLevel: Number(assignToLevel) } : {}),
     });
