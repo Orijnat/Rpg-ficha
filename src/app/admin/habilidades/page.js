@@ -195,7 +195,7 @@ export default function AdminHabilidades() {
 
   return (
     <div className="space-y-5">
-      <Card className="bg-gradient-to-br from-card via-card/85 to-codex-950/20 p-5 sm:p-6">
+      <Card className="bg-gradient-to-br from-card via-card/85 to-amber-950/20 p-5 sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
             <div className="mb-2 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-primary">
@@ -210,9 +210,9 @@ export default function AdminHabilidades() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <div className="rounded-xl border border-codex-500/30 bg-codex-950/30 px-3 py-2 text-center">
-              <span className="block text-[10px] uppercase tracking-wider text-codex-300/80">Pendentes</span>
-              <span className="font-mono text-lg font-bold text-codex-300">{globalStats.pendente}</span>
+            <div className="rounded-xl border border-amber-500/30 bg-amber-950/30 px-3 py-2 text-center">
+              <span className="block text-[10px] uppercase tracking-wider text-amber-300/80">Pendentes</span>
+              <span className="font-mono text-lg font-bold text-amber-300">{globalStats.pendente}</span>
             </div>
             <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/30 px-3 py-2 text-center">
               <span className="block text-[10px] uppercase tracking-wider text-emerald-300/80">Aprovadas</span>
@@ -245,7 +245,7 @@ export default function AdminHabilidades() {
               onClick={() => setTab(id)}
               className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition ${
                 tab === id
-                  ? "bg-codex-500/25 text-codex-300 border border-codex-500/50 shadow-sm font-bold"
+                  ? "bg-amber-500/25 text-amber-300 border border-amber-500/50 shadow-sm font-bold"
                   : "text-zinc-400 hover:text-zinc-200"
               }`}
             >
@@ -261,7 +261,7 @@ export default function AdminHabilidades() {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Buscar herói ou habilidade..."
-            className="w-full rounded-xl border border-zinc-800 bg-zinc-950/80 py-2 pl-9 pr-3 text-xs text-zinc-200 placeholder:text-zinc-600 focus:border-codex-500 focus:outline-none"
+            className="w-full rounded-xl border border-zinc-800 bg-zinc-950/80 py-2 pl-9 pr-3 text-xs text-zinc-200 placeholder:text-zinc-600 focus:border-amber-500 focus:outline-none"
             aria-label="Buscar herói ou habilidade"
           />
         </div>
@@ -300,7 +300,7 @@ export default function AdminHabilidades() {
                       <h3 className="font-serif text-base font-bold text-foreground">{hero.name || "Herói sem nome"}</h3>
                       <p className="text-[11px] text-muted-foreground">
                         {hero.job || hero.customClass || "Sem classe"} · Nível {hero.level ?? 1}
-                        {stats.pendente > 0 && <span className="ml-2 font-bold text-codex-400">{stats.pendente} pendente{stats.pendente > 1 ? "s" : ""}</span>}
+                        {stats.pendente > 0 && <span className="ml-2 font-bold text-amber-400">{stats.pendente} pendente{stats.pendente > 1 ? "s" : ""}</span>}
                         {stats.rejeitada > 0 && <span className="ml-2 text-rose-400">{stats.rejeitada} rejeitada{stats.rejeitada > 1 ? "s" : ""}</span>}
                       </p>
                     </div>
@@ -340,7 +340,7 @@ export default function AdminHabilidades() {
                             status === "rejeitada"
                               ? "border-rose-900/60 bg-rose-950/20"
                               : isPending
-                                ? "border-codex-500/50 bg-codex-950/15"
+                                ? "border-amber-500/50 bg-amber-950/15"
                                 : "border-border bg-secondary/40"
                           }`}
                         >
@@ -365,7 +365,7 @@ export default function AdminHabilidades() {
                                 <span>· T. {ability.trainingHours || 0}h ({progresso.grauAtual?.nome || "Aprendiz"})</span>
                               </div>
                               {ability.masterFeedback && (
-                                <p className="mt-1 text-[10px] italic text-codex-200/70">&ldquo;{ability.masterFeedback}&rdquo;</p>
+                                <p className="mt-1 text-[10px] italic text-amber-200/70">&ldquo;{ability.masterFeedback}&rdquo;</p>
                               )}
                             </div>
                             <div className="flex shrink-0 flex-wrap items-center gap-1.5">

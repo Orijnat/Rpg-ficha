@@ -109,7 +109,7 @@ export default function MarketItemModal({
 
   return (
     <div data-lenis-prevent className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-md overflow-y-auto">
-      <div className="relative my-8 w-full max-w-2xl rounded-2xl border-2 border-primary/50 bg-[#161816] p-6 shadow-2xl shadow-black/80">
+      <div className="relative my-8 w-full max-w-2xl rounded-2xl border-2 border-primary/50 bg-[#0f1118] p-6 shadow-2xl shadow-black/80">
         <button
           type="button"
           onClick={onClose}

@@ -156,22 +156,22 @@ function RollChooser({ request, onVirtual, onManual, onCancel }) {
       </div>
 
       {/* Dado físico */}
-      <div className="rounded-xl border border-codex-500/25 bg-codex-950/10">
+      <div className="rounded-xl border border-amber-500/25 bg-amber-950/10">
         <button
           type="button"
           onClick={() => setPhysOpen((open) => !open)}
           aria-expanded={physOpen}
-          className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-codex-300 transition hover:bg-codex-500/10"
+          className="flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/10"
         >
           <PenLine size={13} />
           Usou o dado físico? Informar valores
           <ChevronDown size={13} className={`transition-transform ${physOpen ? "rotate-180" : ""}`} />
         </button>
         {physOpen && (
-          <div className="space-y-3 border-t border-codex-500/20 p-4">
+          <div className="space-y-3 border-t border-amber-500/20 p-4">
             {allowContest && (
               <div className="flex gap-1.5">
-                {modeButton("normal", "Normal", Dices, "border-codex-500/60 bg-codex-500/20 text-codex-300")}
+                {modeButton("normal", "Normal", Dices, "border-amber-500/60 bg-amber-500/20 text-amber-300")}
                 {modeButton("advantage", "Vantagem", Zap, "border-emerald-500/60 bg-emerald-500/20 text-emerald-300")}
                 {modeButton("disadvantage", "Desvant.", ShieldAlert, "border-rose-500/60 bg-rose-500/20 text-rose-300")}
               </div>
@@ -187,7 +187,7 @@ function RollChooser({ request, onVirtual, onManual, onCancel }) {
               onEnter={handleRegister}
             />
             <p className="font-mono text-[10px] uppercase tracking-wider text-[#cbb288]">
-              Fórmula: <span className="text-codex-300">{physFormula}</span>
+              Fórmula: <span className="text-amber-300">{physFormula}</span>
             </p>
             {error && (
               <p role="alert" className="rounded-lg border border-rose-500/40 bg-rose-950/30 px-3 py-1.5 text-[11px] text-rose-300">
@@ -197,7 +197,7 @@ function RollChooser({ request, onVirtual, onManual, onCancel }) {
             <button
               type="button"
               onClick={handleRegister}
-              className="w-full rounded-xl border border-codex-500/60 bg-codex-500/20 py-2.5 text-xs font-bold uppercase tracking-widest text-codex-200 transition hover:bg-codex-500/30 active:scale-95"
+              className="w-full rounded-xl border border-amber-500/60 bg-amber-500/20 py-2.5 text-xs font-bold uppercase tracking-widest text-amber-200 transition hover:bg-amber-500/30 active:scale-95"
             >
               Registrar rolagem física
             </button>
@@ -281,8 +281,8 @@ function ManualTray({ onDone }) {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-xl border border-codex-500/25 bg-codex-950/10 p-3 text-center">
-        <p className="text-xs font-bold uppercase tracking-widest text-codex-300">
+      <div className="rounded-xl border border-amber-500/25 bg-amber-950/10 p-3 text-center">
+        <p className="text-xs font-bold uppercase tracking-widest text-amber-300">
           Registrar dado físico
         </p>
         <p className="mt-1 text-[11px] text-[#cbb288]">
@@ -300,7 +300,7 @@ function ManualTray({ onDone }) {
               aria-pressed={sides === s}
               className={`flex flex-col items-center justify-center rounded-xl border py-2.5 transition-all ${
                 sides === s
-                  ? "border-codex-500 bg-codex-500 font-bold text-[#17140f] shadow-md"
+                  ? "border-amber-500 bg-amber-500 font-bold text-[#17140f] shadow-md"
                   : "border-white/10 bg-white/[0.02] text-[#e8d5b0] hover:bg-white/5"
               }`}
             >
@@ -321,7 +321,7 @@ function ManualTray({ onDone }) {
             disabled={isContest}
             value={faceCount}
             onChange={(e) => setCount(Math.max(1, parseInt(e.target.value, 10) || 1))}
-            className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-center font-mono text-[#f5efdf] outline-none focus:border-codex-500 disabled:opacity-50"
+            className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-center font-mono text-[#f5efdf] outline-none focus:border-amber-500 disabled:opacity-50"
           />
         </div>
         <div>
@@ -331,7 +331,7 @@ function ManualTray({ onDone }) {
             type="number"
             value={modifier}
             onChange={(e) => setModifier(parseInt(e.target.value, 10) || 0)}
-            className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-center font-mono text-[#f5efdf] outline-none focus:border-codex-500"
+            className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-center font-mono text-[#f5efdf] outline-none focus:border-amber-500"
           />
         </div>
       </div>
@@ -343,7 +343,7 @@ function ManualTray({ onDone }) {
           type="text"
           value={label}
           onChange={(e) => setLabel(e.target.value)}
-          className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-[#f5efdf] outline-none focus:border-codex-500"
+          className="mt-1 w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-[#f5efdf] outline-none focus:border-amber-500"
           placeholder="Ex.: Ataque com espada"
         />
       </div>
@@ -363,7 +363,7 @@ function ManualTray({ onDone }) {
               aria-pressed={mode === id}
               className={`flex-1 rounded-lg border px-2 py-2 text-[10px] font-bold uppercase tracking-wider transition active:scale-95 ${
                 mode === id
-                  ? "border-codex-500/60 bg-codex-500/20 text-codex-300"
+                  ? "border-amber-500/60 bg-amber-500/20 text-amber-300"
                   : "border-white/10 bg-white/[0.03] text-[#cbb288] hover:text-[#e8d5b0]"
               }`}
             >
@@ -393,7 +393,7 @@ function ManualTray({ onDone }) {
       <button
         type="button"
         onClick={handleRegister}
-        className="w-full rounded-xl border border-codex-500/70 bg-gradient-to-r from-codex-500/80 to-codex-600/80 py-3 text-xs font-bold uppercase tracking-widest text-[#17140f] shadow-lg transition active:scale-95"
+        className="w-full rounded-xl border border-amber-500/70 bg-gradient-to-r from-amber-500/80 to-amber-600/80 py-3 text-xs font-bold uppercase tracking-widest text-[#17140f] shadow-lg transition active:scale-95"
       >
         Registrar {faceCount}d{sides} {formatModifier(modifier)}
       </button>
@@ -444,7 +444,7 @@ export default function DiceModal() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md" role="presentation">
       <div
-        className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-white/10 bg-[#161816] text-[#e8d5b0] shadow-2xl shadow-black/90"
+        className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-white/10 bg-[#0f1118] text-[#e8d5b0] shadow-2xl shadow-black/90"
         role="dialog"
         aria-modal="true"
         aria-labelledby="dice-modal-title"
@@ -511,7 +511,7 @@ export default function DiceModal() {
               onClick={() => setActiveTab("manual")}
               className={`flex items-center justify-center gap-1.5 flex-1 py-2.5 font-medium transition-colors ${
                 activeTab === "manual"
-                  ? "border-b-2 border-codex-500 text-[#f5efdf]"
+                  ? "border-b-2 border-amber-500 text-[#f5efdf]"
                   : "text-[#cbb288] hover:text-[#e8d5b0]"
               }`}
             >
@@ -728,7 +728,7 @@ export default function DiceModal() {
                           {h.label || "Rolagem"}
                         </span>
                         {h.manual && (
-                          <span className="ml-1.5 rounded bg-codex-500/20 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-codex-300">
+                          <span className="ml-1.5 rounded bg-amber-500/20 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-300">
                             Físico
                           </span>
                         )}

@@ -20,15 +20,15 @@ export function ThemeProvider({ children }) {
         // Fallback
       }
     }
-    return "codex";
+    return "amber";
   });
   const pathname = usePathname();
 
   // Controla o atributo data-theme no documentElement conforme a rota
   useEffect(() => {
-    // A tela inicial ("/") mantém a identidade canônica "Forja Astral" e não sofre alteração de estilo
+    // A tela inicial ("/") sempre mantém a identidade canônica "amber" e nunca sofre alteração de estilo
     if (pathname === "/") {
-      document.documentElement.setAttribute("data-theme", "codex");
+      document.documentElement.setAttribute("data-theme", "amber");
     } else {
       document.documentElement.setAttribute("data-theme", currentTheme);
     }

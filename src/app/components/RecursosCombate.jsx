@@ -134,7 +134,7 @@ export default function RecursosCombate() {
         {/* Classe de Armadura (CA) */}
         <div className="medallion-plate flex flex-col items-center justify-center rounded-xl p-3 text-center shadow-md">
           <div className="flex items-center gap-1 font-cinzel text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-            <Shield size={13} className="text-codex-400" />
+            <Shield size={13} className="text-amber-400" />
             <span>CA</span>
           </div>
           <EditableNumber
@@ -328,16 +328,16 @@ export default function RecursosCombate() {
         </div>
 
         {/* BP - Bônus de Proficiência / Bravura */}
-        <div className="flex items-center justify-between rounded-lg border border-codex-500/20 bg-codex-950/10 px-3 py-2">
+        <div className="flex items-center justify-between rounded-lg border border-amber-500/20 bg-amber-950/10 px-3 py-2">
           <div className="flex items-center gap-2 text-xs">
-            <Award size={14} className="text-codex-400" />
-            <span className="font-serif font-bold text-codex-300">Bônus de Proficiência (BP)</span>
+            <Award size={14} className="text-amber-400" />
+            <span className="font-serif font-bold text-amber-300">Bônus de Proficiência (BP)</span>
           </div>
           <div className="flex items-center gap-1 font-mono text-xs">
             <EditableNumber
               value={bpCurrent}
               onChange={(val) => updExtra("bpCurrent", val)}
-              className="font-bold text-codex-300"
+              className="font-bold text-amber-300"
               min={0}
               max={bpMax > 0 ? bpMax : undefined}
             />

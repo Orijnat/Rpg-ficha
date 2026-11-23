@@ -573,7 +573,7 @@ export default function MapaTaticoPage() {
         <div
           ref={fieldRef}
           style={stageFrameStyle}
-          className="relative select-none overflow-hidden rounded-2xl border border-primary/30 bg-[#0f100f] shadow-[inset_0_0_80px_rgba(0,0,0,0.9),0_0_60px_color-mix(in_srgb,var(--primary)_15%,transparent)]"
+          className="relative select-none overflow-hidden rounded-2xl border border-primary/30 bg-[#0b0d12] shadow-[inset_0_0_80px_rgba(0,0,0,0.9),0_0_60px_color-mix(in_srgb,var(--primary)_15%,transparent)]"
           onPointerDown={() => setSelectedToken(null)}
         >
           {/* Camadas de fundo */}
@@ -626,7 +626,7 @@ export default function MapaTaticoPage() {
                 <TokenIcon size={size * 0.4} className="text-black/60" />
                 {hpPct !== null && (
                   <span className="absolute -bottom-1.5 left-1 right-1 h-1.5 overflow-hidden rounded-full border border-black/60 bg-black/70">
-                    <span className={`block h-full ${hpPct > 50 ? "bg-emerald-500" : hpPct > 25 ? "bg-codex-400" : "bg-rose-500"}`} style={{ width: `${hpPct}%` }} />
+                    <span className={`block h-full ${hpPct > 50 ? "bg-emerald-500" : hpPct > 25 ? "bg-amber-400" : "bg-rose-500"}`} style={{ width: `${hpPct}%` }} />
                   </span>
                 )}
                 {isHidden && <EyeOff size={14} className="absolute right-1 top-1 text-zinc-300" />}

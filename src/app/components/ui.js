@@ -228,7 +228,7 @@ export function EditableNumber({
       step="1"
       aria-label={label}
       aria-invalid={invalid}
-      className="w-14 max-w-full rounded-md border border-primary/70 bg-black/95 px-1 py-0.5 text-center font-cinzel font-black text-codex-200 text-lg sm:text-xl outline-none focus:ring-2 focus:ring-primary font-tabular shadow-inner mx-auto block"
+      className="w-14 max-w-full rounded-md border border-primary/70 bg-black/95 px-1 py-0.5 text-center font-cinzel font-black text-amber-200 text-lg sm:text-xl outline-none focus:ring-2 focus:ring-primary font-tabular shadow-inner mx-auto block"
       value={draft}
       onBlur={commit}
       onChange={(event) => setDraft(event.target.value)}

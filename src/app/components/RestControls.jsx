@@ -74,7 +74,7 @@ export default function RestControls({ character, updateCharacter, onRest }) {
       <div className="medallion-plate flex flex-col justify-between rounded-xl p-4 sm:p-5">
         <div>
           <div className="flex items-center gap-2 font-cinzel text-sm font-bold text-foreground">
-            <Sun size={17} className="text-codex-400" />
+            <Sun size={17} className="text-amber-400" />
             <span>Descanso Curto (1 hora)</span>
           </div>
           <p className="mt-2 font-journal text-xs sm:text-sm italic leading-relaxed text-muted-foreground">

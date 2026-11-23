@@ -127,9 +127,9 @@ export default function MundoPage() {
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {sharedHeroes.map((hero) => (
-              <div key={`hero-${hero.id}`} className="rounded-xl border border-codex-400/30 bg-codex-500/10 p-4">
+              <div key={`hero-${hero.id}`} className="rounded-xl border border-amber-400/30 bg-amber-500/10 p-4">
                 <div className="flex items-center gap-2">
-                  <Shield size={16} className="text-codex-400" />
+                  <Shield size={16} className="text-amber-400" />
                   <div>
                     <strong className="font-cinzel text-sm text-foreground">{hero.name}</strong>
                     <p className="font-journal text-xs italic text-muted-foreground">

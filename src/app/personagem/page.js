@@ -134,9 +134,9 @@ export default function Personagem() {
     idle: null,
     saving: { label: "Salvando...", Icon: LoaderCircle, className: "text-primary" },
     saved: { label: "Salvo", Icon: Check, className: "text-emerald-400" },
-    offline: { label: "Salvo localmente", Icon: CloudOff, className: "text-codex-300" },
+    offline: { label: "Salvo localmente", Icon: CloudOff, className: "text-amber-300" },
     error: { label: "Falha ao sincronizar", Icon: TriangleAlert, className: "text-rose-300" },
-    conflict: { label: "Conflito: revisão necessária", Icon: TriangleAlert, className: "text-codex-300" },
+    conflict: { label: "Conflito: revisão necessária", Icon: TriangleAlert, className: "text-amber-300" },
   };
   const syncIndicator = syncLabels[syncStatus];
   const syncDetails = Array.isArray(syncError?.details) ? syncError.details : [];
@@ -156,7 +156,7 @@ export default function Personagem() {
             <h2 className="font-cinzel text-3xl sm:text-5xl font-black tracking-tight gold-gradient-text">
               <EditableText value={data.name} onChange={(value) => upd("name", value)} label="Nome do aventureiro" />
             </h2>
-            <p className="mt-2.5 flex items-center gap-2 font-journal text-sm sm:text-base italic text-codex-100/80">
+            <p className="mt-2.5 flex items-center gap-2 font-journal text-sm sm:text-base italic text-amber-100/80">
               <Sparkles size={15} className="text-primary animate-pulse" />
               Um novo capítulo aguarda ser inscrito neste códice vivo.
             </p>
@@ -187,7 +187,7 @@ export default function Personagem() {
                         <button type="button" onClick={reloadFromCloud} className="ml-1 inline-flex min-h-8 items-center gap-1 rounded px-2 text-[10px] underline underline-offset-2 text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label="Descartar o rascunho local e manter a versão do servidor">
                           Manter da nuvem
                         </button>
-                        <button type="button" onClick={overwriteCloud} className="ml-1 inline-flex min-h-8 items-center gap-1 rounded px-2 text-[10px] underline underline-offset-2 text-codex-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label="Sobrescrever a versão do servidor com o rascunho local">
+                        <button type="button" onClick={overwriteCloud} className="ml-1 inline-flex min-h-8 items-center gap-1 rounded px-2 text-[10px] underline underline-offset-2 text-amber-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" aria-label="Sobrescrever a versão do servidor com o rascunho local">
                           Manter meus dados
                         </button>
                       </>
@@ -264,7 +264,7 @@ export default function Personagem() {
                 capacity.isOverloaded
                   ? "bg-rose-500 shadow-[0_0_10px_#f43f5e]"
                   : capacity.percentage > 80
-                  ? "bg-codex-400 shadow-[0_0_10px_#fbbf24]"
+                  ? "bg-amber-400 shadow-[0_0_10px_#fbbf24]"
                   : "bg-primary shadow-[0_0_10px_var(--primary)]"
               }`}
               style={{ width: `${capacity.percentage}%` }}
@@ -279,13 +279,13 @@ export default function Personagem() {
             href="/habilidades"
             className="flex items-center gap-2 font-medium text-muted-foreground hover:text-primary transition"
           >
-            <Sparkles size={15} className="text-codex-400" />
+            <Sparkles size={15} className="text-amber-400" />
             <span className="font-cinzel text-[11px] uppercase tracking-wider">Grimório de Habilidades:</span>
             <strong className="text-foreground font-tabular">
               {unlockedCount} / {abilities.length} despertadas
             </strong>
             {activeTraining && (
-              <span className="wax-seal bg-codex-500/25 text-codex-200 border border-codex-400/50 shadow-[0_0_10px_rgba(99,201,184,0.25)]">
+              <span className="wax-seal bg-amber-500/25 text-amber-200 border border-amber-400/50 shadow-[0_0_10px_rgba(245,158,11,0.25)]">
                 🎯 Treino: {activeTraining.name} ({activeTraining.trainingHours || 0}h)
               </span>
             )}
@@ -463,7 +463,7 @@ export default function Personagem() {
                           ? "XP no limite — a ascensão precisa ser liberada pelo mestre (feito)"
                           : `Rolar ${hitDie} + Mod(CON) e subir para o nível ${characterLevel + 1}`
                   }
-                  className="flex min-h-11 items-center justify-center gap-2 rounded-lg border border-codex-500/50 bg-codex-500/15 px-4 text-xs font-bold uppercase tracking-wider text-codex-300 transition hover:bg-codex-500/25 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="flex min-h-11 items-center justify-center gap-2 rounded-lg border border-amber-500/50 bg-amber-500/15 px-4 text-xs font-bold uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/25 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   <ChevronsUp size={15} />
                   Subir de Nível

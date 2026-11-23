@@ -52,14 +52,14 @@ function LoginForm() {
       {/* Moldura de Runas — brilho pulsante ao redor do card */}
       <div className="absolute -inset-[2px] rounded-2xl opacity-70 blur-[1px] animate-[runeGlow_4s_ease-in-out_infinite]"
         style={{
-          background: "conic-gradient(from 0deg, var(--theme-accent), var(--codex-brass), var(--codex-verdigris), var(--theme-accent), transparent 40%, var(--theme-accent), var(--codex-brass), transparent 70%, var(--theme-accent))",
+          background: "conic-gradient(from 0deg, #d69a3d, #c9862a, #a97323, #d69a3d, transparent 40%, #d69a3d, #c9862a, transparent 70%, #d69a3d)",
         }}
       />
 
       {/* Card Principal — Pergaminho */}
-      <div className="auth-shell-card relative overflow-hidden rounded-2xl border border-[var(--border)] shadow-[0_0_60px_rgba(99,201,184,0.12),0_20px_60px_rgba(0,0,0,0.5)]"
+      <div className="auth-shell-card relative overflow-hidden rounded-2xl border border-[#6b5a3e]/60 shadow-[0_0_60px_rgba(214,154,61,0.15),0_20px_60px_rgba(0,0,0,0.5)]"
         style={{
-          background: "linear-gradient(170deg, #1c1f1c 0%, #151715 30%, #191b18 60%, #0f100f 100%)",
+          background: "linear-gradient(170deg, #1e1a14 0%, #16120d 30%, #1a1510 60%, #13100c 100%)",
         }}
       >
         {/* Textura de Pergaminho */}
@@ -125,33 +125,33 @@ function LoginForm() {
                       fill="none"
                     />
                     <linearGradient id="sealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#63c9b8" />
-                      <stop offset="50%" stopColor="#c7a866" />
-                      <stop offset="100%" stopColor="#63c9b8" />
+                      <stop offset="0%" stopColor="#d69a3d" />
+                      <stop offset="50%" stopColor="#a97323" />
+                      <stop offset="100%" stopColor="#d69a3d" />
                     </linearGradient>
                   </defs>
                 </svg>
                 {/* Ícone central */}
-                <Image src="/astral.svg" alt="Grimorium" width={48} height={48} priority className="relative z-10 h-12 w-12 rounded-xl shadow-[0_0_18px_color-mix(in_srgb,var(--primary)_35%,transparent)]" />
+                <Image src="/ambar-vulcanico.svg" alt="Grimorium" width={48} height={48} priority className="relative z-10 h-12 w-12 rounded-xl shadow-[0_0_18px_rgba(214,154,61,0.35)]" />
               </div>
             </div>
 
             {/* Título */}
             <p
-              className="mt-4 text-[10px] font-semibold uppercase tracking-[0.4em] text-[var(--theme-accent)]"
+              className="mt-4 text-[10px] font-semibold uppercase tracking-[0.4em] text-[#a97323]"
               style={{ fontFamily: "Cinzel, serif" }}
             >
               Crônicas do Destino
             </p>
             <h2
-              className="mt-1.5 text-center text-2xl font-bold tracking-wide text-[var(--theme-title)] sm:text-3xl"
+              className="mt-1.5 text-center text-2xl font-bold tracking-wide text-[#f5efdf] sm:text-3xl"
               style={{ fontFamily: "Cinzel, serif" }}
             >
               Acesso ao Reino
             </h2>
             <div className="mt-2 flex items-center gap-2">
               <div className="h-px w-12 bg-gradient-to-r from-transparent to-[var(--theme-accent)]/40" />
-              <span className="text-[10px] text-[var(--theme-subtitle)]" style={{ fontFamily: "Crimson Text, serif" }}>
+              <span className="text-[10px] text-[#cbb288]" style={{ fontFamily: "Crimson Text, serif" }}>
                 Entre para continuar sua jornada
               </span>
               <div className="h-px w-12 bg-gradient-to-l from-transparent to-[var(--theme-accent)]/40" />
@@ -170,13 +170,13 @@ function LoginForm() {
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label
-                className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-subtitle)]"
+                className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[#b59a6e]"
                 style={{ fontFamily: "Cinzel, serif" }}
               >
                 Nome de Aventureiro
               </label>
               <div className="group relative">
-                <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[var(--theme-subtitle)] transition group-focus-within:text-[var(--theme-accent)]">
+                <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#6b5a3e] transition group-focus-within:text-[var(--theme-accent)]">
                   <User size={15} />
                 </span>
                 <input
@@ -185,7 +185,7 @@ function LoginForm() {
                   onChange={(e) => setIdentifier(e.target.value)}
                   placeholder="Usuário ou e-mail"
                   required
-                  className="w-full rounded-lg border border-[var(--border)] bg-[var(--input-background)] py-2.5 pl-10 pr-3.5 text-sm text-[var(--theme-body)] placeholder-[var(--muted-foreground)] shadow-inner transition-all focus:border-[var(--theme-accent)]/60 focus:bg-[var(--card)] focus:outline-none focus:ring-1 focus:ring-[var(--theme-accent)]/30 focus:shadow-[0_0_12px_rgba(99,201,184,0.12)]"
+                  className="w-full rounded-lg border border-[#4a3d2a]/60 bg-[#0f0d0a]/60 py-2.5 pl-10 pr-3.5 text-sm text-[#f1e7d2] placeholder-[#6b5a3e]/50 shadow-inner transition-all focus:border-[var(--theme-accent)]/60 focus:bg-[#0f0d0a]/80 focus:outline-none focus:ring-1 focus:ring-[var(--theme-accent)]/30 focus:shadow-[0_0_12px_rgba(214,154,61,0.08)]"
                   style={{ fontFamily: "Crimson Text, serif", fontSize: "15px" }}
                 />
               </div>
@@ -193,13 +193,13 @@ function LoginForm() {
 
             <div>
               <label
-                className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-subtitle)]"
+                className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[#b59a6e]"
                 style={{ fontFamily: "Cinzel, serif" }}
               >
                 Palavra-Passe
               </label>
               <div className="group relative">
-                <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[var(--theme-subtitle)] transition group-focus-within:text-[var(--theme-accent)]">
+                <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#6b5a3e] transition group-focus-within:text-[var(--theme-accent)]">
                   <Lock size={15} />
                 </span>
                 <input
@@ -208,13 +208,13 @@ function LoginForm() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  className="w-full rounded-lg border border-[var(--border)] bg-[var(--input-background)] py-2.5 pl-10 pr-10 text-sm text-[var(--theme-body)] placeholder-[var(--muted-foreground)] shadow-inner transition-all focus:border-[var(--theme-accent)]/60 focus:bg-[var(--card)] focus:outline-none focus:ring-1 focus:ring-[var(--theme-accent)]/30 focus:shadow-[0_0_12px_rgba(99,201,184,0.12)]"
+                  className="w-full rounded-lg border border-[#4a3d2a]/60 bg-[#0f0d0a]/60 py-2.5 pl-10 pr-10 text-sm text-[#f1e7d2] placeholder-[#6b5a3e]/50 shadow-inner transition-all focus:border-[var(--theme-accent)]/60 focus:bg-[#0f0d0a]/80 focus:outline-none focus:ring-1 focus:ring-[var(--theme-accent)]/30 focus:shadow-[0_0_12px_rgba(214,154,61,0.08)]"
                   style={{ fontFamily: "Crimson Text, serif", fontSize: "15px" }}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-[var(--theme-subtitle)] transition hover:text-[var(--theme-accent)]"
+                  className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-[#6b5a3e] transition hover:text-[var(--theme-accent)]"
                 >
                   {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                 </button>
@@ -225,11 +225,11 @@ function LoginForm() {
             <button
               type="submit"
               disabled={loading}
-              className="group relative mt-7 flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-lg border border-[var(--theme-accent)]/50 py-3 text-sm font-semibold tracking-wider transition-all hover:border-[var(--theme-accent)] hover:shadow-[0_0_24px_rgba(99,201,184,0.2)] active:scale-[0.98] disabled:opacity-50"
+              className="group relative mt-7 flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-lg border border-[var(--theme-accent)]/50 py-3 text-sm font-semibold tracking-wider transition-all hover:border-[var(--theme-accent)] hover:shadow-[0_0_24px_rgba(214,154,61,0.2)] active:scale-[0.98] disabled:opacity-50"
               style={{
                 fontFamily: "Cinzel, serif",
-                background: "linear-gradient(135deg, #26302a 0%, #32483e 50%, #26302a 100%)",
-                color: "var(--theme-title)",
+                background: "linear-gradient(135deg, #2a2018 0%, #3d2e1a 50%, #2a2018 100%)",
+                color: "#f0d9a0",
               }}
             >
               {/* Brilho no hover */}
@@ -251,14 +251,14 @@ function LoginForm() {
           {/* Link para Registro + Esqueci a senha */}
           <div className="text-center">
             <p
-              className="text-xs text-[var(--theme-subtitle)]"
+              className="text-xs text-[#cbb288]"
               style={{ fontFamily: "Crimson Text, serif" }}
             >
               É sua primeira vez nestas terras?
             </p>
             <Link
               href={`/registro${inviteCode ? `?invite=${encodeURIComponent(inviteCode)}` : ""}`}
-              className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--theme-accent)] transition hover:text-[var(--theme-title)] hover:drop-shadow-[0_0_6px_rgba(99,201,184,0.4)]"
+              className="mt-2 inline-flex items-center gap-1.5 text-sm font-semibold text-[var(--theme-accent)] transition hover:text-[#f0d9a0] hover:drop-shadow-[0_0_6px_rgba(214,154,61,0.4)]"
               style={{ fontFamily: "Cinzel, serif" }}
             >
               <Sparkles size={14} />
@@ -267,10 +267,10 @@ function LoginForm() {
           </div>
 
           {/* Atalho convidado */}
-          <div className="mt-6 border-t border-[var(--border)] pt-4 text-center">
+          <div className="mt-6 border-t border-[#4a3d2a]/30 pt-4 text-center">
             <Link
               href="/personagem"
-              className="text-[11px] text-[var(--theme-subtitle)]/70 transition hover:text-[var(--theme-subtitle)]"
+              className="text-[11px] text-[#6b5a3e]/70 transition hover:text-[#cbb288]"
               style={{ fontFamily: "Crimson Text, serif" }}
             >
               Continuar sem login (modo convidado offline) →

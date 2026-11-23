@@ -76,7 +76,7 @@ export default function ConfirmDialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby="confirm-dialog-title"
-        className="relative w-full max-w-md rounded-2xl border-2 border-primary/50 bg-[#161816] p-6 shadow-2xl shadow-black/80"
+        className="relative w-full max-w-md rounded-2xl border-2 border-primary/50 bg-[#0f1118] p-6 shadow-2xl shadow-black/80"
       >
         <button
           type="button"
@@ -91,7 +91,7 @@ export default function ConfirmDialog({
             className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border ${
               isDanger
                 ? "border-rose-500/50 bg-rose-950/40 text-rose-400"
-                : "border-codex-500/50 bg-codex-950/40 text-codex-400"
+                : "border-amber-500/50 bg-amber-950/40 text-amber-400"
             }`}
           >
             {isDanger ? <ShieldAlert size={22} /> : <AlertTriangle size={22} />}

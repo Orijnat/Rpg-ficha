@@ -217,7 +217,7 @@ export default function PerfilPage() {
                 <span
                   className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
                     isMaster
-                      ? "bg-codex-400/20 text-codex-300 border border-codex-400/40"
+                      ? "bg-amber-400/20 text-amber-300 border border-amber-400/40"
                       : "bg-primary/20 text-primary border border-primary/40"
                   }`}
                 >
@@ -415,7 +415,7 @@ export default function PerfilPage() {
                 />
               </div>
               {racasErro && (
-                <p className="text-[11px] text-codex-300">{racasErro}</p>
+                <p className="text-[11px] text-amber-300">{racasErro}</p>
               )}
               <div className="space-y-1">
                 <label className="mb-1 block text-[11px] font-semibold uppercase tracking-wider text-[#b59a6e]" style={{ fontFamily: "Cinzel, serif" }}>Raça</label>
@@ -486,7 +486,7 @@ export default function PerfilPage() {
                             className={`rounded px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
                               camp.estado === "ativa"
                                 ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                                : "bg-codex-500/20 text-codex-300 border border-codex-500/30"
+                                : "bg-amber-500/20 text-amber-300 border border-amber-500/30"
                             }`}
                           >
                             {camp.estado}
@@ -611,7 +611,7 @@ export default function PerfilPage() {
                     />
                     <span
                       className="h-4 w-4 rounded-full border border-white/20 shadow-sm"
-                      style={{ backgroundColor: theme.bg || theme.preview?.bg || "#0f100f" }}
+                      style={{ backgroundColor: theme.bg || theme.preview?.bg || "#0b0d12" }}
                       title="Superfície"
                     />
                   </div>
@@ -647,7 +647,7 @@ export default function PerfilPage() {
               {isMaster && (
                 <Link
                   href="/admin"
-                  className="flex items-center justify-center gap-1.5 rounded-lg border border-codex-400/40 bg-codex-400/10 p-2.5 font-semibold text-codex-300 hover:bg-codex-400/20 transition"
+                  className="flex items-center justify-center gap-1.5 rounded-lg border border-amber-400/40 bg-amber-400/10 p-2.5 font-semibold text-amber-300 hover:bg-amber-400/20 transition"
                 >
                   Sala do Mestre
                 </Link>

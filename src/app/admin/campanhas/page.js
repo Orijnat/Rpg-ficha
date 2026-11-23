@@ -351,7 +351,7 @@ export default function AdminCampanhasPage() {
                               camp.estado === "ativa"
                                 ? "border border-emerald-500/40 bg-emerald-950/40 text-emerald-300"
                                 : camp.estado === "pausada"
-                                ? "border border-codex-500/40 bg-codex-950/40 text-codex-300"
+                                ? "border border-amber-500/40 bg-amber-950/40 text-amber-300"
                                 : "border border-border bg-secondary text-muted-foreground"
                             }`}
                           >
@@ -500,7 +500,7 @@ export default function AdminCampanhasPage() {
       {/* Modal de Gestão de Membros */}
       {selectedCampaignForMembers && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
-          <div data-lenis-prevent className="w-full max-w-2xl rounded-2xl border-2 border-primary/50 bg-[#161816] p-6 shadow-2xl max-h-[85vh] overflow-y-auto">
+          <div data-lenis-prevent className="w-full max-w-2xl rounded-2xl border-2 border-primary/50 bg-[#0f1118] p-6 shadow-2xl max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div>
                 <h3 className="font-serif text-lg font-bold uppercase text-foreground">
@@ -619,7 +619,7 @@ export default function AdminCampanhasPage() {
                               className={`rounded p-1.5 transition ${
                                 m.bloqueado
                                   ? "bg-emerald-950/40 text-emerald-400 hover:bg-emerald-900/60"
-                                  : "bg-codex-950/40 text-codex-400 hover:bg-codex-900/60"
+                                  : "bg-amber-950/40 text-amber-400 hover:bg-amber-900/60"
                               }`}
                               title={m.bloqueado ? "Desbloquear jogador" : "Bloquear jogador"}
                             >
@@ -650,7 +650,7 @@ export default function AdminCampanhasPage() {
       {/* Modal de Auditoria */}
       {auditCampaign && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
-          <div data-lenis-prevent className="w-full max-w-3xl rounded-2xl border-2 border-primary/50 bg-[#161816] p-6 shadow-2xl max-h-[85vh] overflow-y-auto">
+          <div data-lenis-prevent className="w-full max-w-3xl rounded-2xl border-2 border-primary/50 bg-[#0f1118] p-6 shadow-2xl max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div>
                 <h3 className="font-serif text-lg font-bold uppercase text-foreground">

@@ -57,11 +57,11 @@ export default function XPBar() {
     <div className="w-full" aria-label={`XP: Nível ${level}`}>
       {/* Rótulo */}
       <div className="flex items-center justify-between mb-0.5">
-        <span className="flex items-center gap-1 font-cinzel text-[10px] font-bold uppercase tracking-[0.22em] text-codex-400/80">
-          <Star size={9} className="text-codex-400 drop-shadow-[0_0_4px_#63c9b8]" />
+        <span className="flex items-center gap-1 font-cinzel text-[10px] font-bold uppercase tracking-[0.22em] text-amber-400/80">
+          <Star size={9} className="text-amber-400 drop-shadow-[0_0_4px_#f59e0b]" />
           Nível {level}
           {isMaxLevel && (
-            <span className="ml-1 text-codex-300 tracking-widest">✦ Máximo</span>
+            <span className="ml-1 text-amber-300 tracking-widest">✦ Máximo</span>
           )}
         </span>
 
@@ -76,30 +76,30 @@ export default function XPBar() {
               onChange={(e) => setInputVal(e.target.value)}
               onBlur={commitEdit}
               onKeyDown={handleKey}
-              className="w-20 rounded border border-codex-500/50 bg-zinc-900/80 px-1.5 py-0.5 font-mono text-[10px] text-codex-200 outline-none focus:border-codex-400 focus:ring-1 focus:ring-codex-400/30"
+              className="w-20 rounded border border-amber-500/50 bg-zinc-900/80 px-1.5 py-0.5 font-mono text-[10px] text-amber-200 outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400/30"
               aria-label="Editar XP atual"
             />
             <button
               type="button"
               onClick={commitEdit}
-              className="rounded border border-codex-500/40 bg-codex-900/40 px-1.5 py-0.5 font-cinzel text-[10px] font-bold text-codex-300 hover:bg-codex-800/60 active:scale-95 transition"
+              className="rounded border border-amber-500/40 bg-amber-900/40 px-1.5 py-0.5 font-cinzel text-[10px] font-bold text-amber-300 hover:bg-amber-800/60 active:scale-95 transition"
             >
               OK
             </button>
           </div>
         ) : !canEdit ? (
-          <span className="font-mono text-[10px] text-codex-300/70">
-            <span className="text-codex-400 font-bold">
+          <span className="font-mono text-[10px] text-amber-300/70">
+            <span className="text-amber-400 font-bold">
               {currentXP.toLocaleString("pt-BR")}
             </span>
             {!isMaxLevel && (
               <span className="text-muted-foreground">
                 {" "}
                 / {nextLevelXP.toLocaleString("pt-BR")}{" "}
-                <span className="text-codex-500/60">({progress}%)</span>
+                <span className="text-amber-500/60">({progress}%)</span>
               </span>
             )}
-            <span className="ml-1 font-cinzel text-codex-500/40 text-[8px] uppercase">
+            <span className="ml-1 font-cinzel text-amber-500/40 text-[8px] uppercase">
               XP
             </span>
           </span>
@@ -108,20 +108,20 @@ export default function XPBar() {
             type="button"
             onClick={startEdit}
             title="Clique para editar XP (mestre)"
-            className="group font-mono text-[10px] text-codex-300/70 hover:text-codex-200 transition-colors cursor-pointer"
+            className="group font-mono text-[10px] text-amber-300/70 hover:text-amber-200 transition-colors cursor-pointer"
             aria-label="Editar XP atual"
           >
-            <span className="text-codex-400 font-bold group-hover:text-codex-300">
+            <span className="text-amber-400 font-bold group-hover:text-amber-300">
               {currentXP.toLocaleString("pt-BR")}
             </span>
             {!isMaxLevel && (
               <span className="text-muted-foreground">
                 {" "}
                 / {nextLevelXP.toLocaleString("pt-BR")}{" "}
-                <span className="text-codex-500/60">({progress}%)</span>
+                <span className="text-amber-500/60">({progress}%)</span>
               </span>
             )}
-            <span className="ml-1 font-cinzel text-codex-500/40 group-hover:text-codex-400/60 text-[8px] uppercase">
+            <span className="ml-1 font-cinzel text-amber-500/40 group-hover:text-amber-400/60 text-[8px] uppercase">
               XP ✎
             </span>
           </button>
@@ -130,7 +130,7 @@ export default function XPBar() {
 
       {/* Trilho da barra */}
       <div
-        className="relative h-1.5 w-full overflow-hidden rounded-full bg-zinc-800/80 border border-codex-900/40 shadow-inner"
+        className="relative h-1.5 w-full overflow-hidden rounded-full bg-zinc-800/80 border border-amber-900/40 shadow-inner"
         role="progressbar"
         aria-valuenow={currentXP}
         aria-valuemin={xpForCurrent}

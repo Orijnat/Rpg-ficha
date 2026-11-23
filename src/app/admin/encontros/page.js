@@ -568,7 +568,7 @@ export default function AdminEncontrosPage() {
                     <button
                       type="button"
                       onClick={() => setFinalizeOpen(true)}
-                      className="flex min-h-9 items-center gap-1.5 rounded-lg border border-codex-500/60 bg-codex-500/20 px-3 text-xs font-bold uppercase text-codex-200 transition hover:bg-codex-500/30 active:scale-95"
+                      className="flex min-h-9 items-center gap-1.5 rounded-lg border border-amber-500/60 bg-amber-500/20 px-3 text-xs font-bold uppercase text-amber-200 transition hover:bg-amber-500/30 active:scale-95"
                       title="Quem recebe XP, quanto e o desfecho de cada herói — encerra o encontro"
                     >
                       <Trophy size={13} /> Finalizar

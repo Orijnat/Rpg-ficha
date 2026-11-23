@@ -72,7 +72,7 @@ export function AbilityCard({
       case "reacao":
         return <Zap size={13} className="text-sky-400" />;
       default:
-        return <Sword size={13} className="text-codex-400" />;
+        return <Sword size={13} className="text-amber-400" />;
     }
   };
 
@@ -126,9 +126,9 @@ export function AbilityCard({
         isRejected
           ? "border-rose-900/60 bg-rose-950/20"
           : isPending
-          ? "border-codex-500/50 bg-codex-950/15 shadow-sm"
+          ? "border-amber-500/50 bg-amber-950/15 shadow-sm"
           : isUnlocked
-          ? "border-zinc-800/80 bg-zinc-950/70 shadow-md hover:border-codex-500/40 hover:bg-zinc-900/60"
+          ? "border-zinc-800/80 bg-zinc-950/70 shadow-md hover:border-amber-500/40 hover:bg-zinc-900/60"
           : "border-zinc-800/40 bg-zinc-950/30 opacity-75 backdrop-blur-[2px]"
       }`}
     >
@@ -148,7 +148,7 @@ export function AbilityCard({
             <span
               className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-bold ${
                 ability.category === "nivel"
-                  ? "border-codex-500/40 bg-codex-950/40 text-codex-300"
+                  ? "border-amber-500/40 bg-amber-950/40 text-amber-300"
                   : "border-purple-500/40 bg-purple-950/40 text-purple-300"
               }`}
             >
@@ -170,7 +170,7 @@ export function AbilityCard({
 
             {/* Badge de Aprovação do Mestre */}
             {isPending && (
-              <span className="inline-flex items-center gap-1 rounded-md border border-codex-500/50 bg-codex-950/60 px-2 py-0.5 text-[10px] font-bold text-codex-300 animate-pulse">
+              <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/50 bg-amber-950/60 px-2 py-0.5 text-[10px] font-bold text-amber-300 animate-pulse">
                 <Clock size={10} />
                 Pendente
               </span>
@@ -196,13 +196,13 @@ export function AbilityCard({
                 }
                 className={`flex h-7 w-7 items-center justify-center rounded-lg border transition ${
                   ability.isTraining
-                    ? "border-codex-500/80 bg-codex-500/20 text-codex-300 shadow-[0_0_8px_rgba(99,201,184,0.3)]"
+                    ? "border-amber-500/80 bg-amber-500/20 text-amber-300 shadow-[0_0_8px_rgba(245,158,11,0.3)]"
                     : "border-zinc-800 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300"
                 }`}
               >
                 <Star
                   size={13}
-                  className={ability.isTraining ? "fill-codex-400" : ""}
+                  className={ability.isTraining ? "fill-amber-400" : ""}
                 />
               </button>
             )}
@@ -234,7 +234,7 @@ export function AbilityCard({
         {/* Título e Custo */}
         <div className="mt-3 flex items-start justify-between gap-2">
           <div>
-            <h3 className="font-serif text-base font-bold tracking-tight text-zinc-100 group-hover:text-codex-300 transition-colors">
+            <h3 className="font-serif text-base font-bold tracking-tight text-zinc-100 group-hover:text-amber-300 transition-colors">
               {ability.name}
             </h3>
             {ability.damageType && (
@@ -254,8 +254,8 @@ export function AbilityCard({
 
         {/* Alerta de Pendente / Rejeitada */}
         {isPending && !isMaster && (
-          <div className="mt-2 rounded-lg border border-codex-500/30 bg-codex-950/20 p-2 text-[11px] text-codex-300/90 flex items-center gap-1.5">
-            <Clock size={12} className="shrink-0 text-codex-400" />
+          <div className="mt-2 rounded-lg border border-amber-500/30 bg-amber-950/20 p-2 text-[11px] text-amber-300/90 flex items-center gap-1.5">
+            <Clock size={12} className="shrink-0 text-amber-400" />
             <span>Aguardando avaliação do Mestre para liberação em combate.</span>
           </div>
         )}
@@ -293,7 +293,7 @@ export function AbilityCard({
           <button
             type="button"
             onClick={() => setExpanded(!expanded)}
-            className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-codex-400 hover:text-codex-300 transition"
+            className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-amber-400 hover:text-amber-300 transition"
           >
             {expanded ? (
               <>
@@ -312,8 +312,8 @@ export function AbilityCard({
 
       {/* PAINEL DE MODERAÇÃO EXCLUSIVO DO MESTRE PARA HABILIDADES PENDENTES */}
       {isMaster && isPending && (
-        <div className="mt-3 rounded-xl border border-codex-500/40 bg-codex-950/30 p-2.5 space-y-2">
-          <div className="flex items-center justify-between text-xs font-bold text-codex-300">
+        <div className="mt-3 rounded-xl border border-amber-500/40 bg-amber-950/30 p-2.5 space-y-2">
+          <div className="flex items-center justify-between text-xs font-bold text-amber-300">
             <span className="flex items-center gap-1">
               <Clock size={12} />
               Solicitação do Jogador
@@ -406,7 +406,7 @@ export function AbilityCard({
                 progresso.isMax
                   ? "bg-purple-500"
                   : progresso.porcentagem > 50
-                  ? "bg-codex-400"
+                  ? "bg-amber-400"
                   : "bg-primary"
               }`}
               style={{ width: `${progresso.porcentagem}%` }}
@@ -421,7 +421,7 @@ export function AbilityCard({
             <button
               type="button"
               onClick={() => onTrain(ability.id, 1)}
-              className="flex items-center gap-1 rounded-lg border border-codex-500/30 bg-codex-500/10 px-2.5 py-1 text-xs font-semibold text-codex-300 hover:bg-codex-500/20 active:scale-95 transition"
+              className="flex items-center gap-1 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-xs font-semibold text-amber-300 hover:bg-amber-500/20 active:scale-95 transition"
               title="Dedicar 1 hora de treino prático a esta habilidade"
             >
               <Award size={12} />

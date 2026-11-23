@@ -37,10 +37,10 @@ const ATTR_BADGES = {
   },
   DES: {
     label: "Destreza",
-    border: "border-codex-500/30",
-    text: "text-codex-300",
-    bg: "bg-codex-500/10",
-    activeBg: "bg-codex-500/20",
+    border: "border-amber-500/30",
+    text: "text-amber-300",
+    bg: "bg-amber-500/10",
+    activeBg: "bg-amber-500/20",
   },
   CON: {
     label: "Constituição",

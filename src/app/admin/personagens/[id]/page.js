@@ -47,22 +47,22 @@ export default function EditPersonagem({ params }) {
       {error && <p className="mb-4 border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive-foreground">{error}</p>}
       <div>
         <label className="block text-sm text-[var(--theme-subtitle)]">Nome</label>
-        <input value={item.name || ""} onChange={(e) => setItem({ ...item, name: e.target.value })} className="mt-1 w-full rounded-md bg-[#0f100f] border border-white/6 px-3 py-2 text-[#f5efdf]" />
+        <input value={item.name || ""} onChange={(e) => setItem({ ...item, name: e.target.value })} className="mt-1 w-full rounded-md bg-[#0b0d12] border border-white/6 px-3 py-2 text-[#f5efdf]" />
       </div>
 
       <div className="mt-3">
         <label className="block text-sm text-[var(--theme-subtitle)]">Classe / Job</label>
-        <input value={item.job || ""} onChange={(e) => setItem({ ...item, job: e.target.value })} className="mt-1 w-full rounded-md bg-[#0f100f] border border-white/6 px-3 py-2 text-[#f5efdf]" />
+        <input value={item.job || ""} onChange={(e) => setItem({ ...item, job: e.target.value })} className="mt-1 w-full rounded-md bg-[#0b0d12] border border-white/6 px-3 py-2 text-[#f5efdf]" />
       </div>
 
       <div className="mt-3 grid grid-cols-2 gap-3">
         <div>
           <label className="block text-sm text-[var(--theme-subtitle)]">HP</label>
-          <input type="number" value={item.hp} onChange={(e) => setItem({ ...item, hp: Number(e.target.value) })} className="mt-1 w-full rounded-md bg-[#0f100f] border border-white/6 px-3 py-2 text-[#f5efdf]" />
+          <input type="number" value={item.hp} onChange={(e) => setItem({ ...item, hp: Number(e.target.value) })} className="mt-1 w-full rounded-md bg-[#0b0d12] border border-white/6 px-3 py-2 text-[#f5efdf]" />
         </div>
         <div>
           <label className="block text-sm text-[var(--theme-subtitle)]">HP Máx</label>
-          <input type="number" value={item.hpMax} onChange={(e) => setItem({ ...item, hpMax: Number(e.target.value) })} className="mt-1 w-full rounded-md bg-[#0f100f] border border-white/6 px-3 py-2 text-[#f5efdf]" />
+          <input type="number" value={item.hpMax} onChange={(e) => setItem({ ...item, hpMax: Number(e.target.value) })} className="mt-1 w-full rounded-md bg-[#0b0d12] border border-white/6 px-3 py-2 text-[#f5efdf]" />
         </div>
       </div>
 

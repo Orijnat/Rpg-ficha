@@ -333,7 +333,7 @@ export default function NpcCataloguePage() {
             const attitudeColors = {
               Hostil: "bg-red-500/10 text-red-400 border-red-500/30",
               Chefe: "bg-purple-500/10 text-purple-400 border-purple-500/30",
-              Neutro: "bg-codex-500/10 text-codex-400 border-codex-500/30",
+              Neutro: "bg-amber-500/10 text-amber-400 border-amber-500/30",
               Aliado: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
             };
 
@@ -399,7 +399,7 @@ export default function NpcCataloguePage() {
                           hpPercent > 50
                             ? "bg-emerald-500"
                             : hpPercent > 20
-                            ? "bg-codex-500"
+                            ? "bg-amber-500"
                             : "bg-red-500"
                         }`}
                         style={{ width: `${hpPercent}%` }}

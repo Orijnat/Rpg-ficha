@@ -907,3 +907,11 @@ Criar tabela de raças no banco; selects de raça passam a enviar o ID da raça;
 - Validação: lint 0 erros (45 warnings pré-existentes); testes 165/165; build OK (29 páginas).
 - ✅ Push 2026-11-23: ajuste "sem azuis" enviado ao origin/main em commit próprio, incluindo memória atualizada. Untracked preexistentes (`.github/workflows/`, `test_schema.mjs`) seguem fora do commit.
 - Próximo passo: deploy Vercel e validação visual em browser (indisponível no sandbox).
+
+## ✅ Atualização 2026-11-23 (revert da identidade visual)
+
+- Prompt: "volte para o modelo natio, antes das alteracoes"; confirmado pelo usuário: restaurar o **original âmbar** (não apenas a versão azul do Forja Astral).
+- Ação: revert de `7a3e19b` (remoção dos azuis) e `cabad5b` (identidade Forja Astral + migração âmbar→codex), preservando o histórico com novos commits em vez de reescrever a main. `dd71d6b` (memória) mantido.
+- Resultado: `src/` e `public/` voltaram byte a byte ao estado de `1a4488c` (verificado com `git diff 1a4488c -- src public` vazio). `public/astral.svg` removido; `ambar-vulcanico.svg`, tema Âmbar Vulcânico, logo/cópia/tokens originais restaurados.
+- Conflitos de revert ocorreram apenas nos arquivos de memória; resolvidos mantendo o log de sessão atual e registrando esta decisão.
+- Próximo passo: confirmar visualmente com o usuário que o visual original voltou; não fazer deploy da identidade Forja Astral.

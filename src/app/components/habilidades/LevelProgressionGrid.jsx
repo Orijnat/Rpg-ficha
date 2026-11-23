@@ -114,7 +114,7 @@ export function LevelProgressionGrid({
       case "reacao":
         return <Zap size={12} className="text-sky-400" />;
       default:
-        return <Sword size={12} className="text-codex-400" />;
+        return <Sword size={12} className="text-amber-400" />;
     }
   };
 
@@ -159,7 +159,7 @@ export function LevelProgressionGrid({
       <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-4 sm:p-5 shadow-lg backdrop-blur-sm space-y-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-codex-400">
+            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-amber-400">
               <Layers size={13} />
               <span>Progressão do Herói • Níveis 1 a 20</span>
             </div>
@@ -177,7 +177,7 @@ export function LevelProgressionGrid({
               <span className="block text-[10px] uppercase tracking-wider text-zinc-400">
                 Slots Preenchidos
               </span>
-              <span className="font-mono text-sm font-bold text-codex-300">
+              <span className="font-mono text-sm font-bold text-amber-300">
                 {stats.filled} <span className="text-zinc-500">/ 20</span>
               </span>
             </div>
@@ -209,7 +209,7 @@ export function LevelProgressionGrid({
 
               let bgClass = "bg-zinc-800/50";
               if (isFilled && isUnlocked) {
-                bgClass = "bg-codex-400 shadow-[0_0_6px_rgba(99,201,184,0.5)]";
+                bgClass = "bg-amber-400 shadow-[0_0_6px_rgba(245,158,11,0.5)]";
               } else if (isFilled && !isUnlocked) {
                 bgClass = "bg-sky-500/80";
               } else if (!isFilled && isUnlocked) {
@@ -240,7 +240,7 @@ export function LevelProgressionGrid({
               onClick={() => setFilterMode("todos")}
               className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition ${
                 filterMode === "todos"
-                  ? "bg-codex-500/20 text-codex-300 border border-codex-500/40"
+                  ? "bg-amber-500/20 text-amber-300 border border-amber-500/40"
                   : "text-zinc-400 hover:text-zinc-200"
               }`}
             >
@@ -302,7 +302,7 @@ export function LevelProgressionGrid({
               key={lvl}
               className={`relative flex flex-col justify-between rounded-xl border p-4 transition-all duration-200 ${
                 isUnlocked
-                  ? "border-zinc-800 bg-zinc-950/80 shadow-md hover:border-codex-500/40"
+                  ? "border-zinc-800 bg-zinc-950/80 shadow-md hover:border-amber-500/40"
                   : "border-zinc-800/40 bg-zinc-950/40 opacity-80 backdrop-blur-[1px]"
               }`}
             >
@@ -314,7 +314,7 @@ export function LevelProgressionGrid({
                     <div
                       className={`flex h-8 w-8 items-center justify-center rounded-xl border font-serif text-xs font-bold transition ${
                         isUnlocked
-                          ? "border-codex-500/60 bg-codex-500/20 text-codex-300 shadow-[0_0_8px_rgba(99,201,184,0.25)]"
+                          ? "border-amber-500/60 bg-amber-500/20 text-amber-300 shadow-[0_0_8px_rgba(245,158,11,0.25)]"
                           : "border-zinc-800 bg-zinc-900 text-zinc-500"
                       }`}
                     >
@@ -372,7 +372,7 @@ export function LevelProgressionGrid({
                         <span
                           className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-bold ${
                             ability.category === "nivel"
-                              ? "border-codex-500/40 bg-codex-950/40 text-codex-300"
+                              ? "border-amber-500/40 bg-amber-950/40 text-amber-300"
                               : "border-purple-500/40 bg-purple-950/40 text-purple-300"
                           }`}
                         >
@@ -390,7 +390,7 @@ export function LevelProgressionGrid({
                       {/* Badge de Aprovação */}
                       <div>
                         {isPending && (
-                          <span className="inline-flex items-center gap-1 rounded-md border border-codex-500/50 bg-codex-950/60 px-2 py-0.5 text-[10px] font-bold text-codex-300 animate-pulse">
+                          <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/50 bg-amber-950/60 px-2 py-0.5 text-[10px] font-bold text-amber-300 animate-pulse">
                             <Clock size={10} />
                             Pendente de Aprovação
                           </span>
@@ -429,8 +429,8 @@ export function LevelProgressionGrid({
 
                     {/* Feedback do Mestre (se houver) */}
                     {ability.masterFeedback && (
-                      <div className="rounded-lg border border-codex-500/40 bg-codex-950/30 p-2 text-xs text-codex-200">
-                        <strong className="text-[10px] uppercase font-bold text-codex-400 block">
+                      <div className="rounded-lg border border-amber-500/40 bg-amber-950/30 p-2 text-xs text-amber-200">
+                        <strong className="text-[10px] uppercase font-bold text-amber-400 block">
                           Feedback do Mestre:
                         </strong>
                         <p className="text-[11px] mt-0.5">{ability.masterFeedback}</p>
@@ -458,7 +458,7 @@ export function LevelProgressionGrid({
                             progresso?.isMax
                               ? "bg-purple-500"
                               : (progresso?.porcentagem || 0) > 50
-                              ? "bg-codex-400"
+                              ? "bg-amber-400"
                               : "bg-primary"
                           }`}
                           style={{ width: `${progresso?.porcentagem || 0}%` }}
@@ -479,7 +479,7 @@ export function LevelProgressionGrid({
                           setSelectorSearch("");
                           setSelectorLevel(lvl);
                         }}
-                        className="flex items-center gap-1 rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-xs font-semibold text-zinc-200 hover:border-codex-500/50 hover:text-codex-300 transition active:scale-95"
+                        className="flex items-center gap-1 rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-xs font-semibold text-zinc-200 hover:border-amber-500/50 hover:text-amber-300 transition active:scale-95"
                       >
                         <Layers size={12} />
                         <span>Escolher Habilidade</span>
@@ -509,7 +509,7 @@ export function LevelProgressionGrid({
                       <button
                         type="button"
                         onClick={() => onTrain(ability.id, 1)}
-                        className="flex items-center gap-1 rounded-lg border border-codex-500/40 bg-codex-500/20 px-2.5 py-1 text-xs font-bold text-codex-300 hover:bg-codex-500/30 active:scale-95 transition"
+                        className="flex items-center gap-1 rounded-lg border border-amber-500/40 bg-amber-500/20 px-2.5 py-1 text-xs font-bold text-amber-300 hover:bg-amber-500/30 active:scale-95 transition"
                         title="Dedicar 1 hora de treino prático a esta habilidade"
                       >
                         <Award size={12} />
@@ -566,7 +566,7 @@ export function LevelProgressionGrid({
                         setSelectorLevel(lvl);
                       }}
                       title="Trocar habilidade deste nível"
-                      className="flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-800 text-zinc-400 hover:border-codex-500/50 hover:text-codex-300 transition"
+                      className="flex h-7 w-7 items-center justify-center rounded-lg border border-zinc-800 text-zinc-400 hover:border-amber-500/50 hover:text-amber-300 transition"
                     >
                       <Layers size={12} />
                     </button>
@@ -594,7 +594,7 @@ export function LevelProgressionGrid({
             {/* Cabeçalho do Seletor */}
             <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-codex-500/50 bg-codex-500/20 text-codex-300 font-serif font-bold">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-amber-500/50 bg-amber-500/20 text-amber-300 font-serif font-bold">
                   {selectorLevel}
                 </div>
                 <div>
@@ -624,7 +624,7 @@ export function LevelProgressionGrid({
                 value={selectorSearch}
                 onChange={(e) => setSelectorSearch(e.target.value)}
                 placeholder="Buscar habilidade por nome ou tipo..."
-                className="w-full rounded-xl border border-zinc-800 bg-zinc-900 py-2 pl-9 pr-3 text-xs text-zinc-200 placeholder:text-zinc-600 focus:border-codex-500 focus:outline-none"
+                className="w-full rounded-xl border border-zinc-800 bg-zinc-900 py-2 pl-9 pr-3 text-xs text-zinc-200 placeholder:text-zinc-600 focus:border-amber-500 focus:outline-none"
               />
             </div>
 
@@ -645,7 +645,7 @@ export function LevelProgressionGrid({
                       key={hab.id}
                       className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-xl border p-3 transition ${
                         isCurrent
-                          ? "border-codex-500/60 bg-codex-950/30"
+                          ? "border-amber-500/60 bg-amber-950/30"
                           : "border-zinc-800/80 bg-zinc-900/60 hover:border-zinc-700 hover:bg-zinc-900"
                       }`}
                     >
@@ -659,7 +659,7 @@ export function LevelProgressionGrid({
                           </span>
 
                           {isPending && (
-                            <span className="rounded border border-codex-500/40 bg-codex-950/40 px-1.5 py-0.5 text-[10px] font-bold text-codex-300">
+                            <span className="rounded border border-amber-500/40 bg-amber-950/40 px-1.5 py-0.5 text-[10px] font-bold text-amber-300">
                               Pendente
                             </span>
                           )}
@@ -680,7 +680,7 @@ export function LevelProgressionGrid({
                         )}
 
                         {isAssignedElsewhere && (
-                          <span className="block text-[10px] text-codex-400/90 italic">
+                          <span className="block text-[10px] text-amber-400/90 italic">
                             * Também alocada no Nível {isAssignedElsewhere[0]}
                           </span>
                         )}
@@ -695,8 +695,8 @@ export function LevelProgressionGrid({
                         }}
                         className={`shrink-0 rounded-lg px-3 py-1.5 text-xs font-bold transition active:scale-95 ${
                           isCurrent
-                            ? "border border-codex-500/50 bg-codex-500/25 text-codex-300"
-                            : "border border-zinc-700 bg-zinc-800 text-zinc-200 hover:border-codex-500 hover:text-codex-300"
+                            ? "border border-amber-500/50 bg-amber-500/25 text-amber-300"
+                            : "border border-zinc-700 bg-zinc-800 text-zinc-200 hover:border-amber-500 hover:text-amber-300"
                         }`}
                       >
                         {isCurrent ? "Alocada Neste Nível" : "Alocar no Nível " + selectorLevel}

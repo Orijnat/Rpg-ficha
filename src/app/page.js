@@ -41,10 +41,15 @@ export default function Home() {
 
   useGSAP(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const tl = gsap.timeline({ defaults: { ease: "power2.out" } });
-    tl.from(".codex-hero-seal", { scale: 0.94, opacity: 0, duration: 0.3 })
-      .from(".codex-thread", { scaleX: 0, duration: 0.55 }, 0.08)
-      .from(".codex-hero-copy > *", { y: 16, opacity: 0, duration: 0.5, stagger: 0.07 }, 0.12);
+    gsap.utils.toArray(".section-reveal").forEach((el) => {
+      gsap.from(el, {
+        y: 52,
+        opacity: 0,
+        duration: 0.85,
+        ease: "power3.out",
+        scrollTrigger: { trigger: el, start: "top 84%", once: true },
+      });
+    });
   }, { scope: rootRef });
 
   const handleDemoRoll = () => {
@@ -56,38 +61,34 @@ export default function Home() {
   return (
     <div
       ref={rootRef}
-      data-theme="codex"
-      className="relative isolate min-h-screen overflow-hidden text-[var(--theme-body)] bg-[var(--theme-bg)]"
+      data-theme="amber"
+      className="relative isolate min-h-screen overflow-hidden text-[#ebd9be] bg-[#090b0e]"
       style={{
-        backgroundColor: "var(--theme-bg)",
-        color: "var(--theme-body)",
+        backgroundColor: "#090b0e",
+        color: "#ebd9be",
       }}
     >
-      {/* Fundo — carta náutica: grade de milha, anéis de astrolábio e bruma verdigris */}
+      {/* Fundo — carvão profundo com braseiro âmbar nas bordas (tema Âmbar Vulcânico) */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage:
-              "linear-gradient(color-mix(in srgb, var(--primary) 5%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--primary) 5%, transparent) 1px, transparent 1px)",
-            backgroundSize: "64px 64px",
+            background: [
+              "radial-gradient(90% 70% at 18% -5%, rgba(216,155,56,0.16), transparent 55%)",
+              "radial-gradient(70% 60% at 85% 12%, rgba(216,155,56,0.08), transparent 45%)",
+              "radial-gradient(80% 70% at 50% 118%, rgba(216,155,56,0.12), transparent 55%)",
+            ].join(","),
           }}
         />
         <div
-          className="absolute inset-0"
-          style={{
-            background: [
-              "radial-gradient(circle at 78% 22%, transparent 0 210px, color-mix(in srgb, var(--primary) 16%, transparent) 211px 212px, transparent 213px 290px, color-mix(in srgb, var(--codex-brass) 14%, transparent) 291px 292px, transparent 293px)",
-              "radial-gradient(70% 60% at 18% -5%, var(--theme-glow-1), transparent 60%)",
-              "radial-gradient(60% 55% at 92% 78%, var(--theme-glow-2), transparent 55%)",
-            ].join(","),
-          }}
+          className="torch-glow-ambient absolute left-1/2 top-[-180px] h-[480px] w-[720px] -translate-x-1/2 rounded-full"
+          style={{ background: "radial-gradient(ellipse, rgba(216,155,56,0.14), transparent 65%)" }}
         />
         <div
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse 100% 90% at 50% 20%, transparent 30%, color-mix(in srgb, var(--theme-bg) 92%, transparent) 100%)",
+              "radial-gradient(ellipse 105% 92% at 50% 0%, transparent 22%, rgba(9,11,14,0.55) 60%, #090b0e 100%)",
           }}
         />
       </div>
@@ -95,13 +96,13 @@ export default function Home() {
       {/* Topo / Header Público */}
       <header className="relative z-20 mx-auto flex max-w-7xl items-center justify-between px-5 py-4 sm:px-8 lg:px-12 border-b border-primary/20 backdrop-blur-md">
         <Link href="/" className="flex items-center gap-3" aria-label="Grimorium, início">
-          <Image src="/astral.svg" alt="Grimorium" width={44} height={44} priority className="h-11 w-11 rounded-xl shadow-[0_0_20px_color-mix(in_srgb,var(--primary)_30%,transparent)]" />
+          <Image src="/ambar-vulcanico.svg" alt="Grimorium" width={44} height={44} priority className="h-11 w-11 rounded-xl shadow-[0_0_20px_color-mix(in_srgb,var(--primary)_30%,transparent)]" />
           <div>
-            <span className="block font-display text-base tracking-[0.12em] text-foreground">
+            <span className="block font-cinzel text-base font-bold tracking-[0.16em] text-foreground">
               Grimorium
             </span>
             <span className="block font-journal text-xs italic text-muted-foreground">
-              Atlas de campanha & sala de guerra
+              Grimório Digital & Sala de Guerra
             </span>
           </div>
         </Link>
@@ -128,14 +129,14 @@ export default function Home() {
         {/* ========================================================================= */}
         <section className="mx-auto max-w-7xl px-5 pt-12 pb-16 sm:px-8 sm:pt-20 lg:px-12 lg:pb-24">
           <div className="text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 mb-6 text-xs font-semibold text-primary">
-              <Compass size={14} className="text-primary" />
-              <span>Fichas, campanhas e combate no mesmo lugar</span>
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 mb-6 text-xs font-semibold uppercase tracking-[0.24em] text-primary">
+              <Sparkles size={14} className="text-primary animate-pulse" />
+              <span>Plataforma Definitiva para Mesas de RPG d20</span>
             </div>
 
-            <div role="heading" aria-level={1} className="font-serif text-4xl font-semibold leading-[1.06] tracking-[-0.02em] sm:text-6xl lg:text-7xl">
+            <div role="heading" aria-level={1} className="font-cinzel text-4xl font-black leading-tight tracking-tight sm:text-6xl lg:text-7xl">
               <SplitText
-                text="Trace a rota dos heróis."
+                text="O Códice dos Heróis."
                 tag="span"
                 className="block text-foreground"
                 textAlign="center"
@@ -147,7 +148,7 @@ export default function Home() {
                 staggerFrom="start"
               />
               <SplitText
-                text="Conduza a mesa inteira."
+                text="A Sala de Guerra do Mestre."
                 tag="span"
                 className="mt-1 block text-primary"
                 textAlign="center"
@@ -160,26 +161,26 @@ export default function Home() {
               />
             </div>
 
-            <p className="mt-6 font-journal text-lg sm:text-2xl leading-relaxed text-foreground/80 max-w-2xl mx-auto">
-              Um atlas de campanha para suas fichas d20, NPCs e mapas. A iniciativa acontece ao vivo,
-              enquanto você cuida da história.
+            <p className="mt-6 font-journal text-lg sm:text-2xl leading-relaxed text-foreground/80 max-w-2xl mx-auto italic">
+              Diga adeus às planilhas frias e anotações perdidas. Grimorium combina um
+              <strong> códice vivo e tátil</strong> para aventureiros com um <strong>painel de combate em tempo real</strong> para narradores.
             </p>
 
             <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link
                 href="/registro"
-                className="interactive-lift flex min-h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-xl border border-primary bg-primary px-7 font-sans text-sm font-semibold text-primary-foreground shadow-xl shadow-primary/30 transition hover:brightness-110 active:scale-95"
+                className="interactive-lift flex min-h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-xl border border-primary bg-primary px-7 font-cinzel text-sm font-bold uppercase tracking-wider text-primary-foreground shadow-xl shadow-primary/30 transition hover:brightness-110 active:scale-95"
               >
-                <ShinyText trigger="hover" color="#e7e6dc" shineColor="#f8f7ef" speed={2.1} shineWidth={34} glow={0.3}>
-                  Criar minha ficha
+                <ShinyText trigger="hover" color="#f5e3b0" shineColor="#fffbe8" speed={2.1} shineWidth={34} glow={0.3}>
+                  Começar Minha Jornada
                 </ShinyText>
                 <ArrowRight size={16} />
               </Link>
               <Link
                 href="/login"
-                className="flex min-h-12 w-full sm:w-auto items-center justify-center rounded-xl border border-primary/30 bg-secondary/80 px-6 font-sans text-sm font-medium text-foreground hover:bg-primary/15 transition active:scale-95"
+                className="flex min-h-12 w-full sm:w-auto items-center justify-center rounded-xl border border-primary/30 bg-secondary/80 px-6 font-cinzel text-xs font-bold uppercase tracking-wider text-foreground hover:bg-primary/15 transition active:scale-95"
               >
-                Entrar na minha mesa
+                Já Tenho uma Mesa (Entrar)
               </Link>
             </div>
 
@@ -212,7 +213,7 @@ export default function Home() {
                 onClick={() => setActiveTab("master")}
                 className={`flex items-center gap-2 rounded-xl px-5 py-2.5 font-cinzel text-xs font-bold uppercase tracking-wider transition-all ${
                   activeTab === "master"
-                    ? "border border-codex-400 bg-codex-500/25 text-codex-300 shadow-lg shadow-codex-500/20 scale-105"
+                    ? "border border-amber-400 bg-amber-500/25 text-amber-300 shadow-lg shadow-amber-500/20 scale-105"
                     : "border border-border bg-secondary/50 text-muted-foreground hover:text-foreground"
                 }`}
               >
@@ -314,7 +315,7 @@ export default function Home() {
                 {/* Resumo de Inventário e Recursos Especiais */}
                 <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3 border-t border-primary/20 pt-5">
                   <div className="flex items-center gap-3 p-3 rounded-xl bg-background/40 border border-white/5">
-                    <Shield size={20} className="text-codex-400" />
+                    <Shield size={20} className="text-amber-400" />
                     <div>
                       <span className="block font-cinzel text-[10px] uppercase tracking-wider text-muted-foreground">Classe Armadura</span>
                       <strong className="font-cinzel text-lg font-bold text-foreground">18 (Escudo de Ferro)</strong>
@@ -342,10 +343,10 @@ export default function Home() {
 
             {/* Painel do Mestre */}
             {activeTab === "master" && (
-              <div className="war-room-card bracket-corners rounded-2xl p-6 sm:p-8 transition-all animate-in fade-in-50 border border-codex-400/40">
+              <div className="war-room-card bracket-corners rounded-2xl p-6 sm:p-8 transition-all animate-in fade-in-50 border border-amber-400/40">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-primary/25 pb-5">
                   <div>
-                    <span className="wax-seal bg-codex-500/20 text-codex-300 border border-codex-400/40">
+                    <span className="wax-seal bg-amber-500/20 text-amber-300 border border-amber-400/40">
                       Soberania do Narrador · Sala de Guerra
                     </span>
                     <h3 className="mt-2 font-cinzel text-2xl sm:text-3xl font-black text-foreground">
@@ -357,7 +358,7 @@ export default function Home() {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className="rounded-full bg-codex-400/20 border border-codex-400/40 px-3 py-1 font-cinzel text-xs font-bold text-codex-300">
+                    <span className="rounded-full bg-amber-400/20 border border-amber-400/40 px-3 py-1 font-cinzel text-xs font-bold text-amber-300">
                       ⚔️ Turno Ativo
                     </span>
                   </div>
@@ -365,21 +366,21 @@ export default function Home() {
 
                 {/* Rastreador de Iniciativa e Combate */}
                 <div className="mt-6 space-y-2.5">
-                  <span className="font-cinzel text-xs font-bold uppercase tracking-wider text-codex-300 block mb-2">
+                  <span className="font-cinzel text-xs font-bold uppercase tracking-wider text-amber-300 block mb-2">
                     Ordem de Iniciativa & Pontos de Vida em Tempo Real:
                   </span>
 
                   {/* Combatente 1 (Turno Ativo) */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl border border-codex-400/80 bg-gradient-to-r from-codex-500/20 via-card to-card shadow-[0_0_20px_rgba(99,201,184,0.2)]">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl border border-amber-400/80 bg-gradient-to-r from-amber-500/20 via-card to-card shadow-[0_0_20px_rgba(245,158,11,0.2)]">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-codex-400 text-black font-cinzel font-black text-sm">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-400 text-black font-cinzel font-black text-sm">
                         1
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
                           <strong className="font-cinzel text-sm font-bold text-foreground">Sir Galahad (Herói)</strong>
                           <span className="wax-seal bg-primary/20 text-primary border border-primary/40">Herói</span>
-                          <span className="animate-pulse rounded bg-codex-400/30 px-1.5 py-0.2 text-[10px] font-bold text-codex-300 border border-codex-400">Turno Ativo</span>
+                          <span className="animate-pulse rounded bg-amber-400/30 px-1.5 py-0.2 text-[10px] font-bold text-amber-300 border border-amber-400">Turno Ativo</span>
                         </div>
                         <span className="font-journal text-xs italic text-muted-foreground">Iniciativa 19 · CA 18</span>
                       </div>
@@ -429,7 +430,7 @@ export default function Home() {
                   </span>
                   <Link
                     href="/registro"
-                    className="font-cinzel font-bold text-codex-300 hover:text-codex-200 transition underline underline-offset-4"
+                    className="font-cinzel font-bold text-amber-300 hover:text-amber-200 transition underline underline-offset-4"
                   >
                     Experimentar Painel do Mestre →
                   </Link>
@@ -528,14 +529,14 @@ export default function Home() {
               </SpotlightCard>
 
               {/* Coluna 2: Mestres */}
-              <SpotlightCard spotlightColor="rgba(99,201,184,0.3)" className="bracket-corners">
+              <SpotlightCard spotlightColor="rgba(245,158,11,0.3)" className="bracket-corners">
                 <div className="space-y-6">
-                <div className="flex items-center gap-3 border-b border-codex-400/20 pb-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-codex-400/50 bg-codex-500/10 text-codex-400 shadow-sm">
+                <div className="flex items-center gap-3 border-b border-amber-400/20 pb-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-amber-400/50 bg-amber-500/10 text-amber-400 shadow-sm">
                     <Crown size={24} />
                   </div>
                   <div>
-                    <span className="font-cinzel text-[10px] font-bold uppercase tracking-wider text-codex-400">
+                    <span className="font-cinzel text-[10px] font-bold uppercase tracking-wider text-amber-400">
                       Para os Narradores
                     </span>
                     <h3 className="font-cinzel text-2xl font-bold text-foreground">
@@ -546,7 +547,7 @@ export default function Home() {
 
                 <div className="space-y-4">
                   <div className="flex items-start gap-3.5">
-                    <CheckCircle2 size={18} className="text-codex-400 shrink-0 mt-1" />
+                    <CheckCircle2 size={18} className="text-amber-400 shrink-0 mt-1" />
                     <div>
                       <strong className="font-cinzel text-sm text-foreground block">
                         Iniciativa Dinâmica & Combate Tático
@@ -558,7 +559,7 @@ export default function Home() {
                   </div>
 
                   <div className="flex items-start gap-3.5">
-                    <CheckCircle2 size={18} className="text-codex-400 shrink-0 mt-1" />
+                    <CheckCircle2 size={18} className="text-amber-400 shrink-0 mt-1" />
                     <div>
                       <strong className="font-cinzel text-sm text-foreground block">
                         Bestiário & Criação de Variantes
@@ -570,7 +571,7 @@ export default function Home() {
                   </div>
 
                   <div className="flex items-start gap-3.5">
-                    <CheckCircle2 size={18} className="text-codex-400 shrink-0 mt-1" />
+                    <CheckCircle2 size={18} className="text-amber-400 shrink-0 mt-1" />
                     <div>
                       <strong className="font-cinzel text-sm text-foreground block">
                         Mapas com Névoa de Guerra (Fog of War)
@@ -582,7 +583,7 @@ export default function Home() {
                   </div>
 
                   <div className="flex items-start gap-3.5">
-                    <CheckCircle2 size={18} className="text-codex-400 shrink-0 mt-1" />
+                    <CheckCircle2 size={18} className="text-amber-400 shrink-0 mt-1" />
                     <div>
                       <strong className="font-cinzel text-sm text-foreground block">
                         Convites por Link & Múltiplas Mesas
@@ -607,20 +608,20 @@ export default function Home() {
             <span className="font-cinzel text-xs font-bold uppercase tracking-[0.28em] text-primary">
               Personalização Visual Profunda
             </span>
-            <h2 className="mt-3 font-serif text-3xl sm:text-5xl font-semibold tracking-tight text-foreground">
-              Cinco atmosferas, um só atlas
+            <h2 className="mt-3 font-cinzel text-3xl sm:text-5xl font-black text-foreground">
+              Cinco Atmosferas Arcanas
             </h2>
-            <p className="mt-3 font-journal text-base sm:text-lg text-muted-foreground max-w-xl mx-auto">
-              Cada mesa tem sua própria luz. Troque de paleta em um instante e deixe o cenário acompanhar a história.
+            <p className="mt-3 font-journal text-base sm:text-lg italic text-muted-foreground max-w-xl mx-auto">
+              Cada mesa possui sua própria luz. Alterne instantaneamente entre paletas refinadas com iluminação ambiental dinâmica.
             </p>
 
             <div className="mt-10 grid grid-cols-1 sm:grid-cols-5 gap-3.5">
               {[
-                { name: "Forja Astral", desc: "Latão & verdigris", color: "#63c9b8", ring: "border-codex-400/40" },
-                { name: "Âmbar Vulcânico", desc: "Forja & alquimia", color: "#d89b38", ring: "border-amber-500/40" },
-                { name: "Cripta Abissal", desc: "Sombra & runas", color: "#b05cf9", ring: "border-purple-500/40" },
-                { name: "Lua de Sangue", desc: "Eclipse & brasas", color: "#d53c25", ring: "border-rose-500/40" },
-                { name: "Gelo Eterno", desc: "Aurora polar", color: "#38bdf8", ring: "border-cyan-500/40" },
+                { name: "Âmbar Vulcânico", desc: "Coração da Montanha", color: "#d69a3d", ring: "border-amber-500/40" },
+                { name: "Cripta Abissal", desc: "Mistérios Ocultos", color: "#a855f7", ring: "border-purple-500/40" },
+                { name: "Floresta Ancestral", desc: "Segredos dos Elfos", color: "#10b981", ring: "border-emerald-500/40" },
+                { name: "Sangue Carmesim", desc: "Pacto dos Dragões", color: "#ef4444", ring: "border-rose-500/40" },
+                { name: "Gelo Eterno", desc: "Geada do Norte", color: "#06b6d4", ring: "border-cyan-500/40" },
               ].map((theme) => (
                 <div
                   key={theme.name}
@@ -650,8 +651,8 @@ export default function Home() {
             <span className="font-cinzel text-xs font-bold uppercase tracking-[0.3em] text-primary">
               Sua Próxima Crônica Começa Agora
             </span>
-            <h2 className="font-serif text-3xl sm:text-5xl font-semibold tracking-tight text-foreground">
-              <ShinyText trigger="view" color="#e7e6dc" shineColor="#f8f7ef" speed={3.2} shineWidth={26}>
+            <h2 className="font-cinzel text-3xl sm:text-5xl font-black text-foreground">
+              <ShinyText trigger="view" color="#ebd9be" shineColor="#fff7dd" speed={3.2} shineWidth={26}>
                 Reúna o grupo. Role a iniciativa.
               </ShinyText>
             </h2>
@@ -682,12 +683,12 @@ export default function Home() {
       <footer className="relative z-10 border-t border-primary/20 py-8 px-5 sm:px-8 text-center bg-black/60">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-journal text-muted-foreground italic">
           <div className="flex items-center gap-2 font-cinzel not-italic text-foreground font-bold">
-            <Image src="/astral.svg" alt="" width={16} height={16} className="h-4 w-4 rounded-sm" />
+            <Image src="/ambar-vulcanico.svg" alt="" width={16} height={16} className="h-4 w-4 rounded-sm" />
             <span>Grimorium</span>
           </div>
-          <span>“Toda campanha começa com um ponto no mapa.”</span>
+          <span>“Toda grande campanha começa com uma página em branco.”</span>
           <span className="not-italic font-mono text-[11px] text-muted-foreground/75">
-            © {new Date().getFullYear()} Grimorium · Atlas de campanha & motor tático
+            © {new Date().getFullYear()} Grimorium · RPG d20 Folio & Tactical Engine
           </span>
         </div>
       </footer>

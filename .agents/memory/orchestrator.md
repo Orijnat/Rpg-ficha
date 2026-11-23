@@ -683,3 +683,8 @@ Commitado e pushado: `d800e1e` (fix(registro): remover recomendação de classe 
 ## Ajuste — 2026-11-23 (remover azuis)
 
 - Usuário pediu para tirar as cores azuis; escolheu "grafite + verde/latão". Fundo azul-petróleo virou grafite neutro (`#0f100f`), cards `#1c1f1c`, bordas latão; verdigris/latão seguem como acentos. Ajustes em tokens, temas, metadata, logo, landing, auth e modais/inputs. Lint 0 erros, 165/165, build OK. ✅ Push 2026-11-23 em origin/main (commit próprio, 25 arquivos). Próximo: deploy Vercel e validação visual.
+
+## Revert — 2026-11-23 (voltar ao modelo nativo)
+
+- Usuário pediu para voltar ao original âmbar, antes de todas as alterações de identidade. Revertidos `7a3e19b` e `cabad5b` (sem forçar push); `dd71d6b` de memória preservado.
+- `src/` + `public/` idênticos a `1a4488c` (diff vazio). Log de memória mantido com registro da decisão. NÃO fazer deploy da Forja Astral.

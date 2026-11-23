@@ -8,7 +8,7 @@ import { getEncounterXpReward } from "../../../lib/encounter";
 const OUTCOMES = [
   { id: "vitoria", label: "Vitória", Icon: Trophy, activeClass: "border-emerald-500/60 bg-emerald-500/15 text-emerald-300" },
   { id: "derrota", label: "Derrota", Icon: Skull, activeClass: "border-rose-500/60 bg-rose-500/15 text-rose-300" },
-  { id: "fuga", label: "Fugiu", Icon: DoorOpen, activeClass: "border-codex-500/60 bg-codex-500/15 text-codex-300" },
+  { id: "fuga", label: "Fugiu", Icon: DoorOpen, activeClass: "border-amber-500/60 bg-amber-500/15 text-amber-300" },
 ];
 
 function clampXp(value) {
@@ -197,13 +197,13 @@ function FinalizeBody({ dialogRef, submittingRef, encounter, combatants, reward,
       role="dialog"
       aria-modal="true"
       aria-labelledby="finalizar-encontro-title"
-      className="flex max-h-[92vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-codex-500/30 bg-card shadow-2xl shadow-black/70"
+      className="flex max-h-[92vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-amber-500/30 bg-card shadow-2xl shadow-black/70"
       onClick={(event) => event.stopPropagation()}
     >
       {/* Cabeçalho */}
       <div className="flex items-start justify-between gap-3 border-b border-border px-5 py-4">
         <div className="flex items-center gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-codex-500/50 bg-codex-500/15 text-codex-300">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-amber-500/50 bg-amber-500/15 text-amber-300">
             <Trophy size={20} />
           </span>
           <div>
@@ -235,7 +235,7 @@ function FinalizeBody({ dialogRef, submittingRef, encounter, combatants, reward,
         <button type="button" onClick={() => setAll("derrota")} className="rounded-md border border-rose-500/40 bg-rose-500/10 px-2 py-1 text-rose-300 transition hover:bg-rose-500/20">
           Derrota (0 XP)
         </button>
-        <button type="button" onClick={() => setAll("fuga")} className="rounded-md border border-codex-500/40 bg-codex-500/10 px-2 py-1 text-codex-300 transition hover:bg-codex-500/20">
+        <button type="button" onClick={() => setAll("fuga")} className="rounded-md border border-amber-500/40 bg-amber-500/10 px-2 py-1 text-amber-300 transition hover:bg-amber-500/20">
           Fugiu (0 XP)
         </button>
       </div>
@@ -317,7 +317,7 @@ function FinalizeBody({ dialogRef, submittingRef, encounter, combatants, reward,
       <div className="border-t border-border px-5 py-3.5">
         <p className="text-center text-[9px] uppercase tracking-[0.2em] text-muted-foreground">
           XP do encontro: {reward.toLocaleString("pt-BR")}
-          {combatants.length > 0 && <> ÷ {combatants.length} herói(s) = <strong className="text-codex-400">{perHero.toLocaleString("pt-BR")} XP cada</strong></>}
+          {combatants.length > 0 && <> ÷ {combatants.length} herói(s) = <strong className="text-amber-400">{perHero.toLocaleString("pt-BR")} XP cada</strong></>}
         </p>
         <p className="mt-0.5 text-center font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
           {includedCount} herói(s) recebem XP · total {totalXp.toLocaleString("pt-BR")} XP
@@ -340,7 +340,7 @@ function FinalizeBody({ dialogRef, submittingRef, encounter, combatants, reward,
             type="button"
             onClick={handleConfirm}
             disabled={submitting}
-            className="flex h-10 items-center justify-center gap-2 rounded-lg border border-codex-500/60 bg-codex-500/20 px-4 text-xs font-bold uppercase tracking-wider text-codex-200 transition hover:bg-codex-500/30 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex h-10 items-center justify-center gap-2 rounded-lg border border-amber-500/60 bg-amber-500/20 px-4 text-xs font-bold uppercase tracking-wider text-amber-200 transition hover:bg-amber-500/30 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
           >
             {submitting ? <LoaderCircle size={15} className="animate-spin" /> : <Trophy size={15} />}
             {submitting ? "Finalizando…" : "Finalizar Encontro"}

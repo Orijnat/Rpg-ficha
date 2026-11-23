@@ -134,7 +134,7 @@ export function NpcAbilitiesCard({ abilities, onChange }) {
                         <CheckCircle2 size={10} /> Aprovada
                       </span>
                     ) : approvalStatus === "pendente" ? (
-                      <span className="inline-flex items-center gap-1 rounded-md border border-codex-500/40 bg-codex-950/50 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-codex-300">
+                      <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/40 bg-amber-950/50 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-amber-300">
                         <Clock size={10} /> Pendente
                       </span>
                     ) : (
