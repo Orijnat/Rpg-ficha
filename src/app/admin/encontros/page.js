@@ -139,6 +139,10 @@ export default function AdminEncontrosPage() {
   const handleCreateEncounter = async (e) => {
     e.preventDefault();
     if (!novoNome.trim()) return;
+    if (!selectedCampaignId) {
+      setError("Selecione ou crie uma campanha antes de forjar o encontro.");
+      return;
+    }
     try {
       const created = await createEncounter(
         selectedCampaignId,
