@@ -40,17 +40,17 @@
   --color-theme-accent-hover: var(--theme-accent-hover);
   --color-theme-accent-contrast: var(--theme-accent-contrast);
 
-  --color-codex-50: #eef7f3;
-  --color-codex-100: #d8ebe4;
-  --color-codex-200: #a9d8cb;
-  --color-codex-300: #63c9b8;
-  --color-codex-400: #4fb6a6;
-  --color-codex-500: #369b8d;
-  --color-codex-600: #2a7d73;
-  --color-codex-700: #205f58;
-  --color-codex-800: #17443f;
-  --color-codex-900: #102b31;
-  --color-codex-950: #08171c;
+  --color-codex-50: #f4f3ec;
+  --color-codex-100: #e7e6dc;
+  --color-codex-200: #d4d5c9;
+  --color-codex-300: #9ae3d6;
+  --color-codex-400: #63c9b8;
+  --color-codex-500: #4a9d90;
+  --color-codex-600: #32483e;
+  --color-codex-700: #26302a;
+  --color-codex-800: #1c1f1c;
+  --color-codex-900: #151715;
+  --color-codex-950: #0f100f;
 
   --font-serif: var(--font-codex), Georgia, serif;
   --font-sans: var(--font-inter), "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -59,10 +59,10 @@
 }
 
 :root {
-  /* Tema Padrão: Forja Astral (Azul-Petróleo, Verdigris e Latão) */
-  --codex-ink: #08171c;
-  --codex-ink-2: #102b31;
-  --codex-parchment: #d8ebe4;
+  /* Tema Padrão: Forja Astral (Grafite, Verdigris e Latão) */
+  --codex-ink: #0f100f;
+  --codex-ink-2: #1c1f1c;
+  --codex-parchment: #e7e6dc;
   --codex-verdigris: #63c9b8;
   --codex-brass: #c7a866;
   --codex-vermilion: #e07154;
@@ -70,89 +70,89 @@
   --codex-moss: var(--codex-verdigris);
 
   --theme-id: "codex";
-  --theme-bg: #08171c;
-  --theme-bg-elevated: #102b31;
-  --theme-title: #eef7f3;
-  --theme-subtitle: #9fc4bb;
-  --theme-body: #d8e8e2;
+  --theme-bg: #0f100f;
+  --theme-bg-elevated: #1c1f1c;
+  --theme-title: #f4f3ec;
+  --theme-subtitle: #b6b8ab;
+  --theme-body: #d4d5c9;
   --theme-accent: #63c9b8;
   --theme-accent-hover: #9ae3d6;
-  --theme-accent-contrast: #041416;
+  --theme-accent-contrast: #0b0f0c;
   --theme-accent-glow: rgba(99, 201, 184, 0.30);
   --theme-glow-1: rgba(99, 201, 184, 0.10);
   --theme-glow-2: rgba(199, 168, 102, 0.07);
   --theme-glow-3: rgba(224, 113, 84, 0.06);
 
-  --background: #08171c;
-  --foreground: #d8e8e2;
-  --card: #102b31;
-  --card-foreground: #d8e8e2;
-  --popover: #102b31;
-  --popover-foreground: #d8e8e2;
+  --background: #0f100f;
+  --foreground: #d4d5c9;
+  --card: #1c1f1c;
+  --card-foreground: #d4d5c9;
+  --popover: #1c1f1c;
+  --popover-foreground: #d4d5c9;
   --primary: #63c9b8;
-  --primary-foreground: #041416;
-  --secondary: #15353b;
-  --secondary-foreground: #d8e8e2;
-  --muted: #123038;
-  --muted-foreground: #9fc4bb;
+  --primary-foreground: #0b0f0c;
+  --secondary: #26302a;
+  --secondary-foreground: #d4d5c9;
+  --muted: #202822;
+  --muted-foreground: #b6b8ab;
   --accent: #63c9b8;
-  --accent-foreground: #041416;
+  --accent-foreground: #0b0f0c;
   --destructive: #e07154;
   --destructive-foreground: #1a0805;
-  --border: rgba(99, 201, 184, 0.24);
+  --border: rgba(199, 168, 102, 0.24);
   --input: transparent;
-  --input-background: #0d242a;
-  --switch-background: #205f58;
+  --input-background: #151715;
+  --switch-background: #32483e;
   --ring: #63c9b8;
   --chart-1: #63c9b8;
   --chart-2: #e07154;
   --chart-3: #c7a866;
-  --chart-4: #4a8fd0;
-  --chart-5: #369b8d;
+  --chart-4: #8fbf9a;
+  --chart-5: #4a9d90;
   --radius: 0.5rem;
 }
 
 [data-theme="codex"] {
   --theme-id: "codex";
-  --theme-bg: #08171c;
-  --theme-bg-elevated: #102b31;
-  --theme-title: #eef7f3;
-  --theme-subtitle: #9fc4bb;
-  --theme-body: #d8e8e2;
+  --theme-bg: #0f100f;
+  --theme-bg-elevated: #1c1f1c;
+  --theme-title: #f4f3ec;
+  --theme-subtitle: #b6b8ab;
+  --theme-body: #d4d5c9;
   --theme-accent: #63c9b8;
   --theme-accent-hover: #9ae3d6;
-  --theme-accent-contrast: #041416;
+  --theme-accent-contrast: #0b0f0c;
   --theme-accent-glow: rgba(99, 201, 184, 0.30);
   --theme-glow-1: rgba(99, 201, 184, 0.10);
   --theme-glow-2: rgba(199, 168, 102, 0.07);
   --theme-glow-3: rgba(224, 113, 84, 0.06);
 
-  --background: #08171c;
-  --foreground: #d8e8e2;
-  --card: #102b31;
-  --card-foreground: #d8e8e2;
-  --popover: #102b31;
-  --popover-foreground: #d8e8e2;
+  --background: #0f100f;
+  --foreground: #d4d5c9;
+  --card: #1c1f1c;
+  --card-foreground: #d4d5c9;
+  --popover: #1c1f1c;
+  --popover-foreground: #d4d5c9;
   --primary: #63c9b8;
-  --primary-foreground: #041416;
-  --secondary: #15353b;
-  --secondary-foreground: #d8e8e2;
-  --muted: #123038;
-  --muted-foreground: #9fc4bb;
+  --primary-foreground: #0b0f0c;
+  --secondary: #26302a;
+  --secondary-foreground: #d4d5c9;
+  --muted: #202822;
+  --muted-foreground: #b6b8ab;
   --accent: #63c9b8;
-  --accent-foreground: #041416;
+  --accent-foreground: #0b0f0c;
   --destructive: #e07154;
   --destructive-foreground: #1a0805;
-  --border: rgba(99, 201, 184, 0.24);
+  --border: rgba(199, 168, 102, 0.24);
   --input: transparent;
-  --input-background: #0d242a;
-  --switch-background: #205f58;
+  --input-background: #151715;
+  --switch-background: #32483e;
   --ring: #63c9b8;
   --chart-1: #63c9b8;
   --chart-2: #e07154;
   --chart-3: #c7a866;
-  --chart-4: #4a8fd0;
-  --chart-5: #369b8d;
+  --chart-4: #8fbf9a;
+  --chart-5: #4a9d90;
 }
 
 /* Tema legado: Âmbar Vulcânico */
@@ -527,8 +527,8 @@
       ellipse 88% 80% at 50% 42%,
       transparent 0%,
       transparent 48%,
-      rgba(2, 12, 16, 0.30) 72%,
-      rgba(2, 12, 16, 0.62) 100%
+      rgba(0, 0, 0, 0.30) 72%,
+      rgba(0, 0, 0, 0.62) 100%
     );
   }
 
@@ -555,11 +555,11 @@
   }
 
   ::-webkit-scrollbar-track {
-    background: #061116;
+    background: #0a0b0a;
   }
 
   ::-webkit-scrollbar-thumb {
-    border: 2px solid #061116;
+    border: 2px solid #0a0b0a;
     border-radius: 999px;
     background: color-mix(in srgb, var(--primary) 45%, #181a20);
   }
@@ -596,7 +596,7 @@
 
   /* ── Gradiente de texto: latão iluminado sobre verdigris ── */
   .gold-gradient-text {
-    background: linear-gradient(108deg, #eef7f3 0%, #a7e4d7 28%, #63c9b8 56%, #c7a866 100%);
+    background: linear-gradient(108deg, #f4f3ec 0%, #9ae3d6 28%, #63c9b8 56%, #c7a866 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 2px 10px rgba(99, 201, 184, 0.24));
@@ -713,7 +713,7 @@
   .medallion-plate {
     position: relative;
     background:
-      radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--primary) 16%, #171c26) 0%, #0b0e14 90%);
+      radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--primary) 16%, #1c1f1c) 0%, #0c0d0c 90%);
     border: 1px solid color-mix(in srgb, var(--primary) 32%, rgba(255, 255, 255, 0.08));
     border-radius: 0.85rem;
     box-shadow:
@@ -897,7 +897,7 @@
     text-transform: uppercase;
     border-radius: 0.65rem;
     border: 1px solid color-mix(in srgb, var(--primary) 40%, rgba(255, 255, 255, 0.1));
-    background: linear-gradient(180deg, color-mix(in srgb, var(--primary) 15%, #102b31) 0%, #06161b 100%);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--primary) 15%, #1c1f1c) 0%, #0f100f 100%);
     color: #ffffff;
     box-shadow:
       0 4px 12px rgba(0, 0, 0, 0.6),
@@ -906,7 +906,7 @@
   }
   .btn-rpg:hover {
     border-color: var(--primary);
-    background: linear-gradient(180deg, color-mix(in srgb, var(--primary) 30%, #17443f) 0%, #0a2228 100%);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--primary) 30%, #26302a) 0%, #151715 100%);
     box-shadow:
       0 6px 18px color-mix(in srgb, var(--primary) 30%, transparent),
       inset 0 1px 0 rgba(255, 255, 255, 0.3);

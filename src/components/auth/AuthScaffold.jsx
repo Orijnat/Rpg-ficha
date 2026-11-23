@@ -8,7 +8,7 @@ const NOISE_TEXTURE = `url("data:image/svg+xml,%3Csvg width='100' height='100' x
 
 /**
  * Cenário compartilhado das telas de autenticação:
- * Carta náutica em azul-petróleo com anel de astrolábio gigante atrás do cartão.
+ * Carta náutica em grafite com anel de astrolábio gigante atrás do cartão.
  * Animação de entrada com GSAP (respeita reduced-motion).
  */
 export default function AuthScaffold({ children }) {

@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
     <radialGradient id="sea" cx="50%" cy="42%" r="70%">
-      <stop offset="0%" stop-color="#14363d"/>
-      <stop offset="100%" stop-color="#041418"/>
+      <stop offset="0%" stop-color="#1c1f1c"/>
+      <stop offset="100%" stop-color="#0f100f"/>
     </radialGradient>
     <linearGradient id="brass" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#efdfb4"/>
@@ -29,7 +29,7 @@
     <path d="M17 47 L28 37 L24 39 Z"/>
     <path d="M47 47 L36 37 L40 39 Z"/>
   </g>
-  <circle cx="32" cy="32" r="4.5" fill="#041418" stroke="url(#brass)" stroke-width="1.4"/>
+  <circle cx="32" cy="32" r="4.5" fill="#0f100f" stroke="url(#brass)" stroke-width="1.4"/>
   <circle cx="32" cy="32" r="1.6" fill="url(#verdigris)"/>
   <path d="M32 4 L32 7 M32 57 L32 60 M4 32 L7 32 M57 32 L60 32" stroke="url(#brass)" stroke-width="1.4" stroke-linecap="round"/>
 </svg>

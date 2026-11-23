@@ -76,7 +76,7 @@ export default function ConfirmDialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby="confirm-dialog-title"
-        className="relative w-full max-w-md rounded-2xl border-2 border-primary/50 bg-[#0f1118] p-6 shadow-2xl shadow-black/80"
+        className="relative w-full max-w-md rounded-2xl border-2 border-primary/50 bg-[#161816] p-6 shadow-2xl shadow-black/80"
       >
         <button
           type="button"

@@ -100,8 +100,8 @@ export default function AppShell({ children }) {
       data-theme={isLandingPage ? "codex" : undefined}
       className="relative min-h-screen overflow-x-clip text-[var(--theme-body)] transition-colors duration-300"
       style={{
-        backgroundColor: "var(--theme-bg, #08171c)",
-        color: "var(--theme-body, #d8e8e2)",
+        backgroundColor: "var(--theme-bg, #0f100f)",
+        color: "var(--theme-body, #d4d5c9)",
         fontFamily: "var(--font-sans)",
       }}
     >

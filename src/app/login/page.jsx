@@ -59,7 +59,7 @@ function LoginForm() {
       {/* Card Principal — Pergaminho */}
       <div className="auth-shell-card relative overflow-hidden rounded-2xl border border-[var(--border)] shadow-[0_0_60px_rgba(99,201,184,0.12),0_20px_60px_rgba(0,0,0,0.5)]"
         style={{
-          background: "linear-gradient(170deg, #102b31 0%, #0c2228 30%, #0d262c 60%, #08171c 100%)",
+          background: "linear-gradient(170deg, #1c1f1c 0%, #151715 30%, #191b18 60%, #0f100f 100%)",
         }}
       >
         {/* Textura de Pergaminho */}
@@ -228,7 +228,7 @@ function LoginForm() {
               className="group relative mt-7 flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-lg border border-[var(--theme-accent)]/50 py-3 text-sm font-semibold tracking-wider transition-all hover:border-[var(--theme-accent)] hover:shadow-[0_0_24px_rgba(99,201,184,0.2)] active:scale-[0.98] disabled:opacity-50"
               style={{
                 fontFamily: "Cinzel, serif",
-                background: "linear-gradient(135deg, #12383e 0%, #1b4a4a 50%, #12383e 100%)",
+                background: "linear-gradient(135deg, #26302a 0%, #32483e 50%, #26302a 100%)",
                 color: "var(--theme-title)",
               }}
             >

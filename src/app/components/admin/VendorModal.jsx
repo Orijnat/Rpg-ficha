@@ -77,7 +77,7 @@ export default function VendorModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-md">
-      <div className="relative w-full max-w-lg rounded-2xl border-2 border-primary/50 bg-[#0f1118] p-6 shadow-2xl shadow-black/80">
+      <div className="relative w-full max-w-lg rounded-2xl border-2 border-primary/50 bg-[#161816] p-6 shadow-2xl shadow-black/80">
         <button
           type="button"
           onClick={onClose}

@@ -573,7 +573,7 @@ export default function MapaTaticoPage() {
         <div
           ref={fieldRef}
           style={stageFrameStyle}
-          className="relative select-none overflow-hidden rounded-2xl border border-primary/30 bg-[#0b0d12] shadow-[inset_0_0_80px_rgba(0,0,0,0.9),0_0_60px_color-mix(in_srgb,var(--primary)_15%,transparent)]"
+          className="relative select-none overflow-hidden rounded-2xl border border-primary/30 bg-[#0f100f] shadow-[inset_0_0_80px_rgba(0,0,0,0.9),0_0_60px_color-mix(in_srgb,var(--primary)_15%,transparent)]"
           onPointerDown={() => setSelectedToken(null)}
         >
           {/* Camadas de fundo */}

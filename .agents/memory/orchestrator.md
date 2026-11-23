@@ -679,3 +679,7 @@ Commitado e pushado: `d800e1e` (fix(registro): remover recomendação de classe 
 - Aplicado em `globals.css` (tokens + fundo + componentes), `themes.js` (tema canônico renomeado, id `codex` mantido), `layout.js` (metadata/favicon), `public/astral.svg`, landing, auth (AuthScaffold + login + registro), AppShell e Cabecalho. Teste de temas atualizado; 7 temas voltam a persistir.
 - qa-judge: APROVADO COM RESSALVAS (7.1); S2 resolvidos (persistência `amber`, cartões de auth), resíduos âmbar corrigidos; ressalvas pré-existentes de toque/tipografia e ausência de screenshot.
 - Lint 0 erros · testes 165/165 · build OK (29 páginas). ✅ Push 2026-11-23: `cabad5b` em origin/main (56 arquivos; migração âmbar→codex + nova identidade + logo). Untracked preexistentes fora do commit. Próximo: validação visual em browser e deploy Vercel.
+
+## Ajuste — 2026-11-23 (remover azuis)
+
+- Usuário pediu para tirar as cores azuis; escolheu "grafite + verde/latão". Fundo azul-petróleo virou grafite neutro (`#0f100f`), cards `#1c1f1c`, bordas latão; verdigris/latão seguem como acentos. Ajustes em tokens, temas, metadata, logo, landing, auth e modais/inputs. Lint 0 erros, 165/165, build OK. ✅ Push 2026-11-23 em origin/main (commit próprio, 25 arquivos). Próximo: deploy Vercel e validação visual.

@@ -195,7 +195,7 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div role="dialog" aria-modal="true" aria-labelledby="settings-title" className="relative flex max-h-[90vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0f1118] text-[#e8d5b0] shadow-2xl">
+      <div role="dialog" aria-modal="true" aria-labelledby="settings-title" className="relative flex max-h-[90vh] w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#161816] text-[#e8d5b0] shadow-2xl">
         {/* Cabeçalho do Modal */}
         <div className="flex items-center justify-between border-b border-white/10 bg-white/[0.02] px-6 py-4">
           <div className="flex items-center gap-2.5">

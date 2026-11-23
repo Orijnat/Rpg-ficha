@@ -444,7 +444,7 @@ export default function DiceModal() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md" role="presentation">
       <div
-        className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-white/10 bg-[#0f1118] text-[#e8d5b0] shadow-2xl shadow-black/90"
+        className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-white/10 bg-[#161816] text-[#e8d5b0] shadow-2xl shadow-black/90"
         role="dialog"
         aria-modal="true"
         aria-labelledby="dice-modal-title"

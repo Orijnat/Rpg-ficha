@@ -500,7 +500,7 @@ export default function AdminCampanhasPage() {
       {/* Modal de Gestão de Membros */}
       {selectedCampaignForMembers && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
-          <div data-lenis-prevent className="w-full max-w-2xl rounded-2xl border-2 border-primary/50 bg-[#0f1118] p-6 shadow-2xl max-h-[85vh] overflow-y-auto">
+          <div data-lenis-prevent className="w-full max-w-2xl rounded-2xl border-2 border-primary/50 bg-[#161816] p-6 shadow-2xl max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div>
                 <h3 className="font-serif text-lg font-bold uppercase text-foreground">
@@ -650,7 +650,7 @@ export default function AdminCampanhasPage() {
       {/* Modal de Auditoria */}
       {auditCampaign && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
-          <div data-lenis-prevent className="w-full max-w-3xl rounded-2xl border-2 border-primary/50 bg-[#0f1118] p-6 shadow-2xl max-h-[85vh] overflow-y-auto">
+          <div data-lenis-prevent className="w-full max-w-3xl rounded-2xl border-2 border-primary/50 bg-[#161816] p-6 shadow-2xl max-h-[85vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div>
                 <h3 className="font-serif text-lg font-bold uppercase text-foreground">

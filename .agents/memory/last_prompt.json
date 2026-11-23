@@ -2,6 +2,6 @@
   "timestamp": "2026-11-23T19:25:00-03:00",
   "agent": "opencode",
   "prompt": "poderia alterar a identidade visual do site, pois queria alo unico",
-  "action": "Identidade autoral 'Forja Astral' (atlas náutico: azul-petróleo/verdigris/latão, astrolábio) aplicada em tokens globais, 7 temas, landing, auth, app chrome, logo e metadata. QA aprovado com ressalvas; S2 corrigidos. Lint 0 erros, testes 165/165, build OK. Push concluído: cabad5b em origin/main. Próximo: deploy Vercel.",
+  "action": "Identidade autoral 'Forja Astral' (atlas náutico: azul-petróleo/verdigris/latão, astrolábio) aplicada em tokens globais, 7 temas, landing, auth, app chrome, logo e metadata. QA aprovado com ressalvas; S2 corrigidos. Lint 0 erros, testes 165/165, build OK. Push concluído: cabad5b em origin/main. Novo ajuste pendente: remover azuis (fundo grafite + verdigris/latão) aplicado, validado e enviado ao origin/main em commit próprio. Próximo: deploy Vercel.",
   "session": "identidade-visual-unica"
 }

@@ -676,7 +676,7 @@ export default function PersonagensAdmin() {
       {/* Modal de Duplicação Rápida de NPC */}
       {duplicateTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
-          <div className="w-full max-w-md rounded-2xl border-2 border-primary/50 bg-[#0f1118] p-6 shadow-2xl">
+          <div className="w-full max-w-md rounded-2xl border-2 border-primary/50 bg-[#161816] p-6 shadow-2xl">
             <h3 className="font-serif text-lg font-bold uppercase text-foreground">
               Duplicar &quot;{duplicateTarget.displayName}&quot;
             </h3>

@@ -426,7 +426,7 @@ export default function AdminMapasPage() {
             className={`relative overflow-hidden rounded-2xl border-2 border-primary/40 shadow-2xl ${
               isPlacingMarker ? "cursor-crosshair ring-4 ring-codex-500/50" : "cursor-default"
             }`}
-            style={{ minHeight: "500px", maxHeight: "750px", backgroundColor: "#0b0d12" }}
+            style={{ minHeight: "500px", maxHeight: "750px", backgroundColor: "#0f100f" }}
           >
             <img
               src={activeMap.url}

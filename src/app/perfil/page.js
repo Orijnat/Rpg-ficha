@@ -611,7 +611,7 @@ export default function PerfilPage() {
                     />
                     <span
                       className="h-4 w-4 rounded-full border border-white/20 shadow-sm"
-                      style={{ backgroundColor: theme.bg || theme.preview?.bg || "#0b0d12" }}
+                      style={{ backgroundColor: theme.bg || theme.preview?.bg || "#0f100f" }}
                       title="Superfície"
                     />
                   </div>

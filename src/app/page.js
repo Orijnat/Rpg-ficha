@@ -170,7 +170,7 @@ export default function Home() {
                 href="/registro"
                 className="interactive-lift flex min-h-12 w-full sm:w-auto items-center justify-center gap-2 rounded-xl border border-primary bg-primary px-7 font-sans text-sm font-semibold text-primary-foreground shadow-xl shadow-primary/30 transition hover:brightness-110 active:scale-95"
               >
-                <ShinyText trigger="hover" color="#d8ebe4" shineColor="#f4fffb" speed={2.1} shineWidth={34} glow={0.3}>
+                <ShinyText trigger="hover" color="#e7e6dc" shineColor="#f8f7ef" speed={2.1} shineWidth={34} glow={0.3}>
                   Criar minha ficha
                 </ShinyText>
                 <ArrowRight size={16} />
@@ -651,7 +651,7 @@ export default function Home() {
               Sua Próxima Crônica Começa Agora
             </span>
             <h2 className="font-serif text-3xl sm:text-5xl font-semibold tracking-tight text-foreground">
-              <ShinyText trigger="view" color="#d8ebe4" shineColor="#f4fffb" speed={3.2} shineWidth={26}>
+              <ShinyText trigger="view" color="#e7e6dc" shineColor="#f8f7ef" speed={3.2} shineWidth={26}>
                 Reúna o grupo. Role a iniciativa.
               </ShinyText>
             </h2>

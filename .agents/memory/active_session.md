@@ -898,3 +898,12 @@ Criar tabela de raças no banco; selects de raça passam a enviar o ID da raça;
 - Validação final: `npm run lint` 0 erros (45 warnings pré-existentes); `npm test` 165/165; `npm run build` OK (29 páginas).
 - ✅ Push 2026-11-23: frontend `cabad5b` enviado ao origin/main (`feat(ui): identidade visual Forja Astral (atlas náutico) e unificação de tokens`), 56 arquivos/805 inserções/545 remoções, incluindo a migração âmbar→codex pré-existente e o novo `public/astral.svg`. Untracked preexistentes (`.github/workflows/ci.yml`, `test_schema.mjs`) mantidos fora do commit.
 - Próximo passo: revisar visualmente em 320/768/1920px (browser indisponível no sandbox), ajustar alvos de toque/textos pequenos se desejar e fazer deploy Vercel para produção.
+
+## ✅ Atualização 2026-11-23 (sem azuis: grafite + verdigris + latão)
+
+- Prompt: "poderia tirar as cores azuis"; clarificado pelo usuário: manter verdigris/latão, trocar o fundo azul-petróleo por **grafite neutro**.
+- Nova base: `#0f100f` (fundo), `#151715`/`#161816` (elevado), `#1c1f1c` (card), `#202822` (muted), borda em latão `rgba(199,168,102,0.24)`, textos `#f4f3ec` / `#d4d5c9` / `#b6b8ab`. Verdigris `#63c9b8` e latão `#c7a866` permanecem como acentos; contraste título/fundo 17,14:1 (AAA).
+- Aplicado em `globals.css` (escala `--color-codex-*`, `:root`, `[data-theme="codex"]`, vinheta, scrollbar, `.gold-gradient-text`, `.medallion-plate`, `.btn-rpg`), `themes.js` (descrição, `bg`, cores de preview, `contrastRatio`, harmonia), `layout.js` (`themeColor`), `public/astral.svg`, landing (`ShinyText`), login/registro (gradientes do cartão e do botão), `AppShell`, `AuthScaffold` e modais/inputs que ainda usavam `#0b0d12`/`#0f1118` (agora `#0f100f`/`#161816`).
+- Validação: lint 0 erros (45 warnings pré-existentes); testes 165/165; build OK (29 páginas).
+- ✅ Push 2026-11-23: ajuste "sem azuis" enviado ao origin/main em commit próprio, incluindo memória atualizada. Untracked preexistentes (`.github/workflows/`, `test_schema.mjs`) seguem fora do commit.
+- Próximo passo: deploy Vercel e validação visual em browser (indisponível no sandbox).
