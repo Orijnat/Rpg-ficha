@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Search, Swords, Users, X } from "lucide-react";
 import { normalizeSearchText } from "../../../lib/search";
+import { useStableCallback } from "../../../hooks/useStableCallback";
 
 const FILTROS_TIPO = [
   { id: "todos", label: "Todos" },
@@ -21,6 +22,7 @@ export default function EncounterParticipantsModal({ isOpen, onClose, encounter,
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState("todos");
   const [selectedKeys, setSelectedKeys] = useState(() => new Set());
+  const stableOnClose = useStableCallback(onClose);
 
   const combatientes = useMemo(() => encounter?.dadosExtras?.iniciativa || [], [encounter]);
 
@@ -65,7 +67,7 @@ export default function EncounterParticipantsModal({ isOpen, onClose, encounter,
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
         event.stopPropagation();
-        onClose();
+        stableOnClose();
         return;
       }
       if (event.key === "Tab" && focusable && focusable.length > 0) {
@@ -84,7 +86,7 @@ export default function EncounterParticipantsModal({ isOpen, onClose, encounter,
     };
     document.addEventListener("keydown", handleKeyDown, true);
     return () => document.removeEventListener("keydown", handleKeyDown, true);
-  }, [isOpen, onClose]);
+  }, [isOpen, stableOnClose]);
 
   if (!isOpen) return null;
 

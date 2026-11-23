@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Archive, X } from "lucide-react";
+import { useStableCallback } from "../../../hooks/useStableCallback";
 
 /**
  * Modal "Guardar no Banco" a partir do inventário.
@@ -17,6 +18,7 @@ function DepositDialog({ item, freeSlots, onClose, onConfirm }) {
   const [qtyInput, setQtyInput] = useState(String(maxQty));
   const dialogRef = useRef(null);
   const qtyRef = useRef(null);
+  const stableOnClose = useStableCallback(onClose);
   const hasSpace = freeSlots > 0;
   const amount = Math.min(Math.max(1, Math.floor(Number(qtyInput) || 1)), maxQty);
 
@@ -26,12 +28,12 @@ function DepositDialog({ item, freeSlots, onClose, onConfirm }) {
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
         event.stopPropagation();
-        onClose();
+        stableOnClose();
       }
     };
     document.addEventListener("keydown", handleKeyDown, true);
     return () => document.removeEventListener("keydown", handleKeyDown, true);
-  }, [onClose]);
+  }, [stableOnClose]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md" role="presentation" onClick={onClose}>

@@ -845,5 +845,17 @@ Criar tabela de raças no banco; selects de raça passam a enviar o ID da raça;
 - Causa raiz: filtros textuais usavam `toLowerCase()` puro; "Druída" (com acento) nunca casava com "druida" (sem acento). O cadastro/persistência já estava correto.
 - Correção no front: novo `src/lib/search.js` (`normalizeSearchText`: NFD + remove marcas diacríticas + lowercase pt-BR + trim), com 3 testes em `src/lib/__tests__/search.test.mjs`.
 - Aplicado em `/admin/npcs` (busca e filtro de tag), `/admin/personagens` (busca, filtro de tag, nome/subtítulo/dono) e `EncounterParticipantsModal` (busca por nome **e tags** de NPC).
-- Validação: 165/165 testes front; lint 0 erros (45 warnings pré-existentes); build OK. Alterações NÃO comitadas.
-- Próximo passo: confirmar com o usuário a tela exata; commitar/enviar ao main se aprovado; deploy Vercel para produção.
+- Validação: 165/165 testes front; lint 0 erros (45 warnings pré-existentes); build OK.
+- ✅ Push 2026-11-23: frontend `d592dae` enviado ao origin/main (`fix(npc): busca por tags ignora acentos e caixa`), junto com a memória de sessão.
+- Próximo passo: confirmar a tela exata com o usuário e deploy Vercel para produção. Untracked preexistentes (`.github/workflows/`, `test_schema.mjs`) mantidos fora do commit.
+
+## ✅ Atualização 2026-11-23 (scroll travado + botões com foco involuntário)
+
+- Prompt: "corrigir a responsabilidade do site, pois às vezes o scroll não funciona, e alguns botões são auto selecionados sozinhos".
+- Causa 1 (scroll): `ReactLenis root` sem importar `lenis/dist/lenis.css`, enquanto `layout.js` força `html.h-full`. O CSS do Lenis (que faz `html.lenis, html.lenis body { height:auto }` e `overscroll-behavior:contain`) nunca era carregado → `limit` de scroll stale e wheel em `data-lenis-prevent` imprevisível.
+- Correção 1: `import "lenis/dist/lenis.css"` no root layout (após globals.css) e `body` trocado de `min-h-full` para `min-h-screen`. Confirmado no bundle: `html.lenis,html.lenis body{height:auto}` presente.
+- Causa 2 (botões "auto selecionados"): efeitos de foco inicial dependiam de callbacks instáveis (`closeModal`/`onClose` inline). Qualquer re-render do contexto (ex.: histórico de dados mudando) reexecutava `.focus()` e, com `:focus-visible` global, o botão parecia selecionado sozinho.
+- Correção 2: novo `src/hooks/useStableCallback.js` (ref + useEffect + useCallback) aplicado em DiceModal, ConfirmDialog, CreateEncounterModal, EncounterParticipantsModal, AddItemModal, DepositToBankModal, BankChestModal e AddMountModal — foco passa a ocorrer apenas na abertura.
+- Correção colateral: `FloatingWindow` restaura `document.body.style.userSelect` no cleanup, evitando seleção/texto travada após arrastar janela no mapa tático.
+- Validação: 165/165 testes; lint 0 erros (45 warnings pré-existentes); build OK. Alterações NÃO comitadas.
+- Próximo passo: pedir confirmação do usuário e, se aprovado, commitar/enviar ao main + deploy Vercel.

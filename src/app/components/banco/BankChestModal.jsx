@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Package, Search, X, Archive, Undo2, Check } from "lucide-react";
+import { useStableCallback } from "../../../hooks/useStableCallback";
 
 /**
  * Modal de cofre do Banco de Azedarack.
@@ -30,6 +31,7 @@ function ChestDialog({ slotIndex, slot, inventory, onClose, onDeposit, onWithdra
   const [depositQtyInput, setDepositQtyInput] = useState("1");
   const [withdrawQtyInput, setWithdrawQtyInput] = useState(() => String(Math.max(1, Number(slot?.qty) || 1)));
   const dialogRef = useRef(null);
+  const stableOnClose = useStableCallback(onClose);
   const occupied = Boolean(slot?.item);
 
   useEffect(() => {
@@ -38,12 +40,12 @@ function ChestDialog({ slotIndex, slot, inventory, onClose, onDeposit, onWithdra
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
         event.stopPropagation();
-        onClose();
+        stableOnClose();
       }
     };
     document.addEventListener("keydown", handleKeyDown, true);
     return () => document.removeEventListener("keydown", handleKeyDown, true);
-  }, [onClose]);
+  }, [stableOnClose]);
 
   const term = search.trim().toLowerCase();
   const filtered = (inventory || []).filter((item) =>

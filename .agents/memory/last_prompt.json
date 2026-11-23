@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-11-23T17:55:00-03:00",
+  "timestamp": "2026-11-23T18:15:00-03:00",
   "agent": "opencode",
-  "prompt": "nao funcionou, pois a diitar druida nao aparece o npc com a ta druida",
-  "action": "Causa raiz: busca sensível a acentos ('Druída' vs 'druida'). Criado src/lib/search.js + 3 testes; aplicado em /admin/npcs, /admin/personagens e EncounterParticipantsModal (busca por tags). 165/165 testes, lint 0 erros, build OK. Não comitado; aguardando confirmação para push.",
-  "session": "npc-search-acentos"
+  "prompt": "poderia corrijir a responsabilidade do site, pois as vezes o scroll nao funciona, e auns botoes sao auto selecionados sozinos",
+  "action": "Causas: Lenis CSS não importado (html h-full stale) e efeitos de foco com callbacks instáveis. Corrigido: import lenis.css no layout + body min-h-screen; novo useStableCallback aplicado em 8 modais; FloatingWindow restaura userSelect. 165/165 testes, lint 0 erros, build OK. Não comitado.",
+  "session": "scroll-foco-responsividade"
 }

@@ -1,5 +1,6 @@
 import { Cinzel, Cinzel_Decorative, Crimson_Text } from "next/font/google";
 import "./globals.css";
+import "lenis/dist/lenis.css";
 import AppProviders from "./providers";
 
 const cinzel = Cinzel({
@@ -49,7 +50,7 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="pt-BR" className={`h-full antialiased ${cinzel.variable} ${cinzelDecorative.variable} ${crimsonText.variable}`}>
-      <body className="flex min-h-full flex-col">
+      <body className="flex min-h-screen flex-col">
         <AppProviders>{children}</AppProviders>
       </body>
     </html>

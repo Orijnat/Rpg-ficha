@@ -37,6 +37,8 @@ export default function FloatingWindow({ title, icon, win, onClose, onFocus, onM
     window.addEventListener("pointermove", handlePointerMove);
     window.addEventListener("pointerup", handlePointerUp);
     return () => {
+      dragRef.current = null;
+      document.body.style.userSelect = "";
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerup", handlePointerUp);
     };

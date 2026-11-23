@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AlertTriangle, ShieldAlert, X } from "lucide-react";
+import { useStableCallback } from "../../../hooks/useStableCallback";
 
 export default function ConfirmDialog({
   isOpen,
@@ -16,6 +17,7 @@ export default function ConfirmDialog({
 }) {
   const [typedValue, setTypedValue] = useState("");
   const dialogRef = useRef(null);
+  const stableOnCancel = useStableCallback(onCancel);
 
   // Foco inicial + Escape + focus trap simples
   useEffect(() => {
@@ -30,7 +32,7 @@ export default function ConfirmDialog({
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
         event.stopPropagation();
-        onCancel();
+        stableOnCancel();
         return;
       }
       if (event.key === "Tab" && focusable && focusable.length > 0) {
@@ -49,7 +51,7 @@ export default function ConfirmDialog({
     };
     document.addEventListener("keydown", handleKeyDown, true);
     return () => document.removeEventListener("keydown", handleKeyDown, true);
-  }, [isOpen, onCancel]);
+  }, [isOpen, stableOnCancel]);
 
   if (!isOpen) return null;
 

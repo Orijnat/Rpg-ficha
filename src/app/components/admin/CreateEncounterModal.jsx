@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { LoaderCircle, Swords, X } from "lucide-react";
+import { useStableCallback } from "../../../hooks/useStableCallback";
 
 const TIPOS_ENCONTRO = [
   { id: "combate", label: "Combate Tático" },
@@ -24,6 +25,7 @@ export default function CreateEncounterModal({ isOpen, onClose, onSubmit, onCrea
 }
 
 function CreateEncounterBody({ dialogRef, onClose, onSubmit, onCreated }) {
+  const stableOnClose = useStableCallback(onClose);
   const submittingRef = useRef(false);
   const [submitting, setSubmitting] = useState(false);
   const [nome, setNome] = useState("");
@@ -44,7 +46,7 @@ function CreateEncounterBody({ dialogRef, onClose, onSubmit, onCreated }) {
     const handleKeyDown = (event) => {
       if (event.key === "Escape" && !submittingRef.current) {
         event.stopPropagation();
-        onClose();
+        stableOnClose();
         return;
       }
       if (event.key === "Tab" && focusable && focusable.length > 0) {
@@ -63,7 +65,7 @@ function CreateEncounterBody({ dialogRef, onClose, onSubmit, onCreated }) {
     };
     document.addEventListener("keydown", handleKeyDown, true);
     return () => document.removeEventListener("keydown", handleKeyDown, true);
-  }, [dialogRef, onClose]);
+  }, [dialogRef, stableOnClose]);
 
   const handleCancel = () => {
     if (submittingRef.current) return;

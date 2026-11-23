@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Footprints, X } from "lucide-react";
+import { useStableCallback } from "../../../hooks/useStableCallback";
 
 const inputClass =
   "h-9 w-full rounded-lg border border-[#4a3d2a]/60 bg-[#0f0d0a]/60 px-3 text-xs text-[#f1e7d2] outline-none placeholder:text-[#6b5a3e]/60 focus:border-[var(--theme-accent)]/60";
@@ -38,18 +39,19 @@ function AddMountDialog({ onClose, onAdd }) {
   const [notes, setNotes] = useState("");
   const dialogRef = useRef(null);
   const nameRef = useRef(null);
+  const stableOnClose = useStableCallback(onClose);
 
   useEffect(() => {
     nameRef.current?.focus();
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
         event.stopPropagation();
-        onClose();
+        stableOnClose();
       }
     };
     document.addEventListener("keydown", handleKeyDown, true);
     return () => document.removeEventListener("keydown", handleKeyDown, true);
-  }, [onClose]);
+  }, [stableOnClose]);
 
   const trimmedName = name.trim();
   const canSubmit = trimmedName.length > 0 && Number(hpMax) >= 1 && Number(hp) >= 0;

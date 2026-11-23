@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import DiceRoll3D from "./Dice3D";
 import { formatModifier } from "../../../lib/modifiers";
+import { useStableCallback } from "../../../hooks/useStableCallback";
 
 const DICE_TYPES = [4, 6, 8, 10, 12, 20, 100];
 
@@ -415,6 +416,7 @@ export default function DiceModal() {
     history,
     clearHistory,
   } = useDice();
+  const stableCloseModal = useStableCallback(closeModal);
 
   const [activeTab, setActiveTab] = useState("result"); // "result" | "tray" | "manual" | "history"
   const [customSides, setCustomSides] = useState(20);
@@ -430,12 +432,12 @@ export default function DiceModal() {
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
         event.stopPropagation();
-        closeModal();
+        stableCloseModal();
       }
     };
     document.addEventListener("keydown", handleKeyDown, true);
     return () => document.removeEventListener("keydown", handleKeyDown, true);
-  }, [isModalOpen, closeModal]);
+  }, [isModalOpen, stableCloseModal]);
 
   if (!isModalOpen) return null;
 

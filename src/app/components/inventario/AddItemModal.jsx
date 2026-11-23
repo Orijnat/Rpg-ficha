@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Package, X, Plus } from "lucide-react";
 import { USE_KINDS } from "../../../lib/items";
 import { CATEGORIAS_ITEM, MOEDAS, RARIDADES } from "../../../lib/market";
+import { useStableCallback } from "../../../hooks/useStableCallback";
 
 const inputClass =
   "h-9 w-full rounded-lg border border-[#4a3d2a]/60 bg-[#0f0d0a]/60 px-3 text-xs text-[#f1e7d2] outline-none placeholder:text-[#6b5a3e]/60 focus:border-[var(--theme-accent)]/60";
@@ -39,18 +40,19 @@ function AddItemDialog({ onClose, onAdd }) {
   const [unidade, setUnidade] = useState("rodadas");
   const dialogRef = useRef(null);
   const nameRef = useRef(null);
+  const stableOnClose = useStableCallback(onClose);
 
   useEffect(() => {
     nameRef.current?.focus();
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
         event.stopPropagation();
-        onClose();
+        stableOnClose();
       }
     };
     document.addEventListener("keydown", handleKeyDown, true);
     return () => document.removeEventListener("keydown", handleKeyDown, true);
-  }, [onClose]);
+  }, [stableOnClose]);
 
   const trimmedName = name.trim();
   const canSubmit = trimmedName.length > 0;
