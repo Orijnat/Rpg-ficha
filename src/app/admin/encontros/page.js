@@ -1,27 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  Clock,
-  Dices,
-  Flame,
-  HeartPulse,
-  History,
-  Play,
-  Plus,
-  RotateCcw,
-  Shield,
-  ShieldAlert,
-  Skull,
-  Swords,
-  Trash2,
-  Trophy,
-  Users,
-  X,
-} from "lucide-react";
+import { Dices, HeartPulse, History, Play, Plus, Swords, Trophy, Users } from "lucide-react";
 import { Card, SectionHeader } from "../../components/ui";
 import ConfirmDialog from "../../components/admin/ConfirmDialog";
 import { BattleLogEntryRow } from "../../components/batalha/BattleLogPanel";
+import CreateEncounterModal from "../../components/admin/CreateEncounterModal";
+import EncounterParticipantsModal from "../../components/admin/EncounterParticipantsModal";
 import {
   createEncounter,
   deleteEncounter,
@@ -56,10 +41,6 @@ export default function AdminEncontrosPage() {
 
   // Criação
   const [isCreating, setIsCreating] = useState(false);
-  const [novoNome, setNovoNome] = useState("");
-  const [novoTipo, setNovoTipo] = useState("combate");
-  const [novoXp, setNovoXp] = useState(100);
-  const [novoTesouro, setNovoTesouro] = useState("");
 
   // Encontro ativo sendo conduzido
   const [activeEncounter, setActiveEncounter] = useState(null);
@@ -71,6 +52,7 @@ export default function AdminEncontrosPage() {
   const [distributing, setDistributing] = useState(false);
   const [confirmDistribute, setConfirmDistribute] = useState(false);
   const [finalizeOpen, setFinalizeOpen] = useState(false);
+  const [participantsOpen, setParticipantsOpen] = useState(false);
 
   // Log persistente da batalha: entradas marcadas pelo encontro a que pertencem,
   // para nunca renderizar eventos do encontro anterior enquanto a carga está em curso
@@ -136,31 +118,29 @@ export default function AdminEncontrosPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCampaignId, activeEncounter?.id]);
 
-  const handleCreateEncounter = async (e) => {
-    e.preventDefault();
-    if (!novoNome.trim()) return;
+  const handleCreateEncounter = async (payload) => {
+    const nome = String(payload?.nome || "").trim();
+    if (!nome) return { ok: false, message: "O nome do encontro é obrigatório." };
     if (!selectedCampaignId) {
-      setError("Selecione ou crie uma campanha antes de forjar o encontro.");
-      return;
+      return { ok: false, message: "Selecione ou crie uma campanha antes de forjar o encontro." };
     }
     try {
       const created = await createEncounter(
         selectedCampaignId,
         {
-          nome: novoNome.trim(),
-          tipo: novoTipo,
+          nome,
+          tipo: payload?.tipo || "combate",
           ativo: true,
-          recursos: { xp: Number(novoXp), tesouro: novoTesouro.trim() },
+          recursos: { xp: Number(payload?.xp) || 0, tesouro: String(payload?.tesouro || "").trim() },
         },
         token
       );
-      setNovoNome("");
-      setIsCreating(false);
       setSuccessMsg("Encontro forjado com sucesso.");
       loadEncounters(selectedCampaignId);
       setActiveEncounter(created);
+      return { ok: true, created };
     } catch (err) {
-      setError(err.message);
+      return { ok: false, message: err?.message || "Falha ao forjar o encontro." };
     }
   };
 
@@ -184,7 +164,7 @@ export default function AdminEncontrosPage() {
     }
   };
 
-  const handleAddHeroToEncounter = (char) => {
+  const handleAddHeroToEncounter = async (char) => {
     const list = activeEncounter.dadosExtras?.iniciativa || [];
     const combatantId = `pc-${char.id}`;
     if (list.some((item) => item.id === combatantId)) return;
@@ -202,14 +182,14 @@ export default function AdminEncontrosPage() {
       },
     ];
 
-    syncEncounterUpdate(
+    await syncEncounterUpdate(
       { dadosExtras: { ...(activeEncounter.dadosExtras || {}), iniciativa: newList } },
       `Herói ${char.name} entrou no combate.`,
       "entrada"
     );
   };
 
-  const handleAddNpcToEncounter = (npc) => {
+  const handleAddNpcToEncounter = async (npc) => {
     const list = activeEncounter.dadosExtras?.iniciativa || [];
     const combatantId = `npc-${npc.id}-${list.length + 1}`;
 
@@ -226,7 +206,7 @@ export default function AdminEncontrosPage() {
       },
     ];
 
-    syncEncounterUpdate(
+    await syncEncounterUpdate(
       { dadosExtras: { ...(activeEncounter.dadosExtras || {}), iniciativa: newList } },
       `Ameaça ${npc.nome} posicionada no campo de batalha.`,
       "entrada"
@@ -510,7 +490,7 @@ export default function AdminEncontrosPage() {
 
           <button
             type="button"
-            onClick={() => setIsCreating(!isCreating)}
+            onClick={() => setIsCreating(true)}
             className="flex min-h-10 items-center gap-1.5 rounded-lg bg-primary px-3.5 text-xs font-bold uppercase tracking-wider text-primary-foreground hover:brightness-110 active:scale-95 shadow-md shadow-primary/20"
           >
             <Plus size={14} /> Novo Encontro
@@ -529,75 +509,13 @@ export default function AdminEncontrosPage() {
         </div>
       )}
 
-      {/* Formulário de Criação de Encontro */}
-      {isCreating && (
-        <Card className="border-2 border-primary/40">
-          <SectionHeader title="Criar Encontro Tático" icon={<Swords size={16} />} />
-          <form onSubmit={handleCreateEncounter} className="mt-4 space-y-4">
-            <div className="grid gap-4 sm:grid-cols-[1.5fr_1fr_1fr]">
-              <div>
-                <label className="block text-xs font-bold uppercase text-muted-foreground">
-                  Nome do Encontro *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={novoNome}
-                  onChange={(e) => setNovoNome(e.target.value)}
-                  placeholder="Ex.: Emboscada nas Ruínas Antigas"
-                  className="mt-1 min-h-10 w-full rounded border border-border bg-input-background px-3 text-xs text-foreground outline-none focus:border-primary"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase text-muted-foreground">
-                  Tipo de Encontro
-                </label>
-                <select
-                  value={novoTipo}
-                  onChange={(e) => setNovoTipo(e.target.value)}
-                  className="mt-1 min-h-10 w-full rounded border border-border bg-input-background px-3 text-xs text-foreground outline-none focus:border-primary"
-                >
-                  <option value="combate">Combate Tático</option>
-                  <option value="social">Desafio Social / Negociação</option>
-                  <option value="exploracao">Exploração / Armadilhas</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase text-muted-foreground">
-                  XP Total do Encontro
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  value={novoXp}
-                  onChange={(e) => setNovoXp(Number(e.target.value))}
-                  title="Total do encontro: dividido igualmente entre os heróis da iniciativa"
-
-                  className="mt-1 min-h-10 w-full rounded border border-border bg-input-background px-3 text-xs text-foreground outline-none focus:border-primary"
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setIsCreating(false)}
-                className="rounded border border-border px-3 py-1.5 text-xs text-muted-foreground hover:bg-secondary"
-              >
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                className="rounded bg-primary px-4 py-1.5 text-xs font-bold uppercase text-primary-foreground hover:brightness-110"
-              >
-                Criar Encontro
-              </button>
-            </div>
-          </form>
-        </Card>
-      )}
+      {/* Modal de Criação de Encontro */}
+      <CreateEncounterModal
+        isOpen={isCreating}
+        onClose={() => setIsCreating(false)}
+        onSubmit={handleCreateEncounter}
+        onCreated={() => setParticipantsOpen(true)}
+      />
 
       {/* Seletor de Encontro Ativo */}
       <div className="flex flex-wrap items-center gap-2">
@@ -663,40 +581,25 @@ export default function AdminEncontrosPage() {
                 </div>
               </div>
 
-              {/* Inclusão Rápida no Combate */}
+              {/* Alocação de Participantes no Encontro */}
               <div className="mt-4 border-b border-border/70 pb-3">
                 <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                  Adicionar ao Encontro:
+                  Adicionar Participantes:
                 </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {heroes.map((h) => (
-                    <button
-                      key={h.id}
-                      type="button"
-                      onClick={() => handleAddHeroToEncounter(h)}
-                      className="rounded border border-primary/30 bg-primary/10 px-2 py-0.5 text-xs text-primary hover:bg-primary/20"
-                    >
-                      + {h.name}
-                    </button>
-                  ))}
-                  {npcs.map((n) => (
-                    <button
-                      key={n.id}
-                      type="button"
-                      onClick={() => handleAddNpcToEncounter(n)}
-                      className="rounded border border-accent/30 bg-accent/10 px-2 py-0.5 text-xs text-accent hover:bg-accent/20"
-                    >
-                      + {n.nome}
-                    </button>
-                  ))}
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setParticipantsOpen(true)}
+                  className="flex min-h-10 w-full items-center justify-center gap-2 rounded-lg border border-primary/40 bg-primary/10 px-3 text-xs font-bold uppercase tracking-wider text-primary hover:bg-primary/20 active:scale-95"
+                >
+                  <Users size={14} /> Adicionar Heróis / NPCs ao Encontro
+                </button>
               </div>
 
               {/* Lista de Combatentes */}
               <div className="mt-4 space-y-2.5">
                 {currentInitiative.length === 0 ? (
                   <p className="py-8 text-center text-xs text-muted-foreground">
-                    Nenhum combatente na iniciativa. Adicione acima ou aguarde os jogadores enviarem de suas fichas.
+                    Nenhum combatente na iniciativa. Use o botão abaixo para alocar participantes ou aguarde os jogadores enviarem de suas fichas.
                   </p>
                 ) : (
                   currentInitiative.map((c, index) => {
@@ -884,6 +787,17 @@ export default function AdminEncontrosPage() {
           </div>
         </div>
       ) : null}
+
+      {/* Modal de Alocação de Participantes */}
+      <EncounterParticipantsModal
+        isOpen={participantsOpen}
+        onClose={() => setParticipantsOpen(false)}
+        encounter={activeEncounter}
+        heroes={heroes}
+        npcs={npcs}
+        onAddHero={handleAddHeroToEncounter}
+        onAddNpc={handleAddNpcToEncounter}
+      />
 
       {/* Modal de Finalização do Encontro */}
       <FinalizarEncounterModal

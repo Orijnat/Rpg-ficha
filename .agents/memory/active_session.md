@@ -1,5 +1,23 @@
 # 🧠 Sessão Ativa — Grimorium RPG
 
+## 🔧 Atualização 2026-11-23 (Encontros: modal de criação + alocação de participantes com filtros — NÃO commitado)
+- Pedido: "poderia reformular a tela de encontros, ostaria que abrisse um modal mais bonito para o cadastro dos encontros, que abrisse um modal apos criar o encontro, alocando os npcs e jogadores que irao participar, para ficar mais oranizado, e adicione filtros, no modal de add joadores".
+- **Entregues (front, `src/app/admin/encontros/page.js` + novos componentes `src/app/components/admin/`)**:
+  * `CreateEncounterModal.jsx` (NOVO): modal "Forjar Encontro" — nome, tipo (Combate/Desafio Social/Exploração), XP total, tesouro. Focus/Escape/focus-trap; submit via `onSubmit` (retorna resultado com `created`); sucesso dispara `onCreated` + fecha.
+  * `EncounterParticipantsModal.jsx` (NOVO): modal "Alocar Participantes" — busca por nome + filtro por tipo (Todos/Heróis/NPCs); seleção por checkbox; só selecionados são alocados (`onAddHero`/`onAddNpc` sequenciais); já-alocados aparecem desabilitados.
+  * `src/app/admin/encontros/page.js`: form inline de criação → `CreateEncounterModal`; após criar → auto-open do modal de alocação; chips rápidos ("Adicionar ao Encontro") → botão que abre o modal de alocação.
+- **Validação**: front lint **0 erros** (apenas 3 warnings pré-existentes no arquivo); babel parse OK nos 3 arquivos; testes front **162/162 passando**; build sem erros novos (falha pré-existente em páginas `/admin/npcs`).
+- **Pendências**: reteste manual no navegador do fluxo criar→alocar; corrigir imports `../../../lib/modifiers` pré-existentes em páginas de NPC para o build passar.
+
+## 🔧 Atualização 2026-11-23 (Encontros: erro 404 ao criar — CAUSA RAIZ + FIX no front e JSON 404 no back) — NÃO commitado
+- Pedido: "poderia verififcar para mim o pq os encontros nao estao sendo possiveis ser criados, ele esta dando erro 404".
+- **Diagnóstico**: backend `POST /api/campanhas/:campanhaId/encontros` EXISTE e FUNCIONA (verificado: sem token → 401; com token + campanha válida → **201**; rota montada em `campanhaRoutes` + controller `encontroController.criar` ok). O 404 não era do endpoint em si.
+- **Causa raiz**: o frontend (`src/app/admin/encontros/page.js` → `createEncounter` → `src/lib/api.js`) montava a URL com `selectedCampaignId` do estado do formulário. Quando não há campanha selecionada/carregada (master sem campanha própria na lista, lista ainda carregando, ou campanha não resolvida), o POST saía como `/api/campanhas//encontros` → **rota não casada → Express default 404 em HTML** → `safeFetchJson` (que só lê JSON) lançava "Serviço indisponível ou rota não encontrada (404 …)" → erro exibido no formulário.
+- **Fix (front, `admin/encontros/page.js`)**: guard `if (!selectedCampaignId) { setError("Selecione ou crie uma campanha antes de forjar o encontro."); return; }` no início de `handleCreateEncounter`.
+- **Fix (back, `src/server.js`)**: handler catch-all `app.use` retornando **JSON** 404 `{status,error,code:"ROUTE_NOT_FOUND"}` antes do `errorHandler` (antes era HTML default do Express).
+- **Verificação**: back reiniciado; rota inválida → JSON 404 confirmado via curl; criação com campanha válida → **201**. Back **123/123**, front **162/162**, lint front 0 erros (45 warnings pré-existentes). Browser automation indisponível no sandbox (Chrome sem libs). Backend ainda rodando local (porta 3333) para reteste manual.
+- **NÃO commitado**; próximo passo: commit/push + deploy back (Render manual) se desejado; validar no navegador com campanha selecionada.
+
 ## 🔧 Atualização 2026-11-20 (Backend das Anotações — CRUD + privacidade com testes) — NÃO commitado
 - Pedido: "faca o backend sobre as anotacoes".
 - **Diagnóstico**: backend de anotações JÁ implementado e montado: `notaController` (listar/criar/atualizar/remover), model `Note` (tabela `anotacoes`), rotas `GET/POST /campanhas/:campanhaId/notas` (campanhaRoutes) + `PUT/DELETE /notas/:id` (mestreRecursosRoutes, mounted em /api), `notaSchema` (tipo diario/anotacao/handout + privada/is_private/isPrivate) e filtro server-side de privacidade no listar. Frontend (`/admin/notas` + `src/lib/api.js`) consumia esses endpoints — nada faltava na camada backend.
@@ -753,3 +771,54 @@ Criar tabela de raças no banco; selects de raça passam a enviar o ID da raça;
 - Backup: `/tmp/opencode/backup-pre-purge-2026-11-17-2.dump` (133 KB, 335 objetos, chmod 600).
 - Correção antecipada do incidente anterior: `UPDATE classes SET criado_por=NULL` (1 linha) + drop temporário de `classes_criado_por_fkey` ANTES do TRUNCATE (a FK era o que fazia o CASCADE arrastar classes); FK recriada e validada ao final. **Nenhuma classe foi perdida desta vez.**
 - TRUNCATE ... RESTART IDENTITY CASCADE nas demais tabelas public. Verificado: tudo em 0; `racas`=8, `classes`=11, `classe_habilidades`=0, `sequelize_meta`=17, `SequelizeMeta`=1. auth.*/storage.* intocados; uploads em disco órfãos.
+
+## ✅ Atualização 2026-11-21 (Bug modal de habilidades NPC + save do NPC)
+
+- **Contexto**: usuário reportou "modal de habilidade para a criacao de npcs esta bugado" / "o front esta bugado"; investigado via code-read, lint/tests e dev server.
+- **Causa raiz confirmada**: pagina `/admin/npcs/[id]` (ficha administrativa do NPC) **nao tinha botao de salvar/atualizar** — o unico botao de salvar ("Salvar como novo NPC") chamava `createNpc`, criando NPC novo (extra) em vez de persistir.
+- **Corrigido**:
+  1. `src/app/admin/npcs/[id]/page.js`: novo handler `handleSave` -> `updateNpc(id, buildPayload(), token)` + botao "Salvar" na acao bar.
+  2. `src/app/components/habilidades/AbilityFormModal.jsx`: `masteryLevel` recalculado via `getGrauTreinamento(trainingHours)` ao salvar (antes fixo/stale).
+  3. `src/app/components/admin/NpcSheetBlocks.jsx`: badge de status reflete `approvalStatus` real (Aprovada/Pendente/Rejeitada).
+- **Validacao**: eslint 0 erros (apenas warnings pre-existentes set-state-in-effect), tests front 162/162 OK, dev server compila rotas sem erros.
+- **Commit/push**: `9dc60cd` (main -> origin/main) "fix(npc): adicionar botao de salvar na ficha administrativa e ajustar modal de habilidades".
+
+## ✅ Push 2026-11-21 (5)
+- `9dc60cd` (front: fix save NPC + modal hab) enviado ao origin/main; push OK.
+
+## ✅ Atualização 2026-11-21 (6 — Campo de Perícias NPC + Portal Modal)
+
+- **Contexto**: pedidos "coloque um campo para as perícias do npc" e "nas fichas gerais crie categoria para acoes e ataques"; encaminhados para implementação após correções de modal (portal) e save button.
+- **Implementado**:
+  1. Backend (`Rpg-backend`, commit `cf1df46`): `npcController.criar/atualizar` passam a persistir `pericias` no `dadosExtras` (JSONB; slice 0-100).
+  2. Frontend (`Rpg-ficha`, commit `adf271c`): `/admin/npcs/new` ganhou Card "Perícias" (lista nome+atributo, add/remove) e payload `pericias`; `/admin/npcs/[id]` ganhou handlers/UI/payload `pericias` via `updateExtras`/`buildPayload`.
+- **Validacao**: eslint 0 erros (front + backend controller); tests front 162/162 OK.
+- **Pendente**: campo "ações e ataques" para fichas gerais (heróis) — não implementado ainda.
+
+## ✅ Push 2026-11-21 (6)
+- Frontend `adf271c` + backend `cf1df46` enviados ao origin/main de cada repo.
+
+## ✅ Atualização 2026-11-21 (7 — Campo Ações & Ataques sheet herói)
+
+- Pedido: "ambos, na criacao de npcs e monstros colocar o campo de pericias, e para todas as fichas adicione o campo acoes e ataques".
+- Implementado: field "Ações & Ataques" no sheet de herói (`src/app/personagem/page.js`) — Card com lista de ações/ataques (nome, tipo, dano, bônus, remove), add via `addAcao`.
+- Já existia: field "Ações, Golpes & Habilidades" no cadastro de NPC (`acoes`) + novo field "Perícias" (backend `dadosExtras.pericias` + UI).
+- Validação: eslint 0 erros; tests 162/162 OK; rota /personagem compila (200).
+
+## ✅ Push 2026-11-21 (7)
+- Frontend `da7263a` enviado ao origin/main.
+
+## ✅ Atualização 2026-11-21 (8 — Perícias NPC com lista canônica)
+
+- Pedido: "as pericias poderia colocar o mesmo campo que aparece para os jogadores, o momento de criacao dos npcs".
+- Implementado: `/admin/npcs/new` inicializa `pericias` a partir de `DEFAULT_SKILLS` (19 perícias canônicas com `name/attr/trained/bonus`) — mesmo conjunto usado no sheet de jogador; UI usa `name`/`attr`.
+
+## ✅ Push 2026-11-21 (8)
+- Frontend `2f3fe29` enviado ao origin/main.
+
+## ✅ Atualização 2026-11-21 (9 — Revisão final + correções)
+
+- Subagentes (code-review): Standards → 3 hard (backend npcSchema sem `pericias`; divergência de shape `{nome, atributo}` vs `{name, attr, trained, bonus}`; `acoes` hero sem persistência). Soft: portal SSR (FALSO POSITIVO — `if (!isOpen) return null` precede createPortal).
+- Spec → faltava persistência hero de acoes; backend sem `pericias`; mismatch de formato. Tudo corrigido.
+- Correções aplicadas: backend `pericias` no npcSchema (278bd79); hero `acoes` via context/updateDadosExtras (4485caf); shape canônico em admin [id] via `ensureCanonicalSkills` (4485caf); touch targets `min-h-11`/`h-11` (4485caf).
+- Validação: eslint 0 erros; frontend tests 162/162; backend tests 123/123 (após correções).

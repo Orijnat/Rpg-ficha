@@ -1,5 +1,28 @@
 # Memória do Agente Orquestrador (@orchestrator)
 
+## Entrega — 2026-11-23 (Encontros: modal de criação + alocação com filtros)
+
+- **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `qa-tester`.
+- **Demanda do Usuário**: "poderia reformular a tela de encontros, ostaria que abrisse um modal mais bonito para o cadastro dos encontros, que abrisse um modal apos criar o encontro, alocando os npcs e jogadores que irao participar, para ficar mais oranizado, e adicione filtros, no modal de add joadores".
+- **Implementações Entregues** (front `src/app/admin/encontros/page.js` + `src/app/components/admin/`):
+  * **Novo** `CreateEncounterModal.jsx`: modal "Forjar Encontro" (nome/tipo/XP/tesouro), focus+escape+focus-trap, submit via `onSubmit` → retorna resultado com `created`; sucesso → `onCreated` + fecha.
+  * **Novo** `EncounterParticipantsModal.jsx`: modal "Alocar Participantes" com **filtros** (busca por nome + tipo Todos/Heróis/NPCs), seleção por checkbox, heróis/NPCs já alocados desabilitados, add sequencial.
+  * **Page**: form inline → modal; pós-criação auto-open do modal de alocação; chips rápidos → botão que abre modal.
+- **Validação**: eslint **0 erros** (3 warnings pré-existentes no arquivo); babel parse OK; front **162/162** testes; build sem erros novos (quebra pré-existente em páginas `/admin/npcs`).
+- **Pendências**: reteste manual no navegador do fluxo criar→alocar; corrigir imports `../../../lib/modifiers` pré-existentes em páginas de NPC para o build passar.
+
+## Entrega — 2026-11-23 (Encontros: criação retornando erro 404 — causa raiz + fixes)
+
+- **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `backend-database`, `qa-tester`.
+- **Demanda do Usuário**: "poderia verififcar para mim o pq os encontros nao estao sendo possiveis ser criados, ele esta dando erro 404".
+- **Diagnóstico**: endpoint `POST /api/campanhas/:campanhaId/encontros` **existe e funciona** (local: sem token → 401; com token + campanha válida → **201**; produção: → 401). Logo o 404 vinha da montagem da URL.
+- **Causa raiz**: `handleCreateEncounter` (`src/app/admin/encontros/page.js`) chamava `createEncounter(selectedCampaignId, …)` sem validar `selectedCampaignId`. Sem campanha selecionada → URL `…/campanhas//encontros` → Express **não casa rota** → 404 **HTML** → `safeFetchJson` (só consumia JSON) → erro "Serviço indisponível ou rota não encontrada (404 …)".
+- **Implementações Entregues**:
+  * **Front** (`src/app/admin/encontros/page.js`): guard `if (!selectedCampaignId) { setError("Selecione ou crie uma campanha antes de forjar o encontro."); return; }` no submit de criação.
+  * **Back** (`src/server.js`): catch-all `app.use` com JSON 404 `{status,error,code:"ROUTE_NOT_FOUND"}` antes do `errorHandler` (substitui handler HTML default).
+- **Validação**: back reiniciado → rota inválida agora responde JSON 404; criação com campanha válida → **201**. Back **123/123** testes; front **162/162**; lint front **0 erros**.
+- **Pendências**: commit/push + deploy back (Render manual) se desejado; reteste manual no navegador com campanha selecionada.
+
 ## Entrega — 2026-11-20 (Backend das Anotações — CRUD + Privacidade com Testes)
 
 - **Especialistas Acionados**: `backend-database`, `audit-and-security`, `qa-tester`.

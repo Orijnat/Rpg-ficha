@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-11-20T00:40:00-03:00",
+  "timestamp": "2026-11-23T17:10:27-03:00",
   "agent": "opencode",
-  "prompt": "faca o backend sobre as anotacoes",
-  "action": "Backend anotacoes: auditoria concluida — CRUD (listar/criar/atualizar/remover), model Note, rotas (/campanhas/:id/notas, /notas/:id), notaSchema e filtro de privacidade ja existiam; criados testes backend (test/notas.test.js, 12 casos) -> backend 123/123. VERIFICADO: backend 123/123, front 162/162 + build OK + lint 0 erros. NAO commitado.",
-  "session": "backend-notas-completude"
+  "prompt": "poderia reformular a tela de encontros, ostaria que abrisse um modal mais bonito para o cadastro dos encontros, que abrisse um modal apos criar o encontro, alocando os npcs e jogadores que irao participar, para ficar mais oranizado, e adicione filtros, no modal de add joadores",
+  "action": "Entregue: CreateEncounterModal (cadastro bonito) + EncounterParticipantsModal (alocação com busca por nome + filtro Todos/Heróis/NPCs). Front lint 0 erros; testes 162/162; build sem erros novos (falha pré-existente em páginas de NPC).",
+  "session": "encontros-modal-alocacao-filtros"
 }
