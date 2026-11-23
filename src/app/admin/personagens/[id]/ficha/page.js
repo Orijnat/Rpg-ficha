@@ -70,15 +70,15 @@ export default function MasterCharacterSheet() {
   const updateInventory = (index, patch) => update({ inventory: character.inventory.map((item, itemIndex) => itemIndex === index ? { ...item, ...patch } : item) });
   const addInventory = () => update({ inventory: [...character.inventory, { id: `item-${Date.now()}`, name: "Novo item", qty: 1 }] });
   const removeInventory = (index) => update({ inventory: character.inventory.filter((_, itemIndex) => itemIndex !== index) });
-  const uuidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  const currentRaceId = racas.find((raca) => raca.id === character?.raceId || raca.slug === character?.dadosExtras?.race || raca.slug === character?.race)?.id ?? "";
-  const currentClassId = classes.find((classe) => classe.id === character?.classId || classe.slug === character?.dadosExtras?.class || classe.slug === character?.classSlug)?.id ?? "";
-  const currentRace = racas.find((raca) => raca.id === currentRaceId || raca.slug === character?.dadosExtras?.race) ?? null;
+  const idRe = /^\d+$/;
+  const currentRaceId = racas.find((raca) => String(raca.id) === String(character?.raceId) || raca.slug === character?.dadosExtras?.race || raca.slug === character?.race)?.id ?? "";
+  const currentClassId = classes.find((classe) => String(classe.id) === String(character?.classId) || classe.slug === character?.dadosExtras?.class || classe.slug === character?.classSlug)?.id ?? "";
+  const currentRace = racas.find((raca) => String(raca.id) === String(currentRaceId) || raca.slug === character?.dadosExtras?.race) ?? null;
   const flatAttributes = (source) => Object.fromEntries(ATTRIBUTES.map((key) => [key, Number(source[key] ?? source.attributes?.[key] ?? 10)]));
 
   const handleRaceChange = (event) => {
     const value = event.target.value;
-    const option = value ? racas.find((raca) => raca.id === value) : null;
+    const option = value ? racas.find((raca) => String(raca.id) === String(value)) : null;
     setCharacter((current) => {
       // Troca de raça: subtrai o bônus da raça anterior e soma o da nova (status nunca acumulam bônus de 2 raças).
       const baseAttrs = flatAttributes(current);
@@ -86,8 +86,8 @@ export default function MasterCharacterSheet() {
       const finalAttrs = option ? addRaceBonus(afterRemove, option) : afterRemove;
       return {
         ...current,
-        // raceId só quando for UUID (API); senão o backend resolve pelo slug `race`
-        raceId: option ? (uuidRe.test(String(option.id)) ? option.id : undefined) : null,
+        // raceId só quando for ID numérico (API); senão o backend resolve pelo slug `race`
+        raceId: option ? (idRe.test(String(option.id)) ? option.id : undefined) : null,
         race: option?.slug ?? null,
         ...finalAttrs,
         attributes: { ...(current.attributes || {}), ...finalAttrs },
@@ -101,14 +101,14 @@ export default function MasterCharacterSheet() {
 
   const handleClassChange = (event) => {
     const value = event.target.value;
-    const option = value ? classes.find((classe) => classe.id === value) : null;
+    const option = value ? classes.find((classe) => String(classe.id) === String(value)) : null;
     setCharacter((current) => {
       const heroLevel = Math.max(1, Number(current.level) || 1);
       // A classe define o Dado de Vida; a vida base inicial (nível 1) é o máximo do dado.
       const initialHp = option && heroLevel <= 1 ? hitDieMax(option.hitDie, 8) : null;
       return {
         ...current,
-        classId: option ? (uuidRe.test(String(option.id)) ? option.id : undefined) : null,
+        classId: option ? (idRe.test(String(option.id)) ? option.id : undefined) : null,
         class: option?.slug ?? null,
         ...(initialHp ? { hp: initialHp, hpMax: initialHp } : {}),
         dadosExtras: {
@@ -234,8 +234,8 @@ export default function MasterCharacterSheet() {
           </div>
         </section>
 
-        <section className="border-2 border-amber-400/30 bg-card p-5">
-          <div className="mb-4 flex items-center gap-2 font-serif text-lg font-bold"><Shield size={18} className="text-amber-300" /> Raça (somente o mestre altera)</div>
+        <section className="border-2 border-codex-400/30 bg-card p-5">
+          <div className="mb-4 flex items-center gap-2 font-serif text-lg font-bold"><Shield size={18} className="text-codex-300" /> Raça (somente o mestre altera)</div>
           <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
             <label className="text-xs font-bold uppercase tracking-wide text-muted-foreground">Raça do herói
               <select value={currentRaceId} onChange={handleRaceChange} className="mt-1 min-h-11 w-full border border-border bg-input-background px-3 text-sm text-foreground outline-none focus:border-primary" aria-label="Raça do herói (mestre)">

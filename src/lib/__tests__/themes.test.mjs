@@ -3,9 +3,10 @@ import assert from "node:assert/strict";
 import { THEMES } from "../themes.js";
 
 test("Validação dos temas de RPG (Escuros e Claros)", () => {
-  assert.ok(THEMES.length >= 6, "Devem existir pelo menos 6 temas configurados");
+  assert.ok(THEMES.length >= 7, "Devem existir pelo menos 7 temas configurados");
 
   const expectedThemes = [
+    { id: "codex", name: "Forja Astral", accent: "#63c9b8", type: "dark" },
     { id: "amber", name: "Âmbar Vulcânico", accent: "#d89b38", type: "dark" },
     { id: "abyss", name: "Cripta Abissal", accent: "#b05cf9", type: "dark" },
     { id: "bloodmoon", name: "Lua de Sangue", accent: "#d53c25", type: "dark" },

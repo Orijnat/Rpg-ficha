@@ -413,7 +413,7 @@ export default function InventarioPage() {
                       <p className="truncate text-xs font-semibold text-foreground">{item.name}</p>
                       <p className="text-[10px] text-muted-foreground">
                         {getUseKindLabel(item)}
-                        {preview && <span className="text-amber-300/90"> · {preview.texto}</span>}
+                        {preview && <span className="text-codex-300/90"> · {preview.texto}</span>}
                         {broken && <span className="text-rose-400"> · QUEBRADA</span>}
                         {depleted && <span className="text-rose-400"> · SEM CARGAS</span>}
                       </p>
@@ -641,7 +641,7 @@ export default function InventarioPage() {
                 capacity.isOverloaded
                   ? "bg-rose-500"
                   : capacity.percentage > 80
-                  ? "bg-amber-400"
+                  ? "bg-codex-400"
                   : "bg-primary"
               }`}
               style={{ width: `${capacity.percentage}%` }}
@@ -817,7 +817,7 @@ export default function InventarioPage() {
                     className={`flex items-center gap-1 rounded border px-2 py-0.5 text-[10px] font-bold transition active:scale-95 ${
                       item.esgotado || (item.qty !== undefined && item.qty <= 0)
                         ? "cursor-not-allowed border-white/10 bg-white/5 text-muted-foreground opacity-40"
-                        : "border-amber-500/40 bg-amber-500/10 text-amber-400 hover:bg-amber-500/25"
+                        : "border-codex-500/40 bg-codex-500/10 text-codex-400 hover:bg-codex-500/25"
                     }`}
                     title={item.esgotado ? "Esgotado" : "Usar 1 unidade"}
                   >
@@ -861,7 +861,7 @@ export default function InventarioPage() {
                   type="button"
                   aria-label={`Guardar ${item.name || "item"} no Banco`}
                   onClick={() => setBankItem(item)}
-                  className="rounded p-1 text-muted-foreground transition-all hover:bg-amber-500/10 hover:text-amber-400"
+                  className="rounded p-1 text-muted-foreground transition-all hover:bg-codex-500/10 hover:text-codex-400"
                   title="Guardar no Banco"
                 >
                   <Archive size={13} />

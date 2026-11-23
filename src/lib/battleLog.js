@@ -8,7 +8,7 @@ export const BATTLE_LOG_TIPOS = {
   rolagem: { label: "Rolagem", className: "border-indigo-500/30 bg-indigo-500/15 text-indigo-300" },
   dano: { label: "Dano", className: "border-rose-500/30 bg-rose-500/15 text-rose-300" },
   cura: { label: "Cura", className: "border-emerald-500/30 bg-emerald-500/15 text-emerald-300" },
-  iniciativa: { label: "Iniciativa", className: "border-amber-500/30 bg-amber-500/15 text-amber-300" },
+  iniciativa: { label: "Iniciativa", className: "border-codex-500/30 bg-codex-500/15 text-codex-300" },
   condicao: { label: "Condição", className: "border-fuchsia-500/30 bg-fuchsia-500/15 text-fuchsia-300" },
   turno: { label: "Turno", className: "border-sky-500/30 bg-sky-500/15 text-sky-300" },
   entrada: { label: "Entrada", className: "border-teal-500/30 bg-teal-500/15 text-teal-300" },
@@ -18,7 +18,7 @@ export const BATTLE_LOG_TIPOS = {
 };
 
 export const BATTLE_LOG_PAPEIS = {
-  mestre: { label: "Mestre", className: "border-amber-400/40 bg-amber-500/15 text-amber-300" },
+  mestre: { label: "Mestre", className: "border-codex-400/40 bg-codex-500/15 text-codex-300" },
   jogador: { label: "Jogador", className: "border-sky-400/40 bg-sky-500/15 text-sky-300" },
   sistema: { label: "Sistema", className: "border-border bg-secondary text-muted-foreground" },
 };

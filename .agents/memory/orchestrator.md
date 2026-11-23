@@ -1,5 +1,14 @@
 # Memória do Agente Orquestrador (@orchestrator)
 
+## Entrega — 2026-11-23 (UUID → BIGINT sequencial em todo o banco)
+
+- **Especialistas Acionados**: `backend-database` (skill `supabase-postgres-best-practices`), `frontend-artisan` (skill `sheet-component-builder`), `qa-tester`.
+- **Demanda do Usuário**: trocar IDs aleatórios UUID por números sequenciais (1, 2, 3) em todo o banco; confirmado "sim" para preparar arquivos **sem executar em produção**.
+- **Backend**: migration genérica `20261123190000-uuid-para-bigint.js` (mapa uuid→número, conversão de todas as colunas uuid, restauração de constraints/índices, JSONB, sequences); 24 models `BIGINT`/`autoIncrement`; Zod e services/controller aceitando só IDs numéricos.
+- **Frontend**: `asId`/`ID_RE` e comparações `String(id)` na ficha administrativa.
+- **Validação**: back **130/130**; front **165/165**, lint **0 erros**, build OK. Migration não aplicada; exige backup, janela de manutenção, deploy do back e re-login.
+- **Estado**: NÃO commitado; pendente autorização para commit/push.
+
 ## Entrega — 2026-11-23 (Encontros: modal de criação + alocação com filtros)
 
 - **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `qa-tester`.
@@ -663,3 +672,10 @@ Commitado e pushado: `d800e1e` (fix(registro): remover recomendação de classe 
 
 - Erro colado pelo usuário já resolvido em `d11befb` (correção de `../../../lib/modifiers` → `../../../../lib/modifiers` em `/admin/npcs/new` e `/admin/npcs/[id]`).
 - Validação atual: `npm run build` OK (Next 16.4.3/Turbopack, 29 páginas). Checklist: sem pendência de código; reexecutar build após limpar `.next` se o ambiente ainda reportar o erro antigo.
+
+## Entrega — 2026-11-23 (identidade visual Forja Astral)
+
+- Direção autoral escolhida (usuário pediu "algo único" sem especificar): atlas náutico — azul-petróleo, verdigris e latão; astrolábio substitui o livro-âmbar; grade de milha e anéis no fundo; Cormorant/Cinzel Decorative/Inter.
+- Aplicado em `globals.css` (tokens + fundo + componentes), `themes.js` (tema canônico renomeado, id `codex` mantido), `layout.js` (metadata/favicon), `public/astral.svg`, landing, auth (AuthScaffold + login + registro), AppShell e Cabecalho. Teste de temas atualizado; 7 temas voltam a persistir.
+- qa-judge: APROVADO COM RESSALVAS (7.1); S2 resolvidos (persistência `amber`, cartões de auth), resíduos âmbar corrigidos; ressalvas pré-existentes de toque/tipografia e ausência de screenshot.
+- Lint 0 erros · testes 165/165 · build OK (29 páginas). NÃO commitado. Próximo: validação visual em browser, commit e deploy.

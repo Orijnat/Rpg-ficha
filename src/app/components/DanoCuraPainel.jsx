@@ -54,7 +54,7 @@ export default function DanoCuraPainel({ compact = false, onClose = null }) {
     hpPct > 60
       ? "text-emerald-400"
       : hpPct > 30
-      ? "text-amber-300"
+      ? "text-codex-300"
       : "text-rose-400";
 
   // Aplica dano automatizado (com absorção pela CA, quando ligada)

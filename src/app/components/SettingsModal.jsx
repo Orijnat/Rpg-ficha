@@ -19,6 +19,7 @@ import {
   ShieldAlert,
   Settings2,
   Sparkles,
+  Compass,
 } from "lucide-react";
 import { useCharacter } from "../context/CharacterContext";
 import { useTheme } from "../context/ThemeContext";
@@ -27,6 +28,7 @@ import { validateCharacterSchema } from "../../lib/modifiers";
 import ConfirmDialog from "./admin/ConfirmDialog";
 
 const THEME_ICONS = {
+  codex: Compass,
   amber: Flame,
   abyss: Skull,
   bloodmoon: Eclipse,
@@ -259,7 +261,7 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
                 ? "border border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
                 : syncStatus === "error"
                 ? "border border-rose-500/40 bg-rose-500/10 text-rose-300"
-                : "border border-amber-500/40 bg-amber-500/10 text-amber-300"
+                : "border border-codex-500/40 bg-codex-500/10 text-codex-300"
             }`}
           >
             {syncStatus === "success" && <Check size={14} />}

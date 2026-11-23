@@ -85,7 +85,7 @@ export default function AdminClasses() {
           <button
             type="button"
             onClick={() => setModal({ isOpen: true, classe: null })}
-            className="flex min-h-11 shrink-0 items-center gap-2 rounded-xl border border-amber-500/50 bg-amber-500/15 px-4 text-xs font-bold uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/25 active:scale-95"
+            className="flex min-h-11 shrink-0 items-center gap-2 rounded-xl border border-codex-500/50 bg-codex-500/15 px-4 text-xs font-bold uppercase tracking-wider text-codex-300 transition hover:bg-codex-500/25 active:scale-95"
           >
             <Plus size={15} />
             Nova Classe
@@ -114,7 +114,7 @@ export default function AdminClasses() {
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <h3 className="font-serif text-lg font-bold text-zinc-100">{classe.name}</h3>
-                      <span className="rounded-md border border-amber-500/40 bg-amber-950/40 px-2 py-0.5 font-mono text-[10px] font-bold text-amber-300">
+                      <span className="rounded-md border border-codex-500/40 bg-codex-950/40 px-2 py-0.5 font-mono text-[10px] font-bold text-codex-300">
                         {classe.hitDie}
                       </span>
                       {(classe.primaryAttribute || classe.secondaryAttribute) && (
@@ -131,7 +131,7 @@ export default function AdminClasses() {
                       type="button"
                       onClick={() => setModal({ isOpen: true, classe })}
                       aria-label={`Editar ${classe.name}`}
-                      className="rounded-lg border border-zinc-800 p-2 text-zinc-400 transition hover:bg-zinc-800 hover:text-amber-300"
+                      className="rounded-lg border border-zinc-800 p-2 text-zinc-400 transition hover:bg-zinc-800 hover:text-codex-300"
                     >
                       <Pencil size={16} />
                     </button>
@@ -159,7 +159,7 @@ export default function AdminClasses() {
                 </div>
                 <div className="mt-auto flex items-center justify-between gap-2 border-t border-zinc-800/70 pt-2 text-[10px] text-zinc-500">
                   <span className="flex items-center gap-1.5">
-                    <Sparkles size={11} className="text-amber-400" />
+                    <Sparkles size={11} className="text-codex-400" />
                     {abilities.length} habilidade{abilities.length === 1 ? "" : "s"} de nível · {filledLevels} nível{filledLevels === 1 ? "" : "eis"}
                   </span>
                   {classe.slug && <span className="font-mono">{classe.slug}</span>}

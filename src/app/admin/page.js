@@ -333,7 +333,7 @@ export default function AdminIndex() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.32em] text-primary">
-              <Crown size={14} className="text-amber-400" />
+              <Crown size={14} className="text-codex-400" />
               Soberania do Narrador
             </div>
             <h1 className="mt-1 font-cinzel text-2xl sm:text-4xl font-black uppercase tracking-[0.08em] text-foreground">
@@ -356,7 +356,7 @@ export default function AdminIndex() {
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary/25 bg-primary/10 p-3 sm:p-3.5">
           <div className="flex flex-wrap items-center gap-2.5">
             <span className="font-cinzel text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
-              <Crown size={14} className="text-amber-400" /> Mesa Ativa:
+              <Crown size={14} className="text-codex-400" /> Mesa Ativa:
             </span>
             <select
               value={selectedCampaignId}
@@ -378,7 +378,7 @@ export default function AdminIndex() {
                 <button
                   type="button"
                   onClick={handleCopyInvite}
-                  className="flex min-h-9 items-center gap-1.5 rounded-lg border border-amber-400/50 bg-amber-500/15 px-3 py-1 font-cinzel text-xs font-bold text-amber-300 hover:bg-amber-500/25 transition active:scale-95 shadow-sm"
+                  className="flex min-h-9 items-center gap-1.5 rounded-lg border border-codex-400/50 bg-codex-500/15 px-3 py-1 font-cinzel text-xs font-bold text-codex-300 hover:bg-codex-500/25 transition active:scale-95 shadow-sm"
                   title="Copiar link de convite desta mesa para enviar aos jogadores"
                 >
                   {copiedInvite ? <Check size={13} className="text-emerald-400" /> : <Link2 size={13} />}
@@ -408,7 +408,7 @@ export default function AdminIndex() {
           ["Heróis vivos", activeCharacters.length, Users, "text-emerald-400"],
           ["Personagens", displayedCharacters.length, ScrollText, "text-primary"],
           ["NPCs preparados", table.npcs.length, Skull, "text-rose-400"],
-          ["Na iniciativa", table.initiative.length, Swords, "text-amber-400"],
+          ["Na iniciativa", table.initiative.length, Swords, "text-codex-400"],
         ].map(([label, value, Icon, colorClass]) => (
           <Card key={label} variant="war-room" className="p-4 sm:p-5">
             <div className="flex items-center justify-between">
@@ -481,7 +481,7 @@ export default function AdminIndex() {
             <div className="flex items-center gap-2">
               <SectionHeader title="Iniciativa do Encontro" icon={<Dices size={16} />} />
               {table.initiative.length > 0 && (
-                <span className="rounded-full border border-amber-400/50 bg-amber-500/15 px-3 py-0.5 font-cinzel text-xs font-bold text-amber-300 shadow-sm">
+                <span className="rounded-full border border-codex-400/50 bg-codex-500/15 px-3 py-0.5 font-cinzel text-xs font-bold text-codex-300 shadow-sm">
                   Rodada {table.combatRound || 1}
                 </span>
               )}
@@ -505,7 +505,7 @@ export default function AdminIndex() {
                 <button
                   type="button"
                   onClick={handleAdvanceTurn}
-                  className="flex min-h-10 items-center gap-1.5 rounded-xl border border-amber-400/60 bg-amber-500/25 px-4 py-1.5 font-cinzel text-xs font-bold uppercase tracking-wider text-amber-200 transition hover:bg-amber-500/35 active:scale-95 shadow-md shadow-amber-500/20"
+                  className="flex min-h-10 items-center gap-1.5 rounded-xl border border-codex-400/60 bg-codex-500/25 px-4 py-1.5 font-cinzel text-xs font-bold uppercase tracking-wider text-codex-200 transition hover:bg-codex-500/35 active:scale-95 shadow-md shadow-codex-500/20"
                 >
                   <Play size={13} /> Avançar Turno
                 </button>
@@ -586,7 +586,7 @@ export default function AdminIndex() {
                   key={item.id}
                   className={`relative rounded-xl border p-3.5 transition-all ${
                     isActiveTurn
-                      ? "border-amber-400/80 bg-gradient-to-r from-amber-500/15 via-card to-card shadow-[0_0_24px_rgba(245,158,11,0.2)] ring-1 ring-amber-400/50"
+                      ? "border-codex-400/80 bg-gradient-to-r from-codex-500/15 via-card to-card shadow-[0_0_24px_rgba(99,201,184,0.2)] ring-1 ring-codex-400/50"
                       : "border-border/80 bg-secondary/40 hover:bg-secondary/60"
                   }`}
                 >
@@ -596,7 +596,7 @@ export default function AdminIndex() {
                       <div
                         className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-cinzel text-sm font-black ${
                           isActiveTurn
-                            ? "bg-amber-400 text-black font-extrabold shadow-md shadow-amber-400/30"
+                            ? "bg-codex-400 text-black font-extrabold shadow-md shadow-codex-400/30"
                             : "border border-border bg-background text-muted-foreground"
                         }`}
                       >
@@ -618,7 +618,7 @@ export default function AdminIndex() {
                             {item.type}
                           </span>
                           {isActiveTurn && (
-                            <span className="animate-pulse rounded-md bg-amber-400/25 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-widest text-amber-300 border border-amber-400/60 shadow-sm">
+                            <span className="animate-pulse rounded-md bg-codex-400/25 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-widest text-codex-300 border border-codex-400/60 shadow-sm">
                               Turno Ativo
                             </span>
                           )}

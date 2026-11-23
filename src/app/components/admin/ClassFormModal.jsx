@@ -127,7 +127,7 @@ export default function ClassFormModal({ isOpen, classe = null, onClose, onSave 
   };
 
   const inputClass =
-    "h-9 w-full rounded-lg border border-zinc-800 bg-zinc-950 px-2.5 text-xs text-zinc-100 outline-none focus:border-amber-500/60 placeholder:text-zinc-600";
+    "h-9 w-full rounded-lg border border-zinc-800 bg-zinc-950 px-2.5 text-xs text-zinc-100 outline-none focus:border-codex-500/60 placeholder:text-zinc-600";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-md animate-in fade-in duration-200">
@@ -136,18 +136,18 @@ export default function ClassFormModal({ isOpen, classe = null, onClose, onSave 
         role="dialog"
         aria-modal="true"
         aria-label={isEdit ? "Editar classe" : "Nova classe"}
-        className="custom-scroll flex max-h-[92vh] w-full max-w-2xl flex-col overflow-y-auto rounded-2xl border border-amber-500/40 bg-zinc-950 p-5 shadow-2xl"
+        className="custom-scroll flex max-h-[92vh] w-full max-w-2xl flex-col overflow-y-auto rounded-2xl border border-codex-500/40 bg-zinc-950 p-5 shadow-2xl"
       >
         <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-amber-500/40 bg-amber-500/15 text-amber-300">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-codex-500/40 bg-codex-500/15 text-codex-300">
               <BookOpen size={18} />
             </div>
             <div>
               <h2 className="flex items-center gap-2 font-serif text-base font-bold text-zinc-100">
                 {isEdit ? "Editar Classe" : "Nova Classe"}
                 {isEdit && (
-                  <span className="flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/15 px-2 py-0.2 text-[9px] font-bold uppercase text-amber-300">
+                  <span className="flex items-center gap-1 rounded-full border border-codex-500/40 bg-codex-500/15 px-2 py-0.2 text-[9px] font-bold uppercase text-codex-300">
                     <Crown size={10} /> Mestre
                   </span>
                 )}
@@ -195,7 +195,7 @@ export default function ClassFormModal({ isOpen, classe = null, onClose, onSave 
           </label>
           <label className="sm:col-span-2 flex flex-col gap-1 text-[10px] font-bold uppercase tracking-wider text-zinc-500">
             Descrição / flavor
-            <textarea value={form.descricao} onChange={(e) => set({ descricao: e.target.value })} rows={2} placeholder="O que esta classe representa na mesa?" className="w-full resize-none rounded-lg border border-zinc-800 bg-zinc-950 p-2.5 text-xs leading-snug text-zinc-100 outline-none focus:border-amber-500/60 placeholder:text-zinc-600" />
+            <textarea value={form.descricao} onChange={(e) => set({ descricao: e.target.value })} rows={2} placeholder="O que esta classe representa na mesa?" className="w-full resize-none rounded-lg border border-zinc-800 bg-zinc-950 p-2.5 text-xs leading-snug text-zinc-100 outline-none focus:border-codex-500/60 placeholder:text-zinc-600" />
           </label>
         </div>
 
@@ -203,10 +203,10 @@ export default function ClassFormModal({ isOpen, classe = null, onClose, onSave 
         <div className="mt-4">
           <div className="flex items-center justify-between border-t border-zinc-800 pt-3">
             <div>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-amber-400">Habilidades de Nível (fixas da classe)</h3>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-codex-400">Habilidades de Nível (fixas da classe)</h3>
               <p className="text-[10px] text-zinc-500">Desbloqueiam ao herói subir de nível — não passam pela aprovação.</p>
             </div>
-            <button type="button" onClick={addAbility} className="flex items-center gap-1.5 rounded-lg border border-amber-500/50 bg-amber-500/15 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/25 active:scale-95">
+            <button type="button" onClick={addAbility} className="flex items-center gap-1.5 rounded-lg border border-codex-500/50 bg-codex-500/15 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-codex-300 transition hover:bg-codex-500/25 active:scale-95">
               <Plus size={13} /> Adicionar
             </button>
           </div>
@@ -229,7 +229,7 @@ export default function ClassFormModal({ isOpen, classe = null, onClose, onSave 
                         value={ability.nivel}
                         onChange={(e) => setAbility(ability.key, { nivel: e.target.value })}
                         aria-label="Nível"
-                        className="h-9 w-16 rounded-lg border border-zinc-800 bg-zinc-950 text-center font-mono text-sm font-bold text-amber-300 outline-none focus:border-amber-500/60"
+                        className="h-9 w-16 rounded-lg border border-zinc-800 bg-zinc-950 text-center font-mono text-sm font-bold text-codex-300 outline-none focus:border-codex-500/60"
                       />
                       <input
                         value={ability.nome}
@@ -237,7 +237,7 @@ export default function ClassFormModal({ isOpen, classe = null, onClose, onSave 
                         placeholder="Nome da habilidade"
                         className={`${inputClass} min-w-0 flex-1`}
                       />
-                      <select value={ability.tipo} onChange={(e) => setAbility(ability.key, { tipo: e.target.value })} className="h-9 rounded-lg border border-zinc-800 bg-zinc-950 px-2 text-[11px] text-zinc-200 outline-none focus:border-amber-500/60">
+                      <select value={ability.tipo} onChange={(e) => setAbility(ability.key, { tipo: e.target.value })} className="h-9 rounded-lg border border-zinc-800 bg-zinc-950 px-2 text-[11px] text-zinc-200 outline-none focus:border-codex-500/60">
                         {TIPOS.map((tipo) => (
                           <option key={tipo.id} value={tipo.id}>{tipo.nome}</option>
                         ))}
@@ -260,7 +260,7 @@ export default function ClassFormModal({ isOpen, classe = null, onClose, onSave 
                         <input value={ability.formula} onChange={(e) => setAbility(ability.key, { formula: e.target.value })} placeholder="Fórmula (ex.: 1d8+2)" className={inputClass} />
                         <input value={ability.danoTipo} onChange={(e) => setAbility(ability.key, { danoTipo: e.target.value })} placeholder="Tipo de dano" className={inputClass} />
                         <input value={ability.alcance} onChange={(e) => setAbility(ability.key, { alcance: e.target.value })} placeholder="Alcance" className={`${inputClass} col-span-2 sm:col-span-1`} />
-                        <textarea value={ability.descricao} onChange={(e) => setAbility(ability.key, { descricao: e.target.value })} rows={2} placeholder="Descrição / efeito" className="col-span-2 resize-none rounded-lg border border-zinc-800 bg-zinc-950 p-2.5 text-[11px] text-zinc-100 outline-none focus:border-amber-500/60 placeholder:text-zinc-600 sm:col-span-3" />
+                        <textarea value={ability.descricao} onChange={(e) => setAbility(ability.key, { descricao: e.target.value })} rows={2} placeholder="Descrição / efeito" className="col-span-2 resize-none rounded-lg border border-zinc-800 bg-zinc-950 p-2.5 text-[11px] text-zinc-100 outline-none focus:border-codex-500/60 placeholder:text-zinc-600 sm:col-span-3" />
                       </div>
                     )}
                   </li>
@@ -276,7 +276,7 @@ export default function ClassFormModal({ isOpen, classe = null, onClose, onSave 
           <button type="button" onClick={onClose} className="rounded-lg border border-zinc-800 px-4 py-2 text-xs font-bold uppercase tracking-wider text-zinc-400 transition hover:bg-zinc-900">
             Cancelar
           </button>
-          <button type="button" onClick={handleSave} className="flex min-h-11 items-center gap-2 rounded-lg border border-amber-500/60 bg-amber-500/20 px-5 text-xs font-bold uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/30 active:scale-95">
+          <button type="button" onClick={handleSave} className="flex min-h-11 items-center gap-2 rounded-lg border border-codex-500/60 bg-codex-500/20 px-5 text-xs font-bold uppercase tracking-wider text-codex-300 transition hover:bg-codex-500/30 active:scale-95">
             <Save size={14} /> Salvar Classe
           </button>
         </div>

@@ -29,13 +29,13 @@ function FormField({ label, icon: Icon, children }) {
   return (
     <div>
       <label
-        className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[#b59a6e]"
+        className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-[var(--theme-subtitle)]"
         style={{ fontFamily: "Cinzel, serif" }}
       >
         {label}
       </label>
       <div className="group relative">
-        <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[#6b5a3e] transition group-focus-within:text-[var(--theme-accent)]">
+        <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[var(--theme-subtitle)] transition group-focus-within:text-[var(--theme-accent)]">
           <Icon size={14} />
         </span>
         {children}
@@ -46,14 +46,14 @@ function FormField({ label, icon: Icon, children }) {
 
 /* ─────── Componente reutilizável de input ─────── */
 const inputBase =
-  "w-full rounded-lg border border-[#4a3d2a]/60 bg-[#0f0d0a]/60 py-2 pl-9 pr-3 text-xs text-[#f1e7d2] placeholder-[#6b5a3e]/50 shadow-inner transition-all focus:border-[var(--theme-accent)]/60 focus:bg-[#0f0d0a]/80 focus:outline-none focus:ring-1 focus:ring-[var(--theme-accent)]/30 focus:shadow-[0_0_12px_rgba(214,154,61,0.08)]";
+  "w-full rounded-lg border border-[var(--border)] bg-[var(--input-background)] py-2 pl-9 pr-3 text-xs text-[var(--theme-body)] placeholder-[var(--muted-foreground)] shadow-inner transition-all focus:border-[var(--theme-accent)]/60 focus:bg-[var(--card)] focus:outline-none focus:ring-1 focus:ring-[var(--theme-accent)]/30 focus:shadow-[0_0_12px_rgba(99,201,184,0.12)]";
 
 const inputFont = { fontFamily: "Crimson Text, serif", fontSize: "14px" };
 
 /* ─────── Seção decorativa ─────── */
 function SectionTitle({ icon: Icon, number, title }) {
   return (
-    <div className="flex items-center gap-2.5 border-b border-[#4a3d2a]/40 pb-3">
+    <div className="flex items-center gap-2.5 border-b border-[var(--border)] pb-3">
       <div className="flex h-7 w-7 items-center justify-center rounded-md border border-[var(--theme-accent)]/30 bg-[var(--theme-accent)]/10">
         <Icon size={14} className="text-[var(--theme-accent)]" />
       </div>
@@ -201,16 +201,16 @@ function RegisterForm() {
         className="absolute -inset-[2px] rounded-2xl opacity-70 blur-[1px] animate-[runeGlow_4s_ease-in-out_infinite]"
         style={{
           background:
-            "conic-gradient(from 0deg, #d69a3d, #c9862a, #a97323, #d69a3d, transparent 40%, #d69a3d, #c9862a, transparent 70%, #d69a3d)",
+            "conic-gradient(from 0deg, var(--theme-accent), var(--codex-brass), var(--codex-verdigris), var(--theme-accent), transparent 40%, var(--theme-accent), var(--codex-brass), transparent 70%, var(--theme-accent))",
         }}
       />
 
       {/* Card Principal — Pergaminho */}
       <div
-        className="auth-shell-card relative overflow-hidden rounded-2xl border border-[#6b5a3e]/60 shadow-[0_0_60px_rgba(214,154,61,0.15),0_20px_60px_rgba(0,0,0,0.5)]"
+        className="auth-shell-card relative overflow-hidden rounded-2xl border border-[var(--border)] shadow-[0_0_60px_rgba(99,201,184,0.12),0_20px_60px_rgba(0,0,0,0.5)]"
         style={{
           background:
-            "linear-gradient(170deg, #1e1a14 0%, #16120d 30%, #1a1510 60%, #13100c 100%)",
+            "linear-gradient(170deg, #102b31 0%, #0c2228 30%, #0d262c 60%, #08171c 100%)",
         }}
       >
         {/* Textura de Pergaminho */}
@@ -270,31 +270,31 @@ function RegisterForm() {
                   <defs>
                     <path id="sealPathReg" d="M 50,8 A 42,42 0 1,1 49.99,8" fill="none" />
                     <linearGradient id="sealGradReg" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#d69a3d" />
-                      <stop offset="50%" stopColor="#a97323" />
-                      <stop offset="100%" stopColor="#d69a3d" />
+                      <stop offset="0%" stopColor="#63c9b8" />
+                      <stop offset="50%" stopColor="#c7a866" />
+                      <stop offset="100%" stopColor="#63c9b8" />
                     </linearGradient>
                   </defs>
                 </svg>
-                <Image src="/ambar-vulcanico.svg" alt="Grimorium" width={48} height={48} priority className="relative z-10 h-12 w-12 rounded-xl shadow-[0_0_18px_rgba(214,154,61,0.35)]" />
+                <Image src="/astral.svg" alt="Grimorium" width={48} height={48} priority className="relative z-10 h-12 w-12 rounded-xl shadow-[0_0_18px_color-mix(in_srgb,var(--primary)_35%,transparent)]" />
               </div>
             </div>
 
             <p
-              className="mt-4 text-[10px] font-semibold uppercase tracking-[0.4em] text-[#a97323]"
+              className="mt-4 text-[10px] font-semibold uppercase tracking-[0.4em] text-[var(--theme-accent)]"
               style={{ fontFamily: "Cinzel, serif" }}
             >
               Grimorium
             </p>
             <h2
-              className="mt-1.5 text-center text-2xl font-bold tracking-wide text-[#f5efdf] sm:text-3xl"
+              className="mt-1.5 text-center text-2xl font-bold tracking-wide text-[var(--theme-title)] sm:text-3xl"
               style={{ fontFamily: "Cinzel, serif" }}
             >
               Crie sua Conta
             </h2>
             <div className="mt-2 flex items-center gap-2">
               <div className="h-px w-10 bg-gradient-to-r from-transparent to-[var(--theme-accent)]/40" />
-              <span className="text-[10px] text-[#cbb288]" style={{ fontFamily: "Crimson Text, serif" }}>
+              <span className="text-[10px] text-[var(--theme-subtitle)]" style={{ fontFamily: "Crimson Text, serif" }}>
                 Cadastre-se e forje sua lenda
               </span>
               <div className="h-px w-10 bg-gradient-to-l from-transparent to-[var(--theme-accent)]/40" />
@@ -311,7 +311,7 @@ function RegisterForm() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* ══════ SEÇÃO 1: CREDENCIAIS ══════ */}
-            <div className="rounded-xl border border-[#4a3d2a]/40 bg-[#0f0d0a]/30 p-4 sm:p-5">
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 sm:p-5">
               <SectionTitle icon={Shield} number="I" title="Credenciais de Acesso" />
 
               <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -353,7 +353,7 @@ function RegisterForm() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-[#6b5a3e] transition hover:text-[var(--theme-accent)]"
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-[var(--theme-subtitle)] transition hover:text-[var(--theme-accent)]"
                   >
                     {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
                   </button>
@@ -375,11 +375,11 @@ function RegisterForm() {
             </div>
 
             {/* ══════ SEÇÃO 2: PERFIL ══════ */}
-            <div className="rounded-xl border border-[#4a3d2a]/40 bg-[#0f0d0a]/30 p-4 sm:p-5">
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 sm:p-5">
               <SectionTitle icon={Crown} number="II" title="Seu Papel na Mesa" />
 
               <p
-                className="mt-3 mb-4 text-xs text-[#cbb288]"
+                className="mt-3 mb-4 text-xs text-[var(--theme-subtitle)]"
                 style={{ fontFamily: "Crimson Text, serif" }}
               >
                 Escolha como deseja participar. Mestres gerenciam campanhas e NPC; jogadores possuem uma ficha de personagem.
@@ -395,35 +395,35 @@ function RegisterForm() {
                   onClick={() => setIsMaster(false)}
                   className={`flex items-center gap-3 rounded-xl border p-4 text-left transition-all ${
                     !isMaster
-                      ? "border-[var(--theme-accent)] bg-[var(--theme-accent)]/15 shadow-[0_0_16px_rgba(214,154,61,0.2)]"
-                      : "border-[#4a3d2a]/40 bg-[#0f0d0a]/40 hover:border-[#6b5a3e]"
+                      ? "border-[var(--theme-accent)] bg-[var(--theme-accent)]/15 shadow-[0_0_16px_rgba(99,201,184,0.2)]"
+                      : "border-[var(--border)] bg-[var(--card)] hover:border-[var(--primary)]"
                   }`}
                 >
                   <div
                     className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border ${
                       !isMaster
-                        ? "border-[var(--theme-accent)] bg-[var(--theme-accent)]/20 text-[#f0d9a0]"
-                        : "border-[#4a3d2a]/40 bg-[#0f0d0a]/60 text-[#6b5a3e]"
+                        ? "border-[var(--theme-accent)] bg-[var(--theme-accent)]/20 text-[var(--theme-title)]"
+                        : "border-[var(--border)] bg-[var(--input-background)] text-[var(--theme-subtitle)]"
                     }`}
                   >
                     <Sword size={18} />
                   </div>
                   <div>
                     <p
-                      className={`text-xs font-bold uppercase tracking-wider ${!isMaster ? "text-[#f0d9a0]" : "text-[#cbb288]"}`}
+                      className={`text-xs font-bold uppercase tracking-wider ${!isMaster ? "text-[var(--theme-title)]" : "text-[var(--theme-subtitle)]"}`}
                       style={{ fontFamily: "Cinzel, serif" }}
                     >
                       Jogador
                     </p>
                     <p
-                      className="mt-0.5 text-[11px] text-[#6b5a3e]"
+                      className="mt-0.5 text-[11px] text-[var(--theme-subtitle)]"
                       style={{ fontFamily: "Crimson Text, serif" }}
                     >
                       Possui ficha de personagem
                     </p>
                   </div>
                   {!isMaster && (
-                    <div className="ml-auto flex items-center gap-1.5 rounded-full bg-[var(--theme-accent)]/20 px-2 py-0.5 text-[10px] font-semibold text-[#f0d9a0] border border-[var(--theme-accent)]/40">
+                    <div className="ml-auto flex items-center gap-1.5 rounded-full bg-[var(--theme-accent)]/20 px-2 py-0.5 text-[10px] font-semibold text-[var(--theme-title)] border border-[var(--theme-accent)]/40">
                       <span className="h-1.5 w-1.5 rounded-full bg-[var(--theme-accent)]" />
                       Ativo
                     </div>
@@ -439,35 +439,35 @@ function RegisterForm() {
                   onClick={() => setIsMaster(true)}
                   className={`flex items-center gap-3 rounded-xl border p-4 text-left transition-all ${
                     isMaster
-                      ? "border-[var(--theme-accent)] bg-[var(--theme-accent)]/15 shadow-[0_0_16px_rgba(214,154,61,0.2)]"
-                      : "border-[#4a3d2a]/40 bg-[#0f0d0a]/40 hover:border-[#6b5a3e]"
+                      ? "border-[var(--theme-accent)] bg-[var(--theme-accent)]/15 shadow-[0_0_16px_rgba(99,201,184,0.2)]"
+                      : "border-[var(--border)] bg-[var(--card)] hover:border-[var(--primary)]"
                   }`}
                 >
                   <div
                     className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border ${
                       isMaster
-                        ? "border-[var(--theme-accent)] bg-[var(--theme-accent)]/20 text-[#f0d9a0]"
-                        : "border-[#4a3d2a]/40 bg-[#0f0d0a]/60 text-[#6b5a3e]"
+                        ? "border-[var(--theme-accent)] bg-[var(--theme-accent)]/20 text-[var(--theme-title)]"
+                        : "border-[var(--border)] bg-[var(--input-background)] text-[var(--theme-subtitle)]"
                     }`}
                   >
                     <Crown size={18} />
                   </div>
                   <div>
                     <p
-                      className={`text-xs font-bold uppercase tracking-wider ${isMaster ? "text-[#f0d9a0]" : "text-[#cbb288]"}`}
+                      className={`text-xs font-bold uppercase tracking-wider ${isMaster ? "text-[var(--theme-title)]" : "text-[var(--theme-subtitle)]"}`}
                       style={{ fontFamily: "Cinzel, serif" }}
                     >
                       Mestre
                     </p>
                     <p
-                      className="mt-0.5 text-[11px] text-[#6b5a3e]"
+                      className="mt-0.5 text-[11px] text-[var(--theme-subtitle)]"
                       style={{ fontFamily: "Crimson Text, serif" }}
                     >
                       Gerencia campanhas e NPCs
                     </p>
                   </div>
                   {isMaster && (
-                    <div className="ml-auto flex items-center gap-1.5 rounded-full bg-[var(--theme-accent)]/20 px-2 py-0.5 text-[10px] font-semibold text-[#f0d9a0] border border-[var(--theme-accent)]/40">
+                    <div className="ml-auto flex items-center gap-1.5 rounded-full bg-[var(--theme-accent)]/20 px-2 py-0.5 text-[10px] font-semibold text-[var(--theme-title)] border border-[var(--theme-accent)]/40">
                       <span className="h-1.5 w-1.5 rounded-full bg-[var(--theme-accent)]" />
                       Ativo
                     </div>
@@ -478,7 +478,7 @@ function RegisterForm() {
 
             {/* ══════ SEÇÃO 3: PERSONAGEM (apenas Jogador) ══════ */}
             {!isMaster && (
-              <div className="rounded-xl border border-[#4a3d2a]/40 bg-[#0f0d0a]/30 p-4 sm:p-5">
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 sm:p-5">
                 <SectionTitle icon={Sword} number="III" title="Seu Primeiro Personagem" />
 
                 <div className="mt-4 space-y-4">
@@ -502,7 +502,7 @@ function RegisterForm() {
                       className={inputBase}
                       style={inputFont}
                     />
-                    <p className="mt-1.5 text-[10px] leading-snug text-[#cbb288]" style={{ fontFamily: "Crimson Text, serif" }}>
+                    <p className="mt-1.5 text-[10px] leading-snug text-[var(--theme-subtitle)]" style={{ fontFamily: "Crimson Text, serif" }}>
                       Se a classe não existir no catálogo, ela é salva automaticamente e fica visível e editável na administração de classes do mestre.
                     </p>
                   </FormField>
@@ -513,11 +513,11 @@ function RegisterForm() {
 
             {/* ══════ SEÇÃO 4: CONVITE DA MESA (apenas Jogador) ══════ */}
             {!isMaster && (
-              <div className="rounded-xl border border-[#4a3d2a]/40 bg-[#0f0d0a]/30 p-4 sm:p-5">
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] p-4 sm:p-5">
                 <SectionTitle icon={Link2} number="IV" title="Mesa de RPG & Convite (Opcional)" />
 
                 <p
-                  className="mt-2.5 mb-3 text-xs text-[#cbb288]"
+                  className="mt-2.5 mb-3 text-xs text-[var(--theme-subtitle)]"
                   style={{ fontFamily: "Crimson Text, serif" }}
                 >
                   Se o seu Mestre lhe forneceu um código ou link de convite, insira abaixo para vincular sua conta e sua ficha diretamente à mesa dele.
@@ -536,7 +536,7 @@ function RegisterForm() {
                 )}
 
                 {inviteError && (
-                  <div className="mb-4 rounded-lg border border-amber-600/40 bg-amber-950/20 px-3 py-2 text-xs text-amber-300">
+                  <div className="mb-4 rounded-lg border border-codex-600/40 bg-codex-950/20 px-3 py-2 text-xs text-codex-300">
                     {inviteError}
                   </div>
                 )}
@@ -565,11 +565,11 @@ function RegisterForm() {
             <button
               type="submit"
               disabled={loading}
-              className="group relative flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-lg border border-[var(--theme-accent)]/50 py-3 text-sm font-semibold tracking-wider transition-all hover:border-[var(--theme-accent)] hover:shadow-[0_0_24px_rgba(214,154,61,0.2)] active:scale-[0.98] disabled:opacity-50"
+              className="group relative flex w-full items-center justify-center gap-2.5 overflow-hidden rounded-lg border border-[var(--theme-accent)]/50 py-3 text-sm font-semibold tracking-wider transition-all hover:border-[var(--theme-accent)] hover:shadow-[0_0_24px_rgba(99,201,184,0.2)] active:scale-[0.98] disabled:opacity-50"
               style={{
                 fontFamily: "Cinzel, serif",
-                background: "linear-gradient(135deg, #2a2018 0%, #3d2e1a 50%, #2a2018 100%)",
-                color: "#f0d9a0",
+                background: "linear-gradient(135deg, #12383e 0%, #1b4a4a 50%, #12383e 100%)",
+                color: "var(--theme-title)",
               }}
             >
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[var(--theme-accent)]/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
@@ -588,15 +588,15 @@ function RegisterForm() {
           </form>
 
           {/* Link para Login */}
-          <div className="mt-6 border-t border-[#4a3d2a]/30 pt-4 text-center">
+          <div className="mt-6 border-t border-[var(--border)] pt-4 text-center">
             <p
-              className="text-xs text-[#cbb288]"
+              className="text-xs text-[var(--theme-subtitle)]"
               style={{ fontFamily: "Crimson Text, serif" }}
             >
               Já possui uma conta registrada?{" "}
               <Link
                 href={`/login${inviteCode ? `?invite=${encodeURIComponent(inviteCode)}` : ""}`}
-                className="font-semibold text-[var(--theme-accent)] transition hover:text-[#f0d9a0] hover:drop-shadow-[0_0_6px_rgba(214,154,61,0.4)]"
+                className="font-semibold text-[var(--theme-accent)] transition hover:text-[var(--theme-title)] hover:drop-shadow-[0_0_6px_rgba(99,201,184,0.4)]"
                 style={{ fontFamily: "Cinzel, serif" }}
               >
                 Fazer Login

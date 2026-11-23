@@ -127,8 +127,8 @@ export function AbilityFormModal({
 
         {/* Alerta Informativo para o Jogador */}
         {!isMaster && (
-          <div className="flex items-start gap-2.5 rounded-xl border border-amber-500/30 bg-amber-950/20 p-3 text-xs text-amber-200/90">
-            <AlertCircle size={16} className="text-amber-400 shrink-0 mt-0.5" />
+          <div className="flex items-start gap-2.5 rounded-xl border border-codex-500/30 bg-codex-950/20 p-3 text-xs text-codex-200/90">
+            <AlertCircle size={16} className="text-codex-400 shrink-0 mt-0.5" />
             <p>
               <strong>Atenção:</strong> Como jogador, ao salvar esta habilidade, ela será enviada
               como uma <strong>solicitação pendente</strong> para o Mestre da campanha aprovar,
@@ -163,7 +163,7 @@ export function AbilityFormModal({
                 onClick={() => setFormData({ ...formData, category: "nivel" })}
                 className={`flex items-center justify-center gap-1.5 rounded-xl border p-2 text-xs font-bold transition ${
                   formData.category === "nivel"
-                    ? "border-amber-500/60 bg-amber-950/50 text-amber-300 shadow-sm"
+                    ? "border-codex-500/60 bg-codex-950/50 text-codex-300 shadow-sm"
                     : "border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:text-zinc-200"
                 }`}
               >

@@ -31,25 +31,25 @@ export default function Cabecalho() {
             {/* Lado Esquerdo: Identidade do Contexto (Mestre vs. Jogador) */}
             <div className="flex items-center gap-3">
               {isMasterView ? (
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-amber-400/70 bg-gradient-to-b from-amber-500/25 to-amber-500/10 text-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.35)]">
-                  <Crown size={22} className="drop-shadow-[0_0_8px_#f59e0b]" />
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-codex-400/70 bg-gradient-to-b from-codex-500/25 to-codex-500/10 text-codex-400 shadow-[0_0_20px_rgba(99,201,184,0.35)]">
+                  <Crown size={22} className="drop-shadow-[0_0_8px_#63c9b8]" />
                 </div>
               ) : (
-                <Image src="/ambar-vulcanico.svg" alt="Grimorium" width={44} height={44} priority className="h-11 w-11 shrink-0 rounded-xl shadow-[0_0_20px_color-mix(in_srgb,var(--primary)_35%,transparent)]" />
+                <Image src="/astral.svg" alt="Grimorium" width={44} height={44} priority className="h-11 w-11 shrink-0 rounded-xl shadow-[0_0_20px_color-mix(in_srgb,var(--primary)_35%,transparent)]" />
               )}
               <div>
-                <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.28em] text-primary">
-                  <span>✦</span>
-                  <span>{isMasterView ? "Soberania do Narrador" : "Códice do Aventureiro"}</span>
-                  <span>✦</span>
+                <p className="flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.18em] text-primary">
+                  <span>◆</span>
+                  <span>{isMasterView ? "Mesa do mestre" : "Atlas do aventureiro"}</span>
+                  <span>◆</span>
                 </p>
-                <h1 className="font-decorative text-xl sm:text-2xl font-black tracking-tight gold-gradient-text">
+                <h1 className="font-display text-xl sm:text-2xl gold-gradient-text">
                   {isMasterView ? "Câmara do Mestre" : "Grimorium"}
                 </h1>
                 <p className="font-journal text-xs italic text-muted-foreground/90 hidden sm:block">
                   {isMasterView
-                    ? "Sala de guerra, condução de encontros e controle da mesa"
-                    : "Folio vivo de proezas, inventário e contratos da guilda"}
+                    ? "Sala de guerra, encontros e controle da mesa"
+                    : "Suas proezas, inventário e contratos em um só lugar"}
                 </p>
               </div>
             </div>
@@ -58,7 +58,7 @@ export default function Cabecalho() {
             <div className="flex items-center justify-between gap-4 sm:justify-end">
               {!isMasterView && !authLoading && !activeCharacter ? (
                 <div className="hidden sm:flex flex-col text-right">
-                  <span className="wax-seal bg-amber-500/20 text-amber-300 border border-amber-400/50 shadow-[0_0_12px_rgba(245,158,11,0.25)]">
+                  <span className="wax-seal bg-codex-500/20 text-codex-300 border border-codex-400/50 shadow-[0_0_12px_rgba(99,201,184,0.25)]">
                     <Shield size={11} /> {isMaster ? "Nenhuma ficha própria" : "Nenhuma ficha ativa"}
                   </span>
                   <span className="font-cinzel text-xs text-muted-foreground/80 mt-1">
@@ -113,7 +113,7 @@ export default function Cabecalho() {
                 </div>
               ) : (
                 <div className="hidden sm:flex flex-col text-right">
-                  <span className="wax-seal bg-amber-500/20 text-amber-300 border border-amber-400/50 shadow-[0_0_12px_rgba(245,158,11,0.25)]">
+                  <span className="wax-seal bg-codex-500/20 text-codex-300 border border-codex-400/50 shadow-[0_0_12px_rgba(99,201,184,0.25)]">
                     <Shield size={11} /> Mestre Ativo
                   </span>
                   <span className="font-cinzel text-xs text-muted-foreground/80 mt-1">Painel de Campanhas & Combate</span>

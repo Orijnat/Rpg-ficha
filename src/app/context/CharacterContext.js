@@ -62,8 +62,12 @@ const ATTRIBUTE_ALIASES = {
   inteligencia: "INT",
 };
 
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const asUuid = (value) => (typeof value === "string" && UUID_RE.test(value) ? value : undefined);
+const ID_RE = /^\d+$/;
+const asId = (value) => {
+  if (typeof value === "number" && Number.isInteger(value) && value > 0) return value;
+  if (typeof value === "string" && ID_RE.test(value)) return value;
+  return undefined;
+};
 
 // Reduz qualquer valor a texto curto para campos texto(n) do Zod do backend.
 // A associação `classe` (include do Sequelize) chega como OBJETO
@@ -135,12 +139,12 @@ function normalizeCharacterForSync(charData, activeChar) {
     // O backend resolve a raça pelo vínculo FK (raceId) ou pelo slug (race) —
     // enviar o slug garante persistência mesmo com raceId em formato de slug (fallback offline).
     race: (charData.dadosExtras && charData.dadosExtras.race) || undefined,
-    // Slug/local-id (ex.: "humano") nunca é um uuid válido para o Zod do backend —
+    // Slug/local-id (ex.: "humano") nunca é um ID numérico válido para o Zod do backend —
     // nesse caso o vínculo FK é refeito pelo servidor a partir do slug.
-    raceId: asUuid(charData.raceId),
+    raceId: asId(charData.raceId),
     // O backend resolve a classe pelo vínculo FK (classId) ou pelo slug (class) —
     // o Dado de Vida vem da classe (a raça não define mais o dado de vida).
-    classId: asUuid(charData.classId ?? charData.classeId),
+    classId: asId(charData.classId ?? charData.classeId),
     class: (charData.dadosExtras && charData.dadosExtras.class) || undefined,
     // O backend serializa a associação da classe como OBJETO em `classe` (include
     // do Sequelize) — o Zod espera texto(80). Envia só o slug legível (ou omite);

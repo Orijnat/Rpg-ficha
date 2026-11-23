@@ -13,7 +13,7 @@ const renderTipoIcon = (type) => {
     case "reacao":
       return <Zap size={12} className="text-sky-400" />;
     default:
-      return <Sword size={12} className="text-amber-400" />;
+      return <Sword size={12} className="text-codex-400" />;
   }
 };
 
@@ -46,14 +46,14 @@ export function ClassProgression({ classe = null, characterLevel = 1 }) {
   const locked = normalized.filter((ability) => ability.reqLevel > level);
 
   return (
-    <section className="rounded-2xl border border-amber-500/30 bg-gradient-to-b from-amber-950/15 via-zinc-950/70 to-zinc-950/70 p-4 shadow-md">
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-amber-500/20 pb-3">
+    <section className="rounded-2xl border border-codex-500/30 bg-gradient-to-b from-codex-950/15 via-zinc-950/70 to-zinc-950/70 p-4 shadow-md">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-codex-500/20 pb-3">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-amber-500/50 bg-amber-500/15 text-amber-300">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-codex-500/50 bg-codex-500/15 text-codex-300">
             <BookOpen size={18} />
           </div>
           <div>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-amber-400">
+            <span className="text-[10px] font-bold uppercase tracking-widest text-codex-400">
               Classe · Progressão Fixa
             </span>
             <h3 className="font-serif text-base font-bold text-zinc-100">
@@ -61,7 +61,7 @@ export function ClassProgression({ classe = null, characterLevel = 1 }) {
             </h3>
           </div>
         </div>
-        <span className="rounded-full border border-amber-500/40 bg-amber-950/40 px-2.5 py-1 text-[10px] font-bold text-amber-300">
+        <span className="rounded-full border border-codex-500/40 bg-codex-950/40 px-2.5 py-1 text-[10px] font-bold text-codex-300">
           {unlocked.length} liberada{unlocked.length === 1 ? "" : "s"} no nível {level}
         </span>
       </div>

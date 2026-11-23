@@ -25,6 +25,23 @@ export const LEGACY_THEME_MAP = {
 export const THEMES = [
   // ── TEMAS ESCUROS ──
   {
+    id: "codex",
+    name: "Forja Astral",
+    subtitle: "Latão & Verdigris",
+    description: "Azul-petróleo de carta náutica, latão envelhecido e verdigris de instrumentos de medição.",
+    accent: "#63c9b8",
+    bg: "#08171c",
+    titleColor: "#eef7f3",
+    subtitleColor: "#9fc4bb",
+    tag: "Escuro",
+    type: "dark",
+    harmony: "Análoga Fria com Acento de Latão",
+    harmonyFamily: "Adobe Color: Analogous Teal & Aged Brass",
+    contrastRatio: "16.7:1 (WCAG AAA)",
+    previewColors: ["#08171c", "#63c9b8", "#d8ebe4"],
+    iconName: "Compass",
+  },
+  {
     id: "amber",
     name: "Âmbar Vulcânico",
     subtitle: "Forjas & Alquimia",

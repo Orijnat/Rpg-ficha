@@ -352,7 +352,7 @@ export default function AdminMercadoPage() {
             <span className="block text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
               Vendedores & Tendas
             </span>
-            <span className="mt-1 font-serif text-2xl font-black text-amber-400">
+            <span className="mt-1 font-serif text-2xl font-black text-codex-400">
               {stats.totalVendedores}
             </span>
           </div>
@@ -647,7 +647,7 @@ export default function AdminMercadoPage() {
                           </span>
                         </div>
                         <div className="flex items-center gap-1.5 text-muted-foreground">
-                          <MapPin size={13} className="shrink-0 text-amber-500/70" />
+                          <MapPin size={13} className="shrink-0 text-codex-500/70" />
                           <span className="truncate">{item.regiao}</span>
                         </div>
                       </div>
@@ -661,7 +661,7 @@ export default function AdminMercadoPage() {
 
                       {/* Requisitos */}
                       {item.requisitos && (
-                        <div className="mt-2 text-[11px] text-amber-400/90 font-medium">
+                        <div className="mt-2 text-[11px] text-codex-400/90 font-medium">
                           ⚙️ <span className="underline">Requisitos:</span> {item.requisitos}
                         </div>
                       )}
@@ -672,7 +672,7 @@ export default function AdminMercadoPage() {
                       <div className="flex items-center gap-3">
                         {/* Preço */}
                         <div className="flex items-center gap-1">
-                          <Coins size={14} className="text-amber-400" />
+                          <Coins size={14} className="text-codex-400" />
                           <strong className="font-mono text-sm text-foreground">
                             {item.preco}
                           </strong>
@@ -885,7 +885,7 @@ export default function AdminMercadoPage() {
                         </div>
                         <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
                           <span className="flex items-center gap-1">
-                            <MapPin size={12} className="text-amber-400" />
+                            <MapPin size={12} className="text-codex-400" />
                             {vendor.regiao}
                           </span>
                           {vendor.especialidade && (
@@ -896,7 +896,7 @@ export default function AdminMercadoPage() {
                           )}
                         </div>
                         {vendor.humor && (
-                          <p className="mt-2 text-xs italic text-amber-200/80 font-serif">
+                          <p className="mt-2 text-xs italic text-codex-200/80 font-serif">
                             &ldquo;{vendor.humor}&rdquo;
                           </p>
                         )}

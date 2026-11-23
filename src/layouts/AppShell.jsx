@@ -86,10 +86,6 @@ export default function AppShell({ children }) {
   const hideNavigation = isAuthRoute || isLandingPage || isStandaloneSheet;
 
   useEffect(() => {
-    document.title = "Grimorium";
-  }, []);
-
-  useEffect(() => {
     if (loading) return;
 
     if (!isAuthenticated && !isAuthRoute && pathname !== "/") {
@@ -101,29 +97,28 @@ export default function AppShell({ children }) {
 
   return (
     <div
-      data-theme={isLandingPage ? "amber" : undefined}
+      data-theme={isLandingPage ? "codex" : undefined}
       className="relative min-h-screen overflow-x-clip text-[var(--theme-body)] transition-colors duration-300"
       style={{
-        backgroundColor: isLandingPage ? "#090b0e" : "var(--theme-bg, #0b0d12)",
-        color: isLandingPage ? "#ebd9be" : "var(--theme-body, #e8d5b0)",
-        fontFamily: "'Inter', sans-serif",
+        backgroundColor: "var(--theme-bg, #08171c)",
+        color: "var(--theme-body, #d8e8e2)",
+        fontFamily: "var(--font-sans)",
       }}
     >
       <div
         className="pointer-events-none absolute inset-0 transition-opacity duration-500"
         style={{
-          background: isLandingPage
-            ? "radial-gradient(circle at top left, rgba(214,154,61,0.13), transparent 35%), radial-gradient(circle at top right, rgba(120,97,255,0.08), transparent 30%), linear-gradient(180deg, rgba(255,255,255,0.02), transparent 18%)"
-            : "radial-gradient(circle at top left, var(--theme-glow-1, rgba(214,154,61,0.13)), transparent 35%), radial-gradient(circle at top right, var(--theme-glow-2, rgba(120,97,255,0.08)), transparent 30%), linear-gradient(180deg, rgba(255,255,255,0.02), transparent 18%)",
+          background:
+            "radial-gradient(circle at top left, var(--theme-glow-1), transparent 35%), radial-gradient(circle at top right, var(--theme-glow-2), transparent 30%), linear-gradient(180deg, rgba(255,255,255,0.02), transparent 18%)",
         }}
       />
       <div
         className="pointer-events-none absolute -left-24 top-24 h-72 w-72 rounded-full blur-3xl transition-colors duration-500"
-        style={{ backgroundColor: isLandingPage ? "rgba(214,154,61,0.1)" : "var(--theme-glow-1, rgba(214,154,61,0.1))" }}
+        style={{ backgroundColor: "var(--theme-glow-1, rgba(99,201,184,0.1))" }}
       />
       <div
         className="pointer-events-none absolute right-0 top-80 h-96 w-96 rounded-full blur-3xl transition-colors duration-500"
-        style={{ backgroundColor: isLandingPage ? "rgba(79,143,107,0.1)" : "var(--theme-glow-3, rgba(79,143,107,0.1))" }}
+        style={{ backgroundColor: "var(--theme-glow-3, rgba(199,168,102,0.08))" }}
       />
 
       {!hideNavigation && <Cabecalho />}
@@ -139,10 +134,10 @@ export default function AppShell({ children }) {
         >
           {/* Topo exclusivo da sidebar no desktop com estética Dark Fantasy */}
           <div className="mb-5 hidden items-center gap-3 border-b border-primary/25 px-2 pb-5 lg:flex">
-            <Image src="/ambar-vulcanico.svg" alt="Grimorium" width={44} height={44} priority className="h-11 w-11 rounded-xl shadow-[0_0_22px_color-mix(in_srgb,var(--primary)_40%,transparent)]" />
+            <Image src="/astral.svg" alt="Grimorium" width={44} height={44} priority className="h-11 w-11 rounded-xl shadow-[0_0_22px_color-mix(in_srgb,var(--primary)_40%,transparent)]" />
             <div>
-              <h2 className="font-decorative text-lg font-black tracking-wider gold-gradient-text">Grimorium</h2>
-              <p className="font-journal text-xs italic text-amber-100/70">Códice &amp; Sala de Guerra</p>
+              <h2 className="font-display text-lg tracking-[0.08em] gold-gradient-text">Grimorium</h2>
+              <p className="font-journal text-xs italic text-codex-100/70">Atlas &amp; Sala de Guerra</p>
             </div>
           </div>
 
@@ -153,9 +148,9 @@ export default function AppShell({ children }) {
               <>
                 <div className="hidden lg:block mb-3 px-3">
                   <div className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rotate-45 bg-amber-400 shadow-[0_0_6px_#f59e0b]" />
-                    <span className="font-cinzel text-[10px] font-bold uppercase tracking-[0.25em] text-amber-300/90 flex items-center gap-1.5">
-                      <Crown size={11} className="text-amber-400" /> Câmara do Mestre
+                    <span className="h-1.5 w-1.5 rotate-45 bg-codex-400 shadow-[0_0_6px_#63c9b8]" />
+                    <span className="font-cinzel text-[10px] font-bold uppercase tracking-[0.25em] text-codex-300/90 flex items-center gap-1.5">
+                      <Crown size={11} className="text-codex-400" /> Câmara do Mestre
                     </span>
                   </div>
                 </div>
@@ -172,18 +167,18 @@ export default function AppShell({ children }) {
                         key={item.id}
                         href={item.href}
                         aria-current={active ? "page" : undefined}
-                        className={`group flex min-h-11 items-center gap-2.5 whitespace-nowrap rounded-xl px-3.5 py-2.5 text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
+                        className={`group flex min-h-11 items-center gap-2.5 whitespace-nowrap rounded-xl px-3.5 py-2.5 text-xs font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-codex-400 ${
                           active
-                            ? "border border-amber-400/70 bg-gradient-to-r from-amber-500/25 via-amber-500/15 to-transparent text-amber-200 font-bold shadow-[0_0_18px_rgba(245,158,11,0.25)]"
-                            : "text-muted-foreground hover:bg-amber-500/10 hover:text-amber-100 hover:border-amber-500/20 border border-transparent"
+                            ? "border border-codex-400/70 bg-gradient-to-r from-codex-500/25 via-codex-500/15 to-transparent text-codex-200 font-bold shadow-[0_0_18px_rgba(99,201,184,0.25)]"
+                            : "text-muted-foreground hover:bg-codex-500/10 hover:text-codex-100 hover:border-codex-500/20 border border-transparent"
                         }`}
                       >
-                        <span className={`transition-transform duration-200 group-hover:scale-110 ${active ? "text-amber-300 drop-shadow-[0_0_8px_#f59e0b]" : "opacity-75"}`}>
+                        <span className={`transition-transform duration-200 group-hover:scale-110 ${active ? "text-codex-300 drop-shadow-[0_0_8px_#63c9b8]" : "opacity-75"}`}>
                           {item.icon}
                         </span>
                         <span className="font-cinzel tracking-wider">{item.label}</span>
                         {active && (
-                          <span className="ml-auto hidden h-2 w-2 rotate-45 bg-amber-400 shadow-[0_0_8px_#f59e0b] lg:block" />
+                          <span className="ml-auto hidden h-2 w-2 rotate-45 bg-codex-400 shadow-[0_0_8px_#63c9b8] lg:block" />
                         )}
                       </Link>
                     );
@@ -231,16 +226,16 @@ export default function AppShell({ children }) {
                   {/* Botão de volta ao painel quando mestre está inspecionando */}
                   {isMaster && isInspecting && (
                     <>
-                      <div className="my-2.5 hidden border-t border-amber-400/25 pt-3 px-3 lg:block">
-                        <span className="font-cinzel text-[10px] font-bold uppercase tracking-[0.25em] text-amber-400/90 flex items-center gap-1.5">
+                      <div className="my-2.5 hidden border-t border-codex-400/25 pt-3 px-3 lg:block">
+                        <span className="font-cinzel text-[10px] font-bold uppercase tracking-[0.25em] text-codex-400/90 flex items-center gap-1.5">
                           <Crown size={10} /> Mestre
                         </span>
                       </div>
                       <Link
                         href="/admin"
-                        className="group flex min-h-11 items-center gap-2.5 whitespace-nowrap rounded-xl px-3.5 py-2 text-xs font-bold transition-all border border-amber-400/40 text-amber-300 hover:bg-amber-500/15 hover:border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400"
+                        className="group flex min-h-11 items-center gap-2.5 whitespace-nowrap rounded-xl px-3.5 py-2 text-xs font-bold transition-all border border-codex-400/40 text-codex-300 hover:bg-codex-500/15 hover:border-codex-400 shadow-[0_0_15px_rgba(99,201,184,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-codex-400"
                       >
-                        <span className="transition-transform group-hover:rotate-12 text-amber-400 drop-shadow-[0_0_8px_#f59e0b]">
+                        <span className="transition-transform group-hover:rotate-12 text-codex-400 drop-shadow-[0_0_8px_#63c9b8]">
                           <Crown size={16} />
                         </span>
                         <span className="font-cinzel tracking-wider">Câmara do Mestre</span>

@@ -358,7 +358,7 @@ export default function EditNpcPage() {
           <button
             type="button"
             onClick={() => setIsOverwriteOpen(true)}
-            className="flex min-h-11 items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-950/20 px-3 text-xs font-bold uppercase tracking-wider text-amber-400 hover:bg-amber-950/40"
+            className="flex min-h-11 items-center gap-1.5 rounded-lg border border-codex-500/30 bg-codex-950/20 px-3 text-xs font-bold uppercase tracking-wider text-codex-400 hover:bg-codex-950/40"
             title="Sobrescreve o NPC original no catálogo com os dados desta cópia"
           >
             <ShieldAlert size={14} /> Sobrepor original…
@@ -392,9 +392,9 @@ export default function EditNpcPage() {
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-amber-500/35 bg-amber-500/10 px-4 py-2.5 text-xs text-amber-200/90">
+      <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-codex-500/35 bg-codex-500/10 px-4 py-2.5 text-xs text-codex-200/90">
         <p className="flex items-center gap-2">
-          <ShieldAlert size={14} className="shrink-0 text-amber-400" />
+          <ShieldAlert size={14} className="shrink-0 text-codex-400" />
           <span>
             <strong>Cópia de trabalho desta guia.</strong> O NPC original no catálogo fica intocado —
             cada guia aberta mantém a sua cópia (refresh não perde).
@@ -404,14 +404,14 @@ export default function EditNpcPage() {
           <button
             type="button"
             onClick={handleRestoreOriginal}
-            className="rounded-lg border border-amber-500/40 px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/15"
+            className="rounded-lg border border-codex-500/40 px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-codex-300 transition hover:bg-codex-500/15"
           >
             Restaurar do original
           </button>
           <button
             type="button"
             onClick={handleDiscardCopy}
-            className="rounded-lg border border-amber-500/40 px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/15"
+            className="rounded-lg border border-codex-500/40 px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-codex-300 transition hover:bg-codex-500/15"
           >
             Descartar cópia
           </button>

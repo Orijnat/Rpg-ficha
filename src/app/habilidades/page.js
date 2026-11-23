@@ -268,7 +268,7 @@ export default function HabilidadesPage() {
   return (
     <div className="space-y-5">
       {/* Banner Principal no Estilo Dark Fantasy */}
-      <Card className="bg-gradient-to-br from-card via-card/85 to-amber-950/20 p-5 sm:p-6">
+      <Card className="bg-gradient-to-br from-card via-card/85 to-codex-950/20 p-5 sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="mb-2 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.25em] text-primary">
@@ -289,7 +289,7 @@ export default function HabilidadesPage() {
               <span className="block text-[10px] uppercase tracking-wider text-muted-foreground">
                 Nível do Herói
               </span>
-              <span className="font-serif text-lg font-bold text-amber-400">
+              <span className="font-serif text-lg font-bold text-codex-400">
                 Nível {characterLevel}
               </span>
             </div>
@@ -319,7 +319,7 @@ export default function HabilidadesPage() {
           <span className="text-muted-foreground">
             Total de Habilidades: <strong className="text-foreground">{stats.total}</strong>
           </span>
-          <span className="text-amber-400">
+          <span className="text-codex-400">
             • Níveis Preenchidos: <strong>{stats.levelSlotsFilled}/20</strong>
           </span>
           <span className="text-purple-400">
@@ -329,7 +329,7 @@ export default function HabilidadesPage() {
             • Aprovadas: <strong>{stats.approved}</strong>
           </span>
           {stats.pending > 0 && (
-            <span className="text-amber-400 font-bold flex items-center gap-1">
+            <span className="text-codex-400 font-bold flex items-center gap-1">
               • Pendentes: <strong>{stats.pending}</strong>
             </span>
           )}
@@ -352,21 +352,21 @@ export default function HabilidadesPage() {
           onClick={() => setMainCategory("nivel")}
           className={`flex items-center gap-3.5 rounded-2xl border p-4 text-left transition-all ${
             mainCategory === "nivel"
-              ? "border-amber-500/60 bg-gradient-to-r from-amber-950/40 via-zinc-900 to-zinc-950 shadow-lg ring-1 ring-amber-500/30"
+              ? "border-codex-500/60 bg-gradient-to-r from-codex-950/40 via-zinc-900 to-zinc-950 shadow-lg ring-1 ring-codex-500/30"
               : "border-zinc-800 bg-zinc-950/60 hover:border-zinc-700 hover:bg-zinc-900/60 opacity-80 hover:opacity-100"
           }`}
         >
           <div
             className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border ${
               mainCategory === "nivel"
-                ? "border-amber-500/60 bg-amber-500/20 text-amber-300 shadow-[0_0_8px_rgba(245,158,11,0.25)]"
+                ? "border-codex-500/60 bg-codex-500/20 text-codex-300 shadow-[0_0_8px_rgba(99,201,184,0.25)]"
                 : "border-zinc-800 bg-zinc-900 text-zinc-400"
             }`}
           >
             <Layers size={20} />
           </div>
           <div>
-            <span className="text-[10px] uppercase font-bold tracking-widest text-amber-400">
+            <span className="text-[10px] uppercase font-bold tracking-widest text-codex-400">
               Tipo 1 • Progressão de Nível
             </span>
             <h3 className="font-serif text-base font-bold text-zinc-100">
@@ -403,7 +403,7 @@ export default function HabilidadesPage() {
                 Tipo 2 • Grimório Autoral
               </span>
               {stats.pending > 0 && (
-                <span className="rounded-full bg-amber-500/30 px-1.5 py-0.2 text-[10px] font-bold text-amber-300 animate-pulse">
+                <span className="rounded-full bg-codex-500/30 px-1.5 py-0.2 text-[10px] font-bold text-codex-300 animate-pulse">
                   {stats.pending} pendente{stats.pending > 1 ? "s" : ""}
                 </span>
               )}
@@ -444,22 +444,22 @@ export default function HabilidadesPage() {
             <div
               className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-2xl border p-4 shadow-lg backdrop-blur-sm ${
                 isMaster
-                  ? "border-amber-500/50 bg-amber-950/40 text-amber-200"
-                  : "border-amber-500/30 bg-amber-950/20 text-amber-300"
+                  ? "border-codex-500/50 bg-codex-950/40 text-codex-200"
+                  : "border-codex-500/30 bg-codex-950/20 text-codex-300"
               }`}
             >
               <div className="flex items-center gap-3">
                 <div
                   className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${
                     isMaster
-                      ? "border-amber-500/50 bg-amber-500/20 text-amber-400"
-                      : "border-amber-500/30 bg-amber-500/10 text-amber-400"
+                      ? "border-codex-500/50 bg-codex-500/20 text-codex-400"
+                      : "border-codex-500/30 bg-codex-500/10 text-codex-400"
                   }`}
                 >
                   {isMaster ? <Crown size={18} /> : <Clock size={18} />}
                 </div>
                 <div>
-                  <h4 className="font-serif text-sm font-bold text-amber-300">
+                  <h4 className="font-serif text-sm font-bold text-codex-300">
                     {isMaster
                       ? `Moderação do Mestre: ${stats.pending} ${
                           stats.pending === 1 ? "Solicitação Pendente" : "Solicitações Pendentes"
@@ -479,7 +479,7 @@ export default function HabilidadesPage() {
               <button
                 type="button"
                 onClick={() => setActiveTab("pendentes")}
-                className="self-start sm:self-center shrink-0 rounded-xl border border-amber-500/60 bg-amber-500/25 px-3 py-1.5 text-xs font-bold text-amber-200 hover:bg-amber-500/40 transition active:scale-95"
+                className="self-start sm:self-center shrink-0 rounded-xl border border-codex-500/60 bg-codex-500/25 px-3 py-1.5 text-xs font-bold text-codex-200 hover:bg-codex-500/40 transition active:scale-95"
               >
                 Ver Pendentes ({stats.pending})
               </button>
@@ -488,18 +488,18 @@ export default function HabilidadesPage() {
 
           {/* Banner de Destaque: Foco de Treino Ativo */}
           {activeTrainingAbility && (
-            <Card className="border-amber-500/40 bg-gradient-to-r from-amber-950/20 via-zinc-950/80 to-zinc-950/80 p-4">
+            <Card className="border-codex-500/40 bg-gradient-to-r from-codex-950/20 via-zinc-950/80 to-zinc-950/80 p-4">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-amber-500/50 bg-amber-500/20 text-amber-400 shadow-[0_0_12px_rgba(245,158,11,0.25)]">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-codex-500/50 bg-codex-500/20 text-codex-400 shadow-[0_0_12px_rgba(99,201,184,0.25)]">
                     <Award size={20} />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-codex-400">
                         🎯 Habilidade em Foco de Treinamento
                       </span>
-                      <span className="rounded bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-bold text-amber-300">
+                      <span className="rounded bg-codex-500/20 px-1.5 py-0.5 text-[10px] font-bold text-codex-300">
                         {activeTrainingAbility.type}
                       </span>
                     </div>
@@ -517,14 +517,14 @@ export default function HabilidadesPage() {
                   <button
                     type="button"
                     onClick={() => trainAbility(activeTrainingAbility.id, 1)}
-                    className="flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-xs font-bold text-zinc-200 transition hover:border-amber-500 hover:text-amber-300 active:scale-95"
+                    className="flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-xs font-bold text-zinc-200 transition hover:border-codex-500 hover:text-codex-300 active:scale-95"
                   >
                     +1h Treino
                   </button>
                   <button
                     type="button"
                     onClick={() => trainAbility(activeTrainingAbility.id, 5)}
-                    className="flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-xs font-bold text-zinc-200 transition hover:border-amber-500 hover:text-amber-300 active:scale-95"
+                    className="flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-xs font-bold text-zinc-200 transition hover:border-codex-500 hover:text-codex-300 active:scale-95"
                   >
                     +5h Intenso
                   </button>
@@ -532,7 +532,7 @@ export default function HabilidadesPage() {
                     type="button"
                     onClick={handleRollTrainingSession}
                     title="Rola um teste de atributo para simular uma sessão de treino e conceder progresso proporcional ao resultado"
-                    className="flex items-center gap-1.5 rounded-lg border border-amber-500/60 bg-amber-500/25 px-3 py-2 text-xs font-bold text-amber-300 transition hover:bg-amber-500/35 active:scale-95 shadow-sm"
+                    className="flex items-center gap-1.5 rounded-lg border border-codex-500/60 bg-codex-500/25 px-3 py-2 text-xs font-bold text-codex-300 transition hover:bg-codex-500/35 active:scale-95 shadow-sm"
                   >
                     <Dices size={14} />
                     <span>Rolar Sessão de Treino</span>
@@ -564,14 +564,14 @@ export default function HabilidadesPage() {
                 onClick={() => setActiveTab("pendentes")}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition ${
                   activeTab === "pendentes"
-                    ? "bg-amber-500/25 text-amber-300 border border-amber-500/50 shadow-sm font-bold"
+                    ? "bg-codex-500/25 text-codex-300 border border-codex-500/50 shadow-sm font-bold"
                     : "text-zinc-400 hover:text-zinc-200"
                 }`}
               >
                 <Clock size={12} />
                 <span>Pendentes</span>
                 {stats.pending > 0 && (
-                  <span className="rounded-full bg-amber-500/30 px-1.5 py-0.2 text-[10px] font-bold text-amber-300 animate-pulse">
+                  <span className="rounded-full bg-codex-500/30 px-1.5 py-0.2 text-[10px] font-bold text-codex-300 animate-pulse">
                     {stats.pending}
                   </span>
                 )}
@@ -612,7 +612,7 @@ export default function HabilidadesPage() {
                 onClick={() => setActiveTab("treino")}
                 className={`flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-medium transition ${
                   activeTab === "treino"
-                    ? "bg-amber-500/20 text-amber-300 shadow-sm"
+                    ? "bg-codex-500/20 text-codex-300 shadow-sm"
                     : "text-zinc-400 hover:text-zinc-200"
                 }`}
               >
@@ -624,7 +624,7 @@ export default function HabilidadesPage() {
                 onClick={() => setActiveTab("magias")}
                 className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
                   activeTab === "magias"
-                    ? "bg-amber-500/20 text-amber-300 shadow-sm"
+                    ? "bg-codex-500/20 text-codex-300 shadow-sm"
                     : "text-zinc-400 hover:text-zinc-200"
                 }`}
               >
@@ -635,7 +635,7 @@ export default function HabilidadesPage() {
                 onClick={() => setActiveTab("ativas")}
                 className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
                   activeTab === "ativas"
-                    ? "bg-amber-500/20 text-amber-300 shadow-sm"
+                    ? "bg-codex-500/20 text-codex-300 shadow-sm"
                     : "text-zinc-400 hover:text-zinc-200"
                 }`}
               >
@@ -646,7 +646,7 @@ export default function HabilidadesPage() {
                 onClick={() => setActiveTab("passivas")}
                 className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
                   activeTab === "passivas"
-                    ? "bg-amber-500/20 text-amber-300 shadow-sm"
+                    ? "bg-codex-500/20 text-codex-300 shadow-sm"
                     : "text-zinc-400 hover:text-zinc-200"
                 }`}
               >
@@ -665,7 +665,7 @@ export default function HabilidadesPage() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder="Buscar por nome, elemento ou dano..."
-                className="w-full rounded-xl border border-zinc-800 bg-zinc-950/80 py-2 pl-9 pr-3 text-xs text-zinc-200 placeholder:text-zinc-600 focus:border-amber-500 focus:outline-none"
+                className="w-full rounded-xl border border-zinc-800 bg-zinc-950/80 py-2 pl-9 pr-3 text-xs text-zinc-200 placeholder:text-zinc-600 focus:border-codex-500 focus:outline-none"
               />
             </div>
           </div>
@@ -714,7 +714,7 @@ export default function HabilidadesPage() {
                   <button
                     type="button"
                     onClick={() => setMainCategory("nivel")}
-                    className="flex items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs font-semibold text-zinc-300 hover:text-amber-300 transition"
+                    className="flex items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs font-semibold text-zinc-300 hover:text-codex-300 transition"
                   >
                     <Layers size={14} />
                     <span>Acessar Habilidades de Nível (1 a 20)</span>

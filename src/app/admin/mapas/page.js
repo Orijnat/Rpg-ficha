@@ -400,7 +400,7 @@ export default function AdminMapasPage() {
                 onClick={() => setIsPlacingMarker(!isPlacingMarker)}
                 className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold uppercase transition ${
                   isPlacingMarker
-                    ? "bg-amber-600 text-white animate-pulse"
+                    ? "bg-codex-600 text-white animate-pulse"
                     : "border border-primary/40 bg-primary/10 text-primary hover:bg-primary/20"
                 }`}
               >
@@ -424,7 +424,7 @@ export default function AdminMapasPage() {
             ref={mapContainerRef}
             onClick={handleMapClick}
             className={`relative overflow-hidden rounded-2xl border-2 border-primary/40 shadow-2xl ${
-              isPlacingMarker ? "cursor-crosshair ring-4 ring-amber-500/50" : "cursor-default"
+              isPlacingMarker ? "cursor-crosshair ring-4 ring-codex-500/50" : "cursor-default"
             }`}
             style={{ minHeight: "500px", maxHeight: "750px", backgroundColor: "#0b0d12" }}
           >

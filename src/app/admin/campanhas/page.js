@@ -351,7 +351,7 @@ export default function AdminCampanhasPage() {
                               camp.estado === "ativa"
                                 ? "border border-emerald-500/40 bg-emerald-950/40 text-emerald-300"
                                 : camp.estado === "pausada"
-                                ? "border border-amber-500/40 bg-amber-950/40 text-amber-300"
+                                ? "border border-codex-500/40 bg-codex-950/40 text-codex-300"
                                 : "border border-border bg-secondary text-muted-foreground"
                             }`}
                           >
@@ -619,7 +619,7 @@ export default function AdminCampanhasPage() {
                               className={`rounded p-1.5 transition ${
                                 m.bloqueado
                                   ? "bg-emerald-950/40 text-emerald-400 hover:bg-emerald-900/60"
-                                  : "bg-amber-950/40 text-amber-400 hover:bg-amber-900/60"
+                                  : "bg-codex-950/40 text-codex-400 hover:bg-codex-900/60"
                               }`}
                               title={m.bloqueado ? "Desbloquear jogador" : "Bloquear jogador"}
                             >

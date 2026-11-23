@@ -314,7 +314,7 @@ export default function PersonagensAdmin() {
             type="button"
             onClick={() => setLevelUpTarget({ type: "all" })}
             disabled={heroes.length === 0 || !heroes.some((hero) => hero?.dadosExtras?.levelUpLiberado)}
-            className="flex min-h-11 items-center gap-1.5 rounded-lg border border-amber-400/50 bg-amber-500/15 px-3.5 text-xs font-bold uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/25 disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex min-h-11 items-center gap-1.5 rounded-lg border border-codex-400/50 bg-codex-500/15 px-3.5 text-xs font-bold uppercase tracking-wider text-codex-300 transition hover:bg-codex-500/25 disabled:cursor-not-allowed disabled:opacity-40"
             title="Sobe o nível de todas as fichas de heróis exibidas com a ascensão liberada (cadeado «Liberar»)"
           >
             <ChevronsUp size={15} /> Nível da Mesa
@@ -334,7 +334,7 @@ export default function PersonagensAdmin() {
         </div>
       )}
       {levelUpMsg && (
-        <div className="border border-amber-400/30 bg-amber-500/10 p-3 text-xs text-amber-200" role="status">
+        <div className="border border-codex-400/30 bg-codex-500/10 p-3 text-xs text-codex-200" role="status">
           {levelUpMsg}
         </div>
       )}
@@ -634,7 +634,7 @@ export default function PersonagensAdmin() {
                                   setLevelUpMsg(`«${item.displayName}» não tem a ascensão liberada — clique no cadeado «Liberar» (XP no limite exige um feito) antes de promover.`);
                                 }
                               }}
-                              className="rounded-lg border border-amber-400/40 bg-amber-500/10 px-2 py-1 text-xs font-bold text-amber-300 transition hover:bg-amber-500/20"
+                              className="rounded-lg border border-codex-400/40 bg-codex-500/10 px-2 py-1 text-xs font-bold text-codex-300 transition hover:bg-codex-500/20"
                               title={item.dadosExtras?.levelUpLiberado ? `Subir nível de ${item.displayName}` : `${item.displayName} aguarda a liberação da ascensão (cadeado)`}
                             >
                               +1 Nv.

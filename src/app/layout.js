@@ -1,4 +1,4 @@
-import { Cinzel, Cinzel_Decorative, Crimson_Text } from "next/font/google";
+import { Cinzel, Cinzel_Decorative, Cormorant_Garamond, Crimson_Text, Inter } from "next/font/google";
 import "./globals.css";
 import "lenis/dist/lenis.css";
 import AppProviders from "./providers";
@@ -17,6 +17,13 @@ const cinzelDecorative = Cinzel_Decorative({
   display: "swap",
 });
 
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-codex",
+  display: "swap",
+});
+
 const crimsonText = Crimson_Text({
   subsets: ["latin"],
   weight: ["400", "600", "700"],
@@ -25,31 +32,37 @@ const crimsonText = Crimson_Text({
   display: "swap",
 });
 
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
 export const metadata = {
-  title: "Grimorium — Grimório Digital & Sala de Guerra",
+  title: "Grimorium — Atlas de Campanha & Sala de Guerra",
   description:
-    "Ficha de RPG d20 customizada e tática em tempo real: códice vivo para aventureiros e sala de guerra para mestres. 7 atributos, 19 perícias, combate tático, iniciativa ao vivo.",
+    "Ficha de RPG d20 e tática em tempo real: um atlas de campanha para aventureiros e uma sala de guerra para mestres. 7 atributos, 19 perícias, mapa tático e iniciativa ao vivo.",
   icons: {
-    icon: [{ url: "/ambar-vulcanico.svg", type: "image/svg+xml" }],
-    shortcut: [{ url: "/ambar-vulcanico.svg", type: "image/svg+xml" }],
+    icon: [{ url: "/astral.svg", type: "image/svg+xml" }],
+    shortcut: [{ url: "/astral.svg", type: "image/svg+xml" }],
   },
   openGraph: {
-    title: "Grimorium — Grimório Digital & Sala de Guerra",
-    description: "A ficha de RPG d20 definitiva para mesas dark fantasy.",
+    title: "Grimorium — Atlas de Campanha & Sala de Guerra",
+    description: "Fichas, NPCs e combate tático para mesas de RPG d20.",
     type: "website",
     locale: "pt_BR",
   },
 };
 
 export const viewport = {
-  themeColor: "#090b0e",
+  themeColor: "#08171C",
   width: "device-width",
   initialScale: 1,
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="pt-BR" className={`h-full antialiased ${cinzel.variable} ${cinzelDecorative.variable} ${crimsonText.variable}`}>
+    <html lang="pt-BR" className={`h-full antialiased ${cinzel.variable} ${cinzelDecorative.variable} ${cormorant.variable} ${crimsonText.variable} ${inter.variable}`}>
       <body className="flex min-h-screen flex-col">
         <AppProviders>{children}</AppProviders>
       </body>

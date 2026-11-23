@@ -32,7 +32,7 @@ const EMPTY_ENTRY = {
 
 export const DIARY_CATEGORIES = [
   { id: "Geral", label: "Geral", color: "text-muted-foreground bg-white/5 border-white/10" },
-  { id: "Missão", label: "Missão", color: "text-amber-300 bg-amber-950/30 border-amber-500/30" },
+  { id: "Missão", label: "Missão", color: "text-codex-300 bg-codex-950/30 border-codex-500/30" },
   { id: "Rumor", label: "Rumor", color: "text-purple-300 bg-purple-950/30 border-purple-500/30" },
   { id: "Lore", label: "Lore", color: "text-sky-300 bg-sky-950/30 border-sky-500/30" },
   { id: "Combate", label: "Combate", color: "text-rose-300 bg-rose-950/30 border-rose-500/30" },

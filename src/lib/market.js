@@ -27,7 +27,7 @@ export const RARIDADES = [
   { id: "Incomum", label: "Incomum", color: "text-emerald-400 border-emerald-600/40 bg-emerald-950/40" },
   { id: "Raro", label: "Raro", color: "text-sky-400 border-sky-600/40 bg-sky-950/40" },
   { id: "Muito Raro", label: "Muito Raro", color: "text-purple-400 border-purple-600/40 bg-purple-950/40" },
-  { id: "Lendário", label: "Lendário", color: "text-amber-400 border-amber-600/50 bg-amber-950/40" },
+  { id: "Lendário", label: "Lendário", color: "text-codex-400 border-codex-600/50 bg-codex-950/40" },
 ];
 
 export const MOEDAS = [

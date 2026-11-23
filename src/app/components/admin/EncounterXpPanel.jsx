@@ -37,17 +37,17 @@ export function EncounterXpPanel({ encounter, heroes, onDistribute, distributing
       </p>
 
       {/* XP total (definido na criação, somente leitura) */}
-      <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-amber-500/30 bg-amber-950/20 px-4 py-3">
+      <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-codex-500/30 bg-codex-950/20 px-4 py-3">
         <div className="flex items-center gap-2.5">
-          <Lock size={14} className="shrink-0 text-amber-400" />
+          <Lock size={14} className="shrink-0 text-codex-400" />
           <div>
-            <span className="block text-[9px] font-bold uppercase tracking-[0.25em] text-amber-500/80">XP total do encontro</span>
-            <span className="font-mono text-lg font-black text-amber-300">{reward.toLocaleString("pt-BR")} XP</span>
+            <span className="block text-[9px] font-bold uppercase tracking-[0.25em] text-codex-500/80">XP total do encontro</span>
+            <span className="font-mono text-lg font-black text-codex-300">{reward.toLocaleString("pt-BR")} XP</span>
           </div>
         </div>
         <span className="text-right text-[10px] font-bold uppercase leading-tight text-muted-foreground">
           {perHero > 0 ? (
-            <>÷ {partySize} herói(s)<br /><span className="text-amber-300">{perHero} XP cada</span></>
+            <>÷ {partySize} herói(s)<br /><span className="text-codex-300">{perHero} XP cada</span></>
           ) : (
             <>Nenhum herói<br />na iniciativa</>
           )}
@@ -81,7 +81,7 @@ export function EncounterXpPanel({ encounter, heroes, onDistribute, distributing
                 aria-label={`Progresso de XP de ${p.name}`}
               >
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-amber-800 via-amber-600 to-amber-400 transition-all duration-500"
+                  className="h-full rounded-full bg-gradient-to-r from-codex-800 via-codex-600 to-codex-400 transition-all duration-500"
                   style={{ width: `${p.nextLevelXP === null ? 100 : p.progress}%` }}
                 />
               </div>
@@ -101,7 +101,7 @@ export function EncounterXpPanel({ encounter, heroes, onDistribute, distributing
         type="button"
         disabled={!canDistribute}
         onClick={onDistribute}
-        className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-amber-500/50 bg-amber-500/15 text-xs font-bold uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/25 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+        className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-codex-500/50 bg-codex-500/15 text-xs font-bold uppercase tracking-wider text-codex-300 transition hover:bg-codex-500/25 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
       >
         <Sparkles size={15} />
         {distributing
@@ -117,7 +117,7 @@ export function EncounterXpPanel({ encounter, heroes, onDistribute, distributing
           <button
             type="button"
             onClick={onFinalizeEncounter}
-            className="mt-2 flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-amber-500/50 bg-amber-500/15 text-[10px] font-bold uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/25 active:scale-95"
+            className="mt-2 flex h-10 w-full items-center justify-center gap-2 rounded-lg border border-codex-500/50 bg-codex-500/15 text-[10px] font-bold uppercase tracking-wider text-codex-300 transition hover:bg-codex-500/25 active:scale-95"
             title="Abre o desfecho completo: quem recebe XP, quanto e vitória/derrota/fuga de cada herói"
           >
             <Trophy size={12} />

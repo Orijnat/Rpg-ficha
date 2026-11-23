@@ -626,7 +626,7 @@ export default function MapaTaticoPage() {
                 <TokenIcon size={size * 0.4} className="text-black/60" />
                 {hpPct !== null && (
                   <span className="absolute -bottom-1.5 left-1 right-1 h-1.5 overflow-hidden rounded-full border border-black/60 bg-black/70">
-                    <span className={`block h-full ${hpPct > 50 ? "bg-emerald-500" : hpPct > 25 ? "bg-amber-400" : "bg-rose-500"}`} style={{ width: `${hpPct}%` }} />
+                    <span className={`block h-full ${hpPct > 50 ? "bg-emerald-500" : hpPct > 25 ? "bg-codex-400" : "bg-rose-500"}`} style={{ width: `${hpPct}%` }} />
                   </span>
                 )}
                 {isHidden && <EyeOff size={14} className="absolute right-1 top-1 text-zinc-300" />}

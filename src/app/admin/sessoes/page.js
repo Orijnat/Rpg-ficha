@@ -34,7 +34,7 @@ import { useAuth } from "../../context/AuthContext";
 
 const ESTADO_SESSAO = {
   planejada: { label: "Planejada", cls: "border-sky-500/40 bg-sky-500/10 text-sky-300" },
-  em_andamento: { label: "Em Andamento", cls: "border-amber-500/40 bg-amber-500/10 text-amber-300" },
+  em_andamento: { label: "Em Andamento", cls: "border-codex-500/40 bg-codex-500/10 text-codex-300" },
   concluida: { label: "Concluída", cls: "border-emerald-500/40 bg-emerald-500/10 text-emerald-300" },
   cancelada: { label: "Cancelada", cls: "border-rose-500/40 bg-rose-500/10 text-rose-300" },
 };
@@ -821,7 +821,7 @@ export default function AdminSessoesPage() {
                           Distribuída em {new Date(sessao.recompensas.xpDistribuidoEm).toLocaleString("pt-BR")}
                         </span>
                       ) : (
-                        <span className="rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-300">
+                        <span className="rounded-full border border-codex-500/40 bg-codex-500/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-codex-300">
                           XP ainda não distribuído
                         </span>
                       )}
@@ -837,7 +837,7 @@ export default function AdminSessoesPage() {
                         type="button"
                         onClick={() => prepareXpDistribution(sessao)}
                         disabled={distributingXpId === sessao.id || !sessao.recompensas?.xp}
-                        className="flex min-h-9 items-center gap-1.5 rounded-lg border border-amber-500/50 bg-amber-500/15 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/25 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+                        className="flex min-h-9 items-center gap-1.5 rounded-lg border border-codex-500/50 bg-codex-500/15 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-codex-300 transition hover:bg-codex-500/25 active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
                         title="Divide o total do XP da sessão igualmente entre os heróis da campanha"
                       >
                         {distributingXpId === sessao.id ? (
