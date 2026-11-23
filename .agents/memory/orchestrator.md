@@ -658,3 +658,8 @@ Commitado e pushado: `d800e1e` (fix(registro): remover recomendação de classe 
 ## Entrega — 2026-11-17 (Logo/favicon Âmbar Vulcânico)
 
 - public/ambar-vulcanico.svg (do Downloads do Windows) vira favicon (metadata.icons; favicon.ico removido) e logo da app (AppShell, Cabecalho, landing, login, registro, rodapé). 162/162, build OK. NÃO commitado.
+
+## Diagnóstico — 2026-11-23 (build NPC module-not-found)
+
+- Erro colado pelo usuário já resolvido em `d11befb` (correção de `../../../lib/modifiers` → `../../../../lib/modifiers` em `/admin/npcs/new` e `/admin/npcs/[id]`).
+- Validação atual: `npm run build` OK (Next 16.4.3/Turbopack, 29 páginas). Checklist: sem pendência de código; reexecutar build após limpar `.next` se o ambiente ainda reportar o erro antigo.

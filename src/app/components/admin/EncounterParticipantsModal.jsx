@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Search, Swords, Users, X } from "lucide-react";
+import { normalizeSearchText } from "../../../lib/search";
 
 const FILTROS_TIPO = [
   { id: "todos", label: "Todos" },
@@ -28,13 +29,13 @@ export default function EncounterParticipantsModal({ isOpen, onClose, encounter,
   const isNpcAdded = (npcId) =>
     combatientes.some((c) => c.type === "NPC" && String(c.id).startsWith(`npc-${String(npcId)}-`));
 
-  const normalizedQuery = query.trim().toLowerCase();
+  const normalizedQuery = normalizeSearchText(query);
 
   const visibleHeroes = useMemo(() => {
     const list = Array.isArray(heroes) ? heroes : [];
     const filtered = list.filter((h) => {
       const matchesType = typeFilter === "todos" || typeFilter === "hero";
-      const matchesQuery = !normalizedQuery || String(h?.name || "").toLowerCase().includes(normalizedQuery);
+      const matchesQuery = !normalizedQuery || normalizeSearchText(h?.name).includes(normalizedQuery);
       return matchesType && matchesQuery;
     });
     return filtered.sort((a, b) => String(a?.name || "").localeCompare(String(b?.name || ""), "pt-BR"));
@@ -44,7 +45,9 @@ export default function EncounterParticipantsModal({ isOpen, onClose, encounter,
     const list = Array.isArray(npcs) ? npcs : [];
     const filtered = list.filter((n) => {
       const matchesType = typeFilter === "todos" || typeFilter === "npc";
-      const matchesQuery = !normalizedQuery || String(n?.nome || "").toLowerCase().includes(normalizedQuery);
+      const matchesQuery = !normalizedQuery ||
+        normalizeSearchText(n?.nome).includes(normalizedQuery) ||
+        (Array.isArray(n?.dadosExtras?.tags) && n.dadosExtras.tags.some((tag) => normalizeSearchText(tag).includes(normalizedQuery)));
       return matchesType && matchesQuery;
     });
     return filtered.sort((a, b) => String(a?.nome || "").localeCompare(String(b?.nome || ""), "pt-BR"));

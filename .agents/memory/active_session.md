@@ -822,3 +822,28 @@ Criar tabela de raças no banco; selects de raça passam a enviar o ID da raça;
 - Spec → faltava persistência hero de acoes; backend sem `pericias`; mismatch de formato. Tudo corrigido.
 - Correções aplicadas: backend `pericias` no npcSchema (278bd79); hero `acoes` via context/updateDadosExtras (4485caf); shape canônico em admin [id] via `ensureCanonicalSkills` (4485caf); touch targets `min-h-11`/`h-11` (4485caf).
 - Validação: eslint 0 erros; frontend tests 162/162; backend tests 123/123 (após correções).
+
+## ✅ Diagnóstico 2026-11-23 (module-not-found em /admin/npcs/new)
+
+- Prompt: usuário colou erro `Module not found` apontando `src/app/admin/npcs/new/page.js` (code frame em `PRESET_TAGS`) + `[BUILD_UTILS_SPAWN_1] npm run build exited with 1`.
+- Causa: import `DEFAULT_SKILLS` de `../../../lib/modifiers` (2 níveis acima) — caminho errado; correto é `../../../../lib/modifiers`.
+- Estado: JÁ CORRIGIDO no commit `d11befb` (também ajustou `/admin/npcs/[id]`). `npm run build` atual: compila e gera 29 páginas, 0 erros.
+- Próximo passo: rienviar o build; se o erro persistir, limpar cache `.next`/Turbopack. Nenhuma alteração de código necessária.
+
+## ✅ Atualização 2026-11-23 (tags de NPC persistidas no cadastro)
+
+- Pedido: "adicionar as tags que os npcs tem ao serem criados" → esclarecido: garantir que as tags marcadas sejam enviadas/persistidas na criação.
+- Diagnóstico: front já envia `tags` (new/page.js:142) e backend já gravava em `dadosExtras.tags`, mas `POST /api/npcs` não validava o body e convertia silenciosamente qualquer valor inválido em `[]`; não havia teste de regressão.
+- Correções no backend (`/home/cledi/rp/Rpg-backend`): `npcRoutes.js` aplica `validar(npcSchema)` no POST; `apiSchemas.js` passou a declarar `descricao`, `campanhaId`, `sharedWithPlayers`, `atributos`, `abilities` (campos do form, evitando strip); `npcController.js` normaliza tags (trim/dedupe case-insensitive/limite 50) no POST e PUT.
+- Testes: novo `test/npc_tags.test.js` (5 casos) — 129/129 no backend. Front inalterado.
+- ✅ Push 2026-11-23: backend `b506a7f` enviado ao origin/main (`fix(npc): validar e normalizar tags no cadastro`).
+- Próximo passo: deploy manual no Render para produção (se aplicável). `.github/` untracked preexistente mantido fora do commit.
+
+## ✅ Atualização 2026-11-23 (busca por tag ignora acentos)
+
+- Prompt: "nao funcionou, pois a diitar druida nao aparece o npc com a ta druida".
+- Causa raiz: filtros textuais usavam `toLowerCase()` puro; "Druída" (com acento) nunca casava com "druida" (sem acento). O cadastro/persistência já estava correto.
+- Correção no front: novo `src/lib/search.js` (`normalizeSearchText`: NFD + remove marcas diacríticas + lowercase pt-BR + trim), com 3 testes em `src/lib/__tests__/search.test.mjs`.
+- Aplicado em `/admin/npcs` (busca e filtro de tag), `/admin/personagens` (busca, filtro de tag, nome/subtítulo/dono) e `EncounterParticipantsModal` (busca por nome **e tags** de NPC).
+- Validação: 165/165 testes front; lint 0 erros (45 warnings pré-existentes); build OK. Alterações NÃO comitadas.
+- Próximo passo: confirmar com o usuário a tela exata; commitar/enviar ao main se aprovado; deploy Vercel para produção.

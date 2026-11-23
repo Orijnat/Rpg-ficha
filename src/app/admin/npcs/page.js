@@ -29,6 +29,7 @@ import {
   duplicateNpc,
   listNpcs,
 } from "../../../lib/api";
+import { normalizeSearchText } from "../../../lib/search";
 import { useAuth } from "../../context/AuthContext";
 
 export default function NpcCataloguePage() {
@@ -111,16 +112,16 @@ export default function NpcCataloguePage() {
         // Filtro por tag
         if (selectedTag !== "todas") {
           const tags = npc.dadosExtras?.tags || [];
-          if (!tags.includes(selectedTag)) return false;
+          if (!tags.some((tag) => normalizeSearchText(tag) === normalizeSearchText(selectedTag))) return false;
         }
 
         // Busca textual
         if (searchTerm.trim()) {
-          const term = searchTerm.toLowerCase();
-          const nameMatch = (npc.nome || "").toLowerCase().includes(term);
-          const roleMatch = (npc.papel || "").toLowerCase().includes(term);
+          const term = normalizeSearchText(searchTerm);
+          const nameMatch = normalizeSearchText(npc.nome).includes(term);
+          const roleMatch = normalizeSearchText(npc.papel).includes(term);
           const tagsMatch = (npc.dadosExtras?.tags || []).some((t) =>
-            t.toLowerCase().includes(term)
+            normalizeSearchText(t).includes(term)
           );
           if (!nameMatch && !roleMatch && !tagsMatch) return false;
         }

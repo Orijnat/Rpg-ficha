@@ -35,6 +35,7 @@ import { useAuth } from "../../context/AuthContext";
 import { rollDice } from "../../../lib/dice";
 import { parseHitDie, hpGainFromRoll } from "../../../lib/leveling";
 import { calculateModifier } from "../../../lib/modifiers";
+import { normalizeSearchText } from "../../../lib/search";
 
 export default function PersonagensAdmin() {
   const { token, isMaster } = useAuth();
@@ -136,20 +137,21 @@ export default function PersonagensAdmin() {
 
     // Busca textual
     if (searchTerm.trim()) {
-      const q = searchTerm.trim().toLowerCase();
+      const q = normalizeSearchText(searchTerm);
       combined = combined.filter(
         (item) =>
-          item.displayName.toLowerCase().includes(q) ||
-          item.displaySubtitle.toLowerCase().includes(q) ||
-          item.tags.some((t) => t.toLowerCase().includes(q)) ||
-          item.owner?.username?.toLowerCase().includes(q)
+          normalizeSearchText(item.displayName).includes(q) ||
+          normalizeSearchText(item.displaySubtitle).includes(q) ||
+          item.tags.some((t) => normalizeSearchText(t).includes(q)) ||
+          normalizeSearchText(item.owner?.username).includes(q)
       );
     }
 
     // Filtro por Tag
     if (selectedTag !== "todas") {
+      const tagBuscada = normalizeSearchText(selectedTag);
       combined = combined.filter((item) =>
-        item.tags.some((t) => t.toLowerCase() === selectedTag.toLowerCase())
+        item.tags.some((t) => normalizeSearchText(t) === tagBuscada)
       );
     }
 
