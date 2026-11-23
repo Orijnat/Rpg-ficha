@@ -22,7 +22,7 @@ import ConfirmDialog from "../../../components/admin/ConfirmDialog";
 import { deleteNpc, createNpc, fetchNpcById, updateNpc } from "../../../../lib/api";
 import { useAuth } from "../../../context/AuthContext";
 import { NpcAttributesCard, NpcAbilitiesCard, NPC_ATTR_DEFAULTS } from "../../../components/admin/NpcSheetBlocks";
-import { ensureCanonicalSkills } from "../../../lib/modifiers";
+import { ensureCanonicalSkills } from "../../../../lib/modifiers";
 
 const PRESET_TAGS = [
   "Chefe",

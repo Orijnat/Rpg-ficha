@@ -21,7 +21,7 @@ import { Card, SectionHeader } from "../../../components/ui";
 import { createNpc } from "../../../../lib/api";
 import { useAuth } from "../../../context/AuthContext";
 import { NpcAttributesCard, NpcAbilitiesCard, NPC_ATTR_DEFAULTS } from "../../../components/admin/NpcSheetBlocks";
-import { DEFAULT_SKILLS } from "../../../lib/modifiers";
+import { DEFAULT_SKILLS } from "../../../../lib/modifiers";
 
 const PRESET_TAGS = [
   "Chefe",
