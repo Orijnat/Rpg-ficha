@@ -1,5 +1,13 @@
 # Memória do Agente Orquestrador (@orchestrator)
 
+## Entrega — 2026-11-24 (Remoção dos azuis claros das palavras)
+
+- **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `qa-judge`.
+- **Demanda do Usuário**: "poderia remover as cores azuis claras das palavras do site, pois nao esta combinando".
+- **Implementação**: 17 arquivos alterados. Textos/badges sky/cyan/blue/indigo/teal substituídos por âmbar, laranja, violeta, rosa, lima e neutro (stone), preservando distinções entre categorias; PE e demais destaques agora seguem a paleta Âmbar Vulcânico. Prata/platina trocados para tons quentes (`#cfc9bb` / `#e6dcc2`). Tema selecionável "Gelo Eterno" e swatch da landing mantidos (fora do escopo de texto da identidade padrão).
+- **Validação**: lint **0 erros** (45 warnings pré-existentes), testes **165/165**, build **29/29 páginas**. Grep final sem azuis em texto fora dos temas. `qa-judge`: APROVADO COM RESSALVAS (8.5) — colisões de log de batalha, raridade e anotações corrigidas na sequência.
+- **Estado**: COMMITADO/PUSHADO — `2d529e2` fix(ui) → `8f16edb..2d529e2` em origin/main; pendente apenas conferência visual no navegador após o deploy da Vercel.
+
 ## Entrega — 2026-11-23 (UUID → BIGINT sequencial em todo o banco)
 
 - **Especialistas Acionados**: `backend-database` (skill `supabase-postgres-best-practices`), `frontend-artisan` (skill `sheet-component-builder`), `qa-tester`.

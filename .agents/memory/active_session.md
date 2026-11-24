@@ -1,5 +1,12 @@
 # 🧠 Sessão Ativa — Grimorium RPG
 
+## 🎨 2026-11-24 — Remoção dos azuis claros das palavras (identidade Âmbar restaurada)
+- Pedido: "poderia remover as cores azuis claras das palavras do site, pois nao esta combinando". Mantida a identidade original (Âmbar Vulcânico); NÃO reintroduzir Forja Astral.
+- Skill carregada: `sheet-component-builder`; julgamento `qa-judge` (APROVADO COM RESSALVAS, 8.5 — colisões S3/S4 corrigidas na sequência).
+- 17 arquivos / 54 linhas: `text/border/bg/accent-*` sky→âmbar (PE, landing, habilidades, Dano/Cura, RestControls, Settings); `Pericia` ESP→lime e INT→stone; `Anotacoes` Lore→orange; `admin/sessoes` planejada→stone; `lib/abilities` praticante→orange e reação→rose; `battleLog` rolagem→violet, turno→stone, entrada→lime, jogador→orange; raridade Raro→rose; grade de níveis (bloqueado→purple, filtro vazios→stone); prata/platina `#cbd5e1`/`#a5b4fc`→`#cfc9bb`/`#e6dcc2` em market, inventário e banco.
+- Escopo preservado: tema selecionável `frostfall` (Gelo Eterno) em `globals.css`/`themes.js` e o swatch da landing — não são textos da identidade padrão.
+- Verificação: lint **0 erros** (45 warnings pré-existentes), testes **165/165**, build **29/29 páginas**. Grep final: 0 classes sky/cyan/blue/indigo/teal em texto fora dos temas. **COMMITADO/PUSHADO** (2026-11-24): `2d529e2` fix(ui) → `8f16edb..2d529e2` em origin/main; sem conferência visual em navegador (Vercel sobe automático).
+
 ## ⚖️ 2026-11-23 — Julgamento QA da identidade "Forja Astral" (somente leitura, sem edição de código)
 - **Veredito: APROVADO COM RESSALVAS** · média ponderada **7.1** (Responsividade 6.5 · Beleza 6.5 · Falhas 8.0 · Acessibilidade 6.5). Nenhum S1.
 - Evidências literais: `npm run build` OK/29 páginas · `npm run lint` 0 erros/45 warnings · `node --test 'src/lib/__tests__/*.test.mjs'` 165/165 · dev server :3118 → `/`, `/login`, `/registro`, `/personagem`, `/admin`, `/mapa-tatico`, `/astral.svg` = 200; favicon `<link rel="icon" href="/astral.svg">`; log sem erros. Browser/screenshot **indisponível** (sem Chromium/Firefox/Playwright) → não renderizado, avaliação por código.
