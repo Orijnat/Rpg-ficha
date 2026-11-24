@@ -25,10 +25,10 @@ export const GRAUS_TREINAMENTO = [
     horasMaximas: 25,
     bonus: "+1 no Teste / -1 PE",
     efeito: "Execução consistente com menor desgaste físico e mental.",
-    cor: "text-sky-300",
-    bg: "bg-sky-950/40",
-    borda: "border-sky-500/40",
-    badge: "border-sky-500/50 bg-sky-950/60 text-sky-300",
+    cor: "text-orange-300",
+    bg: "bg-orange-950/40",
+    borda: "border-orange-500/40",
+    badge: "border-orange-500/50 bg-orange-950/60 text-orange-300",
   },
   {
     id: "veterano",
@@ -86,10 +86,10 @@ export const TIPOS_HABILIDADE = {
   reacao: {
     id: "reacao",
     nome: "Reação",
-    cor: "text-sky-300",
-    bg: "bg-sky-950/40",
-    borda: "border-sky-500/40",
-    badge: "border-sky-500/40 bg-sky-950/60 text-sky-300",
+    cor: "text-rose-300",
+    bg: "bg-rose-950/40",
+    borda: "border-rose-500/40",
+    badge: "border-rose-500/40 bg-rose-950/60 text-rose-300",
   },
 };
 

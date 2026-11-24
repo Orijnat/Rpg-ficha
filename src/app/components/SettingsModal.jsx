@@ -419,12 +419,12 @@ export default function SettingsModal({ isOpen, onClose, initialTab = "themes" }
                 type="button"
                 onClick={handleManualSync}
                 disabled={syncStatus === "syncing"}
-                className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] p-3.5 transition-all hover:border-indigo-500/40 hover:bg-indigo-500/10 active:scale-[0.99] disabled:opacity-50"
+                className="flex w-full items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] p-3.5 transition-all hover:border-amber-500/40 hover:bg-amber-500/10 active:scale-[0.99] disabled:opacity-50"
               >
                 <div className="flex items-center gap-3">
                   <RefreshCw
                     size={18}
-                    className={`text-indigo-400 ${syncStatus === "syncing" ? "animate-spin" : ""}`}
+                    className={`text-amber-400 ${syncStatus === "syncing" ? "animate-spin" : ""}`}
                   />
                   <div className="text-left">
                     <span className="block text-xs font-semibold text-[var(--theme-title)]">

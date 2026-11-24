@@ -227,7 +227,7 @@ export default function RecursosCombate() {
         {/* PE - Pontos de Energia */}
         <div>
           <div className="mb-1.5 flex items-center justify-between text-xs">
-            <span className="flex items-center gap-1 font-serif font-bold text-sky-400">
+            <span className="flex items-center gap-1 font-serif font-bold text-amber-400">
               <Zap size={13} />
               Pontos de Energia (PE)
             </span>
@@ -235,7 +235,7 @@ export default function RecursosCombate() {
               <EditableNumber
                 value={peCurrent}
                 onChange={(val) => updExtra("peCurrent", val)}
-                className="font-bold text-sky-300"
+                className="font-bold text-amber-300"
                 min={0}
               />
               <span className="text-muted-foreground">/</span>
@@ -252,21 +252,21 @@ export default function RecursosCombate() {
             <button
               type="button"
               onClick={() => updExtra("peCurrent", Math.max(0, peCurrent - 1))}
-              className="flex h-7 w-7 items-center justify-center rounded border border-sky-500/30 bg-sky-950/30 text-xs font-bold text-sky-300 hover:bg-sky-900/50 active:scale-95"
+              className="flex h-7 w-7 items-center justify-center rounded border border-amber-500/30 bg-amber-950/30 text-xs font-bold text-amber-300 hover:bg-amber-900/50 active:scale-95"
               title="Gastar 1 PE"
             >
               −
             </button>
-            <div className="h-3 flex-1 overflow-hidden rounded-full border border-sky-500/20 bg-background/80">
+            <div className="h-3 flex-1 overflow-hidden rounded-full border border-amber-500/20 bg-background/80">
               <div
-                className="h-full bg-gradient-to-r from-sky-600 to-cyan-400 transition-all duration-300"
+                className="h-full bg-gradient-to-r from-amber-600 to-amber-400 transition-all duration-300"
                 style={{ width: `${pePercent}%` }}
               />
             </div>
             <button
               type="button"
               onClick={() => updExtra("peCurrent", peMax > 0 ? Math.min(peMax, peCurrent + 1) : peCurrent + 1)}
-              className="flex h-7 w-7 items-center justify-center rounded border border-sky-500/30 bg-sky-950/30 text-xs font-bold text-sky-300 hover:bg-sky-900/50 active:scale-95"
+              className="flex h-7 w-7 items-center justify-center rounded border border-amber-500/30 bg-amber-950/30 text-xs font-bold text-amber-300 hover:bg-amber-900/50 active:scale-95"
               title="Recuperar 1 PE"
             >
               +

@@ -298,7 +298,7 @@ export default function HabilidadesPage() {
               <span className="block text-[10px] uppercase tracking-wider text-muted-foreground">
                 Energia (PE)
               </span>
-              <span className="font-mono text-lg font-bold text-sky-400">
+              <span className="font-mono text-lg font-bold text-amber-400">
                 {peCurrent} / {peMax}
               </span>
             </div>
@@ -338,7 +338,7 @@ export default function HabilidadesPage() {
               • Rejeitadas: <strong>{stats.rejected}</strong>
             </span>
           )}
-          <span className="text-sky-400">
+          <span className="text-amber-400">
             • Em Treino: <strong>{stats.inTraining}</strong>
           </span>
         </div>

@@ -96,7 +96,7 @@ export default function RestControls({ character, updateCharacter, onRest }) {
       <div className="medallion-plate flex flex-col justify-between rounded-xl p-4 sm:p-5">
         <div>
           <div className="flex items-center gap-2 font-cinzel text-sm font-bold text-foreground">
-            <Moon size={17} className="text-indigo-400" />
+            <Moon size={17} className="text-amber-400" />
             <span>Descanso Longo (8 horas)</span>
           </div>
           <p className="mt-2 font-journal text-xs sm:text-sm italic leading-relaxed text-muted-foreground">
@@ -107,7 +107,7 @@ export default function RestControls({ character, updateCharacter, onRest }) {
           type="button"
           disabled={loading}
           onClick={() => handleRest("long")}
-          className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-indigo-400/50 bg-indigo-500/20 py-2.5 font-cinzel text-xs font-bold uppercase tracking-wider text-indigo-300 transition hover:bg-indigo-500/30 active:scale-95 shadow-md shadow-indigo-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="mt-4 flex items-center justify-center gap-2 rounded-xl border border-amber-400/50 bg-amber-500/20 py-2.5 font-cinzel text-xs font-bold uppercase tracking-wider text-amber-300 transition hover:bg-amber-500/30 active:scale-95 shadow-md shadow-amber-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
           Realizar Descanso Longo

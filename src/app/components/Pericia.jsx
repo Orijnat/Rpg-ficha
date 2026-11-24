@@ -58,10 +58,10 @@ const ATTR_BADGES = {
   },
   ESP: {
     label: "Espírito",
-    border: "border-cyan-500/30",
-    text: "text-cyan-300",
-    bg: "bg-cyan-500/10",
-    activeBg: "bg-cyan-500/20",
+    border: "border-lime-500/30",
+    text: "text-lime-300",
+    bg: "bg-lime-500/10",
+    activeBg: "bg-lime-500/20",
   },
   CAR: {
     label: "Carisma",
@@ -72,10 +72,10 @@ const ATTR_BADGES = {
   },
   INT: {
     label: "Inteligência",
-    border: "border-blue-500/30",
-    text: "text-blue-300",
-    bg: "bg-blue-500/10",
-    activeBg: "bg-blue-500/20",
+    border: "border-stone-500/30",
+    text: "text-stone-300",
+    bg: "bg-stone-500/10",
+    activeBg: "bg-stone-500/20",
   },
 };
 

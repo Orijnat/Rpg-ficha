@@ -274,10 +274,10 @@ export default function DanoCuraPainel({ compact = false, onClose = null }) {
       </div>
 
       {/* Absorção pela Classe de Armadura */}
-      <label className="flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-sky-400/25 bg-sky-500/10 px-3 py-2 transition hover:border-sky-400/50">
+      <label className="flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-amber-400/25 bg-amber-500/10 px-3 py-2 transition hover:border-amber-400/50">
         <span className="flex items-center gap-2">
-          <ShieldAlert size={14} className="text-sky-300" />
-          <span className="text-[11px] font-bold uppercase tracking-wider text-sky-200">
+          <ShieldAlert size={14} className="text-amber-300" />
+          <span className="text-[11px] font-bold uppercase tracking-wider text-amber-200">
             Absorver dano pela CA (−{armorClass})
           </span>
         </span>
@@ -285,7 +285,7 @@ export default function DanoCuraPainel({ compact = false, onClose = null }) {
           type="checkbox"
           checked={absorbCA}
           onChange={(e) => setAbsorbCA(e.target.checked)}
-          className="h-4 w-4 accent-sky-400"
+          className="h-4 w-4 accent-amber-400"
           aria-label="Absorver dano automaticamente pela Classe de Armadura"
         />
       </label>

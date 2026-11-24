@@ -11,7 +11,7 @@ const renderTipoIcon = (type) => {
     case "passiva":
       return <Shield size={12} className="text-emerald-400" />;
     case "reacao":
-      return <Zap size={12} className="text-sky-400" />;
+      return <Zap size={12} className="text-amber-400" />;
     default:
       return <Sword size={12} className="text-amber-400" />;
   }

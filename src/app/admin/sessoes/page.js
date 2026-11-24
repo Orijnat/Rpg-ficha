@@ -33,7 +33,7 @@ import {
 import { useAuth } from "../../context/AuthContext";
 
 const ESTADO_SESSAO = {
-  planejada: { label: "Planejada", cls: "border-sky-500/40 bg-sky-500/10 text-sky-300" },
+  planejada: { label: "Planejada", cls: "border-stone-500/40 bg-stone-500/10 text-stone-300" },
   em_andamento: { label: "Em Andamento", cls: "border-amber-500/40 bg-amber-500/10 text-amber-300" },
   concluida: { label: "Concluída", cls: "border-emerald-500/40 bg-emerald-500/10 text-emerald-300" },
   cancelada: { label: "Cancelada", cls: "border-rose-500/40 bg-rose-500/10 text-rose-300" },

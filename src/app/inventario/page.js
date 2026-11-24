@@ -223,9 +223,9 @@ export default function InventarioPage() {
         <SectionHeader title="Tesouro & Moedas" icon={<Coins size={14} />} />
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[
-            { label: "Platina", key: "platina", fallbackKey: "platina", color: "#a5b4fc" },
+            { label: "Platina", key: "platina", fallbackKey: "platina", color: "#e6dcc2" },
             { label: "Ouro", key: "ouro", color: "#fbbf24" },
-            { label: "Prata", key: "prata", color: "#cbd5e1" },
+            { label: "Prata", key: "prata", color: "#cfc9bb" },
             { label: "Cobre", key: "cobre", color: "#f97316" },
           ].map(({ label, key, fallbackKey, color }) => {
             const val = data[key] !== undefined ? data[key] : (data[fallbackKey] ?? 0);

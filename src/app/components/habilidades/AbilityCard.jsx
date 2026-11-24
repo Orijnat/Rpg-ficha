@@ -70,7 +70,7 @@ export function AbilityCard({
       case "passiva":
         return <Shield size={13} className="text-emerald-400" />;
       case "reacao":
-        return <Zap size={13} className="text-sky-400" />;
+        return <Zap size={13} className="text-amber-400" />;
       default:
         return <Sword size={13} className="text-amber-400" />;
     }
@@ -246,7 +246,7 @@ export function AbilityCard({
           </div>
 
           {ability.cost && (
-            <span className="shrink-0 rounded-lg border border-sky-500/30 bg-sky-950/40 px-2 py-1 font-mono text-xs font-bold text-sky-300">
+            <span className="shrink-0 rounded-lg border border-amber-500/30 bg-amber-950/40 px-2 py-1 font-mono text-xs font-bold text-amber-300">
               {ability.cost}
             </span>
           )}

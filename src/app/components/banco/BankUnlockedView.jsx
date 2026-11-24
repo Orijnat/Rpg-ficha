@@ -8,9 +8,9 @@ import { BankChestModal } from "./BankChestModal";
 import { convertCurrency, CURRENCY_RATES } from "../../../lib/modifiers";
 
 const CURRENCY_LABELS = {
-  latina: { label: "Latina (Platina)", color: "#a5b4fc" },
+  latina: { label: "Latina (Platina)", color: "#e6dcc2" },
   ouro:   { label: "Ouro",            color: "#fbbf24" },
-  prata:  { label: "Prata",           color: "#cbd5e1" },
+  prata:  { label: "Prata",           color: "#cfc9bb" },
   cobre:  { label: "Cobre",           color: "#f97316" },
 };
 

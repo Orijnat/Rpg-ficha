@@ -323,10 +323,10 @@ export default function Home() {
                   </div>
 
                   <div className="flex items-center gap-3 p-3 rounded-xl bg-background/40 border border-white/5">
-                    <Zap size={20} className="text-sky-400" />
+                    <Zap size={20} className="text-amber-400" />
                     <div>
                       <span className="block font-cinzel text-[10px] uppercase tracking-wider text-muted-foreground">Pontos de Energia (PE)</span>
-                      <strong className="font-mono text-lg font-bold text-sky-300">12 / 12</strong>
+                      <strong className="font-mono text-lg font-bold text-amber-300">12 / 12</strong>
                     </div>
                   </div>
 

@@ -25,16 +25,16 @@ export const CATEGORIAS_ITEM = [
 export const RARIDADES = [
   { id: "Comum", label: "Comum", color: "text-zinc-400 border-zinc-700 bg-zinc-900/60" },
   { id: "Incomum", label: "Incomum", color: "text-emerald-400 border-emerald-600/40 bg-emerald-950/40" },
-  { id: "Raro", label: "Raro", color: "text-sky-400 border-sky-600/40 bg-sky-950/40" },
+  { id: "Raro", label: "Raro", color: "text-rose-400 border-rose-600/40 bg-rose-950/40" },
   { id: "Muito Raro", label: "Muito Raro", color: "text-purple-400 border-purple-600/40 bg-purple-950/40" },
   { id: "Lendário", label: "Lendário", color: "text-amber-400 border-amber-600/50 bg-amber-950/40" },
 ];
 
 export const MOEDAS = [
   { id: "ouro", label: "Ouro (PO)", sigla: "PO", color: "#fbbf24" },
-  { id: "prata", label: "Prata (PP)", sigla: "PP", color: "#cbd5e1" },
+  { id: "prata", label: "Prata (PP)", sigla: "PP", color: "#cfc9bb" },
   { id: "cobre", label: "Cobre (PC)", sigla: "PC", color: "#f97316" },
-  { id: "latina", label: "Platina / Latina (PL)", sigla: "PL", color: "#a5b4fc" },
+  { id: "latina", label: "Platina / Latina (PL)", sigla: "PL", color: "#e6dcc2" },
 ];
 
 /**

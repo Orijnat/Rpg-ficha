@@ -112,7 +112,7 @@ export function LevelProgressionGrid({
       case "passiva":
         return <Shield size={12} className="text-emerald-400" />;
       case "reacao":
-        return <Zap size={12} className="text-sky-400" />;
+        return <Zap size={12} className="text-amber-400" />;
       default:
         return <Sword size={12} className="text-amber-400" />;
     }
@@ -211,7 +211,7 @@ export function LevelProgressionGrid({
               if (isFilled && isUnlocked) {
                 bgClass = "bg-amber-400 shadow-[0_0_6px_rgba(245,158,11,0.5)]";
               } else if (isFilled && !isUnlocked) {
-                bgClass = "bg-sky-500/80";
+                bgClass = "bg-purple-500/80";
               } else if (!isFilled && isUnlocked) {
                 bgClass = "bg-emerald-500/30 border border-dashed border-emerald-500/50";
               }
@@ -262,7 +262,7 @@ export function LevelProgressionGrid({
               onClick={() => setFilterMode("vazios")}
               className={`rounded-lg px-2.5 py-1 text-xs font-semibold transition ${
                 filterMode === "vazios"
-                  ? "bg-sky-500/20 text-sky-300 border border-sky-500/40"
+                  ? "bg-stone-500/20 text-stone-300 border border-stone-500/40"
                   : "text-zinc-400 hover:text-zinc-200"
               }`}
             >
