@@ -1,5 +1,23 @@
 # 🧠 Sessão Ativa — Grimorium RPG
 
+## 🐉 2026-11-24 — Ficha de NPC deixou de parecer ficha de jogador (commitado/pushado)
+- Pedido: "ao tentar editar um npc, estou acessando o npc, consta como se eu estivesse acessando a ficha de um jogador poderia corriir isso".
+- Skill carregada: `npc-curator`; discussão com `qa-judge` em 3 rodadas. Causa raiz: link "Acessar Ficha" abre `/personagem?inspect=${id}&type=npc`; `AuthContext` criava sintético com `id` numérico igual ao do catálogo (colisão com heróis) e rótulos/ícones/XP do layout de jogador. Merge de heróis (`{...c, ...fullChar}`) preservava `__npc`.
+- Correção em 8 arquivos de código: `AuthContext.jsx` (id composto `npc:<id>` + `npcId`, `npcInspectFailed`/`inspectError` sem fallback para herói, limpeza de `__npc`/`npcId` no merge, erro exposto); `AppShell.jsx` ("Ficha do Monstro", Skull, sem "Trocar Herói", alvos `min-h-11`, `py-0.5`); `Cabecalho.jsx` (Skull, "Bestiário/Folio do Monstro", papel com `truncate`, XPBar oculto, "Carregando ficha" no loading); `personagem/page.js` (rótulos monstro, sem progressão de nível, `role="alert"` no erro, ícone Skull); `convite/[code]/page.js` (filtra `__npc`); 3 páginas admin (titles dos botões "Acessar Ficha").
+- Validação final: `npm run lint` **0 erros** (45 warnings pré-existentes), `npm test` **165/165** (18 suítes), `npm run build` **29/29**, `git diff --check` limpo. `qa-judge` final: **APROVADO**, média **8.3** (Responsividade 8.0 · Beleza 8.5 · Falhas 8.5 · A11y 8.0); nenhum S1/S2. Dev server nas rotas afetadas = 200, sem erros; browser indisponível (não renderizado).
+- Ressalvas S3/S4 opcionais: `inspectError` persiste na SPA após sair via `<Link>` (limpar ao mudar de rota), textos 9–10px pré-existentes, alvos `min-h-8` na barra de sync, `py-0.2` inválido fora do diff.
+- Estado: código **commitado e pushado**: `63545af` `fix(npc): abrir ficha do monstro sem parecer ficha de jogador` (`c430ed7..63545af`) em `origin/main`. Memórias atualizadas em commit separado; untracked `.github/workflows/` e `test_schema.mjs` fora do escopo. Pendente separado: solicitação de `hpMax = hitDieMax` para nível 1 ao alterar dado de vida da classe (investigada, não implementada).
+
+## ⚖️ 2026-11-24 — Julgamento QA intermediário: ficha de NPC deixou de parecer ficha de jogador (somente leitura; superado pelo veredito final acima)
+- Pedido: julgar alterações NÃO commitadas em 7 arquivos (AuthContext, AppShell, Cabecalho, personagem/page, 3 páginas admin) que trocaram rótulos/ícones para "monstro" e garantiram `activeCharacter` do NPC via `unshift`.
+- **Veredito: APROVADO COM RESSALVAS** · média **7.3** (Responsividade 7.0 · Beleza 7.5 · Falhas 7.5 · Acessibilidade 7.0). Nenhum S1.
+- Evidências literais: `npm run build` OK 29/29 · `npm run lint` 0 erros/45 warnings pré-existentes · `node --test 'src/lib/__tests__/*.test.mjs'` 165/165 em 18 suítes · dev server :3117 → `/personagem?inspect=1&type=npc`, `/admin/npcs`, `/admin/npcs/1`, `/admin/personagens`, `/personagem` = 200, log sem erros, processo encerrado. Browser indisponível → **não renderizado**; avaliação por código.
+- **S2** `AuthContext.jsx:112` (`unshift`) + `:313-317` (merge `{...c, ...fullChar}` preserva `__npc`) — com IDs numéricos independentes em `/characters/:id` (`api.js:419`) e `/npcs/:id` (`api.js:607`), um herói com id colidido herda identidade de monstro; `:115-117` falha silenciosa no fetch do NPC (`console.warn`) e cai para outra ficha.
+- **S3** `AppShell.jsx:275-276` mantém `<Crown>` no banner "Ficha do Monstro"; `personagem/page.js:151` mantém `<Crown>` em "Registro do monstro"; `Cabecalho.jsx:66` mostra "Nv. 1" + XPBar durante `authLoading`; `Cabecalho.jsx:84` badge com `papel` sem `truncate` em 320px; textos 10px novos em `personagem/page.js:435,480`.
+- Pontos fortes: cache isolado `rpg-npc-sheet:v1` (`CharacterContext.js:208-210`), sync desligado (`:362-366`), `reloadFromCloud` bloqueado (`:327`), `playerCharacters` já filtra `__npc` (`AuthContext.jsx:361`), `stopInspecting` usa `userId` (`:334`), aria-labels atualizados, progressão de nível bloqueada (`personagem/page.js:434-437`).
+- Próximo passo: `frontend-artisan` (ícones, truncate, flash de loading) e `backend-database` (id composto/prefixado para NPC); nenhum código alterado neste turno.
+
+
 ## 🎨 2026-11-24 — Remoção dos azuis claros das palavras (identidade Âmbar restaurada)
 - Pedido: "poderia remover as cores azuis claras das palavras do site, pois nao esta combinando". Mantida a identidade original (Âmbar Vulcânico); NÃO reintroduzir Forja Astral.
 - Skill carregada: `sheet-component-builder`; julgamento `qa-judge` (APROVADO COM RESSALVAS, 8.5 — colisões S3/S4 corrigidas na sequência).

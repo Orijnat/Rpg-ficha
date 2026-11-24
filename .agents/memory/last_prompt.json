@@ -1,7 +1,7 @@
 {
-  "timestamp": "2026-11-24T14:40:44-03:00",
+  "timestamp": "2026-11-24T15:08:14-03:00",
   "agent": "opencode",
-  "prompt": "poderia remover as cores azuis claras das palavras do site, pois nao esta combinando",
-  "action": "Removidos os azuis claros das palavras/textos (sky/cyan/blue/indigo/teal) em 17 arquivos, substituídos por âmbar/neutra/violeta conforme o contexto; prata e platina agora em tons quentes. Identidade Âmbar Vulcânico preservada; tema opcional Gelo Eterno intacto. Lint 0 erros (45 warnings pré-existentes), testes 165/165, build 29/29. qa-judge: APROVADO COM RESSALVAS (8.5), colisões de cor corrigidas. Commitado e pushado: 2d529e2 (8f16edb..2d529e2) em origin/main.",
-  "session": "remover-azuis-claros-palavras"
+  "prompt": "ao tentar editar um npc, estou acessando o npc, consta como se eu estivesse acessando a ficha de um jogador poderia corriir isso",
+  "action": "Corrigida a identidade da ficha de NPC aberta por /personagem?inspect=<id>&type=npc: id composto npc:<id>, erro explícito sem fallback para herói, limpeza de __npc no merge, rótulos/ícones 'monstro' em AppShell/Cabecalho/personagem, XP e progressão ocultos, filtro de __npc no convite e titles dos botões atualizados. Skill npc-curator; qa-judge final APROVADO (8.3; nenhum S1/S2). Lint 0 erros/45 warnings, testes 165/165, build 29/29, diff --check limpo. Commitado e pushado: 63545af (c430ed7..63545af) em origin/main.",
+  "session": "ficha-npc-identidade-monstro"
 }

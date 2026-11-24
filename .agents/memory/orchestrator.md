@@ -1,5 +1,22 @@
 # Memória do Agente Orquestrador (@orchestrator)
 
+## Entrega — 2026-11-24 (Ficha de NPC: identidade de monstro)
+- **Especialistas Acionados**: `npc-curator` (regras de curadoria), `qa-judge` (3 rodadas: 7.3 → 7.2 → **8.3 APROVADO**).
+- **Demanda do Usuário**: ao editar/acessar NPC, a interface constava como ficha de jogador.
+- **Correção**: `AuthContext` usa id composto `npc:<id>`, erro explícito (`inspectError`/`npcInspectFailed`) sem fallback para herói e remove `__npc`/`npcId` no merge; `AppShell`/`Cabecalho`/`personagem/page` passam a exibir "Monstro" com ícone Skull, sem XP e sem progressão de nível; `convite/[code]` filtra NPCs; titles dos 3 botões "Acessar Ficha" esclarecem cópia local.
+- **Validação**: lint 0 erros/45 warnings pré-existentes · testes 165/165 · build 29/29 · `git diff --check` limpo · rotas afetadas 200 em dev server · sem browser/screenshot.
+- **Estado**: **Commitado e pushado** — `63545af` `fix(npc): abrir ficha do monstro sem parecer ficha de jogador` (`c430ed7..63545af`) em `origin/main`. Pendente separado: ajuste de `hpMax` para nível 1 ao trocar dado de vida (investigado, não implementado). Ressalvas S3/S4 opcionais registradas em `active_session.md`.
+
+## Julgamento intermediário — 2026-11-24 (Ficha de NPC: identidade de monstro; superado pela entrega acima)
+
+- **Especialista Acionado**: `qa-judge` (somente julgamento; nenhuma edição de código).
+- **Demanda do Usuário**: julgar as alterações não commitadas que fizeram a ficha aberta via "Acessar Ficha" de NPC deixar de parecer ficha de jogador.
+- **Veredito**: **APROVADO COM RESSALVAS** — média **7.3** (Responsividade 7.0 · Beleza 7.5 · Falhas 7.5 · Acessibilidade 7.0), nenhum S1.
+- **Evidências**: build 29/29 · lint 0 erros/45 warnings · testes 165/165 · dev server :3117 com 5 rotas 200 e log limpo · browser indisponível (não renderizado).
+- **Achados priorizados**: S2 colisão de ID numérico entre `/characters/:id` e `/npcs/:id` com `__npc` preservado no merge (`AuthContext.jsx:112,313-317`); S2 falha silenciosa no fetch do NPC (`:115-117`); S3 ícones `Crown` em contexto de monstro (`AppShell.jsx:275-276`, `personagem/page.js:151`); S3 flash de "Nv. 1"/XPBar no loading (`Cabecalho.jsx:66`); S3 badge de papel sem `truncate` (`Cabecalho.jsx:84`) e textos 10px.
+- **Estado na ocasião**: NÃO commitado; achados delegados a `frontend-artisan` e `backend-database` e corrigidos antes do commit final `63545af`.
+
+
 ## Entrega — 2026-11-24 (Remoção dos azuis claros das palavras)
 
 - **Especialistas Acionados**: `frontend-artisan` (skill `sheet-component-builder`), `qa-judge`.
