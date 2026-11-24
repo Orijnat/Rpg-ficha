@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Check, CloudOff, Crown, LoaderCircle, RefreshCw, Sparkles, Sword, TriangleAlert, Package, ChevronsUp, Dna, Lock, LockOpen, Plus, Trash2 } from "lucide-react";
+import { Check, CloudOff, Crown, LoaderCircle, RefreshCw, Skull, Sparkles, Sword, TriangleAlert, Package, ChevronsUp, Dna, Lock, LockOpen, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useCharacter } from "../context/CharacterContext";
 import { Card, EditableText, SectionHeader, StatBox } from "../components/ui";
@@ -20,7 +20,8 @@ import { DEFAULT_ABILITIES, isHabilidadeDesbloqueada } from "../../lib/abilities
 export default function Personagem() {
   const { data, upd, syncStatus, syncError, autoRetryAttempt, retrySync, reloadFromCloud, overwriteCloud, updateDadosExtras, updateRace, updateClass, applyLevelUp } = useCharacter();
   const { requestRoll } = useDice();
-  const { isMaster, activeCharacter, loading: authLoading, logout } = useAuth();
+  const { isMaster, activeCharacter, inspectError, loading: authLoading, logout } = useAuth();
+  const isNpcSheet = Boolean(activeCharacter?.__npc);
   const [levelFeedback, setLevelFeedback] = useState(null);
   const [showSyncDetails, setShowSyncDetails] = useState(false);
   const feedbackTimer = useRef(null);
@@ -105,19 +106,29 @@ export default function Personagem() {
 
   // Mestre logando sem ficha própria (ou conta sem ficha): nunca abrir a ficha de um herói
   if (!authLoading && !activeCharacter) {
+    const isNpcLoadError = Boolean(inspectError);
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-5 text-center">
         <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-primary/40 bg-primary/10 text-primary">
-          <Crown size={30} />
+          {isNpcLoadError ? <Skull size={30} /> : <Crown size={30} />}
         </div>
         <div>
           <h2 className="font-cinzel text-xl font-black text-foreground sm:text-2xl">
-            {isMaster ? "Modo Mestre — nenhuma ficha própria" : "Nenhuma ficha vinculada"}
+            {isNpcLoadError
+              ? "Falha ao carregar o monstro"
+              : isMaster
+                ? "Modo Mestre — nenhuma ficha própria"
+                : "Nenhuma ficha vinculada"}
           </h2>
-          <p className="mt-2 max-w-md text-sm text-muted-foreground">
-            {isMaster
-              ? "Como mestre, você conduz a mesa. Para abrir a ficha completa de um herói em uma nova guia, use os botões «Acessar Ficha» no Painel do Mestre."
-              : "Nenhuma ficha foi encontrada para esta conta."}
+          <p
+            role={isNpcLoadError ? "alert" : undefined}
+            className="mt-2 max-w-md text-sm text-muted-foreground"
+          >
+            {isNpcLoadError
+              ? inspectError
+              : isMaster
+                ? "Como mestre, você conduz a mesa. Para abrir a ficha completa de um herói em uma nova guia, use os botões «Acessar Ficha» no Painel do Mestre."
+                : "Nenhuma ficha foi encontrada para esta conta."}
           </p>
         </div>
         <Link
@@ -149,16 +160,22 @@ export default function Personagem() {
           <div className="min-w-0">
             <div className="mb-2 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.3em] text-primary">
               <span>✦</span>
-              <Crown size={14} className="text-primary drop-shadow-[0_0_6px_var(--primary)]" />
-              <span>Registro do aventureiro</span>
+              {isNpcSheet ? (
+                <Skull size={14} className="text-primary drop-shadow-[0_0_6px_var(--primary)]" />
+              ) : (
+                <Crown size={14} className="text-primary drop-shadow-[0_0_6px_var(--primary)]" />
+              )}
+              <span>{isNpcSheet ? "Registro do monstro" : "Registro do aventureiro"}</span>
               <span>✦</span>
             </div>
             <h2 className="font-cinzel text-3xl sm:text-5xl font-black tracking-tight gold-gradient-text">
-              <EditableText value={data.name} onChange={(value) => upd("name", value)} label="Nome do aventureiro" />
+              <EditableText value={data.name} onChange={(value) => upd("name", value)} label={isNpcSheet ? "Nome do monstro" : "Nome do aventureiro"} />
             </h2>
             <p className="mt-2.5 flex items-center gap-2 font-journal text-sm sm:text-base italic text-amber-100/80">
               <Sparkles size={15} className="text-primary animate-pulse" />
-              Um novo capítulo aguarda ser inscrito neste códice vivo.
+              {isNpcSheet
+                ? "Cópia de trabalho do bestiário — o monstro original não é alterado."
+                : "Um novo capítulo aguarda ser inscrito neste códice vivo."}
             </p>
           </div>
           <div className="flex flex-col gap-2.5 sm:items-end">
@@ -304,7 +321,7 @@ export default function Personagem() {
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <SectionHeader
             title="Ações & Ataques"
-            subtitle="Golpes, técnicas e combates diretos do herói"
+            subtitle={isNpcSheet ? "Golpes, técnicas e combates diretos do monstro" : "Golpes, técnicas e combates diretos do herói"}
             icon={<Sword size={15} />}
           />
           <button
@@ -382,7 +399,7 @@ export default function Personagem() {
                   }}
                   disabled={Boolean(race)}
                   className="h-9 rounded-lg border border-border bg-input-background px-2.5 text-xs font-normal text-foreground outline-none focus:border-primary disabled:cursor-not-allowed disabled:opacity-70 normal-case"
-                  aria-label="Raça do herói"
+                  aria-label={isNpcSheet ? "Raça do monstro" : "Raça do herói"}
                   title={race ? "A raça já foi definida e só o mestre pode alterar." : "Escolha com cuidado: a raça só pode ser definida uma vez."}
                 >
                   {!race && <option value="">Selecione a raça (uma única vez)</option>}
@@ -403,7 +420,7 @@ export default function Personagem() {
                   }}
                   disabled={Boolean(classe)}
                   className="h-9 rounded-lg border border-border bg-input-background px-2.5 text-xs font-normal text-foreground outline-none focus:border-primary disabled:cursor-not-allowed disabled:opacity-70 normal-case"
-                  aria-label="Classe do herói"
+                  aria-label={isNpcSheet ? "Classe do monstro" : "Classe do herói"}
                   title={classe ? "A classe já foi definida e só o mestre pode alterar." : "Escolha com cuidado: a classe só pode ser definida uma vez."}
                 >
                   {!classe && <option value="">Selecione a classe (uma única vez)</option>}
@@ -428,7 +445,11 @@ export default function Personagem() {
             </p>
           </div>
           <div className="flex shrink-0 flex-col items-stretch gap-1.5 sm:items-end">
-            {!isMaster ? (
+            {isNpcSheet ? (
+              <span className="max-w-[180px] rounded-lg border border-primary/30 bg-primary/10 px-3 py-2 text-center font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                NPC não possui progressão de nível
+              </span>
+            ) : !isMaster ? (
               <span className="max-w-[180px] rounded-lg border border-primary/30 bg-primary/10 px-3 py-2 text-center font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                 Apenas o mestre promove o herói de nível
               </span>
@@ -470,14 +491,16 @@ export default function Personagem() {
                 </button>
               </>
             )}
-            <span className="text-center font-mono text-[10px] text-muted-foreground sm:text-right">
-              {characterLevel >= 20
-                ? "Nível máximo (20)"
-                : !xpReady
-                  ? `Faltam ${xpMissing.toLocaleString("pt-BR")} XP para o nível ${characterLevel + 1}`
-                  : liberado
-                    ? "XP suficiente e ascensão liberada — o herói pode subir!"
-                    : "XP no limite — aguardando o mestre liberar a ascensão (feito)"}
+            <span className="text-center font-mono text-xs text-muted-foreground sm:text-right">
+              {isNpcSheet
+                ? `Nível do monstro: ${data.level || 1} (sem progressão)`
+                : characterLevel >= 20
+                  ? "Nível máximo (20)"
+                  : !xpReady
+                    ? `Faltam ${xpMissing.toLocaleString("pt-BR")} XP para o nível ${characterLevel + 1}`
+                    : liberado
+                      ? "XP suficiente e ascensão liberada — o herói pode subir!"
+                      : "XP no limite — aguardando o mestre liberar a ascensão (feito)"}
             </span>
           </div>
         </div>

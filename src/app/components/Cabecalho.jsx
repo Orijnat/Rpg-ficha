@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Crown, HeartPulse, Settings, Shield } from "lucide-react";
+import { Crown, HeartPulse, LoaderCircle, Settings, Shield, Skull } from "lucide-react";
 import { useCharacter } from "../context/CharacterContext";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../context/AuthContext";
@@ -22,6 +22,7 @@ export default function Cabecalho() {
   const [isHpModalOpen, setIsHpModalOpen] = useState(false);
 
   const isMasterView = pathname?.startsWith("/admin");
+  const isNpcSheet = Boolean(activeCharacter?.__npc);
 
   return (
     <>
@@ -34,22 +35,28 @@ export default function Cabecalho() {
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-amber-400/70 bg-gradient-to-b from-amber-500/25 to-amber-500/10 text-amber-400 shadow-[0_0_20px_rgba(245,158,11,0.35)]">
                   <Crown size={22} className="drop-shadow-[0_0_8px_#f59e0b]" />
                 </div>
+              ) : isNpcSheet ? (
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-primary/50 bg-primary/15 text-primary shadow-[0_0_20px_color-mix(in_srgb,var(--primary)_30%,transparent)]">
+                  <Skull size={22} className="drop-shadow-[0_0_8px_var(--primary)]" />
+                </div>
               ) : (
                 <Image src="/ambar-vulcanico.svg" alt="Grimorium" width={44} height={44} priority className="h-11 w-11 shrink-0 rounded-xl shadow-[0_0_20px_color-mix(in_srgb,var(--primary)_35%,transparent)]" />
               )}
               <div>
                 <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.28em] text-primary">
                   <span>✦</span>
-                  <span>{isMasterView ? "Soberania do Narrador" : "Códice do Aventureiro"}</span>
+                  <span>{isMasterView ? "Soberania do Narrador" : isNpcSheet ? "Bestiário do Monstro" : "Códice do Aventureiro"}</span>
                   <span>✦</span>
                 </p>
                 <h1 className="font-decorative text-xl sm:text-2xl font-black tracking-tight gold-gradient-text">
-                  {isMasterView ? "Câmara do Mestre" : "Grimorium"}
+                  {isMasterView ? "Câmara do Mestre" : isNpcSheet ? "Folio do Monstro" : "Grimorium"}
                 </h1>
                 <p className="font-journal text-xs italic text-muted-foreground/90 hidden sm:block">
                   {isMasterView
                     ? "Sala de guerra, condução de encontros e controle da mesa"
-                    : "Folio vivo de proezas, inventário e contratos da guilda"}
+                    : isNpcSheet
+                      ? "Cópia local de trabalho — o NPC original no catálogo permanece intacto"
+                      : "Folio vivo de proezas, inventário e contratos da guilda"}
                 </p>
               </div>
             </div>
@@ -65,7 +72,7 @@ export default function Cabecalho() {
                     {isMaster ? "Abra a ficha de um herói pelo Painel do Mestre" : "Nenhuma ficha vinculada a esta conta"}
                   </span>
                 </div>
-              ) : !isMasterView ? (
+              ) : !isMasterView && !authLoading ? (
                 <div className="min-w-0 text-left sm:text-right">
                   <div className="flex items-center gap-2 sm:justify-end">
                     <EditableText
@@ -73,8 +80,11 @@ export default function Cabecalho() {
                       onChange={(value) => upd("name", value)}
                       className="font-cinzel block text-base sm:text-lg font-black text-foreground drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]"
                     />
-                    <span className="wax-seal bg-primary/20 text-primary border border-primary/40 shadow-[0_0_10px_color-mix(in_srgb,var(--primary)_25%,transparent)]">
-                      Nv. {data.level || 1}
+                    <span
+                      title={isNpcSheet ? activeCharacter?.papel || "Monstro" : undefined}
+                      className={`wax-seal bg-primary/20 text-primary border border-primary/40 shadow-[0_0_10px_color-mix(in_srgb,var(--primary)_25%,transparent)] ${isNpcSheet ? "max-w-[8rem] truncate" : ""}`}
+                    >
+                      {isNpcSheet ? activeCharacter?.papel || "Monstro" : `Nv. ${data.level || 1}`}
                     </span>
                   </div>
 
@@ -107,9 +117,18 @@ export default function Cabecalho() {
                   </div>
 
                   {/* Barra de XP/Nível */}
-                  <div className="mt-2 w-full max-w-[13rem] sm:max-w-[16rem] sm:ml-auto">
-                    <XPBar />
-                  </div>
+                  {!isNpcSheet && (
+                    <div className="mt-2 w-full max-w-[13rem] sm:max-w-[16rem] sm:ml-auto">
+                      <XPBar />
+                    </div>
+                  )}
+                </div>
+              ) : !isMasterView ? (
+                <div className="hidden sm:flex flex-col text-right">
+                  <span className="wax-seal bg-primary/20 text-primary border border-primary/40 shadow-[0_0_12px_color-mix(in_srgb,var(--primary)_25%,transparent)]">
+                    <LoaderCircle size={11} className="animate-spin" /> Carregando ficha
+                  </span>
+                  <span className="font-cinzel text-xs text-muted-foreground/80 mt-1">Preparando o códice</span>
                 </div>
               ) : (
                 <div className="hidden sm:flex flex-col text-right">

@@ -197,7 +197,11 @@ export default function AppShell({ children }) {
                   <div className="flex items-center gap-2">
                     <span className="h-1.5 w-1.5 rotate-45 bg-primary shadow-[0_0_6px_var(--primary)]" />
                     <span className="font-cinzel text-[10px] font-bold uppercase tracking-[0.25em] text-primary/90">
-                      {isMaster ? "Ficha do Jogador" : "Folio do Jogador"}
+                      {activeCharacter?.__npc
+                        ? "Ficha do Monstro"
+                        : isMaster
+                          ? "Ficha do Jogador"
+                          : "Folio do Jogador"}
                     </span>
                   </div>
                 </div>
@@ -269,7 +273,7 @@ export default function AppShell({ children }) {
           <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-2xl border-2 border-primary/50 bg-card/95 p-4 shadow-xl backdrop-blur-md">
             <div className="flex items-center gap-3">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-primary/50 bg-primary/20 text-primary shadow-md">
-                <Crown size={22} />
+                {activeCharacter?.__npc ? <Skull size={22} /> : <Crown size={22} />}
               </div>
               <div>
                 <div className="flex items-center gap-2">
@@ -278,7 +282,7 @@ export default function AppShell({ children }) {
                       ? "Modo Mestre · Ficha do Monstro"
                       : "Modo Mestre · Inspecionando Ficha do Jogador"}
                   </span>
-                  <span className="rounded-full bg-primary/20 border border-primary/40 px-2 py-0.2 text-[10px] font-bold text-primary animate-pulse">
+                  <span className="rounded-full bg-primary/20 border border-primary/40 px-2 py-0.5 text-[10px] font-bold text-primary animate-pulse">
                     {activeCharacter?.__npc ? "Cópia desta guia" : "Ao Vivo"}
                   </span>
                 </div>
@@ -305,7 +309,7 @@ export default function AppShell({ children }) {
             </div>
 
             <div className="flex flex-wrap items-center gap-2.5">
-              {playerCharacters.length > 1 && (
+              {!activeCharacter?.__npc && playerCharacters.length > 1 && (
                 <div className="flex items-center gap-1.5">
                   <span className="text-[10px] font-bold uppercase text-muted-foreground hidden sm:inline">
                     Trocar Herói:
@@ -313,7 +317,7 @@ export default function AppShell({ children }) {
                   <select
                     value={activeCharacterId || ""}
                     onChange={(e) => inspectCharacter(e.target.value, false)}
-                    className="min-h-9 rounded-lg border border-primary/40 bg-background/90 px-2.5 py-1 text-xs font-semibold text-foreground outline-none focus:border-primary"
+                    className="min-h-11 rounded-lg border border-primary/40 bg-background/90 px-2.5 py-1 text-xs font-semibold text-foreground outline-none focus:border-primary"
                   >
                     {playerCharacters.map((c) => (
                       <option key={c.id} value={c.id}>
@@ -327,7 +331,7 @@ export default function AppShell({ children }) {
               <button
                 type="button"
                 onClick={stopInspecting}
-                className="flex min-h-9 items-center gap-1.5 rounded-lg border border-border bg-secondary px-3 py-1.5 text-xs font-bold text-foreground hover:border-primary transition active:scale-95"
+                className="flex min-h-11 items-center gap-1.5 rounded-lg border border-border bg-secondary px-3 py-1.5 text-xs font-bold text-foreground hover:border-primary transition active:scale-95"
               >
                 <span>Voltar ao Painel do Mestre</span>
                 <ArrowRight size={13} />

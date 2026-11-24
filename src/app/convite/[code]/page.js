@@ -32,7 +32,8 @@ export default function ConvitePage({ params }) {
   const [joining, setJoining] = useState(false);
   const [joinedSuccess, setJoinedSuccess] = useState(false);
 
-  const activeChar = characters.find((c) => c.id === activeCharacterId) || characters[0];
+  const heroCharacters = characters.filter((c) => !c.__npc);
+  const activeChar = heroCharacters.find((c) => c.id === activeCharacterId) || heroCharacters[0] || null;
 
   useEffect(() => {
     if (!code) {

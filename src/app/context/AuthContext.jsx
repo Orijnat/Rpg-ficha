@@ -25,6 +25,7 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(null);
   const [characters, setCharacters] = useState([]);
   const [activeCharacterId, setActiveCharacterId] = useState(null);
+  const [inspectError, setInspectError] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -38,6 +39,7 @@ export function AuthProvider({ children }) {
       }
 
       setToken(storedToken);
+      setInspectError(null);
 
       try {
         const data = await fetchMe(storedToken);
@@ -73,6 +75,7 @@ export function AuthProvider({ children }) {
             : null;
 
           let inspectFound = inspectParam ? allChars.find((c) => c.id === inspectParam) : null;
+          let npcInspectFailed = false;
           if (inspectParam && inspectType === "npc") {
             try {
               const npc = await fetchNpcById(inspectParam, storedToken);
@@ -80,7 +83,8 @@ export function AuthProvider({ children }) {
                 const attrs = npc.dadosExtras?.attributes ?? {};
                 const synthetic = {
                   __npc: true,
-                  id: npc.id,
+                  id: `npc:${npc.id}`,
+                  npcId: npc.id,
                   nome: npc.nome,
                   name: npc.nome,
                   papel: npc.papel,
@@ -109,11 +113,13 @@ export function AuthProvider({ children }) {
                   owner: { username: "Monstro" },
                   campanhaId: npc.campanhaId ?? null,
                 };
-                allChars.push(synthetic);
+                allChars.unshift(synthetic);
                 inspectFound = synthetic;
               }
             } catch (e) {
               console.warn("Falha ao abrir ficha do monstro:", e);
+              npcInspectFailed = true;
+              setInspectError("Não foi possível carregar o monstro solicitado. Volte ao Painel do Mestre e tente novamente.");
             }
           }
 
@@ -125,9 +131,13 @@ export function AuthProvider({ children }) {
           const ownChars = data.characters || [];
           const savedCharId = window.sessionStorage.getItem("rpg_current_char_id")
             || window.localStorage.getItem("rpg_current_char_id");
-          const found = inspectFound ?? ownChars.find((c) => c.id === savedCharId);
+          const fallbackChar = inspectType === "npc" ? null : ownChars.find((c) => c.id === savedCharId);
+          const found = inspectFound ?? fallbackChar;
           if (found) {
             setActiveCharacterId(found.id);
+          } else if (npcInspectFailed) {
+            setActiveCharacterId(null);
+            window.sessionStorage.removeItem("rpg_current_char_id");
           } else if (ownChars.length > 0) {
             setActiveCharacterId(ownChars[0].id);
             window.sessionStorage.setItem("rpg_current_char_id", ownChars[0].id);
@@ -303,6 +313,7 @@ export function AuthProvider({ children }) {
   };
 
   const inspectCharacter = async (characterId, redirectToSheet = true) => {
+    setInspectError(null);
     try {
       let fullChar = await fetchCharacterFromBackend(characterId, token);
       if (!fullChar) {
@@ -312,7 +323,13 @@ export function AuthProvider({ children }) {
         setCharacters((prev) => {
           const exists = prev.some((c) => c.id === fullChar.id);
           if (exists) {
-            return prev.map((c) => (c.id === fullChar.id ? { ...c, ...fullChar } : c));
+            return prev.map((c) => {
+              if (c.id !== fullChar.id) return c;
+              const merged = { ...c, ...fullChar };
+              delete merged.__npc;
+              delete merged.npcId;
+              return merged;
+            });
           }
           return [fullChar, ...prev];
         });
@@ -331,6 +348,7 @@ export function AuthProvider({ children }) {
   };
 
   const stopInspecting = () => {
+    setInspectError(null);
     const myChar = characters.find((c) => c.userId === user?.id);
     if (myChar) {
       setActiveCharacterId(myChar.id);
@@ -369,6 +387,7 @@ export function AuthProvider({ children }) {
     playerCharacters,
     activeCharacter,
     activeCharacterId,
+    inspectError,
     loading,
     isAuthenticated: Boolean(user && token && !sessionInfo?.isExpired),
     isMaster,

@@ -343,7 +343,7 @@ export default function EditNpcPage() {
             href={`/personagem?inspect=${id}&type=npc`}
             target="_blank"
             rel="noreferrer noopener"
-            title="Abre a ficha no layout do jogador em uma nova guia (cópia local; o original fica intacto)"
+            title="Abre a ficha do monstro em uma nova guia (cópia local; o NPC do catálogo fica intacto)"
             className="flex min-h-11 items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-950/20 px-3 text-xs font-bold uppercase tracking-wider text-emerald-300 hover:bg-emerald-950/40"
           >
             <ScrollText size={14} /> Acessar Ficha
